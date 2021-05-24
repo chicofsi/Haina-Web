@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Pulsa;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Resources\ValueMessage;
+use App\Http\Resources\BillResource;
 use App\Http\Resources\CategoryServiceResource;
 use App\Http\Resources\ProductGroupResource;
 use Illuminate\Support\Facades\Auth;
@@ -171,7 +172,11 @@ class PulsaController extends Controller
             //return $response;
 
             $bill = json_decode($response->getBody()->getContents());
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $bill]), 200);
+            $bill['product_code'] = $request->product_code;
+
+            $billdata = new BillResource($bill);
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
         }catch(RequestException $e) {
             echo Psr7\Message::toString($e->getRequest());
             if ($e->hasResponse()) {
