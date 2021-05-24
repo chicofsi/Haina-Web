@@ -174,6 +174,11 @@ class PulsaController extends Controller
             $bill = json_decode($response->getBody()->getContents());
             $bill->product_code = $request->product_code;
 
+            if(isset($bill->data->bill_period)){
+                $bill->data->bill_date = $bill->data->bill_period;
+                unset($bill->data->bill_period);
+            }
+
             $billdata = new BillResource($bill);
 
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
