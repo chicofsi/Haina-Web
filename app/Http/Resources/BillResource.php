@@ -13,11 +13,11 @@ class BillResource extends JsonResource {
 
 public function toArray($request){
 
-    $product_group = Product::select('id_product_group')->where('product_code',$this->product_code)->get();
+    $product_group = Product::select('id_product_group', 'description')->where('product_code',$this->product_code)->first();
+    
+    $product_category = ProductGroup::select('id_product_category')->where('id', $product_group['id_product_group'])->first();
 
-    $product_category = ProductGroup::select('id_product_category')->where('id', $product_group)->get();
-
-    $product_type = ProductCategory::where('id', $product_category)->get();
+    $product_type = ProductCategory::where('id', $product_category['id_product_category'])->first();
     
     return [
         'rq_uuid' => $this->rq_uuid,
@@ -27,9 +27,10 @@ public function toArray($request){
         'order_id' => $this->error_desc,
         'bill_amount' => $this->bill_amount,
         'admin_fee' => $this->admin_fee,
-        'name' => $product_type->name,
-        'name_zh' => $product_type->name_zh,
-        'icon_code' => $product_type->icon_code,
+        'product' => $product_group['description'],
+        'category' => $product_type['name'],
+        'category_zh' => $product_type['name_zh'],
+        'icon_code' => $product_type['icon_code'],
         'data' => $this->data
     ];
 }
