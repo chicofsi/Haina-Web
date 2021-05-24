@@ -172,7 +172,7 @@ class PulsaController extends Controller
             //return $response;
 
             $bill = json_decode($response->getBody()->getContents());
-            $bill['product_code'] = $request->product_code;
+            $bill->product_code = $request->product_code;
 
             $billdata = new BillResource($bill);
 
