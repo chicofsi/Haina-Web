@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\Jobs\ManageJobCategory;
 use App\Http\Controllers\Admin\Jobs\ManageJobs;
 use App\Http\Controllers\Admin\Company\ManageCompany;
 use App\Http\Controllers\Admin\User\ManageUser;
+use App\Http\Controllers\Api\WebHooks;
 use App\Http\Controllers\Admin\UserNotification\ManageNotificationCategory;
 use App\Http\Controllers\Admin\UserNotification\ManageNotification;
 use App\Http\Controllers\Api\Midtrans\MidtransController;
@@ -29,6 +30,7 @@ use App\Http\Controllers\Api\Midtrans\MidtransController;
 */
 
 Route::post('notif', [MidtransController::class, 'notificationHandler']);
+Route::post('hook', [WebHooks::class, 'index']);
 
 Route::get('/', function () {
    	return redirect()->intended('/login');
