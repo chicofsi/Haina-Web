@@ -191,6 +191,61 @@ class PulsaController extends Controller
         }
     }
 
+    public function getDirectBills(Request $request)
+    {
+        
+        $datetime=Date('Y-m-d H:m:s');
+        $time = Date('YmdHms');
+
+        $uuid="HAINAAPP".$request->order_id."inq".$time;
+
+        //$uuid=$request->uuid;
+        $sender_id="HAINAAPP";
+        $password="zclwXJlnApNbBhYF";
+		$current_date = new DateTime();
+        $signature=hash('sha256',strtoupper("##".$sender_id."##".$request->order_id."##".$request->product_code."##".$request->amount."##".$uuid."##djHKvcScStINUlaK##"),false);
+        
+
+        $body=[
+            "rq_uuid"       => $uuid,
+            "rq_datetime"   => $datetime,
+            "sender_id"     => $sender_id,
+            "password"      => $password,
+            "order_id"      => $request->order_id,
+            "product_code"  => $request->product_code,
+            "amount"        => $request->amount,
+            "signature"     => $signature
+        ];
+        try {
+
+            $response=$this->client->request(
+                'POST',
+                'paymentreport',
+                [
+                    'form_params' => $body
+                ]  
+            );
+            //return $response;
+
+            $bill = json_decode($response->getBody()->getContents());
+            $bill->product_code = $request->product_code;
+
+            if($request->amount > $bill->data->amount){
+                $bill->amount = $bill->data->amount;
+            }
+
+            $billdata = new BillResource($bill);
+            
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $bill]), 200);
+        }catch(RequestException $e) {
+            echo Psr7\Message::toString($e->getRequest());
+            if ($e->hasResponse()) {
+                echo Psr7\Message::toString($e->getResponse());
+            }
+            return;
+        }
+    }
+
 	public function getProviders(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
