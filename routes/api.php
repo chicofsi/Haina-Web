@@ -97,13 +97,10 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	
 	Route::group(['prefix' => 'pulsa'],function ()
 	{
-		Route::post('/providers'  , [PulsaController::class, 'getProviders']);
+		
 		Route::post('/inquiry'  , [PulsaController::class, 'getInquiry']);
 		Route::post('/transaction'  , [PulsaController::class, 'addTransaction']);
 		Route::post('/list'  , [PulsaController::class, 'transactionList']);
-		Route::post('/category'  , [PulsaController::class, 'getProductCategory']);
-		Route::post('/group'  , [PulsaController::class, 'getProductGroup']);
-		Route::post('/product'  , [PulsaController::class, 'getProduct']);
 	});
 
 	Route::group(['prefix' => 'bills'],function ()
@@ -115,9 +112,14 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	});
 });
 
+Route::post('/providers'  , [PulsaController::class, 'getProviders']);
+Route::post('/category'  , [PulsaController::class, 'getProductCategory']);
+Route::post('/group'  , [PulsaController::class, 'getProductGroup']);
+Route::post('/product'  , [PulsaController::class, 'getProduct']);
+
 Route::group(['prefix' => 'category'],function () {
 	Route::post('/service', [ServiceCategoryController::class, 'getServiceCategory']);
-	Route::post('/group'  , [ServiceCategoryController::class, 'getProductGroup']);
+	//Route::post('/group'  , [ServiceCategoryController::class, 'getProductGroup']);
 });
 
 	Route::post('test/notification'  , [NotificationController::class, 'notifSend']);

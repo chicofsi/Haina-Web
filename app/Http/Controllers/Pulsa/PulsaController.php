@@ -202,8 +202,9 @@ class PulsaController extends Controller
         //$uuid=$request->uuid;
         $sender_id="HAINAAPP";
         $password="zclwXJlnApNbBhYF";
+        $amount=1000000;
 		$current_date = new DateTime();
-        $signature=hash('sha256',strtoupper("##".$sender_id."##".$request->order_id."##".$request->product_code."##".$request->amount."##".$uuid."##djHKvcScStINUlaK##"),false);
+        $signature=hash('sha256',strtoupper("##".$sender_id."##".$request->order_id."##".$request->product_code."##".$amount."##".$uuid."##djHKvcScStINUlaK##"),false);
         
 
         $body=[
@@ -213,7 +214,7 @@ class PulsaController extends Controller
             "password"      => $password,
             "order_id"      => $request->order_id,
             "product_code"  => $request->product_code,
-            "amount"        => $request->amount,
+            "amount"        => $amount,
             "signature"     => $signature
         ];
         try {
@@ -228,15 +229,23 @@ class PulsaController extends Controller
             //return $response;
 
             $bill = json_decode($response->getBody()->getContents());
-            $bill->product_code = $request->product_code;
+            if(isset($bill)){
+                $bill->product_code = $request->product_code;
 
-            if($request->amount > $bill->data->amount){
-                $bill->amount = $bill->data->amount;
+                $bill->data->amount = intval($bill->data->amount);            
+
+                if($amount != $bill->data->amount){
+                    $bill->amount = $bill->data->amount;
+                }
+
+                $billdata = new BillResource($bill);
+                
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $bill]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Wait 5 minutes','data'=> '']), 500);
             }
 
-            $billdata = new BillResource($bill);
-            
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $bill]), 200);
         }catch(RequestException $e) {
             echo Psr7\Message::toString($e->getRequest());
             if ($e->hasResponse()) {
