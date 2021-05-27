@@ -232,14 +232,14 @@ class PulsaController extends Controller
             
             if(isset($bill) && $bill->error_code != 610){
                 $bill->product_code = $request->product_code;
-
-                //$bill->data->amount = intval($bill->data->amount);            
+                //dd($bill);
+                $bill->data->amount = intval($bill->data->amount);            
 
                 //if($amount != $bill->data->amount){
                 //    $bill->amount = $bill->data->amount;
                 //}
 
-                $bill->amount = $amount;
+                $bill->amount = intval($amount);
 
                 $billdata = new BillResource($bill);
                 
@@ -247,6 +247,9 @@ class PulsaController extends Controller
             }
             else if($bill->error_code == 610){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Wait 5 minutes','data'=> '']), 500);
+            }
+            else if($bill->error_code == 820){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Max/min payment amount exceeded','data'=> '']), 500);
             }
 
         }catch(RequestException $e) {
