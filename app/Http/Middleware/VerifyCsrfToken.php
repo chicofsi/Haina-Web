@@ -14,6 +14,7 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         'https://hainaservice.com/notif',
         'https://hainaservice.com/hook',
-        'https://hainaservice.com/hooks',
+        'http://testgit.hainaservice.com/notif',
+        'http://testgit.hainaservice.com/hook',
     ];
 }
