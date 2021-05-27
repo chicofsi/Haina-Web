@@ -241,7 +241,7 @@ class PulsaController extends Controller
 
                 $billdata = new BillResource($bill);
                 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> '']), 200);
             }
             else if($bill->error_code == 610){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Wait 5 minutes','data'=> '']), 500);
@@ -421,6 +421,31 @@ class PulsaController extends Controller
     				'profit' => ($product->sell_price - $product->base_price),
     				'status' => 'pending payment',
     				'id_product' => $idproduct,
+    				'customer_number' => $customernumber
+    			]);
+    			$transaction['payment_data']=json_decode($this->chargeMidtrans($transaction,$payment));
+    			return $transaction;
+    		}else{
+				return false;
+    		}
+    	}else{
+			return false;
+		}
+    }
+
+    public function createBillTransaction($iduser, $product_code, $amount, $adminfee, $customernumber, $payment)
+    {
+    	if(User::where('id',$iduser)->first()){
+    		if(Product::where('product_code',$product_code)->first()){
+    			$product=Product::where('product_code',$product_code)->first();
+    			$transaction=Transaction::create([
+    				'id_user' => $iduser,
+    				'order_id' => $this->generateOrderId(),
+    				'transaction_time' => date("Y-m-d h:m:s"),
+    				'total_payment' => $amount,
+    				'profit' => $adminfee,
+    				'status' => 'pending payment',
+    				'id_product' => $product->id,
     				'customer_number' => $customernumber
     			]);
     			$transaction['payment_data']=json_decode($this->chargeMidtrans($transaction,$payment));
