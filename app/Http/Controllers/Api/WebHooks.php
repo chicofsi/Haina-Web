@@ -12,7 +12,7 @@ class WebHooks extends Controller
 	public function index(Request $request)
 	{
 		$commands = array(
-	        'ls'
+	        'git pull'
 	    );
 	    $output = '';
 	    foreach($commands AS $command){
