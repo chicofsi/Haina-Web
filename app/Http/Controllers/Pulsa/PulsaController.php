@@ -202,7 +202,7 @@ class PulsaController extends Controller
         //$uuid=$request->uuid;
         $sender_id="HAINAAPP";
         $password="zclwXJlnApNbBhYF";
-        $amount=1000000;
+        $amount=$request->amount;
 		$current_date = new DateTime();
         $signature=hash('sha256',strtoupper("##".$sender_id."##".$request->order_id."##".$request->product_code."##".$amount."##".$uuid."##djHKvcScStINUlaK##"),false);
         
@@ -233,15 +233,17 @@ class PulsaController extends Controller
             if(isset($bill) && $bill->error_code != 610){
                 $bill->product_code = $request->product_code;
 
-                $bill->data->amount = intval($bill->data->amount);            
+                //$bill->data->amount = intval($bill->data->amount);            
 
-                if($amount != $bill->data->amount){
-                    $bill->amount = $bill->data->amount;
-                }
+                //if($amount != $bill->data->amount){
+                //    $bill->amount = $bill->data->amount;
+                //}
+
+                $bill->amount = $amount;
 
                 $billdata = new BillResource($bill);
                 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> '']), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
             }
             else if($bill->error_code == 610){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Wait 5 minutes','data'=> '']), 500);
