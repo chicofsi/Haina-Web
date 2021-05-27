@@ -14,7 +14,7 @@ class BillResource extends JsonResource {
 public function toArray($request){
 
     $product_group = Product::select('id_product_group', 'description')->where('product_code',$this->product_code)->first();
-    
+    dd($product_group);
     $product_category = ProductGroup::select('id_product_category')->where('id', $product_group['id_product_group'])->first();
 
     $product_type = ProductCategory::where('id', $product_category['id_product_category'])->first();
