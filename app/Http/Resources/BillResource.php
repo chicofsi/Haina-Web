@@ -33,7 +33,7 @@ public function toArray($request){
         'rs_datetime' => $this->rs_datetime,
         'error_code' => $this->error_code,
         'error_desc' => $this->error_desc,
-        'order_id' => $this->error_desc,
+        'order_id' => $this->order_id,
         'bill_amount' => $billamount,
         'admin_fee' => $adminfee,
         'product' => $product_group['description'],

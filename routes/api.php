@@ -106,7 +106,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	Route::group(['prefix' => 'bills'],function ()
 	{
 		Route::post('/inquiry'  , [PulsaController::class, 'getInquiryBills']);
-		Route::post('/transaction'  , [PulsaController::class, 'transactionBills']);
+		Route::post('/transaction'  , [PulsaController::class, 'addBillsTransaction']);
 		Route::post('/amountbill'  , [PulsaController::class, 'getAmountBills']);
 		Route::post('/directbill'  , [PulsaController::class, 'getDirectBills']);
 	});
