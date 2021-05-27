@@ -12,7 +12,7 @@ class WebHooks extends Controller
 {
 	public function index(Request $request)
 	{
-		$commands =['git', 'reset', '--hard', 'origin/master'],['git','pull'];
+		$commands =[['git', 'reset', '--hard', 'origin/master'],['git','pull']];
 	    $output = '';
 	    foreach ($commands as $command) {
 		    $migration = new Process($command);
