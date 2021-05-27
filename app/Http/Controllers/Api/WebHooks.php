@@ -12,16 +12,18 @@ class WebHooks extends Controller
 {
 	public function index(Request $request)
 	{
-		$commands =['git','pull'];
+		$commands =[['git', 'reset', '--hard', 'origin/master'],['git','pull']];
 	    $output = '';
-	    $migration = new Process($commands);
-    	$migration->setWorkingDirectory(base_path());
-    	$migration->run();
-    	if($migration->isSuccessful()){
-            $output=$migration->getOutput();
-        } else {
-            throw new ProcessFailedException($migration);
-        }
+	    foreach ($commands as $command) {
+		    $migration = new Process($command);
+	    	$migration->setWorkingDirectory(base_path());
+	    	$migration->run();
+	    	if($migration->isSuccessful()){
+	            $output.=$migration->getOutput();
+	        } else {
+	            throw new ProcessFailedException($migration);
+	        }
+	    }
 	    echo $output;
 
 	}
