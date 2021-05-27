@@ -229,7 +229,8 @@ class PulsaController extends Controller
             //return $response;
 
             $bill = json_decode($response->getBody()->getContents());
-            if(isset($bill)){
+            
+            if(isset($bill) && $bill->error_code != 610){
                 $bill->product_code = $request->product_code;
 
                 $bill->data->amount = intval($bill->data->amount);            
@@ -240,9 +241,9 @@ class PulsaController extends Controller
 
                 $billdata = new BillResource($bill);
                 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $bill]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
             }
-            else{
+            else if($bill->error_code == 610){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Wait 5 minutes','data'=> '']), 500);
             }
 

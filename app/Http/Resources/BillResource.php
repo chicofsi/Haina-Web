@@ -18,6 +18,15 @@ public function toArray($request){
     $product_category = ProductGroup::select('id_product_category')->where('id', $product_group['id_product_group'])->first();
 
     $product_type = ProductCategory::where('id', $product_category['id_product_category'])->first();
+
+    if(isset($this->bill_amount)){
+        $billamount = $this->bill_amount;
+        $adminfee = $this->admin_fee;
+    }
+    else{
+        $billamount = $this->amount;
+        $adminfee = 0;
+    }
     
     return [
         'rq_uuid' => $this->rq_uuid,
@@ -25,8 +34,8 @@ public function toArray($request){
         'error_code' => $this->error_code,
         'error_desc' => $this->error_desc,
         'order_id' => $this->error_desc,
-        'bill_amount' => $this->bill_amount,
-        'admin_fee' => $this->admin_fee,
+        'bill_amount' => $billamount,
+        'admin_fee' => $adminfee,
         'product' => $product_group['description'],
         'category' => $product_type['name'],
         'category_zh' => $product_type['name_zh'],
