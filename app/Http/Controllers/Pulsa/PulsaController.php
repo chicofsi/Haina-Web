@@ -502,7 +502,7 @@ class PulsaController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
             $payment=PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
-        	$transaction = $this->createBillTransaction($request->user()->id, $request->product_code, $request->amount, $request->adminfee, $request->order_id, $payment);
+        	$transaction = $this->createBillTransaction($request->user()->id, $request->product_code, $request->amount, $request->adminfee, $request->customer_number, $payment);
         	if($transaction){
                 $transaction_data=Transaction::where('id',$transaction->id)->with('product')->first();
                 $data['payment_type']=$transaction->payment_data->payment_type;
