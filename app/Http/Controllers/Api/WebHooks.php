@@ -6,25 +6,22 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class WebHooks extends Controller
 {
 	public function index(Request $request)
 	{
-		$commands = array(
-	        'git pull'
-	    );
+		$commands =['git','pull'];
 	    $output = '';
-	    foreach($commands AS $command){
-	        // Run it
-        	$migration = new Process([$command]);
-        	$migration->setWorkingDirectory(base_path());
-        	$migration->run();
-
-	        // Output
-	        $output .= "<span style=\"color: #6BE234;\">\$</span> <span style=\"color: #729FCF;\">{$command}\n</span>";
-	        $output .= $migration->getOutput().'<br/>';
-	    }
+	    $migration = new Process($commands);
+    	$migration->setWorkingDirectory(base_path());
+    	$migration->run();
+    	if($migration->isSuccessful()){
+            $output=$migration->getOutput();
+        } else {
+            throw new ProcessFailedException($migration);
+        }
 	    echo $output;
 
 	}
