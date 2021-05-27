@@ -32,6 +32,7 @@ use App\Http\Controllers\Api\Midtrans\MidtransController;
 Route::post('notif', [MidtransController::class, 'notificationHandler']);
 Route::post('hook', [WebHooks::class, 'index']);
 
+
 Route::get('/', function () {
    	return redirect()->intended('/login');
 });
