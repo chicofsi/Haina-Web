@@ -31,7 +31,7 @@ public function toArray($request){
         'category' => $product_type['name'],
         'category_zh' => $product_type['name_zh'],
         'icon_code' => $product_type['icon_code'],
-        'data' => $this->data
+        'bill_data' => $this->data
     ];
 }
 }
