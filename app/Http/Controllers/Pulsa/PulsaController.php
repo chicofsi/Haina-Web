@@ -490,6 +490,38 @@ class PulsaController extends Controller
         }
     }
 
+    public function addBillsTransaction(Request $request)
+    {
+    	$validator = Validator::make($request->all(), [
+            'product_code' => 'required',
+            'customer_number' => 'required',
+            'id_payment_method' => 'required'
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            $payment=PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
+        	$transaction = $this->createBillTransaction($request->user()->id, $request->product_code, $request->amount, $request->adminfee, $request->order_id, $payment);
+        	if($transaction){
+                $transaction_data=Transaction::where('id',$transaction->id)->with('product')->first();
+                $data['payment_type']=$transaction->payment_data->payment_type;
+                $data['amount']=$transaction->payment_data->gross_amount;
+                $data['payment_status']=$transaction->payment_data->transaction_status;
+                foreach ($transaction->payment_data->va_numbers as $key => $value) {
+                    $data['virtual_account']=$value->va_number;
+                    $data['bank']=$value->bank;
+                }
+                $transaction_data['payment']=$data;
+
+            	return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction Success!','data'=> $transaction_data]), 200);
+        	}else {
+            	return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Failed!','data'=> ""]), 400);
+
+        	}
+        }
+    }
+
     public function transactionList(Request $request)
     {
         $pending=Transaction::where('id_user',$request->user()->id)->with('product','payment')->where('status','pending payment')->get();
