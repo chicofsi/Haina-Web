@@ -17,7 +17,7 @@ class CategoryService extends Model
     protected $table = 'service_category';
 
     protected $fillable = [
-    	'name', 'icon_code'
+    	'name', 'icon_code',
     ];
 
     public function productCategory(){

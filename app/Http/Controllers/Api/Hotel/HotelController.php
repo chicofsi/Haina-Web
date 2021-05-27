@@ -27,7 +27,6 @@ class HotelController extends Controller
         else{
             foreach($post as $key => $value){
                 $postData[$key] = new HotelResource($value);
-
             }
 
             return response()->json(new ValueMessage(['value'=>1, 'message'=>'Get Data Success!', 'data'=> $postData]), 200);

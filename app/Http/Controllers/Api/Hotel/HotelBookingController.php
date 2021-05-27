@@ -114,16 +114,17 @@ class HotelBookingController extends Controller
 	{
 		$username="SB-Mid-server-uUu-OOYw1hyxA9QH8wAbtDRl";
 		$url="https://api.sandbox.midtrans.com/v2/charge";
-		$data_array =  array(
-		    "payment_type"			=> $payment->payment_category->url,
-		    "bank_transfer"			=> array(
-		    	"bank"				=> $payment->name
+		$data_array =  [
+		    "payment_type"        => $payment->payment_category->url,
+		    "bank_transfer"       => [
+		    	"bank"               => $payment->name
+		    ],
+            "custom_field1"        => "Hotel",
+		    "transaction_details" => array(
+		        "order_id"            => $transaction->order_id,
+		        "gross_amount"		  => $transaction->total_price
 		    ),
-		    "transaction_details"	=> array(
-		        "order_id"			=> $transaction->order_id,
-		        "gross_amount"		=> $transaction->total_price
-		    ),
-		);
+		];
 
 		$header="Authorization: Basic ".base64_encode($username.":");
 		// return json_encode($data_array)."BLABLABLAB".$header."davdavd".$username.":";

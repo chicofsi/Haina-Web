@@ -241,7 +241,7 @@ class PulsaController extends Controller
 
                 $billdata = new BillResource($bill);
                 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> '']), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
             }
             else if($bill->error_code == 610){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Wait 5 minutes','data'=> '']), 500);
@@ -369,6 +369,7 @@ class PulsaController extends Controller
 		    "bank_transfer"			=> array(
 		    	"bank"				=> $payment->name
 		    ),
+            "custom_field1"        => "PPOB",
 		    "transaction_details"	=> array(
 		        "order_id"			=> $transaction->order_id,
 		        "gross_amount"		=> $transaction->total_payment
@@ -502,7 +503,7 @@ class PulsaController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
             $payment=PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
-        	$transaction = $this->createBillTransaction($request->user()->id, $request->product_code, $request->amount, $request->adminfee, $request->order_id, $payment);
+        	$transaction = $this->createBillTransaction($request->user()->id, $request->product_code, $request->amount, $request->adminfee, $request->customer_number, $payment);
         	if($transaction){
                 $transaction_data=Transaction::where('id',$transaction->id)->with('product')->first();
                 $data['payment_type']=$transaction->payment_data->payment_type;
