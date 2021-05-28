@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\TransferStats;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
 use App\Models\Transaction;
@@ -24,6 +25,7 @@ use App\Models\ProductGroup;
 use App\Models\PaymentMethod;
 use App\Models\PaymentMethodCategory;
 use App\Models\CategoryService;
+use App\Models\EspayRequest;
 
 use DateTime;
 
@@ -112,28 +114,77 @@ class PulsaController extends Controller
 
     public function getInquiryBills(Request $request)
     {
-        $uuid="HAINAAPP".$order_id."inq";
-        $sender_id="HAINAAPP";
-        $password="zclwXJlnApNbBhYF";
-        $signature=base64_encode(strtoupper("##".$sender_id."##".$number."##".$product_code."##".$uuid."##djHKvcScStINUlaK##"));
+        $product=Product::where('product_code',$request->product_code)->first();
 
-        $body=array(
-            "rq_uuid"          => $uuid,
-            "rq_datetime"  => $datetime,
-            "sender_id"  => $sender_id,
-            "password"  => $password,
-            "order_id"  => $order_id,
-            "product_code"  => $product_code,
-            "signature"  => $signature,
-        );
+        if($product->inquiry_type=="inquiry"){
+            $datetime=Date('Y-m-d H:m:s');
+            $time = Date('YmdHms');
 
-        if($data){
-            $body["additional_data"]=$data;
+            $uuid="HAINAAPP".$request->order_id."inq".$time;
+
+            //$uuid=$request->uuid;
+            $sender_id="HAINAAPP";
+            $password="zclwXJlnApNbBhYF";
+            $current_date = new DateTime();
+            $signature=hash('sha256',strtoupper("##".$sender_id."##".$request->order_id."##".$request->product_code."##".$uuid."##djHKvcScStINUlaK##"),false);
+            
+
+            $body=[
+                "rq_uuid"       => $uuid,
+                "rq_datetime"   => $datetime,
+                "sender_id"     => $sender_id,
+                "password"      => $password,
+                "order_id"      => $request->order_id,
+                "product_code"  => $request->product_code,
+                "signature"     => $signature,
+            ];
+            try {
+                $response=$this->client->request(
+                    'POST',
+                    'inquirytransaction',
+                    [
+                        'form_params' => $body,
+                        'on_stats' => function (TransferStats $stats) use (&$url) {
+                            $url = $stats->getEffectiveUri();
+                        }
+                    ]  
+                );
+
+                $bodyresponse=$response->getBody()->getContents();
+                EspayRequest::insert(
+                    [
+                        'order_id'=>$request->order_id,
+                        'uuid'=>$uuid,
+                        'request'=>json_encode($body),
+                        'response'=>$bodyresponse,
+                        'url'=>$url,
+                        'response_code'=>$response->getStatusCode()
+                    ]
+                );
+                //return $response;
+
+                $bill = json_decode($bodyresponse);
+                $bill->product_code = $request->product_code;
+
+                if(isset($bill->data->bill_period)){
+                    $bill->data->bill_date = $bill->data->bill_period;
+                    unset($bill->data->bill_period);
+                }
+
+                $billdata = new BillResource($bill);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $bill]), 200);
+            }catch(RequestException $e) {
+                echo Psr7\Message::toString($e->getRequest());
+                if ($e->hasResponse()) {
+                    echo Psr7\Message::toString($e->getResponse());
+                }
+                return;
+            }
         }
+        else{
 
-        $header="Authorization: Basic ".base64_encode("hainaapp".":"."zclwXJlnApNbBhYF");
-
-        $call=$this->callAPI('https://sandbox-api.espay.id/rest/biller/inquirytransaction', $body, $header);
+        }
     }
 
 	public function getAmountBills(Request $request)
@@ -519,6 +570,14 @@ class PulsaController extends Controller
                     $data['bank']=$value->bank;
                 }
                 $transaction_data['payment']=$data;
+                $transaction_payment = TransactionPayment::create([
+                    'id_transaction' => $transaction_data->id,
+                    'payment_method_id' => $request->id_payment_method,
+                    'midtrans_id' => '',
+                    'va_number' => $transaction_data->payment['virtual_account'],
+                    'settlement_time' => null,
+                    'payment_status' => 'pending'
+                ]);
 
             	return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction Success!','data'=> $transaction_data]), 200);
         	}else {
