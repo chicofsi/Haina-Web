@@ -29,7 +29,7 @@ class PendingTransactionResource extends JsonResource {
         }
         else if(isset($this->product)){
             
-            $product_group = Product::select('id_product_group', 'description')->where('id',$this->product->id_product)->first();
+            $product_group = Product::select('id_product_group', 'description')->where('id',$this->product->id)->first();
             $product_category = ProductGroup::select('id_product_category')->where('id', $product_group['id_product_group'])->first();
             $product_type = ProductCategory::where('id', $product_category['id_product_category'])->first();
 
