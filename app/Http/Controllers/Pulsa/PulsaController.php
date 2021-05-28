@@ -175,7 +175,7 @@ class PulsaController extends Controller
 
                 $billdata = new BillResource($bill);
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $bill]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
             }catch(RequestException $e) {
                 echo Psr7\Message::toString($e->getRequest());
                 if ($e->hasResponse()) {
@@ -271,17 +271,32 @@ class PulsaController extends Controller
             "signature"     => $signature
         ];
         try {
-
             $response=$this->client->request(
                 'POST',
                 'paymentreport',
                 [
-                    'form_params' => $body
+                    'form_params' => $body,
+                    'on_stats' => function (TransferStats $stats) use (&$url) {
+                        $url = $stats->getEffectiveUri();
+                    }
                 ]  
+            );
+
+            $bodyresponse=$response->getBody()->getContents();
+            EspayRequest::insert(
+                [
+                    'order_id'=>$request->order_id,
+                    'uuid'=>$uuid,
+                    'request'=>json_encode($body),
+                    'response'=>$bodyresponse,
+                    'url'=>$url,
+                    'response_code'=>$response->getStatusCode()
+                ]
             );
             //return $response;
 
-            $bill = json_decode($response->getBody()->getContents());
+            $bill = json_decode($bodyresponse);
+            //return $response;
             
             if(isset($bill) && $bill->error_code != 610){
                 $bill->product_code = $request->product_code;
