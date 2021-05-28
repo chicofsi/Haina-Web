@@ -20,11 +20,11 @@ class PendingTransactionResource extends JsonResource {
         if(isset($this->hotel)){
             $hotel_name = Hotel::select('name')->where('id', $this->hotel->id)->first();
 
-            $payment_method = HotelBookingPayment::select('id_payment_method_category')->where('id', 'id_payment_method')->first();
+            $payment_method = HotelBookingPayment::select('id_payment_method_category')->where('id', $this->payment->id_payment_method)->first();
             $payment_name = PaymentMethodCategory::select('name')->where('id', $payment_method['id_payment_method_category'])->first();
             
             $name = "Booking at ".$hotel_name['name'];
-            $icon = $product_type['icon_code'];
+            $icon = "&#1f3e8;";
             $payment = $payment_name['name'];
         }
         else if(isset($this->product)){
@@ -33,7 +33,7 @@ class PendingTransactionResource extends JsonResource {
             $product_category = ProductGroup::select('id_product_category')->where('id', $product_group['id_product_group'])->first();
             $product_type = ProductCategory::where('id', $product_category['id_product_category'])->first();
 
-            $payment_method = PaymentMethod::select('id_payment_method_category')->where('id', 'id_payment_method')->first();
+            $payment_method = PaymentMethod::select('id_payment_method_category')->where('id', $this->payment->id_payment_method)->first();
             $payment_name = PaymentMethodCategory::select('name')->where('id', $payment_method['id_payment_method_category'])->first();
 
             $name = $product_group['description'];
