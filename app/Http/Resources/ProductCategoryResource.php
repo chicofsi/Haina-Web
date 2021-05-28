@@ -12,6 +12,7 @@ public function toArray($request){
     return [
         'id'=>$this->id,
         'name'=>$this->name,
+        'name_zh'=>$this->name_zh,
         'icon'=>$this->icon_code,
         'id_service_category'=>$this->id_service_category,
     ];

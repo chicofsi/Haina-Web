@@ -17,7 +17,7 @@ class JobCategory extends Model
     protected $table = 'job_category';
 
     protected $fillable = [
-    	'name', 'display_name', 'photo_url'
+    	'name', 'name_zh', 'display_name', 'photo_url'
     ];
 
     public function jobvacancy(){

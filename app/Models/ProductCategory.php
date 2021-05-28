@@ -17,7 +17,7 @@ class ProductCategory extends Model
     protected $table = 'product_category';
 
     protected $fillable = [
-    	'name', 'photo_url','name_zh'
+    	'name', 'photo_url'
     ];
 
     public function productgroup(){
