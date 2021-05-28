@@ -160,7 +160,8 @@ class PulsaController extends Controller
                         'request'=>json_encode($body),
                         'response'=>$bodyresponse,
                         'url'=>$url,
-                        'response_code'=>$response->getStatusCode()
+                        'response_code'=>$response->getStatusCode(),
+                        'error_code'=>json_decode($bodyresponse)->error_code
                     ]
                 );
                 //return $response;
@@ -290,7 +291,8 @@ class PulsaController extends Controller
                     'request'=>json_encode($body),
                     'response'=>$bodyresponse,
                     'url'=>$url,
-                    'response_code'=>$response->getStatusCode()
+                    'response_code'=>$response->getStatusCode(),
+                    'error_code'=>json_decode($bodyresponse)->error_code
                 ]
             );
             //return $response;
@@ -641,7 +643,7 @@ class PulsaController extends Controller
         }
         //dd($bill_list);
 
-        $hotel_pending=HotelBooking::where('user_id',$request->user()->id)->with('hotel', 'payment')->where('status','pending payment')->get();
+        $hotel_pending=HotelBooking::where('user_id',$request->user()->id)->with('hotel', 'payment')->where('status','UNPAID')->get();
 
         foreach($hotel_pending as $key => $value){
             $hotel_list[$key] = new PendingTransactionResource($value);
