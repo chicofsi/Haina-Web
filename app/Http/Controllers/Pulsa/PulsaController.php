@@ -316,8 +316,11 @@ class PulsaController extends Controller
             else if($bill->error_code == 610){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Wait 5 minutes','data'=> '']), 500);
             }
-            else if($bill->error_code == 820){
+            else if($bill->error_code == 802){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Max/min payment amount exceeded','data'=> '']), 500);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Other error detected','data'=> $bill->error_code]), 500);
             }
 
         }catch(RequestException $e) {

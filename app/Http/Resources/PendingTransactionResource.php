@@ -17,7 +17,7 @@ class PendingTransactionResource extends JsonResource {
 
     public function toArray($request){
 
-        if($this->has('hotel')){
+        if(isset($this->hotel)){
             $hotel_name = Hotel::select('name')->where('id', $this->hotel->id)->first();
 
             $payment_method = HotelBookingPayment::select('id_payment_method_category')->where('id', 'id_payment_method')->first();
@@ -27,7 +27,7 @@ class PendingTransactionResource extends JsonResource {
             $icon = $product_type['icon_code'];
             $payment = $payment_name['name'];
         }
-        else if($this->has('product')){
+        else if(isset($this->product)){
             
             $product_group = Product::select('id_product_group', 'description')->where('id',$this->product->id_product)->first();
             $product_category = ProductGroup::select('id_product_category')->where('id', $product_group['id_product_group'])->first();
