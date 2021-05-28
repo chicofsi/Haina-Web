@@ -162,7 +162,8 @@ class PulsaController extends Controller
                         'response'=>$bodyresponse,
                         'error_code'=>json_decode($bodyresponse)->error_code,
                         'url'=>$url,
-                        'response_code'=>$response->getStatusCode()
+                        'response_code'=>$response->getStatusCode(),
+                        'error_code'=>json_decode($bodyresponse)->error_code
                     ]
                 );
                 //return $response;
@@ -294,7 +295,8 @@ class PulsaController extends Controller
                     'response'=>$bodyresponse,
                     'error_code'=>json_decode($bodyresponse)->error_code,   
                     'url'=>$url,
-                    'response_code'=>$response->getStatusCode()
+                    'response_code'=>$response->getStatusCode(),
+                    'error_code'=>json_decode($bodyresponse)->error_code
                 ]
             );
             //return $response;
@@ -320,8 +322,11 @@ class PulsaController extends Controller
             else if($bill->error_code == 610){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Wait 5 minutes','data'=> '']), 500);
             }
-            else if($bill->error_code == 820){
+            else if($bill->error_code == 802){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Max/min payment amount exceeded','data'=> '']), 500);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Other error detected','data'=> $bill->error_code]), 500);
             }
 
         }catch(RequestException $e) {
@@ -642,7 +647,7 @@ class PulsaController extends Controller
         }
         //dd($bill_list);
 
-        $hotel_pending=HotelBooking::where('user_id',$request->user()->id)->with('hotel', 'payment')->where('status','pending payment')->get();
+        $hotel_pending=HotelBooking::where('user_id',$request->user()->id)->with('hotel', 'payment')->where('status','UNPAID')->get();
 
         foreach($hotel_pending as $key => $value){
             $hotel_list[$key] = new PendingTransactionResource($value);
