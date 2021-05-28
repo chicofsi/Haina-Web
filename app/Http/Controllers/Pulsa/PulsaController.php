@@ -564,7 +564,7 @@ class PulsaController extends Controller
         }
         //dd($bill_list);
 
-        $hotel_pending=HotelBooking::where('id_user',$request->user()->id)->with('hotel', 'payment')->where('status','pending payment')->get();
+        $hotel_pending=HotelBooking::where('user_id',$request->user()->id)->with('hotel', 'payment')->where('status','pending payment')->get();
 
         foreach($hotel_pending as $key => $value){
             $hotel_list[$key] = new PendingTransactionResource($value);
