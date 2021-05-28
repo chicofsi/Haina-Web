@@ -8,6 +8,7 @@ use App\Http\Resources\ValueMessage;
 use App\Http\Resources\BillResource;
 use App\Http\Resources\CategoryServiceResource;
 use App\Http\Resources\ProductGroupResource;
+use App\Http\Resources\PendingTransactionResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -551,6 +552,18 @@ class PulsaController extends Controller
         
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Transaction List Success!','data'=> $transaction]), 200);
     
+    }
+
+    public function pendingTransactionList(Request $request){
+        //logo, nama produk, total amount, metode pembayaran
+        $bill_pending=Transaction::where('id_user',$request->user()->id)->with('product','payment')->where('status','pending payment')->get();
+        
+        foreach($bill_pending as $key => $value){
+            $bill_list[$key] = new PendingTransactionResource($value);
+        }
+        dd($bill_list);
+
+        $hotel_pending=HotelBooking::where('id_user',$request->user()->id)->with('hotel', 'payment')->where('status','pending payment')->get();
     }
 
 }
