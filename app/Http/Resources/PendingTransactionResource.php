@@ -38,7 +38,7 @@ class PendingTransactionResource extends JsonResource {
 
             $name = $product_group['description'];
             $icon = $product_type['icon_code'];
-            $payment = "Virtual"
+            $payment = "Virtual";
         }
         
         return [
