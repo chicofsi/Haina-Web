@@ -16,6 +16,7 @@ use App\Models\PaymentMethodCategory;
 class PendingTransactionResource extends JsonResource {
 
     public function toArray($request){
+        $data=$this;
 
         if(isset($this->hotel)){
             $hotel_name = Hotel::select('name')->where('id', $this->hotel->id)->first();
@@ -41,17 +42,18 @@ class PendingTransactionResource extends JsonResource {
             $payment = "Virtual";
         }
         
-        return [
-            'order_id' => $this->order_id,
-            'transaction_time' => $this->transaction_time,
-            'product' => $name,
-            'total_amount' => $this->total_amount,
-            'customer_number' => $this->customer_number,
-            'status' => $this->status,
-            'icon' => $icon,
-            'id_payment_method' => $this->payment->id_payment_method,
-            'payment_method' => $payment
+        // return [
+        //     'order_id' => $this->order_id,
+        //     'transaction_time' => $this->transaction_time,
+        //     'product' => $name,
+        //     'total_amount' => $this->total_amount,
+        //     'customer_number' => $this->customer_number,
+        //     'status' => $this->status,
+        //     'icon' => $icon,
+        //     'id_payment_method' => $data->payment->id_payment_method,
+        //     'payment_method' => $payment
             
-        ];
+        // ];
+        return $this;
     }
 }
