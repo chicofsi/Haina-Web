@@ -19,6 +19,7 @@ use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
 use App\Models\HotelBooking;
 use App\Models\Transaction;
+use App\Models\TransactionPayment;
 use App\Models\Providers;
 use App\Models\ProvidersPrefix;
 use App\Models\User;
