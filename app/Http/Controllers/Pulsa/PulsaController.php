@@ -561,9 +561,15 @@ class PulsaController extends Controller
         foreach($bill_pending as $key => $value){
             $bill_list[$key] = new PendingTransactionResource($value);
         }
-        dd($bill_list);
+        //dd($bill_list);
 
         $hotel_pending=HotelBooking::where('id_user',$request->user()->id)->with('hotel', 'payment')->where('status','pending payment')->get();
+
+        foreach($hotel_pending as $key => $value){
+            $hotel_list[$key] = new PendingTransactionResource($value);
+        }
+
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Transaction List Success!','data'=> $bill_list]), 200);
     }
 
 }
