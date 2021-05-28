@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Validator;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
+use App\Models\HotelBooking;
 use App\Models\Transaction;
 use App\Models\Providers;
 use App\Models\ProvidersPrefix;
