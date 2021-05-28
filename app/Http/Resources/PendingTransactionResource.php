@@ -49,6 +49,7 @@ class PendingTransactionResource extends JsonResource {
             'customer_number' => $this->customer_number,
             'status' => $this->status,
             'icon' => $icon,
+            'id_payment_method' => $this->payment->id_payment_method,
             'payment_method' => $payment
             
         ];
