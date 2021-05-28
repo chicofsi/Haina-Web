@@ -19,7 +19,7 @@ class EspayRequest extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'order_id', 'uuid', 'request', 'response','response_code','url'
+        'order_id', 'uuid', 'request', 'response','response_code','url','error_code'
     ];
 
 }

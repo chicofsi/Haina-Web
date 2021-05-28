@@ -8,6 +8,7 @@ use App\Http\Resources\ValueMessage;
 use App\Http\Resources\BillResource;
 use App\Http\Resources\CategoryServiceResource;
 use App\Http\Resources\ProductGroupResource;
+use App\Http\Resources\InquiryBills as InquiryBillsResource;
 use App\Http\Resources\PendingTransactionResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -159,6 +160,7 @@ class PulsaController extends Controller
                         'uuid'=>$uuid,
                         'request'=>json_encode($body),
                         'response'=>$bodyresponse,
+                        'error_code'=>json_decode($bodyresponse)->error_code,
                         'url'=>$url,
                         'response_code'=>$response->getStatusCode()
                     ]
@@ -167,15 +169,16 @@ class PulsaController extends Controller
 
                 $bill = json_decode($bodyresponse);
                 $bill->product_code = $request->product_code;
+                $bill->inquiry = 1;
 
                 if(isset($bill->data->bill_period)){
                     $bill->data->bill_date = $bill->data->bill_period;
                     unset($bill->data->bill_period);
                 }
 
-                $billdata = new BillResource($bill);
+                $billdata = new InquiryBillsResource($bill);
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $bill]), 200);
             }catch(RequestException $e) {
                 echo Psr7\Message::toString($e->getRequest());
                 if ($e->hasResponse()) {
@@ -289,6 +292,7 @@ class PulsaController extends Controller
                     'uuid'=>$uuid,
                     'request'=>json_encode($body),
                     'response'=>$bodyresponse,
+                    'error_code'=>json_decode($bodyresponse)->error_code,   
                     'url'=>$url,
                     'response_code'=>$response->getStatusCode()
                 ]
