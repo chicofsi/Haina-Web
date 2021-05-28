@@ -34,7 +34,7 @@ class PendingTransactionResource extends JsonResource {
             $product_type = ProductCategory::where('id', $product_category['id_product_category'])->first();
 
             $payment_method = PaymentMethod::select('id_payment_method_category')->where('id', $this->payment->id_payment_method)->first();
-            dd($payment_method);
+            dd($payment_method['id_payment_method_category']);
             $payment_name = PaymentMethodCategory::select('name')->where('id', $payment_method['id_payment_method_category'])->first();
 
             $name = $product_group['description'];
