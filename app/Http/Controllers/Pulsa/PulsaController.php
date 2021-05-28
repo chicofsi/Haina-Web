@@ -163,7 +163,6 @@ class PulsaController extends Controller
                         'error_code'=>json_decode($bodyresponse)->error_code,
                         'url'=>$url,
                         'response_code'=>$response->getStatusCode(),
-                        'error_code'=>json_decode($bodyresponse)->error_code
                     ]
                 );
                 //return $response;
@@ -296,7 +295,6 @@ class PulsaController extends Controller
                     'error_code'=>json_decode($bodyresponse)->error_code,   
                     'url'=>$url,
                     'response_code'=>$response->getStatusCode(),
-                    'error_code'=>json_decode($bodyresponse)->error_code
                 ]
             );
             //return $response;
