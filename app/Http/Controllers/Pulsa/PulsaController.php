@@ -520,6 +520,15 @@ class PulsaController extends Controller
                 }
                 $transaction_data['payment']=$data;
 
+                $transaction_payment = TransactionPayment::create([
+                    'id_transaction' => $transaction_data->id,
+                    'payment_method_id' => $request->id_payment_method,
+                    'midtrans_id' => '',
+                    'va_number' => $transaction_data->payment['virtual_account'],
+                    'settlement_time' => null,
+                    'payment_status' => 'pending'
+                ]);
+
             	return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction Success!','data'=> $transaction_data]), 200);
         	}else {
             	return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Failed!','data'=> ""]), 400);
