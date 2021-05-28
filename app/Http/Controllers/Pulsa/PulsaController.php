@@ -8,6 +8,7 @@ use App\Http\Resources\ValueMessage;
 use App\Http\Resources\BillResource;
 use App\Http\Resources\CategoryServiceResource;
 use App\Http\Resources\ProductGroupResource;
+use App\Http\Resources\PendingTransactionResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -15,6 +16,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\TransferStats;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
+use App\Models\HotelBooking;
 use App\Models\Transaction;
 use App\Models\Providers;
 use App\Models\ProvidersPrefix;
@@ -579,6 +581,15 @@ class PulsaController extends Controller
                     'payment_status' => 'pending'
                 ]);
 
+                $transaction_payment = TransactionPayment::create([
+                    'id_transaction' => $transaction_data->id,
+                    'payment_method_id' => $request->id_payment_method,
+                    'midtrans_id' => '',
+                    'va_number' => $transaction_data->payment['virtual_account'],
+                    'settlement_time' => null,
+                    'payment_status' => 'pending'
+                ]);
+
             	return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction Success!','data'=> $transaction_data]), 200);
         	}else {
             	return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Failed!','data'=> ""]), 400);
@@ -601,6 +612,24 @@ class PulsaController extends Controller
         
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Transaction List Success!','data'=> $transaction]), 200);
     
+    }
+
+    public function pendingTransactionList(Request $request){
+        //logo, nama produk, total amount, metode pembayaran
+        $bill_pending=Transaction::where('id_user',$request->user()->id)->with('product','payment')->where('status','pending payment')->get();
+        
+        foreach($bill_pending as $key => $value){
+            $bill_list[$key] = new PendingTransactionResource($value);
+        }
+        //dd($bill_list);
+
+        $hotel_pending=HotelBooking::where('user_id',$request->user()->id)->with('hotel', 'payment')->where('status','pending payment')->get();
+
+        foreach($hotel_pending as $key => $value){
+            $hotel_list[$key] = new PendingTransactionResource($value);
+        }
+
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Transaction List Success!','data'=> $bill_list]), 200);
     }
 
 }

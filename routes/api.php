@@ -110,6 +110,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/amountbill'  , [PulsaController::class, 'getAmountBills']);
 		Route::post('/directbill'  , [PulsaController::class, 'getDirectBills']);
 	});
+
+	Route::post('/pending_transaction'  , [PulsaController::class, 'pendingTransactionList']);
 });
 
 Route::post('/providers'  , [PulsaController::class, 'getProviders']);
