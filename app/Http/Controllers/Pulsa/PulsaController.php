@@ -632,7 +632,7 @@ class PulsaController extends Controller
     public function pendingTransactionList(Request $request){
         //logo, nama produk, total amount, metode pembayaran
         $bill_pending=Transaction::where('id_user',$request->user()->id)->with('product','payment')->where('status','pending payment')->get();
-        
+        print_r($bill_pending);
         foreach($bill_pending as $key => $value){
             //dd($value);
             $bill_list[$key] = new PendingTransactionResource($value);
