@@ -177,9 +177,10 @@ class PulsaController extends Controller
                     unset($bill->data->bill_period);
                 }
 
+
                 $billdata = new InquiryBillsResource($bill);
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $bill]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
             }catch(RequestException $e) {
                 echo Psr7\Message::toString($e->getRequest());
                 if ($e->hasResponse()) {
@@ -189,7 +190,19 @@ class PulsaController extends Controller
             }
         }
         else{
+            $data=(object)[
+                "product_code"=>$product->product_code,
+                "data"=>[
+                    "order_id"      => $request->order_id,
+                    "product_code"  => $request->product_code,
+                    "bill_date"     => date("m-d"),
+                ],
+                "rs_datetime"=>date("Y-m-d H:i:s"),
+                "inquiry"=>0,
+            ];
+            $billdata = new InquiryBillsResource($data);
 
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
         }
     }
 
