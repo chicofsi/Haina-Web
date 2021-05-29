@@ -55,6 +55,6 @@ class PendingTransactionResource extends JsonResource {
             
         // ];
         
-        return $this->payment->id_payment_method;
+        return $this->payment;
     }
 }
