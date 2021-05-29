@@ -17,7 +17,7 @@ use App\Models\TransactionPayment;
 class PendingTransactionResource extends JsonResource {
 
     public function toArray($request){
-        $data=$this;
+        //$data=$this;
 
         if(isset($this->hotel)){
             $hotel_name = Hotel::select('name')->where('id', $this->hotel->id)->first();

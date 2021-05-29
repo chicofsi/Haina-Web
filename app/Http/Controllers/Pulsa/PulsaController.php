@@ -658,7 +658,13 @@ class PulsaController extends Controller
             $hotel_list[$key] = new PendingTransactionResource($value);
         }
 
-        return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Transaction List Success!','data'=> $bill_list]), 200);
+        if(isset($bill_list)){
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Transaction List Success!','data'=> $bill_list]), 200);
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Error in getting transaction!','data'=> $bill_list]), 404);
+        }
+        
     }
 
 }
