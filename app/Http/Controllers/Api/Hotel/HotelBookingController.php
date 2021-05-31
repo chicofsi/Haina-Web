@@ -116,7 +116,7 @@ class HotelBookingController extends Controller
 		$username="SB-Mid-server-uUu-OOYw1hyxA9QH8wAbtDRl";
 		$url="https://api.sandbox.midtrans.com/v2/charge";
 		$data_array =  [
-		    "payment_type"        => $payment->payment_category->url,
+		    "payment_type"        => $payment->category->url,
 		    "bank_transfer"       => [
 		    	"bank"               => $payment->name
 		    ],
@@ -222,7 +222,7 @@ class HotelBookingController extends Controller
             }
             else{
 
-                $payment = PaymentMethod::where('id',$request->id_payment_method)->with('payment_category')->first();
+                $payment = PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
 
                 $booking = HotelBooking::create(
                     [

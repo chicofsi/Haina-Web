@@ -26,6 +26,7 @@ class HotelBookingResource extends JsonResource
             'total_price' => $this->total_price,
             'status' => $this->status,
             'order_id' => $this->order_id,
+            'transaction_time' => $this->transaction_time,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at
         ];

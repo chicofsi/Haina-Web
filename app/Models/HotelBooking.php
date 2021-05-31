@@ -16,7 +16,7 @@ class HotelBooking extends Model
     protected $table = 'hotel_booking';
 
     protected $fillable = [ 
-        'hotel_id', 'room_id', 'user_id', 'check_in', 'check_out', 'total_night', 'total_guest', 'total_price', 'status', 'order_id' 
+        'hotel_id', 'room_id', 'user_id', 'check_in', 'check_out', 'total_night', 'total_guest', 'total_price', 'status', 'order_id', 'transaction_time' 
     ];
 
     public function hotel(){
