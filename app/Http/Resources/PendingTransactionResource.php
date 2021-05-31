@@ -30,6 +30,7 @@ class PendingTransactionResource extends JsonResource {
             $payment_name = PaymentMethodCategory::select('name')->where('id', $payment_method['id_payment_method_category'])->first();
             
             $name = "Booking at ".$hotel_name['hotel_name'];
+            $category = 0;
             $icon = "&#xf594;";
             $payment = $payment_name['name'];
             $total_amount = $this->total_price;
@@ -49,6 +50,7 @@ class PendingTransactionResource extends JsonResource {
 
             $name = $product_group['description'];
             $icon = $product_type['icon_code'];
+            $category = $product_category['id_product_category'];
             //$payment = "Virtual";
             $payment = $payment_name['name'];
             $total_amount = $this->total_payment;
@@ -60,6 +62,7 @@ class PendingTransactionResource extends JsonResource {
             'order_id' => $this->order_id,
             'transaction_time' => $this->created_at,
             'product' => $name,
+            'id_category' => $category,
             'total_amount' => $total_amount,
             'customer_number' => $this->number,
             'status' => $this->status,
