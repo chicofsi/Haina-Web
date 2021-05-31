@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Hotel;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Facilities;
 use App\Http\Resources\FacilitiesResource; 

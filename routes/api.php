@@ -24,6 +24,15 @@ use App\Http\Controllers\Pulsa\ServiceCategoryController;
 use App\Http\Controllers\Pulsa\ProductGroupController;
 use App\Http\middleware\SanctumConfigForUser;
 
+use App\Http\Controllers\Api\Hotel\HotelController;
+use App\Http\Controllers\Api\Hotel\HotelBookingController;
+use App\Http\Controllers\Api\Hotel\HotelImageController;
+use App\Http\Controllers\Api\Hotel\HotelRatingController;
+use App\Http\Controllers\Api\Hotel\HotelRoomController;
+use App\Http\Controllers\Api\Hotel\HotelRoomImageController;
+use App\Http\Controllers\Api\Hotel\HotelRoomBedTypeController;
+use App\Http\Controllers\Api\Hotel\FacilitiesController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -112,6 +121,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	});
 
 	Route::post('/pending_transaction'  , [PulsaController::class, 'pendingTransactionList']);
+
+	
 });
 
 Route::post('/providers'  , [PulsaController::class, 'getProviders']);
@@ -142,6 +153,41 @@ Route::get('jobs/category'  , [JobsController::class, 'getJobsCategory']);
 Route::post('jobs/vacancy'  , [JobsVacancyController::class, 'getJobVacancy']);
 Route::get('location'  , [LocationController::class, 'getLocation']);
 
+
+Route::group(['prefix' => 'hotel'], function() {
+	Route::group(['prefix' => 'book'], function() {
+	    Route::post('new',[HotelBookingController::class, 'store']);
+	    Route::post('cancel',[HotelBookingController::class, 'cancel']);
+	    Route::post('get_booking',[HotelBookingController::class, 'getBooking']);
+	    Route::post('user_booking',[HotelBookingController::class, 'getBookingByUser']);
+	    Route::get('/',[HotelBookingController::class, 'index']);
+	});
+	Route::group(['prefix' => 'image'], function() {
+
+		Route::post('/get_image',[HotelImageController::class, 'getImageByHotel']);
+		Route::resource('/', HotelImageController::class);
+	});
+	Route::group(['prefix' => 'rating'], function() {
+
+		Route::post('/get_rating',[HotelRatingController::class, 'getRatingByHotel']);
+		Route::resource('/', HotelRatingController::class);
+	});
+
+	Route::post('by_city',[HotelController::class, 'getHotelByCity']);
+    Route::post('by_name',[HotelController::class, 'getHotelByName']);
+    Route::get('/{id}',[HotelController::class, 'show']);
+    Route::get('/',[HotelController::class, 'index']);
+    Route::put('/{id}',[HotelController::class, 'update']);
+
+	Route::group(['prefix' => 'room'], function() {
+	    Route::get('/',[HotelRoomController::class, 'index']);
+	    Route::get('/{id}',[HotelRoomController::class, 'show']);
+	    Route::put('/{id}',[HotelRoomController::class, 'update']);
+		Route::resource('/bed_type', HotelRoomBedTypeController::class);
+
+		Route::resource('/image', HotelRoomImageController::class);
+	});
+});
 
 
 
