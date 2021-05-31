@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\URL;
 use App\Models\Hotel;
 use App\Models\HotelBooking;
 use App\Models\Product;
+use App\Models\Transaction;
 use App\Models\ProductCategory;
 use App\Models\ProductGroup;
 use App\Models\PaymentMethod;
@@ -18,7 +19,6 @@ class PendingTransactionResource extends JsonResource {
 
     public function toArray($request){
         //$data=$this;
-
         if(isset($this->hotel)){
             $hotel_name = Hotel::select('name')->where('id', $this->hotel->id)->first();
 
@@ -31,12 +31,14 @@ class PendingTransactionResource extends JsonResource {
             $payment = $payment_name['name'];
         }
         else if(isset($this->product)){
+
+            $transaction=Transaction::where('id',$this->id)->with('product','payment')->first();
             
-            $product_group = Product::select('id_product_group', 'description')->where('id',$this->product->id)->first();
+            $product_group = Product::select('id_product_group', 'description')->where('id',$transaction->product->id)->first();
             $product_category = ProductGroup::select('id_product_category')->where('id', $product_group['id_product_group'])->first();
             $product_type = ProductCategory::where('id', $product_category['id_product_category'])->first();
 
-            $payment_id = TransactionPayment::select('id_payment_method')->where('id',$this->payment->id)->first();
+            $payment_id = TransactionPayment::select('id_payment_method')->where('id',$transaction->payment->id)->first();
             $payment_method = PaymentMethod::select('id_payment_method_category')->where('id', $payment_id['id_payment_method'])->first();
             $payment_name = PaymentMethodCategory::select('name')->where('id', $payment_method['id_payment_method_category'])->first();
 
