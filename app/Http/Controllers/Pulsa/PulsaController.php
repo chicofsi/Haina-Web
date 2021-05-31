@@ -177,6 +177,7 @@ class PulsaController extends Controller
                     unset($bill->data->bill_period);
                 }
 
+
                 $billdata = new InquiryBillsResource($bill);
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
@@ -189,17 +190,6 @@ class PulsaController extends Controller
             }
         }
         else{
-            $data=(object)[
-                "product_code"=>$product->product_code,
-                "data"=>[
-                    "customer_id"      => $request->order_id,
-                    "product_code"  => $request->product_code,
-                    "bill_date"     => date("m-d"),
-                ],
-                "rs_datetime"=>date("Y-m-d H:i:s"),
-                "inquiry"=>0,
-            ];
-            $billdata = new InquiryBillsResource($data);
 
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
         }
@@ -658,7 +648,13 @@ class PulsaController extends Controller
             $hotel_list[$key] = new PendingTransactionResource($value);
         }
 
-        return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Transaction List Success!','data'=> $bill_list]), 200);
+        if(isset($bill_list)){
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Transaction List Success!','data'=> $bill_list]), 200);
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Error in getting transaction!','data'=> '']), 404);
+        }
+        
     }
 
 }
