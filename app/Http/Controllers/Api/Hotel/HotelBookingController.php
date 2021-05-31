@@ -235,7 +235,8 @@ class HotelBookingController extends Controller
                         'total_guest' => $request->total_guest,
                         'total_price' => $request->total_price,
                         'status' => "UNPAID",
-                        'order_id' => $idbooking
+                        'order_id' => $idbooking,
+                        'transaction_time' => date("Y-m-d h:m:s")
                     ]
                 );
                 //

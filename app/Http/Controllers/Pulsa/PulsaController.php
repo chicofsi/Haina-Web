@@ -12,6 +12,7 @@ use App\Http\Resources\InquiryBills as InquiryBillsResource;
 use App\Http\Resources\PendingTransactionResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Collection;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\TransferStats;
@@ -190,6 +191,17 @@ class PulsaController extends Controller
             }
         }
         else{
+            $data=(object)[
+                "product_code"=>$product->product_code,
+                "data"=>[
+                    "customer_id"      => $request->order_id,
+                    "product_code"  => $request->product_code,
+                    "bill_date"     => date("m-d"),
+                ],
+                "rs_datetime"=>date("Y-m-d H:i:s"),
+                "inquiry"=>0,
+            ];
+            $billdata = new InquiryBillsResource($data);
 
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
         }
@@ -526,7 +538,7 @@ class PulsaController extends Controller
     				'id_user' => $iduser,
     				'order_id' => $this->generateOrderId(),
     				'transaction_time' => date("Y-m-d h:m:s"),
-    				'total_payment' => $amount+$adminfee,
+    				'total_payment' => $amount,
     				'profit' => $adminfee,
     				'status' => 'pending payment',
     				'id_product' => $product->id,
@@ -586,8 +598,7 @@ class PulsaController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
             $payment=PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
-            $product=Product::where('product_code',$request->product_code)->first();
-            $transaction = $this->createBillTransaction($request->user()->id, $request->product_code, $request->amount, $request->adminfee, $request->customer_number, $payment);
+        	$transaction = $this->createBillTransaction($request->user()->id, $request->product_code, $request->amount, $request->adminfee, $request->customer_number, $payment);
         	if($transaction){
                 $transaction_data=Transaction::where('id',$transaction->id)->with('product')->first();
                 $data['payment_type']=$transaction->payment_data->payment_type;
@@ -634,24 +645,34 @@ class PulsaController extends Controller
 
     public function pendingTransactionList(Request $request){
         //logo, nama produk, total amount, metode pembayaran
+        $list_pending = [];
         $bill_pending=Transaction::where('id_user',$request->user()->id)->with('product','payment')->where('status','pending payment')->get();
         
         foreach($bill_pending as $key => $value){
             //dd($value);
-            $bill_list[$key] = new PendingTransactionResource($value);
+            $bill_list = new PendingTransactionResource($value);
+            array_push($list_pending, $bill_list);
         }
+        
         //dd($bill_list);
 
         $hotel_pending=HotelBooking::where('user_id',$request->user()->id)->with('hotel', 'payment')->where('status','UNPAID')->get();
 
         foreach($hotel_pending as $key => $value){
-            $hotel_list[$key] = new PendingTransactionResource($value);
+            $hotel_list = new PendingTransactionResource($value);
+            array_push($list_pending,$hotel_list);
         }
+        
+        //$date = array_column($list_pending, 'transaction_date');
+        //$amount = array_column($list_pending, 'total_amount');
+        //array_multisort($date, SORT_ASC, $amount, SORT_DESC, $list_pending);
 
-        $list_pending = $bill_list->merge($hotel_list);
+        usort($list_pending, function($a, $b) {
+            return strcmp($a->transaction_time, $b->transaction_time);
+        });
 
-        if(isset($list_pending)){
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Transaction List Success!','data'=> $hotel_list]), 200);
+        if(isset($bill_list)){
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Transaction List Success!','data'=> $list_pending]), 200);
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Error in getting transaction!','data'=> '']), 404);
