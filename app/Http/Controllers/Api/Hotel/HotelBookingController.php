@@ -21,7 +21,6 @@ use DateTime;
 
 class HotelBookingController extends Controller
 {
-
     //bikin baru
     public function getBooking(Request $request){
         $post=HotelBooking::select('*');
