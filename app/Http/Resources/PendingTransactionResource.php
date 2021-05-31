@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\URL;
 
 use App\Models\Hotel;
 use App\Models\HotelBooking;
+use App\Models\HotelBookingPayment;
 use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\ProductCategory;
@@ -20,15 +21,20 @@ class PendingTransactionResource extends JsonResource {
     public function toArray($request){
         //$data=$this;
         if(isset($this->hotel)){
-            $hotel_name = Hotel::select('name')->where('id', $this->hotel->id)->first();
+            $transaction=HotelBooking::where('id',$this->id)->with('hotel','payment')->first();
 
-            $payment_id = HotelBookingPayment::select('payment_method_id')->where('id',$this->payment->id)->first();
+            $hotel_name = Hotel::select('hotel_name')->where('id', $transaction->hotel->id)->first();
+
+            $payment_id = HotelBookingPayment::select('payment_method_id')->where('id',$transaction->payment->id)->first();
             $payment_method = PaymentMethod::select('id_payment_method_category')->where('id', $payment_id['payment_method_id'])->first();
             $payment_name = PaymentMethodCategory::select('name')->where('id', $payment_method['id_payment_method_category'])->first();
             
-            $name = "Booking at ".$hotel_name['name'];
-            $icon = "&#1f3e8;";
+            $name = "Booking at ".$hotel_name['hotel_name'];
+            $category = 0;
+            $icon = "&#xf594;";
             $payment = $payment_name['name'];
+            $total_amount = $this->total_price;
+            $id_payment_method = $payment_id['payment_method_id'];
         }
         else if(isset($this->product)){
 
@@ -44,19 +50,24 @@ class PendingTransactionResource extends JsonResource {
 
             $name = $product_group['description'];
             $icon = $product_type['icon_code'];
+            $category = $product_category['id_product_category'];
             //$payment = "Virtual";
             $payment = $payment_name['name'];
+            $total_amount = $this->total_payment;
+            $id_payment_method = $payment_id['id_payment_method'];
+            $number = $this->customer_number;
         }
         
         return [
             'order_id' => $this->order_id,
-            'transaction_time' => $this->transaction_time,
+            'transaction_time' => $this->created_at,
             'product' => $name,
-            'total_amount' => $this->total_amount,
-            'customer_number' => $this->customer_number,
+            'id_category' => $category,
+            'total_amount' => $total_amount,
+            'customer_number' => $this->number,
             'status' => $this->status,
             'icon' => $icon,
-            'id_payment_method' => $payment_id['id_payment_method'],
+            'id_payment_method' => $id_payment_method,
             'payment_method' => $payment
             
         ];
