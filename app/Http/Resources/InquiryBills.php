@@ -19,24 +19,33 @@ public function toArray($request){
 
     $product_type = ProductCategory::where('id', $product_category['id_product_category'])->first();
 
-    if(isset($this->bill_amount)){
-        $billamount = $this->bill_amount;
-        $adminfee = $this->admin_fee;
+    if($this->inquiry==1){
+        if(isset($this->bill_amount)){
+            $billamount = $this->bill_amount;
+            $adminfee = $this->admin_fee;
+        }
+        else{
+            $billamount = $this->amount;
+            $adminfee = 0;
+        }
+    }else{
+        
+        $billamount=0;
+        $adminfee=0;
     }
-    else{
-        $billamount = $this->amount;
-        $adminfee = 0;
-    }
+    
     
     return [
         'datetime' => $this->rs_datetime,
         'bill_amount' => $billamount,
         'admin_fee' => $adminfee,
         'product' => $product_group['description'],
+        'product_code' => $this->product_code,
         'category' => $product_type['name'],
         'category_zh' => $product_type['name_zh'],
         'icon_code' => $product_type['icon_code'],
-        'bill_data' => $this->data
+        'bill_data' => $this->data,
+        'inquiry' => $this->inquiry
     ];
 }
 }

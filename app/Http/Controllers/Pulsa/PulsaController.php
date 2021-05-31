@@ -179,7 +179,7 @@ class PulsaController extends Controller
 
                 $billdata = new InquiryBillsResource($bill);
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $bill]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
             }catch(RequestException $e) {
                 echo Psr7\Message::toString($e->getRequest());
                 if ($e->hasResponse()) {
@@ -189,7 +189,19 @@ class PulsaController extends Controller
             }
         }
         else{
+            $data=(object)[
+                "product_code"=>$product->product_code,
+                "data"=>[
+                    "customer_id"      => $request->order_id,
+                    "product_code"  => $request->product_code,
+                    "bill_date"     => date("m-d"),
+                ],
+                "rs_datetime"=>date("Y-m-d H:i:s"),
+                "inquiry"=>0,
+            ];
+            $billdata = new InquiryBillsResource($data);
 
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
         }
     }
 
@@ -408,14 +420,14 @@ class PulsaController extends Controller
     public function getInquiry(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id_product' => 'required',
+            'product_code' => 'required',
             'customer_number' => 'required'
         ]);
 
         if ($validator->fails()) {          
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
-            $product=Product::where('id',$request->id_product)->first();
+            $product=Product::where('product_code',$request->product_code)->first();
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Inquiry Success!','data'=> $product]), 200);
         }
     }
@@ -490,11 +502,11 @@ class PulsaController extends Controller
 		return $result;
 	}
 
-	public function createTransaction($iduser, $idproduct, $customernumber, $payment)
+	public function createTransaction($iduser, $productcode, $customernumber, $payment)
     {
     	if(User::where('id',$iduser)->first()){
-    		if(Product::where('id',$idproduct)->first()){
-    			$product=Product::where('id',$idproduct)->first();
+    		if(Product::where('product_code',$productcode)->first()){
+    			$product=Product::where('product_code',$productcode)->first();
     			$transaction=Transaction::create([
     				'id_user' => $iduser,
     				'order_id' => $this->generateOrderId(),
@@ -502,7 +514,7 @@ class PulsaController extends Controller
     				'total_payment' => $product->sell_price,
     				'profit' => ($product->sell_price - $product->base_price),
     				'status' => 'pending payment',
-    				'id_product' => $idproduct,
+    				'id_product' => $product->id,
     				'customer_number' => $customernumber
     			]);
     			$transaction['payment_data']=json_decode($this->chargeMidtrans($transaction,$payment));
@@ -524,7 +536,7 @@ class PulsaController extends Controller
     				'id_user' => $iduser,
     				'order_id' => $this->generateOrderId(),
     				'transaction_time' => date("Y-m-d h:m:s"),
-    				'total_payment' => $amount,
+    				'total_payment' => $amount+$adminfee,
     				'profit' => $adminfee,
     				'status' => 'pending payment',
     				'id_product' => $product->id,
@@ -543,7 +555,7 @@ class PulsaController extends Controller
     public function addTransaction(Request $request)
     {
     	$validator = Validator::make($request->all(), [
-            'id_product' => 'required',
+            'product_code' => 'required',
             'customer_number' => 'required',
             'id_payment_method' => 'required'
         ]);
@@ -552,7 +564,7 @@ class PulsaController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
             $payment=PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
-        	$transaction = $this->createTransaction($request->user()->id, $request->id_product, $request->customer_number, $payment);
+        	$transaction = $this->createTransaction($request->user()->id, $request->product_code, $request->customer_number, $payment);
         	if($transaction){
                 $transaction_data=Transaction::where('id',$transaction->id)->with('product')->first();
                 $data['payment_type']=$transaction->payment_data->payment_type;
@@ -584,7 +596,8 @@ class PulsaController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
             $payment=PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
-        	$transaction = $this->createBillTransaction($request->user()->id, $request->product_code, $request->amount, $request->adminfee, $request->customer_number, $payment);
+            $product=Product::where('product_code',$request->product_code)->first();
+            $transaction = $this->createBillTransaction($request->user()->id, $request->product_code, $request->amount, $request->adminfee, $request->customer_number, $payment);
         	if($transaction){
                 $transaction_data=Transaction::where('id',$transaction->id)->with('product')->first();
                 $data['payment_type']=$transaction->payment_data->payment_type;
