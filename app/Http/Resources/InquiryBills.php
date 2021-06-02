@@ -34,7 +34,7 @@ public function toArray($request){
         $adminfee=0;
     }
 
-    if($this->product_code == "SLYTSD"){
+    if($this->product_code == "SLYTSD" && isset($this->data->phone_no)){
         $this->data->customer_id = $this->data->phone_no;
     }
     
