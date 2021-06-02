@@ -192,6 +192,6 @@ Route::group(['prefix' => 'hotel'], function() {
 Route::group(['prefix' => 'ticket'], function() {
 
 	Route::get('/login',[TicketController::class, 'login']);
-	Route::get('/airline',[TicketController::class, 'login']);
+	Route::post('/airline',[TicketController::class, 'getAirline']);
 
 });
