@@ -32,6 +32,7 @@ use App\Http\Controllers\Api\Hotel\HotelRoomController;
 use App\Http\Controllers\Api\Hotel\HotelRoomImageController;
 use App\Http\Controllers\Api\Hotel\HotelRoomBedTypeController;
 use App\Http\Controllers\Api\Hotel\FacilitiesController;
+use App\Http\Controllers\Api\Ticket\TicketController;
 
 /*
 |--------------------------------------------------------------------------
@@ -189,5 +190,5 @@ Route::group(['prefix' => 'hotel'], function() {
 	});
 });
 
-
+Route::get('/ticket/login',[TicketController::class, 'login']);
 

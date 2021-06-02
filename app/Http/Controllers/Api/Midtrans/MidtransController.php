@@ -63,7 +63,7 @@ class MidtransController extends Controller
 
             $transaction=Transaction::where('order_id',$order_id)->update(['status'=>$status]);
             $transaction=Transaction::where('order_id',$order_id)->with('product')->first();
-            if($transaction->status="process"){
+            if($transaction_status=='settlement'){
                 $this->espayPayment($order_id);
             }
 
@@ -136,7 +136,7 @@ class MidtransController extends Controller
         //$uuid=$request->uuid;
         $sender_id="HAINAAPP";
         $password="zclwXJlnApNbBhYF";
-        $amount=$transaction->total_payment-$transaction->profit;
+        $amount=($transaction->total_payment-$transaction->profit)*100;
         $current_date = new DateTime();
         $signature=hash('sha256',strtoupper("##".$sender_id."##".$transaction->customer_number."##".$transaction->product->product_code."##".$amount."##".$uuid."##djHKvcScStINUlaK##"),false);
         
