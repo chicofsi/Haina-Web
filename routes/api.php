@@ -189,6 +189,9 @@ Route::group(['prefix' => 'hotel'], function() {
 		Route::resource('/image', HotelRoomImageController::class);
 	});
 });
+Route::group(['prefix' => 'ticket'], function() {
 
-Route::get('/ticket/login',[TicketController::class, 'login']);
+	Route::get('/login',[TicketController::class, 'login']);
+	Route::get('/airline',[TicketController::class, 'login']);
 
+});
