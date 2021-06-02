@@ -33,6 +33,10 @@ public function toArray($request){
         $billamount=0;
         $adminfee=0;
     }
+
+    if($this->product_code == "SLYTSD"){
+        $this->data->customer_id = $this->data->phone_no;
+    }
     
     
     return [
