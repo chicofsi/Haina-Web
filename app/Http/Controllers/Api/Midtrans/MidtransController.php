@@ -12,8 +12,10 @@ use GuzzleHttp\TransferStats;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
 use App\Models\Transaction;
+use App\Models\TransactionInquiry;
 use App\Models\TransactionPayment;
 use App\Models\PaymentMethod;
+use App\Models\Product;
 use App\Models\NotificationCategory;
 use App\Models\HotelBooking;
 use App\Models\EspayRequest;
@@ -154,9 +156,8 @@ class MidtransController extends Controller
         $product=Product::where('id',$transaction->product->id)->first();
 
         if($product->inquiry_type=="inquiry"){
-            $body["data"]=TransactionInquiry::where('order_id',$order_id)->first()->inquiry_data;
+            $body["data"]=json_decode(TransactionInquiry::where('order_id',$order_id)->first()->inquiry_data);
         }
-        
         try {
             $response=$this->client->request(
                 'POST',
