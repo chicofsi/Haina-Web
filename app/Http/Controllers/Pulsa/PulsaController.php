@@ -20,6 +20,7 @@ use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
 use App\Models\HotelBooking;
 use App\Models\Transaction;
+use App\Models\TransactionInquiry;
 use App\Models\TransactionPayment;
 use App\Models\Providers;
 use App\Models\ProvidersPrefix;
@@ -171,18 +172,30 @@ class PulsaController extends Controller
 
                 $bill = json_decode($bodyresponse);
                 $bill->product_code = $request->product_code;
-                $bill->inquiry = 1;
 
                 if(isset($bill->data->bill_period)){
                     $bill->data->bill_date = $bill->data->bill_period;
                     unset($bill->data->bill_period);
                 }
-
-
+                $product=Product::where('product_code',$request->product_code)->first();
+                if(isset($bill->bill_amount)){
+                    $billamount = $bill->bill_amount/100;
+                }
+                else{
+                    $billamount = $bill->amount/100;
+                }
+                $inquiry=TransactionInquiry::insert([
+                    "id_product" => $product->id,
+                    "order_id" => $this->generateOrderId(), 
+                    "id_user" => $request->user()->id,
+                    "amount" => $billamount,
+                    "inquiry_data" => $bill->data
+                ]);
+                $bill->inquiry = $inquiry->id;
                 if(isset($bill) && $bill->error_code == 0000){
                     $billdata = new InquiryBillsResource($bill);
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>$bill->error_desc,'data'=> $bill->error_code]), 500);
@@ -465,10 +478,11 @@ class PulsaController extends Controller
                 $randomString .= $characters[rand(0, $charactersLength - 1)];
             }
 
-        }while (Transaction::where('order_id',$randomString)->first());
+        }while (Transaction::where('order_id',$randomString)->first()||TransactionInquiry::where('order_id',$randomString)->first());
         
         return $randomString;
     }
+
     public function chargeMidtrans($transaction,$payment)
     {
         $username="SB-Mid-server-uUu-OOYw1hyxA9QH8wAbtDRl";

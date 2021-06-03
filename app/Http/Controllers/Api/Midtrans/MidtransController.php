@@ -139,7 +139,6 @@ class MidtransController extends Controller
         $amount=($transaction->total_payment-$transaction->profit)*100;
         $current_date = new DateTime();
         $signature=hash('sha256',strtoupper("##".$sender_id."##".$transaction->customer_number."##".$transaction->product->product_code."##".$amount."##".$uuid."##djHKvcScStINUlaK##"),false);
-        
 
         $body=[
             "rq_uuid"       => $uuid,
@@ -175,9 +174,8 @@ class MidtransController extends Controller
                     'response_code'=>$response->getStatusCode(),
                 ]
             );
-            //return $response;
+            
             $bill = json_decode($bodyresponse);
-            //return $response;
             
             if(isset($bill) && $bill->error_code == "0000"){
                 $transaction=Transaction::where('order_id',$order_id)->update(['status'=>'success']);

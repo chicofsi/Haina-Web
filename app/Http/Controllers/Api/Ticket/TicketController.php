@@ -12,9 +12,8 @@ use GuzzleHttp\Client;
 use GuzzleHttp\TransferStats;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
-
+use thiagoalessio\TesseractOCR\TesseractOCR;
 use DateTime;
-
 
 class TicketController extends Controller
 {
