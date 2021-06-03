@@ -36,9 +36,9 @@ class NewsController extends Controller
     public function getArticle(Request $request)
     {
         $body = [
-            "query" => "{\"$query\":{\"$and\":[{\"locationUri\":\"http://en.wikipedia.org/wiki/Indonesia\"},{\"lang\":\"zho\"}]},\"$filter\":{\"forceMaxDataTimeWindow\":\"31\"}}",
-            "dataType" => [
-                "news"
+            'query' => '{\"\":{\"$and\":[{\"locationUri\":\"http://en.wikipedia.org/wiki/Indonesia\"},{\"lang\":\"zho\"}]},\"$filter\":{\"forceMaxDataTimeWindow\":\"31\"}};',
+            'dataType' => [
+                'news'
             ],
             "resultType" => "articles",
             "articlesSortBy" => "date",
