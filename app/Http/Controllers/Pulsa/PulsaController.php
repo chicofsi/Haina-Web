@@ -710,7 +710,7 @@ class PulsaController extends Controller
             return strcmp($a->transaction_time, $b->transaction_time);
         });
 
-        if(isset($bill_list)){
+        if(isset($list_pending)){
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Transaction List Success!','data'=> $list_pending]), 200);
         }
         else{
