@@ -53,8 +53,16 @@ class TicketController extends Controller
             $bodyresponse=json_decode($response->getBody()->getContents());
             //return $response;
 
+            if($bodyresponse->status=="FAILED"){
+                if($bodyresponse->respMessage=="member authentication failed"){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Login Failed!','data'=> '']), 500);
+                }
+            }else{
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Login Complete!','data'=> $bodyresponse]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Login Complete!','data'=> $bodyresponse]), 200);
+            }
+
+
         }catch(RequestException $e) {
             dd($e);
             return;
@@ -82,9 +90,52 @@ class TicketController extends Controller
 
             $bodyresponse=json_decode($response->getBody()->getContents());
             //return $response;
+            if($bodyresponse->status=="FAILED"){
+                if($bodyresponse->respMessage=="member authentication failed"){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+                }
+            }else{
 
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Airline List Success!','data'=> $bodyresponse->airlines]), 200);
+            }
+        }catch(RequestException $e) {
+            dd($e);
+            return;
+        }
+    }
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Airline List Success!','data'=> $bodyresponse->airlines]), 200);
+    public function getRoute(Request $request)
+    {
+        $userid=$this->username;
+        $token=$request->token;
+        $airlineid=$request->airline_id;
+
+        try {
+            $response=$this->client->request(
+                'POST',
+                'airline/route',
+                [
+                    'form_params' => [
+                        'userID'=>$userid,
+                        'airlineID'=>$airlineid,
+                        'accessToken'=>$token
+                    ],
+                    'on_stats' => function (TransferStats $stats) use (&$url) {
+                        $url = $stats->getEffectiveUri();
+                    }
+                ]  
+            );
+
+            $bodyresponse=json_decode($response->getBody()->getContents());
+            //return $response;
+            if($bodyresponse->status=="FAILED"){
+                if($bodyresponse->respMessage=="member authentication failed"){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+                }
+            }else{
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Airline Routes Success!','data'=> $bodyresponse->routes]), 200);
+            }
         }catch(RequestException $e) {
             dd($e);
             return;
