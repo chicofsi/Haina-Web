@@ -138,7 +138,6 @@ class TicketController extends Controller
             }
         }catch(RequestException $e) {
             dd($e);
-            return;
         }
     }
 }

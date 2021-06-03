@@ -13,25 +13,22 @@ class InquiryBills extends JsonResource {
 
 public function toArray($request){
 
-    $product_group = Product::select('id_product_group', 'description')->where('product_code',$this->product_code)->first();
+    $product_group = Product::where('product_code',$this->product_code)->first();
     
-    $product_category = ProductGroup::select('id_product_category')->where('id', $product_group['id_product_group'])->first();
+    $product_category = ProductGroup::where('id', $product_group['id_product_group'])->first();
 
     $product_type = ProductCategory::where('id', $product_category['id_product_category'])->first();
 
     if($this->inquiry==1){
         if(isset($this->bill_amount)){
-            $billamount = $this->bill_amount;
-            $adminfee = $this->admin_fee;
+            $billamount = $this->bill_amount/100;
         }
         else{
-            $billamount = $this->amount;
-            $adminfee = 0;
+            $billamount = $this->amount/100;
         }
     }else{
         
         $billamount=0;
-        $adminfee=0;
     }
 
     if($this->product_code == "SLYTSD" && isset($this->data->phone_no)){
@@ -42,7 +39,7 @@ public function toArray($request){
     return [
         'datetime' => $this->rs_datetime,
         'bill_amount' => $billamount,
-        'admin_fee' => $adminfee,
+        'admin_fee' => $product_group->sell_price,
         'product' => $product_group['description'],
         'product_code' => $this->product_code,
         'category' => $product_type['name'],

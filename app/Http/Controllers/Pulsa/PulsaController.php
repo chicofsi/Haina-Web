@@ -543,7 +543,7 @@ class PulsaController extends Controller
         }
     }
 
-    public function createBillTransaction($iduser, $product_code, $amount, $adminfee, $customernumber, $payment)
+    public function createBillTransaction($iduser, $product_code, $amount, $customernumber, $payment)
     {
         if(User::where('id',$iduser)->first()){
             if(Product::where('product_code',$product_code)->first()){
@@ -553,7 +553,7 @@ class PulsaController extends Controller
                     'order_id' => $this->generateOrderId(),
                     'transaction_time' => date("Y-m-d h:m:s"),
                     'total_payment' => $amount,
-                    'profit' => $adminfee,
+                    'profit' => $product->sell_price,
                     'status' => 'pending payment',
                     'id_product' => $product->id,
                     'customer_number' => $customernumber
@@ -612,7 +612,7 @@ class PulsaController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
             $payment=PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
-            $transaction = $this->createBillTransaction($request->user()->id, $request->product_code, $request->amount, $request->adminfee, $request->customer_number, $payment);
+            $transaction = $this->createBillTransaction($request->user()->id, $request->product_code, $request->amount, $request->customer_number, $payment);
             if($transaction){
                 $transaction_data=Transaction::where('id',$transaction->id)->with('product')->first();
                 $data['payment_type']=$transaction->payment_data->payment_type;

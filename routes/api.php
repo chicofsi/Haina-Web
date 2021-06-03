@@ -136,7 +136,7 @@ Route::group(['prefix' => 'category'],function () {
 	//Route::post('/group'  , [ServiceCategoryController::class, 'getProductGroup']);
 });
 
-	Route::post('test/notification'  , [NotificationController::class, 'notifSend']);
+Route::post('test/notification'  , [NotificationController::class, 'notifSend']);
 
 
 Route::get('news'  , [NewsController::class, 'index']);
