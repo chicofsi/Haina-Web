@@ -184,13 +184,15 @@ class PulsaController extends Controller
                 else{
                     $billamount = $bill->amount/100;
                 }
+                $order_id=$this->generateOrderId();
                 $inquiry=TransactionInquiry::insert([
                     "id_product" => $product->id,
-                    "order_id" => $this->generateOrderId(), 
+                    "order_id" => $order_id, 
                     "id_user" => $request->user()->id,
                     "amount" => $billamount,
-                    "inquiry_data" => $bill->data
+                    "inquiry_data" => json_encode($bill->data)
                 ]);
+                $inquiry=TransactionInquiry::where('order_id',$order_id)->first();
                 $bill->inquiry = $inquiry->id;
                 if(isset($bill) && $bill->error_code == 0000){
                     $billdata = new InquiryBillsResource($bill);
@@ -557,14 +559,14 @@ class PulsaController extends Controller
         }
     }
 
-    public function createBillTransaction($iduser, $product_code, $amount, $customernumber, $payment)
+    public function createBillTransaction($iduser, $product_code, $amount, $customernumber, $payment, $order_id)
     {
         if(User::where('id',$iduser)->first()){
             if(Product::where('product_code',$product_code)->first()){
                 $product=Product::where('product_code',$product_code)->first();
                 $transaction=Transaction::create([
                     'id_user' => $iduser,
-                    'order_id' => $this->generateOrderId(),
+                    'order_id' => $order_id,
                     'transaction_time' => date("Y-m-d h:m:s"),
                     'total_payment' => $amount,
                     'profit' => $product->sell_price,
@@ -626,7 +628,16 @@ class PulsaController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
             $payment=PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
-            $transaction = $this->createBillTransaction($request->user()->id, $request->product_code, $request->amount, $request->customer_number, $payment);
+
+            $product=Product::where('product_code',$request->product_code)->first();
+
+            if($product->inquiry_type=="inquiry"){
+                $order_id=TransactionInquiry::where('id',$request->id_inquiry)->first()->order_id;
+            }else{
+                $order_id=$this->generateOrderId();
+            }
+
+            $transaction = $this->createBillTransaction($request->user()->id, $request->product_code, $request->amount, $request->customer_number, $payment,$order_id);
             if($transaction){
                 $transaction_data=Transaction::where('id',$transaction->id)->with('product')->first();
                 $data['payment_type']=$transaction->payment_data->payment_type;

@@ -150,6 +150,13 @@ class MidtransController extends Controller
             "amount"        => $amount,
             "signature"     => $signature
         ];
+
+        $product=Product::where('id',$transaction->product->id)->first();
+
+        if($product->inquiry_type=="inquiry"){
+            $body["data"]=TransactionInquiry::where('order_id',$order_id)->first()->inquiry_data;
+        }
+        
         try {
             $response=$this->client->request(
                 'POST',
@@ -174,7 +181,7 @@ class MidtransController extends Controller
                     'response_code'=>$response->getStatusCode(),
                 ]
             );
-            
+
             $bill = json_decode($bodyresponse);
             
             if(isset($bill) && $bill->error_code == "0000"){
