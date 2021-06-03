@@ -58,6 +58,8 @@ class NewsController extends Controller
 
         $result = $response->getBody()->getContents();
 
+		$result = json_decode($result);
+
         if(isset($result)){
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Get News List Success!','data'=> $result]), 200);
         }
