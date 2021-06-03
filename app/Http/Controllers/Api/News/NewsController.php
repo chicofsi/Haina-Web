@@ -66,10 +66,10 @@ class NewsController extends Controller
         $result = $response->getBody()->getContents();
 
         if(isset($result)){
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get News List Success!','data'=> $list_pending]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get News List Success!','data'=> $result]), 200);
         }
         else{
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Error in getting transaction!','data'=> '']), 404);
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Error in news!','data'=> '']), 404);
         }
     }
 
