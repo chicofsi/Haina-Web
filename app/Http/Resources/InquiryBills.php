@@ -20,14 +20,8 @@ public function toArray($request){
     $product_type = ProductCategory::where('id', $product_category['id_product_category'])->first();
 
     if($this->inquiry!=0){
-        if(isset($this->bill_amount)){
-            $billamount = $this->bill_amount/100;
-        }
-        else{
-            $billamount = $this->amount/100;
-        }
+        $billamount = $this->amount/100;
     }else{
-        
         $billamount=0;
     }
 

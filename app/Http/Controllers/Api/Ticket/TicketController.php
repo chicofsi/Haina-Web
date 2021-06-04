@@ -139,4 +139,58 @@ class TicketController extends Controller
             dd($e);
         }
     }
+
+    public function getAirlineSchedule(Request $request)
+    {
+        $userid=$this->username;
+        $token=$request->token;
+        $trip_type=$request->trip_type;
+        $origin=$request->origin;
+        $destination=$request->destination;
+        $depart_date=$request->depart_date;
+        $return_date=$request->return_date;
+        $adult=$request->adult;
+        $child=$request->child;
+        $infant=$request->infant;
+
+        try {
+            $response=$this->client->request(
+                'POST',
+                'airline/scheduleallairline',
+                [
+                    'form_params' => [
+                        'userID'=>$userid,
+                        'accessToken'=>$token,
+                        'tripType'=>$trip_type,
+                        'origin'=>$origin,
+                        'destination'=>$destination,
+                        'departDate'=>$depart_date,
+                        'returnDate'=>$return_date,
+                        'paxAdult'=>$adult,
+                        'paxChild'=>$child,
+                        'paxInfant'=>$infant,
+                        'airlineAccessCode'=>$request->airline_access_code,
+                        'cacheType'=>"Mix",
+                        'isShowEachAirline'=>"false"
+                    ],
+                    'on_stats' => function (TransferStats $stats) use (&$url) {
+                        $url = $stats->getEffectiveUri();
+                    }
+                ]  
+            );
+
+            $bodyresponse=json_decode($response->getBody()->getContents());
+            //return $response;
+            if($bodyresponse->status=="FAILED"){
+                if($bodyresponse->respMessage=="member authentication failed"){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+                }
+            }else{
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
+            }
+        }catch(RequestException $e) {
+            return $e;
+        }
+    }
 }

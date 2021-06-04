@@ -178,12 +178,9 @@ class PulsaController extends Controller
                     unset($bill->data->bill_period);
                 }
                 $product=Product::where('product_code',$request->product_code)->first();
-                if(isset($bill->bill_amount)){
-                    $billamount = $bill->bill_amount/100;
-                }
-                else{
-                    $billamount = $bill->amount/100;
-                }
+                
+                $billamount = $bill->amount/100;
+
                 $order_id=$this->generateOrderId();
                 $inquiry=TransactionInquiry::insert([
                     "id_product" => $product->id,
@@ -458,8 +455,91 @@ class PulsaController extends Controller
         if ($validator->fails()) {          
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
-            $product=Product::where('product_code',$request->product_code)->first();
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Inquiry Success!','data'=> $product]), 200);
+            $datetime=Date('Y-m-d H:m:s');
+            $time = Date('YmdHms');
+
+            $uuid="HAINAAPP".$request->customer_number."inq".$time;
+
+            //$uuid=$request->uuid;
+            $sender_id="HAINAAPP";
+            $password="zclwXJlnApNbBhYF";
+            $current_date = new DateTime();
+            $signature=hash('sha256',strtoupper("##".$sender_id."##".$request->customer_number."##".$request->product_code."##".$uuid."##djHKvcScStINUlaK##"),false);
+            
+
+            $body=[
+                "rq_uuid"       => $uuid,
+                "rq_datetime"   => $datetime,
+                "sender_id"     => $sender_id,
+                "password"      => $password,
+                "order_id"      => $request->customer_number,
+                "product_code"  => $request->product_code,
+                "signature"     => $signature,
+            ];
+            try {
+                $response=$this->client->request(
+                    'POST',
+                    'inquirytransaction',
+                    [
+                        'form_params' => $body,
+                        'on_stats' => function (TransferStats $stats) use (&$url) {
+                            $url = $stats->getEffectiveUri();
+                        }
+                    ]  
+                );
+
+                $bodyresponse=$response->getBody()->getContents();
+                EspayRequest::insert(
+                    [
+                        'order_id'=>$request->customer_number,
+                        'uuid'=>$uuid,
+                        'request'=>json_encode($body),
+                        'response'=>$bodyresponse,
+                        'error_code'=>json_decode($bodyresponse)->error_code,
+                        'url'=>$url,
+                        'response_code'=>$response->getStatusCode(),
+                    ]
+                );
+                //return $response;
+
+                $bill = json_decode($bodyresponse);
+                $bill->product_code = $request->product_code;
+
+                if(isset($bill->data->bill_period)){
+                    $bill->data->bill_date = $bill->data->bill_period;
+                    unset($bill->data->bill_period);
+                }
+                $product=Product::where('product_code',$request->product_code)->first();
+                
+                $billamount = $bill->amount/100;
+                
+                $order_id=$this->generateOrderId();
+                $inquiry=TransactionInquiry::insert([
+                    "id_product" => $product->id,
+                    "order_id" => $order_id, 
+                    "id_user" => $request->user()->id,
+                    "amount" => $billamount,
+                    "inquiry_data" => json_encode($bill->data)
+                ]);
+                $inquiry=TransactionInquiry::where('order_id',$order_id)->first();
+                if(isset($bill) && $bill->error_code == 0000){
+
+                    $product=Product::where('product_code',$request->product_code)->first();
+                    $product->sell_price=($bill->amount/100)+$product->sell_price-$product->base_price;
+                    $product->id_inquiry=$inquiry->id;
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Inquiry Success!','data'=> $product]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>$bill->error_desc,'data'=> $bill->error_code]), 500);
+                }
+            }catch(RequestException $e) {
+                echo Psr7\Message::toString($e->getRequest());
+                if ($e->hasResponse()) {
+                    echo Psr7\Message::toString($e->getResponse());
+                }
+                return;
+            }
+
         }
     }
 
@@ -534,16 +614,17 @@ class PulsaController extends Controller
         return $result;
     }
 
-    public function createTransaction($iduser, $productcode, $customernumber, $payment)
+    public function createTransaction($iduser, $productcode, $customernumber, $payment, $id_inquiry)
     {
         if(User::where('id',$iduser)->first()){
             if(Product::where('product_code',$productcode)->first()){
                 $product=Product::where('product_code',$productcode)->first();
+                $inquiry=TransactionInquiry::where('id',$id_inquiry)->first();
                 $transaction=Transaction::create([
                     'id_user' => $iduser,
-                    'order_id' => $this->generateOrderId(),
+                    'order_id' => $inquiry->order_id,
                     'transaction_time' => date("Y-m-d h:m:s"),
-                    'total_payment' => $product->sell_price,
+                    'total_payment' => $inquiry->amount+($product->sell_price - $product->base_price),
                     'profit' => ($product->sell_price - $product->base_price),
                     'status' => 'pending payment',
                     'id_product' => $product->id,
@@ -589,14 +670,15 @@ class PulsaController extends Controller
         $validator = Validator::make($request->all(), [
             'product_code' => 'required',
             'customer_number' => 'required',
-            'id_payment_method' => 'required'
+            'id_payment_method' => 'required',
+            'id_inquiry' => 'required'
         ]);
 
         if ($validator->fails()) {          
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
             $payment=PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
-            $transaction = $this->createTransaction($request->user()->id, $request->product_code, $request->customer_number, $payment);
+            $transaction = $this->createTransaction($request->user()->id, $request->product_code, $request->customer_number, $payment, $request->id_inquiry);
             if($transaction){
                 $transaction_data=Transaction::where('id',$transaction->id)->with('product')->first();
                 $data['payment_type']=$transaction->payment_data->payment_type;
