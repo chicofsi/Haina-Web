@@ -22,6 +22,8 @@ class News extends JsonResource
             $image = "http://static.everypixel.com/ep-pixabay/0741/1093/6899/08857/7411093689908857422-news.jpg";
         }
 
+        $category = "news/General";
+
         foreach($this->categories as $key=>$value){
             if(isset($value->label)){
                 $category = $value->label;
