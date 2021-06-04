@@ -15,6 +15,9 @@ use GuzzleHttp\Exception\RequestException;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 use DateTime;
 
+use App\Models\Airports;
+
+
 class TicketController extends Controller
 {
     public function __construct()
@@ -140,57 +143,82 @@ class TicketController extends Controller
         }
     }
 
+    public function getAirport(Request $request)
+    {
+        $airports=Airports::where('country',"Indonesia")->get();
+
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Airline Routes Success!','data'=> $airports]), 200);
+    }
+
     public function getAirlineSchedule(Request $request)
     {
-        $userid=$this->username;
-        $token=$request->token;
-        $trip_type=$request->trip_type;
-        $origin=$request->origin;
-        $destination=$request->destination;
-        $depart_date=$request->depart_date;
-        $return_date=$request->return_date;
-        $adult=$request->adult;
-        $child=$request->child;
-        $infant=$request->infant;
+        $validator = Validator::make($request->all(), [
+            'token' => 'required',
+            'trip_type' => 'required',
+            'origin' => 'required',
+            'destination' => 'required',
+            'depart_date' => 'required',
+            'return_date' => 'required',
+            'adult' => 'required',
+            'child' => 'required',
+            'infant' => 'required',
+            'airline_access_code' => 'required'
+        ]);
 
-        try {
-            $response=$this->client->request(
-                'POST',
-                'airline/scheduleallairline',
-                [
-                    'form_params' => [
-                        'userID'=>$userid,
-                        'accessToken'=>$token,
-                        'tripType'=>$trip_type,
-                        'origin'=>$origin,
-                        'destination'=>$destination,
-                        'departDate'=>$depart_date,
-                        'returnDate'=>$return_date,
-                        'paxAdult'=>$adult,
-                        'paxChild'=>$child,
-                        'paxInfant'=>$infant,
-                        'airlineAccessCode'=>$request->airline_access_code,
-                        'cacheType'=>"Mix",
-                        'isShowEachAirline'=>"false"
-                    ],
-                    'on_stats' => function (TransferStats $stats) use (&$url) {
-                        $url = $stats->getEffectiveUri();
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $userid=$this->username;
+            $token=$request->token;
+            $trip_type=$request->trip_type;
+            $origin=$request->origin;
+            $destination=$request->destination;
+            $depart_date=$request->depart_date;
+            $return_date=$request->return_date;
+            $adult=$request->adult;
+            $child=$request->child;
+            $infant=$request->infant;
+
+            try {
+                $response=$this->client->request(
+                    'POST',
+                    'airline/scheduleallairline',
+                    [
+                        'form_params' => [
+                            'userID'=>$userid,
+                            'accessToken'=>$token,
+                            'tripType'=>$trip_type,
+                            'origin'=>$origin,
+                            'destination'=>$destination,
+                            'departDate'=>$depart_date,
+                            'returnDate'=>$return_date,
+                            'paxAdult'=>$adult,
+                            'paxChild'=>$child,
+                            'paxInfant'=>$infant,
+                            'airlineAccessCode'=>$request->airline_access_code,
+                            'cacheType'=>"Mix",
+                            'isShowEachAirline'=>"false"
+                        ],
+                        'on_stats' => function (TransferStats $stats) use (&$url) {
+                            $url = $stats->getEffectiveUri();
+                        }
+                    ]  
+                );
+
+                $bodyresponse=json_decode($response->getBody()->getContents());
+                //return $response;
+                if($bodyresponse->status=="FAILED"){
+                    if($bodyresponse->respMessage=="member authentication failed"){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
                     }
-                ]  
-            );
+                }else{
 
-            $bodyresponse=json_decode($response->getBody()->getContents());
-            //return $response;
-            if($bodyresponse->status=="FAILED"){
-                if($bodyresponse->respMessage=="member authentication failed"){
-                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
                 }
-            }else{
-
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
+            }catch(RequestException $e) {
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
             }
-        }catch(RequestException $e) {
-            return $e;
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
         }
     }
 }

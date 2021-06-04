@@ -193,6 +193,7 @@ Route::group(['prefix' => 'hotel'], function() {
 Route::group(['prefix' => 'ticket'], function() {
 
 	Route::get('/login',[TicketController::class, 'login']);
+	Route::post('/airport',[TicketController::class, 'getAirport']);
 	Route::post('/airline',[TicketController::class, 'getAirline']);
 	Route::post('/schedule',[TicketController::class, 'getAirlineSchedule']);
 	Route::post('/route',[TicketController::class, 'getRoute']);
