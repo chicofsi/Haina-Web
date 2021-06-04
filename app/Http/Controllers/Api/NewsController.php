@@ -60,8 +60,14 @@ class NewsController extends Controller
 
         $result = json_decode($result);
 
+		$newsData=null;
+
+		foreach($result->articles->results as $key => $value){
+			$newsData[$key] = new NewsResource($value);
+		}
+
         if(isset($result)){
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get News List Success!','data'=> $result]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get News List Success!','data'=> $newsData]), 200);
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Error in news!','data'=> '']), 404);
