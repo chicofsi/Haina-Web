@@ -170,7 +170,7 @@ Route::group(['prefix' => 'hotel'], function() {
 		Route::resource('/', HotelImageController::class);
 	});
 	Route::group(['prefix' => 'rating'], function() {
-
+		Route::post('/get_user_rating',[HotelRatingController::class, 'getRatingByUser']);
 		Route::post('/get_rating',[HotelRatingController::class, 'getRatingByHotel']);
 		Route::resource('/', HotelRatingController::class);
 	});

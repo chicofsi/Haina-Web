@@ -41,6 +41,27 @@ class HotelRatingController extends Controller
         }
     }
 
+    public function getRatingByUser(Request $request){
+        //nama rel, bukan table
+        $post = HotelRating::with('hotel', 'users');
+
+        $post = $post->where('user_id', $request->user()->id);
+
+        $post = $post->get();
+
+        if($post->isEmpty()){
+            return response()->json(new ValueMessage(['value'=>0, 'message'=>'Data Not Found!', 'data'=> '']), 404);
+        }
+        else{
+            foreach($post as $key => $value){
+                $postData[$key] = new HotelRatingResource($value);
+
+            }
+
+            return response()->json(new ValueMessage(['value'=>1, 'message'=>'Get Data Success!', 'data'=> $postData]), 200);
+        }
+    }
+
     /**
      * Display a listing of the resource.
      *
