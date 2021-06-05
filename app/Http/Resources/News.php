@@ -40,6 +40,7 @@ class News extends JsonResource
             'body' => $this->body,
             'image' => $image,
             'category' => $category,
+            'source_name' => $this->source->uri,
             'source' => $this->url,
              
         ];
