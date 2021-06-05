@@ -45,21 +45,40 @@ class HotelRatingController extends Controller
         //nama rel, bukan table
         $post = HotelRating::with('hotel', 'users');
 
-        $post = $post->where('user_id', $request->user()->id);
+        $token = $request->header('Authorization');
 
-        $post = $post->get();
+        $tokens = DB::table('personal_access_tokens')->get();
 
-        if($post->isEmpty()){
-            return response()->json(new ValueMessage(['value'=>0, 'message'=>'Data Not Found!', 'data'=> '']), 404);
-        }
-        else{
-            foreach($post as $key => $value){
-                $postData[$key] = new HotelRatingResource($value);
+        foreach ($tokens as $key => $val) {
+            if(Str::contains($token, $val->id)){
+                $success =  $val->tokenable_id;
+                $user=User::where('id',$success)->first();
 
             }
-
-            return response()->json(new ValueMessage(['value'=>1, 'message'=>'Get Data Success!', 'data'=> $postData]), 200);
         }
+
+        if($user){
+            $post = $post->where('user_id', $user->id);
+    
+            $post = $post->get();
+    
+            if($post->isEmpty()){
+                return response()->json(new ValueMessage(['value'=>0, 'message'=>'Data Not Found!', 'data'=> '']), 404);
+            }
+            else{
+                foreach($post as $key => $value){
+                    $postData[$key] = new HotelRatingResource($value);
+    
+                }
+    
+                return response()->json(new ValueMessage(['value'=>1, 'message'=>'Get User Rating Success!', 'data'=> $postData]), 200);
+            }
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 403);
+        }
+
+        
     }
 
     /**
