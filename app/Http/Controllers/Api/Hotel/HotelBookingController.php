@@ -182,8 +182,8 @@ class HotelBookingController extends Controller
         }
 
         if($user){
-            $datein = new DateTime (date("d-m-Y",strtotime($request->check_in)));
-            $dateout = new DateTime (date("d-m-Y",strtotime($request->check_out)));
+            $datein = new DateTime (date("Y-m-d",strtotime($request->check_in)));
+            $dateout = new DateTime (date("Y-m-d",strtotime($request->check_out)));
             $interval = $datein->diff($dateout);
             $days = $interval->format('%a');
 
@@ -228,8 +228,8 @@ class HotelBookingController extends Controller
                         'hotel_id' => $request->hotel_id,
                         'room_id' => $request->room_id,
                         'user_id' => $user->id,
-                        'check_in' => date("d-m-Y",strtotime($request->check_in)),
-                        'check_out' => date("d-m-Y",strtotime($request->check_out)),
+                        'check_in' => date("Y-m-d",strtotime($request->check_in)),
+                        'check_out' => date("Y-m-d",strtotime($request->check_out)),
                         'total_night' => (int)$days,
                         'total_guest' => $request->total_guest,
                         'total_price' => $request->total_price,
@@ -334,8 +334,8 @@ class HotelBookingController extends Controller
     {
         $booking = HotelBooking::find($id);
 
-        $datein = new DateTime (date("d-m-Y",strtotime($request->check_in)));
-        $dateout = new DateTime (date("d-m-Y",strtotime($request->check_out)));
+        $datein = new DateTime (date("Y-m-d",strtotime($request->check_in)));
+        $dateout = new DateTime (date("Y-m-d",strtotime($request->check_out)));
         $interval = $datein->diff($dateout);
         $days = $interval->format('%a');
 
