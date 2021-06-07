@@ -24,14 +24,14 @@ class ApiLog
         if(Auth::check()){
             $id_user=Auth::id();
         }else{
-            $id_user=0;
+            $id_user=null;
         }
         Log::create([
             'id_user'=>$id_user,
-            'ip_address'=>Request::ip(),
-            'url'=>$request->getUri(),
+            'ip_address'=>$request->ip(),
+            'url'=> $request->getUri(),
             'method' => $request->getMethod(),
-            'request' => $request->all(),
+            'request' => json_encode($request->all()),
             'response' => $response->getContent()
         ]);
         return $response;
