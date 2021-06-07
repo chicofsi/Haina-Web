@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\UserDocs\UserDocsController;
 use App\Http\Controllers\Api\Skill\UserSkillController;
 use App\Http\Controllers\Api\Notification\NotificationController;
 use App\Http\Controllers\Api\NewsController;
+use App\Http\Controllers\Api\HowToPayController;
 use App\Http\Controllers\Api\CurrencyController;
 use App\Http\Controllers\Api\CovidController;
 use App\Http\Controllers\Pulsa\PulsaController;
@@ -164,6 +165,7 @@ Route::get('jobs/category'  , [JobsController::class, 'getJobsCategory']);
 Route::post('jobs/vacancy'  , [JobsVacancyController::class, 'getJobVacancy']);
 Route::get('location'  , [LocationController::class, 'getLocation']);
 
+Route::post('how_to_pay'  , [HowToPayController::class, 'instruction']);
 
 Route::group(['prefix' => 'hotel'], function() {
 	Route::group(['prefix' => 'book'], function() {
