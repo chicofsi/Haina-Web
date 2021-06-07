@@ -60,7 +60,7 @@ class TicketController extends Controller
                 [
                     'request'=>json_encode($body),
                     'response'=>json_encode($bodyresponse),
-                    'error_code'=>$bodyresponse->status,
+                    'status'=>$bodyresponse->status,
                     'url'=>$url,
                     'response_code'=>$response->getStatusCode()
                 ]
@@ -117,16 +117,16 @@ class TicketController extends Controller
         
         $userid=$this->username;
         $token=$this->checkLoginUser();
-
+        $body=[
+            'userID'=>$userid,
+            'accessToken'=>$token
+        ];
         try {
             $response=$this->client->request(
                 'POST',
                 'airline/list',
                 [
-                    'form_params' => [
-                        'userID'=>$userid,
-                        'accessToken'=>$token
-                    ],
+                    'form_params' => $body,
                     'on_stats' => function (TransferStats $stats) use (&$url) {
                         $url = $stats->getEffectiveUri();
                     }
@@ -134,6 +134,15 @@ class TicketController extends Controller
             );
 
             $bodyresponse=json_decode($response->getBody()->getContents());
+            DarmawisataRequest::insert(
+                [
+                    'request'=>json_encode($body),
+                    'response'=>json_encode($bodyresponse),
+                    'status'=>$bodyresponse->status,
+                    'url'=>$url,
+                    'response_code'=>$response->getStatusCode()
+                ]
+            );
             //return $response;
             if($bodyresponse->status=="FAILED"){
                 if($bodyresponse->respMessage=="member authentication failed"){
