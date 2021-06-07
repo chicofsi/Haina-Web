@@ -32,7 +32,8 @@ class ApiLog
             'url'=> $request->getUri(),
             'method' => $request->getMethod(),
             'request' => json_encode($request->all()),
-            'response' => $response->getContent()
+            'response' => $response->getContent(),
+            'response_code' => $response->getStatusCode(),
         ]);
         return $response;
         
