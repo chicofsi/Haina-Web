@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use App\Http\Resources\ValueMessage;
 use App\Http\Controllers\Api\StaticVariable;
+use Illuminate\Support\Facades\Auth;
 use App\Models\ApiLog as Log;
 
 class ApiLog
