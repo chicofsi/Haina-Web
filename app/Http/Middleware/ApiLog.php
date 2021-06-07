@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use App\Http\Resources\ValueMessage;
 use App\Http\Controllers\Api\StaticVariable;
-use App\Models\ApiLog;
+use App\Models\ApiLog as Log;
 
 class ApiLog
 {
@@ -25,7 +25,7 @@ class ApiLog
         }else{
             $id_user=0;
         }
-        ApiLog::create([
+        Log::create([
             'id_user'=>$id_user,
             'ip_address'=>Request::ip(),
             'url'=>$request->getUri(),
