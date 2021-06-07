@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\ValueMessage;
 use App\Http\Resources\HowToPayResource;
 use App\Models\HowToPay;
+use App\Models\PaymentMethod;
 
 class HowToPayController extends Controller
 {
@@ -15,9 +16,18 @@ class HowToPayController extends Controller
 
 
         if(isset($instruction)){
-            $howto = new HowToPayResource($instruction);
+            $howto_data = null;
+            
+            //$howto = new HowToPayResource($instruction);
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Payment Instructions Success!','data'=> $howto]), 200);
+            $payment_name = PaymentMethod::select('name')->where('id',$request->id_payment_method)->first();
+            $payment_icon = PaymentMethod::select('photo_url')->where('id',$request->id_payment_method)->first();
+
+            $howto_data['payment'] = $payment_name['name'];
+            $howto_data['icon'] = $payment_icon['photo_url'];
+            $howto_data['how_to'] = $instruction;
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Payment Instructions Success!','data'=> $howto_data]), 200);
 
         }
         else{
