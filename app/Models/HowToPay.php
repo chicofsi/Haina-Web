@@ -16,7 +16,7 @@ class HowToPay extends Model
     protected $table = 'how_to_pay';
 
     protected $fillable = [ 
-        'id_payment_method', 'payment_media', 'how_to'
+        'id_payment_method', 'payment_media', 'how_to', 'how_to_zh'
     ];
 
     public function payment_method(){
