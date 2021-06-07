@@ -8,6 +8,8 @@ use App\Http\Resources\ValueMessage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
+use App\Http\Resources\FlightSchedule as FlightScheduleResource;
+
 use GuzzleHttp\Client;
 use GuzzleHttp\TransferStats;
 use GuzzleHttp\Psr7;
@@ -284,8 +286,21 @@ class TicketController extends Controller
                         return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
                     }
                 }else{
+                    $data=[
+                        "total_airline"=>$bodyresponse->totalAirline
+                    ];
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
+                    foreach ($bodyresponse->journeyDepart as $key => $value) {
+                        $data['depart'][$key]=new FlightScheduleResource($value);
+                    }
+                    if($bodyresponse->journeyReturn){
+                        foreach ($bodyresponse->journeyReturn as $key => $value) {
+                            $data['return'][$key]=new FlightScheduleResource($value);
+                        }
+                    }
+                    
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $data]), 200);
                 }
             }catch(RequestException $e) {
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
