@@ -16,6 +16,7 @@ use thiagoalessio\TesseractOCR\TesseractOCR;
 use DateTime;
 
 use App\Models\Airports;
+use App\Models\DarmawisataSession;
 
 
 class TicketController extends Controller
@@ -60,8 +61,13 @@ class TicketController extends Controller
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Login Failed!','data'=> '']), 500);
                 }
             }else{
+                $session=DarmawisataSession::where('id_user',$request->user()->id)->delete();
+                $session=DarmawisataSession::create([
+                    'access_token'=>$bodyresponse->accessToken,
+                    'id_user'=>$request->user()->id
+                ]);
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Login Complete!','data'=> $bodyresponse]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Login Complete!','data'=> $session]), 200);
             }
 
 
