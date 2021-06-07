@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Resources\ValueMessage;
+use App\Http\Resources\HowToPayResource;
 use App\Models\HowToPay;
 
 class HowToPayController extends Controller
@@ -14,7 +15,9 @@ class HowToPayController extends Controller
 
 
         if(isset($instruction)){
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Payment Instructions Success!','data'=> $instruction]), 200);
+            $howto = new HowToPayResource($instruction);
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Payment Instructions Success!','data'=> $howto]), 200);
 
         }
         else{
