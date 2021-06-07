@@ -32,7 +32,7 @@ class ApiLog
             'method' => $request->getMethod(),
             'request' => $request->all(),
             'response' => $response->getContent()
-        ])
+        ]);
         return $response;
         
 
