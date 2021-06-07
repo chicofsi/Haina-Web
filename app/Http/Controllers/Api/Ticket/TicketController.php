@@ -17,6 +17,7 @@ use DateTime;
 
 use App\Models\Airports;
 use App\Models\DarmawisataSession;
+use App\Models\DarmawisataRequest;
 
 
 class TicketController extends Controller
@@ -36,16 +37,62 @@ class TicketController extends Controller
         $userid=$this->username;
         $token=date('Y-m-d').'T'.date('H:i:s');
         $securitycode=md5($token.md5($this->password));
-
+        $body=[
+            'userID'=>$userid,
+            'token'=>$token,
+            'securityCode'=>$securitycode
+        ];
         try {
             $response=$this->client->request(
                 'POST',
                 'session/login',
                 [
+                    'form_params' => $body,
+                    'on_stats' => function (TransferStats $stats) use (&$url) {
+                        $url = $stats->getEffectiveUri();
+                    }
+                ]  
+            );
+
+            $bodyresponse=json_decode($response->getBody()->getContents());
+            //return $response;
+            DarmawisataRequest::insert(
+                [
+                    'request'=>json_encode($body),
+                    'response'=>json_encode($bodyresponse),
+                    'error_code'=>$bodyresponse->status,
+                    'url'=>$url,
+                    'response_code'=>$response->getStatusCode()
+                ]
+            );
+            if($bodyresponse->status=="FAILED"){
+                if($bodyresponse->respMessage=="member authentication failed"){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Login Failed!','data'=> '']), 500);
+                }
+            }else{
+                $session=DarmawisataSession::where('id_user',Auth::user()->id)->delete();
+                $session=DarmawisataSession::create([
+                    'access_token'=>$bodyresponse->accessToken,
+                    'id_user'=>Auth::user()->id
+                ]);
+                return $bodyresponse->accessToken;
+            }
+        }catch(RequestException $e) {
+            return;
+        }
+    }
+
+    public function checkLoginUser()
+    {
+        $token=DarmawisataSession::where('id_user',Auth::id())->first()->access_token;
+        try {
+            $response=$this->client->request(
+                'POST',
+                'airline/list',
+                [
                     'form_params' => [
-                        'userID'=>$userid,
-                        'token'=>$token,
-                        'securityCode'=>$securitycode
+                        'userID'=>$this->username,
+                        'accessToken'=>$token
                     ],
                     'on_stats' => function (TransferStats $stats) use (&$url) {
                         $url = $stats->getEffectiveUri();
@@ -55,31 +102,21 @@ class TicketController extends Controller
 
             $bodyresponse=json_decode($response->getBody()->getContents());
             //return $response;
-
             if($bodyresponse->status=="FAILED"){
-                if($bodyresponse->respMessage=="member authentication failed"){
-                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Login Failed!','data'=> '']), 500);
-                }
+                return $this->login();
+
             }else{
-                $session=DarmawisataSession::where('id_user',$request->user()->id)->delete();
-                $session=DarmawisataSession::create([
-                    'access_token'=>$bodyresponse->accessToken,
-                    'id_user'=>$request->user()->id
-                ]);
-
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Login Complete!','data'=> $session]), 200);
+                return $token;
             }
-
-
         }catch(RequestException $e) {
-            dd($e);
             return;
         }
     }
     public function getAirline(Request $request)
     {
+        
         $userid=$this->username;
-        $token=$request->token;
+        $token=$this->checkLoginUser();
 
         try {
             $response=$this->client->request(
@@ -115,7 +152,7 @@ class TicketController extends Controller
     public function getRoute(Request $request)
     {
         $userid=$this->username;
-        $token=$request->token;
+        $token=$this->checkLoginUser();
         $airlineid=$request->airline_id;
 
         try {
@@ -159,7 +196,6 @@ class TicketController extends Controller
     public function getAirlineSchedule(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'token' => 'required',
             'trip_type' => 'required',
             'origin' => 'required',
             'destination' => 'required',
@@ -175,7 +211,7 @@ class TicketController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }else{
             $userid=$this->username;
-            $token=$request->token;
+            $token=$this->checkLoginUser();
             $trip_type=$request->trip_type;
             $origin=$request->origin;
             $destination=$request->destination;

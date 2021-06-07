@@ -123,6 +123,15 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
 	Route::post('/pending_transaction'  , [PulsaController::class, 'pendingTransactionList']);
 
+	Route::group(['prefix' => 'ticket'], function() {
+
+		Route::get('/login',[TicketController::class, 'login']);
+		Route::post('/airport',[TicketController::class, 'getAirport']);
+		Route::post('/airline',[TicketController::class, 'getAirline']);
+		Route::post('/schedule',[TicketController::class, 'getAirlineSchedule']);
+		Route::post('/route',[TicketController::class, 'getRoute']);
+
+	});
 	
 });
 
@@ -190,12 +199,4 @@ Route::group(['prefix' => 'hotel'], function() {
 		Route::resource('/image', HotelRoomImageController::class);
 	});
 });
-Route::group(['prefix' => 'ticket'], function() {
 
-	Route::get('/login',[TicketController::class, 'login']);
-	Route::post('/airport',[TicketController::class, 'getAirport']);
-	Route::post('/airline',[TicketController::class, 'getAirline']);
-	Route::post('/schedule',[TicketController::class, 'getAirlineSchedule']);
-	Route::post('/route',[TicketController::class, 'getRoute']);
-
-});
