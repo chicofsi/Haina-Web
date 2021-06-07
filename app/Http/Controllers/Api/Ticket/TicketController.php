@@ -163,17 +163,17 @@ class TicketController extends Controller
         $userid=$this->username;
         $token=$this->checkLoginUser();
         $airlineid=$request->airline_id;
-
+        $body=[
+            'userID'=>$userid,
+            'accessToken'=>$token,
+            'airlineID'=>$airlineid
+        ];
         try {
             $response=$this->client->request(
                 'POST',
                 'airline/route',
                 [
-                    'form_params' => [
-                        'userID'=>$userid,
-                        'airlineID'=>$airlineid,
-                        'accessToken'=>$token
-                    ],
+                    'form_params' => $body,
                     'on_stats' => function (TransferStats $stats) use (&$url) {
                         $url = $stats->getEffectiveUri();
                     }
@@ -181,7 +181,17 @@ class TicketController extends Controller
             );
 
             $bodyresponse=json_decode($response->getBody()->getContents());
-            //return $response;
+
+            DarmawisataRequest::insert(
+                [
+                    'request'=>json_encode($body),
+                    'response'=>json_encode($bodyresponse),
+                    'status'=>$bodyresponse->status,
+                    'url'=>$url,
+                    'response_code'=>$response->getStatusCode()
+                ]
+            );
+
             if($bodyresponse->status=="FAILED"){
                 if($bodyresponse->respMessage=="member authentication failed"){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
@@ -231,25 +241,26 @@ class TicketController extends Controller
             $infant=$request->infant;
 
             try {
+                $body=[
+                    'userID'=>$userid,
+                    'accessToken'=>$token,
+                    'tripType'=>$trip_type,
+                    'origin'=>$origin,
+                    'destination'=>$destination,
+                    'departDate'=>$depart_date,
+                    'returnDate'=>$return_date,
+                    'paxAdult'=>$adult,
+                    'paxChild'=>$child,
+                    'paxInfant'=>$infant,
+                    'airlineAccessCode'=>$request->airline_access_code,
+                    'cacheType'=>"Mix",
+                    'isShowEachAirline'=>"false"
+                ];
                 $response=$this->client->request(
                     'POST',
                     'airline/scheduleallairline',
                     [
-                        'form_params' => [
-                            'userID'=>$userid,
-                            'accessToken'=>$token,
-                            'tripType'=>$trip_type,
-                            'origin'=>$origin,
-                            'destination'=>$destination,
-                            'departDate'=>$depart_date,
-                            'returnDate'=>$return_date,
-                            'paxAdult'=>$adult,
-                            'paxChild'=>$child,
-                            'paxInfant'=>$infant,
-                            'airlineAccessCode'=>$request->airline_access_code,
-                            'cacheType'=>"Mix",
-                            'isShowEachAirline'=>"false"
-                        ],
+                        'form_params' => $body,
                         'on_stats' => function (TransferStats $stats) use (&$url) {
                             $url = $stats->getEffectiveUri();
                         }
@@ -257,7 +268,17 @@ class TicketController extends Controller
                 );
 
                 $bodyresponse=json_decode($response->getBody()->getContents());
-                //return $response;
+
+
+                DarmawisataRequest::insert(
+                    [
+                        'request'=>json_encode($body),
+                        'response'=>json_encode($bodyresponse),
+                        'status'=>$bodyresponse->status,
+                        'url'=>$url,
+                        'response_code'=>$response->getStatusCode()
+                    ]
+                );
                 if($bodyresponse->status=="FAILED"){
                     if($bodyresponse->respMessage=="member authentication failed"){
                         return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
