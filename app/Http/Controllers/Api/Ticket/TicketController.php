@@ -241,7 +241,7 @@ class TicketController extends Controller
             $child=$request->child;
             $infant=$request->infant;
             if(isset($request->airline_access_code)){
-                $airline_access_code=$request->airline_access_code
+                $airline_access_code=$request->airline_access_code;
             }else{
                 $airline_access_code=0;
             }
