@@ -25,7 +25,7 @@ class HowToPayController extends Controller
 
             $howto_data['payment'] = $payment_name['name'];
             $howto_data['icon'] = $payment_icon['photo_url'];
-            $howto_data['how_to'] = $instruction;
+            $howto_data['instructions'] = $instruction;
 
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Payment Instructions Success!','data'=> $howto_data]), 200);
 
