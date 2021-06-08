@@ -317,8 +317,6 @@ class TicketController extends Controller
     public function testOCR(Request $request)
     {
                 
-        ob_start();
-        $im = imageCreateFromString(base64_decode($request->image));
-        echo (new TesseractOCR($im))->run();
+        echo '<img src="data:image/gif;base64,' . $request->image . '" />';
     }
 }

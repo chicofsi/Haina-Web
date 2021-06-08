@@ -3,8 +3,9 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\Airlines;
 
+
+use App\Models\Airlines;
 class FlightSchedule extends JsonResource
 {
     /**
