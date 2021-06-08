@@ -224,8 +224,7 @@ class TicketController extends Controller
             'return_date' => 'required',
             'adult' => 'required',
             'child' => 'required',
-            'infant' => 'required',
-            'airline_access_code' => 'required'
+            'infant' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -241,6 +240,11 @@ class TicketController extends Controller
             $adult=$request->adult;
             $child=$request->child;
             $infant=$request->infant;
+            if(isset($request->airline_access_code)){
+                $airline_access_code=$request->airline_access_code
+            }else{
+                $airline_access_code=0;
+            }
 
             try {
                 $body=[
@@ -254,7 +258,7 @@ class TicketController extends Controller
                     'paxAdult'=>$adult,
                     'paxChild'=>$child,
                     'paxInfant'=>$infant,
-                    'airlineAccessCode'=>$request->airline_access_code,
+                    'airlineAccessCode'=>$airline_access_code,
                     'cacheType'=>"Mix",
                     'isShowEachAirline'=>"false"
                 ];
@@ -284,6 +288,8 @@ class TicketController extends Controller
                 if($bodyresponse->status=="FAILED"){
                     if($bodyresponse->respMessage=="member authentication failed"){
                         return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+                    }else if($bodyresponse->respMessage=="airline access code is empty or not valid"){
+
                     }
                 }else{
                     $data=[
@@ -307,5 +313,10 @@ class TicketController extends Controller
             }
             return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
         }
+    }
+    public function testOCR(Request $request)
+    {
+        
+        echo (new TesseractOCR(Image::make(file_get_contents($request->image))))->run();
     }
 }
