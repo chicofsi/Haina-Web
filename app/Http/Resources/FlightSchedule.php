@@ -16,7 +16,7 @@ class FlightSchedule extends JsonResource
      */
     public function toArray($request)
     {
-        $airline=Airline::where('airline_code',$this->airlineID)->first();
+        $airline=Airlines::where('airline_code',$this->airlineID)->first();
         foreach ($this->segment as $key => $value) {
             $flightdetail[$key]=$value;
         }
