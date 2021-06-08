@@ -13,7 +13,60 @@ use App\Models\NotificationCategory;
 
 class NotificationController extends Controller
 {
+    public function sendMessage() {
+        $content      = array(
+            "en" => 'Message'
+        );
+        $hashes_array = array();
+        array_push($hashes_array, array(
+            "id" => "like-button",
+            "text" => "Like",
+            "icon" => "http://i.imgur.com/N8SN8ZS.png",
+            "url" => "https://hainaservice.com"
+        ));
+        array_push($hashes_array, array(
+            "id" => "ok-button",
+            "text" => "Go",
+            "icon" => "http://i.imgur.com/N8SN8ZS.png",
+            "url" => "https://hainaservice.com"
+        ));
+        $fields = array(
+            'app_id' => "cb3a2a52-1950-4d94-9b7a-c06d1c47c56a",
+            'included_segments' => array(
+                'Subscribed Users'
+            ),
+            'data' => array(
+                "foo" => "bar"
+            ),
+            'contents' => $content,
+            'web_buttons' => $hashes_array
+        );
+        
+        $fields = json_encode($fields);
+        print("\nJSON sent:\n");
+        print($fields);
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json; charset=utf-8',
+            'Authorization: Basic NjM1NTljMWUtMWRhYi00MWJhLWE4NjQtODkzMzJjYjdjMzZl'
+        ));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_HEADER, FALSE);
+        curl_setopt($ch, CURLOPT_POST, TRUE);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        
+        $response = curl_exec($ch);
+        curl_close($ch);
+        
+        return $response;
+    }
 
+
+
+    /*
     protected $serverKey;
     
 	public function __construct()
@@ -110,6 +163,8 @@ class NotificationController extends Controller
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Get User Notification Success!','data'=> $usernotif]), 200);
         }
     }
+
+    */
 
 
 }
