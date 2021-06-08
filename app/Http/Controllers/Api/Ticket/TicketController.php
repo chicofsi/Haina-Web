@@ -289,7 +289,7 @@ class TicketController extends Controller
                     if($bodyresponse->respMessage=="member authentication failed"){
                         return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
                     }else if($bodyresponse->respMessage=="airline access code is empty or not valid"){
-
+                        return $bodyresponse->airlineAccessCode;
                     }
                 }else{
                     $data=[
@@ -316,7 +316,9 @@ class TicketController extends Controller
     }
     public function testOCR(Request $request)
     {
-        
-        echo (new TesseractOCR(Image::make(file_get_contents($request->image))))->run();
+                
+        ob_start();
+        $im = imageCreateFromString(base64_decode($request->image));
+        echo (new TesseractOCR($im))->run();
     }
 }
