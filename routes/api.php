@@ -130,6 +130,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/airport',[TicketController::class, 'getAirport']);
 		Route::post('/airline',[TicketController::class, 'getAirline']);
 		Route::post('/schedule',[TicketController::class, 'getAirlineSchedule']);
+		Route::post('/price',[TicketController::class, 'getAirlinePrice']);
 		Route::post('/route',[TicketController::class, 'getRoute']);
 		Route::post('/test',[TicketController::class, 'testOCR']);
 
