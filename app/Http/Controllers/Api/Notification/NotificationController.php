@@ -13,9 +13,10 @@ use App\Models\NotificationCategory;
 
 class NotificationController extends Controller
 {
-    public function sendMessage() {
+    /*
+    public function sendMessage(Request $request) {
         $content      = array(
-            "en" => 'Message'
+            "en" => $request->message
         );
         $hashes_array = array();
         array_push($hashes_array, array(
@@ -33,7 +34,7 @@ class NotificationController extends Controller
         $fields = array(
             'app_id' => "cb3a2a52-1950-4d94-9b7a-c06d1c47c56a",
             'included_segments' => array(
-                'Subscribed Users'
+                $request->segment
             ),
             'data' => array(
                 "foo" => "bar"
@@ -63,10 +64,10 @@ class NotificationController extends Controller
         
         return $response;
     }
+    */
 
 
-
-    /*
+    
     protected $serverKey;
     
 	public function __construct()
@@ -164,7 +165,7 @@ class NotificationController extends Controller
         }
     }
 
-    */
+    
 
 
 }
