@@ -75,7 +75,7 @@ class NotificationController extends Controller
         $this->serverKey = 'AAAA8gxroJU:APA91bEVVjGrc-JmrOVW20ntmKdCjfq603SF976B6b5mIiZqRm97ahljd-5d58lhza9jBz860aKChLrPou8eGzpe0ttLkgJujd4_iWbaaYb3rwzh_zBtw2uCssTDwXqJwKQItyaZrebn';
     }
 
-	public function sendPush ($token, $title, $body, $type)
+	public function sendPush ($token, $title, $body, $type,$tabs)
     {
         $headers = [
             'Authorization: key=' . $this->serverKey,
@@ -87,12 +87,11 @@ class NotificationController extends Controller
             "notification" =>
                 [
                     "title" => $title,
-                    "body" => $body,
-                    "click_action" => $type
-                    
+                    "body" => $body
                 ],
             "data" => [
-                    "page" => $type
+                    "page" => $type,
+                    "tabs" => $tabs
                 ]
         ];
 
@@ -108,6 +107,30 @@ class NotificationController extends Controller
 
         return curl_exec($ch);
     }
+
+
+    public function notifSend(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'token' => 'required',
+            'title' => 'required',
+            'body' => 'required',
+            'page' => 'required',
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            $retdata='';
+
+            foreach ($request->token as $key => $value) {
+                $retdata=$retdata.$this->sendPush($value,$request->title,$request->body,$request->page,$request->tabs);
+            }
+            return $retdata;
+
+        }    
+    }
+
 
     public function createNotif($idUser,$message,$idCategory)
     {
@@ -132,29 +155,6 @@ class NotificationController extends Controller
         
 
     }
-
-    public function notifSend(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'token' => 'required',
-            'title' => 'required',
-            'body' => 'required',
-        ]);
-
-        if ($validator->fails()) {          
-            return response()->json(['error'=>$validator->errors()], 400);                        
-        }else{
-            $retdata='';
-
-            foreach ($request->token as $key => $value) {
-                $retdata=$retdata.$this->sendPush($value,$request->title,$request->body,"transaction");
-            }
-            return $retdata;
-
-        }    
-    }
-
-
 
 
     public function getUserNotification(Request $request)

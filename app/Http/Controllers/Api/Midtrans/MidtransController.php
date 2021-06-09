@@ -72,18 +72,25 @@ class MidtransController extends Controller
             if($transaction_status=='settlement'){
                 $settlement_time=date("Y-m-d h:m:s",strtotime($request->settlement_time));
                 $status='process';
-                NotificationController::sendPush($token, "Payment successful", "Your Rp ".$transaction_amount."payment for ".$transaction_product." is successful", "Transaction");
+                foreach ($token as $key => $value) {
+                    NotificationController::sendPush($value, "Payment successful", "Your Rp ".$transaction_amount."payment for ".$transaction_product." is successful", "Transaction");
+
+                }
             }else if($transaction_status=='pending'){
                 $settlement_time=null;
                 $status='pending payment';
-                NotificationController::sendPush($token, "Waiting for payment", "There is a pending payment for ".$transaction_product.". Please finish payment in 24 hours", "Transaction");
+                foreach ($token as $key => $value) {
+                    NotificationController::sendPush($value, "Waiting for payment", "There is a pending payment for ".$transaction_product.". Please finish payment in 24 hours", "Transaction");
+                }
             }else if($transaction_status=='expire'){
                 $settlement_time=null;
                 $status='unsuccess';
             }else if($transaction_status=='cancel'){
                 $settlement_time=null;
                 $status='unsuccess';
-                NotificationController::sendPush($token, "Transaction cancelled", "Your transaction for ".$transaction_product." has been cancelled.", "Transaction");
+                foreach ($token as $key => $value) {
+                    NotificationController::sendPush($value, "Transaction cancelled", "Your transaction for ".$transaction_product." has been cancelled.", "Transaction");
+                }
             }
 
             $transaction=Transaction::where('order_id',$order_id)->update(['status'=>$status]);
