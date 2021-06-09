@@ -147,7 +147,7 @@ class NotificationController extends Controller
             $retdata='';
 
             foreach ($request->token as $key => $value) {
-                $retdata=$retdata.$this->sendPush($value,$request->title,$request->body);
+                $retdata=$retdata.$this->sendPush($value,$request->title,$request->body,"transaction");
             }
             return $retdata;
 
