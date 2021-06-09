@@ -88,10 +88,11 @@ class NotificationController extends Controller
                 [
                     "title" => $title,
                     "body" => $body,
-                    "data" => [
-                        "page" => $type
-                    ]
+                    
                 ],
+            "data" => [
+                    "page" => $type
+                ]
         ];
 
         $dataString = json_encode($data);
