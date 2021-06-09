@@ -14,7 +14,7 @@ class PersonalAccessToken extends Model
      *
      * @var array
      */
-    protected $table = 'personal_access_token';
+    protected $table = 'personal_access_tokens';
 
     protected $fillable = [
         'tokenable_type', 'tokenable_id', 'name', 'token', 'abilities'

@@ -68,17 +68,12 @@ class NotificationController extends Controller
 
 
     
-    protected $serverKey;
-    
-	public function __construct()
-    {
-        $this->serverKey = 'AAAA8gxroJU:APA91bEVVjGrc-JmrOVW20ntmKdCjfq603SF976B6b5mIiZqRm97ahljd-5d58lhza9jBz860aKChLrPou8eGzpe0ttLkgJujd4_iWbaaYb3rwzh_zBtw2uCssTDwXqJwKQItyaZrebn';
-    }
 
-	public function sendPush ($token, $title, $body, $type,$tabs)
+	public static function sendPush ($token, $title, $body, $type,$tabs)
     {
+        $serverKey = 'AAAA8gxroJU:APA91bEVVjGrc-JmrOVW20ntmKdCjfq603SF976B6b5mIiZqRm97ahljd-5d58lhza9jBz860aKChLrPou8eGzpe0ttLkgJujd4_iWbaaYb3rwzh_zBtw2uCssTDwXqJwKQItyaZrebn';
         $headers = [
-            'Authorization: key=' . $this->serverKey,
+            'Authorization: key=' . $serverKey,
             'Content-Type: application/json',
         ];
 

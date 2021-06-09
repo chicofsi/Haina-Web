@@ -209,7 +209,7 @@ class TicketController extends Controller
 
     public function getAirport(Request $request)
     {
-        $airports=Airports::where('country',"Indonesia")->get();
+        $airports=Airports::where('country',"Indonesia")->orderBy('city')->get();
 
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Airline Routes Success!','data'=> $airports]), 200);
     }
