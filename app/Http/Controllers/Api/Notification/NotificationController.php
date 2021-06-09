@@ -88,6 +88,7 @@ class NotificationController extends Controller
                 [
                     "title" => $title,
                     "body" => $body,
+                    "click_action" => $type
                     
                 ],
             "data" => [
