@@ -75,7 +75,7 @@ class NotificationController extends Controller
         $this->serverKey = 'AAAA8gxroJU:APA91bEVVjGrc-JmrOVW20ntmKdCjfq603SF976B6b5mIiZqRm97ahljd-5d58lhza9jBz860aKChLrPou8eGzpe0ttLkgJujd4_iWbaaYb3rwzh_zBtw2uCssTDwXqJwKQItyaZrebn';
     }
 
-	public function sendPush ($token, $title, $body)
+	public function sendPush ($token, $title, $body, $type)
     {
         $headers = [
             'Authorization: key=' . $this->serverKey,
@@ -87,7 +87,10 @@ class NotificationController extends Controller
             "notification" =>
                 [
                     "title" => $title,
-                    "body" => $body
+                    "body" => $body,
+                    "data" => [
+                        "page" => $type
+                    ]
                 ],
         ];
 

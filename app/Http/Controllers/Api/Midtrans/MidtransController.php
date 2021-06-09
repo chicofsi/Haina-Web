@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Midtrans;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Http\Request;
 use App\Http\Resources\ValueMessage;
 use Illuminate\Support\Facades\Validator;
@@ -19,7 +20,10 @@ use App\Models\Product;
 use App\Models\NotificationCategory;
 use App\Models\HotelBooking;
 use App\Models\EspayRequest;
-use App\Models\HotelBookingPayment; 
+use App\Models\HotelBookingPayment;
+use App\Models\PersonalAccessToken;
+
+use App\Models\User;
 use DateTime;
 
 
@@ -48,13 +52,31 @@ class MidtransController extends Controller
 
         if($request->custom_field1=="PPOB"){
 
+            $transaction=Transaction::where('order_id',$order_id)->with('product')->first();
             $status="";
+
+            $token = [];
+            $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $transaction['id_user'])->get();
+
+            $product_group = Product::select('id_product_group', 'description')->where('id',$transaction['id_product'])->first();
+            $product_category = ProductGroup::select('id_product_category')->where('id', $product_group['id_product_group'])->first();
+            $product_type = ProductCategory::where('id', $product_category['id_product_category'])->first();
+
+            $transaction_product = $product_type['name'];
+            $transaction_amount = number_format($transaction['total_payment'], 2, ",", ".");
+
+            foreach($usertoken as $key => $value){
+                array_push($token, $value); 
+            }
+
             if($transaction_status=='settlement'){
                 $settlement_time=date("Y-m-d h:m:s",strtotime($request->settlement_time));
                 $status='process';
+                NotificationController::sendPush($token, "Payment successful", "Your Rp ".$transaction_amount."payment for ".$transaction_product." is successful", "Transaction");
             }else if($transaction_status=='pending'){
                 $settlement_time=null;
                 $status='pending payment';
+                NotificationController::sendPush($token, "Waiting for payment", "There is a pending payment for ".$transaction_product.". Please finish payment in 24 hours", "Transaction");
             }else if($transaction_status=='expire'){
                 $settlement_time=null;
                 $status='unsuccess';
@@ -65,6 +87,7 @@ class MidtransController extends Controller
 
             $transaction=Transaction::where('order_id',$order_id)->update(['status'=>$status]);
             $transaction=Transaction::where('order_id',$order_id)->with('product')->first();
+            
             if($transaction_status=='settlement'){
                 $this->espayPayment($order_id);
             }
