@@ -2,19 +2,24 @@
 
 namespace App\Http\Controllers\Api\Post\Jobs;
 
-use App\Models\JobVacancy;
-use App\Models\Post;
 use App\Http\Controllers\Controller;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\ValueMessage;
 use App\Http\Resources\JobVacancy as JobVacancyResource;
 use App\Http\Resources\JobApplicant as JobApplicantResource;
-use App\Models\Company;
 use App\Http\Resources\Post as PostResource;
 
+use App\Models\NotificationCategory;
+use App\Models\PersonalAccessToken;
 use App\Models\UserLogs;
 use App\Models\JobApplicant;
+use App\Models\Company;
+use App\Models\JobVacancy;
+use App\Models\Post;
+
+use App\Http\Controllers\Api\Notification\NotificationController;
 
 class JobsVacancyController extends Controller
 {
@@ -179,6 +184,32 @@ class JobsVacancyController extends Controller
 
                 if($jobvacancy=JobVacancy::where('id',$jobapplicant->id_job_vacancy)->where('id_company',$company->id)->first()){
                     JobApplicant::where('id',$request->id_applicant)->update(['status'=>$request->status]);
+
+                    $user_id = $jobapplicant['id_user'];
+                    $token = [];
+                    $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $user_id['id_user'])->get();
+
+                    foreach($usertoken as $key => $value){
+                        array_push($token, $value->name); 
+                    }
+
+                    if($request->status == "interview"){
+                        foreach ($token as $key => $value) {
+                            NotificationController::sendPush($value, "Interview Request Scheduled", "Interview inviation for ".$jobvacancy['title']." in ".$company['name']. ".", "Job", "");
+                        }
+                    }
+                    else if($request->status == "accepted"){
+                        foreach ($token as $key => $value) {
+                            NotificationController::sendPush($value, "Job Application Accepted", "Your application for ".$jobvacancy['title']."is accepted by".$company['name'].".", "Job", "");
+                        }
+                    }
+                    else if($request->status == "declined"){
+                        foreach ($token as $key => $value) {
+                            NotificationController::sendPush($value, "Job Application Rejected", "Your application for ".$jobvacancy['title']."is rejected by".$company['name'].".", "Job", "");
+                        }
+                    }
+
+
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Job Application Status Updated!','data'=>  '']), 200);
 
                 }else{

@@ -2,10 +2,6 @@
 
 namespace App\Http\Controllers\Admin\Company;
 
-use App\Models\Company;
-use App\Models\City;
-use App\Models\PostCategory;
-use App\Models\PostSubCategory;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\Datatables;
@@ -13,8 +9,18 @@ use Illuminate\Support\Facades\URL;
 
 use Illuminate\Support\Facades\Auth;
 
+use App\Http\Controllers\Api\Notification\NotificationController;
+
 use App\Models\AdminLogs;
 use App\Models\UserLogs;
+use App\Models\NotificationCategory;
+use App\Models\PersonalAccessToken;
+use App\Models\JobVacancy;
+use App\Models\User;
+use App\Models\Company;
+use App\Models\City;
+use App\Models\PostCategory;
+use App\Models\PostSubCategory;
 
 class ManageCompany extends Controller
 {
@@ -101,6 +107,19 @@ class ManageCompany extends Controller
            'id_user_activity' => 10,
            'message' => 'Admin approved the company named '.$company->name
         ]);
+
+        $user_id = Company::select('id_user')->where('id', $companyId)->first();
+
+        $token = [];
+        $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $user_id['id_user'])->get();
+
+        foreach($usertoken as $key => $value){
+            array_push($token, $value->name); 
+        }
+
+        foreach ($token as $key => $value) {
+            NotificationController::sendPush($value, "Company Listing Approved", $company['name']." is approved. Start posting job vacancies now!", "Job", "");
+        }
                          
         return Response()->json($companyupdate);
     }
@@ -126,6 +145,19 @@ class ManageCompany extends Controller
            'id_user_activity' => 11,
            'message' => 'Admin suspended the company named '.$company->name
         ]);
+
+        $user_id = Company::select('id_user')->where('id', $companyId)->first();
+
+        $token = [];
+        $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $user_id['id_user'])->get();
+
+        foreach($usertoken as $key => $value){
+            array_push($token, $value->name); 
+        }
+
+        foreach ($token as $key => $value) {
+            NotificationController::sendPush($value, "Company Suspended", $company['name']." is suspended. Please contact admin for more details.", "Job", "");
+        }
             
                          
         return Response()->json($companyupdate);

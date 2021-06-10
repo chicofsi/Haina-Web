@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Admin\Jobs;
 
-use App\Models\JobVacancy;
-use App\Models\City;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\Datatables;
@@ -11,7 +9,16 @@ use Illuminate\Support\Facades\URL;
 
 use Illuminate\Support\Facades\Auth;
 
+use App\Http\Controllers\Api\Notification\NotificationController;
+
 use App\Models\AdminLogs;
+use App\Models\NotificationCategory;
+use App\Models\PersonalAccessToken;
+use App\Models\JobVacancy;
+use App\Models\City;
+use App\Models\User;
+use App\Models\Company;
+
 
 class ManageJobs extends Controller
 {
@@ -119,6 +126,20 @@ class ManageJobs extends Controller
            'id_admin_activity' => 5,
            'message' => 'Admin approved a job vacancy titled '.$post
         ]);
+
+        $company = JobVacancy::select('id_company', 'name')->where('id', $postId)->first();
+        $user_id = Company::select('id_user')->where('id', $company['id_company'])->first();
+
+        $token = [];
+        $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $user_id['id_user'])->get();
+
+        foreach($usertoken as $key => $value){
+            array_push($token, $value->name); 
+        }
+
+        foreach ($token as $key => $value) {
+            NotificationController::sendPush($value, "Job Posting Approved", $post." in ".$company['name']. " is approved", "Job", "");
+        }
                          
         return Response()->json($postupdate);
     }
@@ -137,6 +158,20 @@ class ManageJobs extends Controller
            'id_admin_activity' => 6,
            'message' => 'Admin blocked a job vacancy titled '.$post
         ]);
+
+        $company = JobVacancy::select('id_company', 'name')->where('id', $postId)->first();
+        $user_id = Company::select('id_user')->where('id', $company['id_company'])->first();
+
+        $token = [];
+        $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $user_id['id_user'])->get();
+
+        foreach($usertoken as $key => $value){
+            array_push($token, $value->name); 
+        }
+
+        foreach ($token as $key => $value) {
+            NotificationController::sendPush($value, "Job Posting Rejected", $post." in ".$company['name']. " is rejected. Please contact admin for more details.", "Job", "");
+        }
                          
         return Response()->json($postupdate);
     }
@@ -155,6 +190,20 @@ class ManageJobs extends Controller
            'id_admin_activity' => 7,
            'message' => 'Admin closed a job vacancy titled '.$post
         ]);
+
+        $company = JobVacancy::select('id_company', 'name')->where('id', $postId)->first();
+        $user_id = Company::select('id_user')->where('id', $company['id_company'])->first();
+
+        $token = [];
+        $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $user_id['id_user'])->get();
+
+        foreach($usertoken as $key => $value){
+            array_push($token, $value->name); 
+        }
+
+        foreach ($token as $key => $value) {
+            NotificationController::sendPush($value, "Job Posting Closed", $post." in ".$company['name']. " has been closed by admin.", "Job", "");
+        }
                          
         return Response()->json($postupdate);
     }
