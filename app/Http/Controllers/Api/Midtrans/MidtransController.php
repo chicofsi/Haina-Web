@@ -28,7 +28,6 @@ use App\Models\PersonalAccessToken;
 use App\Models\User;
 use DateTime;
 
-
 class MidtransController extends Controller
 {
     public function __construct()

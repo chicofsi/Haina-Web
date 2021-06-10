@@ -540,4 +540,135 @@ class TicketController extends Controller
             return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
         }
     }
+
+    public function getAirlineSeat(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'airline' => 'required',
+            'trip_type' => 'required',
+            'origin' => 'required',
+            'destination' => 'required',
+            'depart_date' => 'required',
+            'adult' => 'required',
+            'child' => 'required',
+            'infant' => 'required',
+            'depart_reference' => 'required',
+            'contact_title' => 'required',
+            'contact_first_name' => 'required',
+            'contact_last_name' => 'required',
+            'contact_country_code_phone' => 'required',
+            'contact_area_code_phone' => 'required',
+            'contact_remaining_phone_no' => 'required',
+            'pax_details' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $userid=$this->username;
+            $token=$this->checkLoginUser();
+            $trip_type=$request->trip_type;
+            $airline=$request->airline;
+            $origin=$request->origin;
+            $destination=$request->destination;
+            $depart_date=$request->depart_date;
+            $return_date=$request->return_date;
+            $adult=$request->adult;
+            $child=$request->child;
+            $infant=$request->infant;
+            $depart_reference=$request->depart_reference;
+            $return_reference=$request->return_reference;
+            if(null !== $request->airline_access_code){
+                $airline_access_code=$request->airline_access_code;
+            }else{
+                $airline_access_code=0;
+            }
+
+            $pax_details=$request->pax_details;
+            foreach ($pax_details as $key => $value) {
+
+                $pax_data[$key]=[
+                    "IDNumber" => $value['id_number'] ,
+                    "title" => $value['title'] ,
+                    "firstName" => $value['first_name'] ,
+                    "lastName" => $value['last_name'] ,
+                    "birthDate" => $value['birth_date'] ,
+                    "gender" => $value['gender'] ,
+                    "nationality" => $value['nationality'] ,
+                    "birthCountry" => $value['birth_country'] ,
+                    "parent" => $value['parent'] ,
+                    "type"=> $value['type'] ,
+                ];
+                if($value['passport_number']){
+                    $pax_data[$key]['passportNumber'] = $value['passport_number'] ;
+                    $pax_data[$key]['passportIssuedCountry'] = $value['passport_issued_country'] ;
+                    $pax_data[$key]['passportIssuedDate'] = $value['passport_issued_date'] ;
+                    $pax_data[$key]['passportExpiredDate'] = $value['passport_expired_date'] ;
+                }
+            }
+            try {
+                $body=[
+                    'userID'=>$userid,
+                    'accessToken'=>$token,
+                    'airlineID'=>$airline,
+                    'tripType'=>$trip_type,
+                    'origin'=>$origin,
+                    'destination'=>$destination,
+                    'departDate'=>$depart_date,
+                    'returnDate'=>$return_date,
+                    'paxAdult'=>$adult,
+                    'paxChild'=>$child,
+                    'paxInfant'=>$infant,
+                    'airlineAccessCode'=>$airline_access_code,
+                    'schDepart'=>$depart_reference,
+                    'schReturn'=>$return_reference,
+                    'contactTitle' => $request->contact_title,
+                    'contactFirstName' => $request->contact_first_name,
+                    'contactLastName' => $request->contact_last_name,
+                    'contactCountryCodePhone' => $request->contact_country_code_phone,
+                    'contactAreaCodePhone' => $request->contact_area_code_phone,
+                    'contactRemainingPhoneNo' => $request->contact_remaining_phone_no,
+                    'insurance' => $request->insurance,
+                    'paxDetails' => $pax_data 
+                ];
+                $response=$this->client->request(
+                    'POST',
+                    'airline/seat',
+                    [
+                        'form_params' => $body,
+                        'on_stats' => function (TransferStats $stats) use (&$url) {
+                            $url = $stats->getEffectiveUri();
+                        }
+                    ]  
+                );
+
+                $bodyresponse=json_decode($response->getBody()->getContents());
+
+
+                DarmawisataRequest::insert(
+                    [
+                        'request'=>json_encode($body),
+                        'response'=>json_encode($bodyresponse),
+                        'status'=>$bodyresponse->status,
+                        'url'=>$url,
+                        'response_code'=>$response->getStatusCode()
+                    ]
+                );
+                if($bodyresponse->status=="FAILED"){
+                    if($bodyresponse->respMessage=="member authentication failed"){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+                    }else if($bodyresponse->respMessage=="airline access code is empty or not valid"){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Code Wrong!','data'=> $bodyresponse->airlineAccessCode]), 401);;
+                    }
+                }else{
+                    
+                    
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
+                }
+            }catch(RequestException $e) {
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+            }
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
+        }
+    }
 }
