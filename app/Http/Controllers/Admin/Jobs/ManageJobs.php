@@ -18,6 +18,7 @@ use App\Models\JobVacancy;
 use App\Models\City;
 use App\Models\User;
 use App\Models\Company;
+use App\Models\UserNotification;
 
 
 class ManageJobs extends Controller
@@ -138,8 +139,9 @@ class ManageJobs extends Controller
         }
 
         foreach ($token as $key => $value) {
-            NotificationController::sendPush($value, "Job Posting Approved", $post." in ".$company['title']. " is approved", "Job", "");
+            NotificationController::sendPush($value, "Job Posting Approved", $company['title']." in ".$user_id['name']. " is approved", "Job", "");
         }
+
                          
         return Response()->json($postupdate);
     }
@@ -160,7 +162,7 @@ class ManageJobs extends Controller
         ]);
 
         $company = JobVacancy::select('id_company', 'title')->where('id', $postId)->first();
-        $user_id = Company::select('id_user')->where('id', $company['id_company'])->first();
+        $user_id = Company::select('id_user', 'name')->where('id', $company['id_company'])->first();
 
         $token = [];
         $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $user_id['id_user'])->get();
@@ -170,7 +172,7 @@ class ManageJobs extends Controller
         }
 
         foreach ($token as $key => $value) {
-            NotificationController::sendPush($value, "Job Posting Rejected", $post." in ".$company['title']. " is rejected. Please contact admin for more details.", "Job", "");
+            NotificationController::sendPush($value, "Job Posting Rejected", $company['title']." in ".$user_id['name']. " is rejected. Please contact admin for more details.", "Job", "");
         }
                          
         return Response()->json($postupdate);
@@ -202,7 +204,7 @@ class ManageJobs extends Controller
         }
 
         foreach ($token as $key => $value) {
-            NotificationController::sendPush($value, "Job Posting Closed", $post." in ".$company['title']. " has been closed by admin.", "Job", "");
+            NotificationController::sendPush($value, "Job Posting Closed", $company['title']." in ".$user_id['name']. " has been closed by admin.", "Job", "");
         }
                          
         return Response()->json($postupdate);
