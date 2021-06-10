@@ -127,7 +127,7 @@ class ManageJobs extends Controller
            'message' => 'Admin approved a job vacancy titled '.$post
         ]);
 
-        $company = JobVacancy::select('id_company', 'name')->where('id', $postId)->first();
+        $company = JobVacancy::select('id_company', 'title')->where('id', $postId)->first();
         $user_id = Company::select('id_user')->where('id', $company['id_company'])->first();
 
         $token = [];
@@ -138,7 +138,7 @@ class ManageJobs extends Controller
         }
 
         foreach ($token as $key => $value) {
-            NotificationController::sendPush($value, "Job Posting Approved", $post." in ".$company['name']. " is approved", "Job", "");
+            NotificationController::sendPush($value, "Job Posting Approved", $post." in ".$company['title']. " is approved", "Job", "");
         }
                          
         return Response()->json($postupdate);
@@ -159,7 +159,7 @@ class ManageJobs extends Controller
            'message' => 'Admin blocked a job vacancy titled '.$post
         ]);
 
-        $company = JobVacancy::select('id_company', 'name')->where('id', $postId)->first();
+        $company = JobVacancy::select('id_company', 'title')->where('id', $postId)->first();
         $user_id = Company::select('id_user')->where('id', $company['id_company'])->first();
 
         $token = [];
@@ -170,7 +170,7 @@ class ManageJobs extends Controller
         }
 
         foreach ($token as $key => $value) {
-            NotificationController::sendPush($value, "Job Posting Rejected", $post." in ".$company['name']. " is rejected. Please contact admin for more details.", "Job", "");
+            NotificationController::sendPush($value, "Job Posting Rejected", $post." in ".$company['title']. " is rejected. Please contact admin for more details.", "Job", "");
         }
                          
         return Response()->json($postupdate);
@@ -191,7 +191,7 @@ class ManageJobs extends Controller
            'message' => 'Admin closed a job vacancy titled '.$post
         ]);
 
-        $company = JobVacancy::select('id_company', 'name')->where('id', $postId)->first();
+        $company = JobVacancy::select('id_company', 'title')->where('id', $postId)->first();
         $user_id = Company::select('id_user')->where('id', $company['id_company'])->first();
 
         $token = [];
@@ -202,7 +202,7 @@ class ManageJobs extends Controller
         }
 
         foreach ($token as $key => $value) {
-            NotificationController::sendPush($value, "Job Posting Closed", $post." in ".$company['name']. " has been closed by admin.", "Job", "");
+            NotificationController::sendPush($value, "Job Posting Closed", $post." in ".$company['title']. " has been closed by admin.", "Job", "");
         }
                          
         return Response()->json($postupdate);
