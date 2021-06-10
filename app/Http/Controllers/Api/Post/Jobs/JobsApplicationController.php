@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Api\Post\Jobs;
 
-use App\Models\JobVacancy;
-use App\Models\JobApplicant;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -12,10 +10,13 @@ use App\Http\Resources\JobVacancy as JobVacancyResource;
 use App\Http\Resources\JobApplication as JobApplicationResource;
 use App\Http\Resources\JobApplicant as JobApplicantResource;
 
-
+use App\Models\PersonalAccessToken;
+use App\Models\JobVacancy;
+use App\Models\JobApplicant;
 use App\Models\UserDocs;
 use App\Models\Company;
 use App\Models\UserLogs;
+use App\Models\User;
 
 class JobsApplicationController extends Controller
 {
@@ -57,6 +58,8 @@ class JobsApplicationController extends Controller
                                'id_user_activity' => 18,
                                'message' => 'User sent job application to job vacancy titled '.$jobvacancy->title
                             ]);
+
+                        //
 
                         return  response()->json(new ValueMessage(['value'=>1,'message'=>'Post Jobs Application Success!','data'=>  ""]), 200);;
 
