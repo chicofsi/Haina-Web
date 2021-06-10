@@ -198,28 +198,28 @@ class JobsVacancyController extends Controller
                         foreach ($token as $key => $value) {
                             NotificationController::sendPush($value, "Interview Request Scheduled", "Interview inviation for ".$jobvacancy['title']." in ".$company['name']. ".", "Job", "");
                         }
-                        $notif_list = ['id_category' => 1, 'id_user' => $user_id, 'message' => 'Interview inviation for '.$jobvacancy['title'].' in '.$company['name'].'.'];
+                        $notif_list = ['id_category' => 1, 'id_user' => $user_id, 'title' => 'Interview Request Scheduled','body' => 'Interview inviation for '.$jobvacancy['title'].' in '.$company['name'].'.'];
                         UserNotification::create($notif_list);
                     }
                     else if($request->status == "accepted"){
                         foreach ($token as $key => $value) {
                             NotificationController::sendPush($value, "Job Application Accepted", "Your application for ".$jobvacancy['title']."is accepted by".$company['name'].".", "Job", "");
                         }
-                        $notif_list = ['id_category' => 1, 'id_user' => $user_id, 'message' => 'Your application for '.$jobvacancy['title'].' in '.$company['name'].'is accepted.'];
+                        $notif_list = ['id_category' => 1, 'id_user' => $user_id, 'title' => 'Job Application Accepted', 'body' => 'Your application for '.$jobvacancy['title'].' in '.$company['name'].'is accepted.'];
                         UserNotification::create($notif_list);
                     }
                     else if($request->status == "declined"){
                         foreach ($token as $key => $value) {
                             NotificationController::sendPush($value, "Job Application Rejected", "Your application for ".$jobvacancy['title']."is rejected by".$company['name'].".", "Job", "");
                         }
-                        $notif_list = ['id_category' => 1, 'id_user' => $user_id, 'message' => 'Your application for '.$jobvacancy['title'].' in '.$company['name'].'is rejected.'];
+                        $notif_list = ['id_category' => 1, 'id_user' => $user_id, 'title' => 'Job Application Rejected', 'body' => 'Your application for '.$jobvacancy['title'].' in '.$company['name'].'is rejected.'];
                         UserNotification::create($notif_list);
                     }
                     else if($request->status == "shortlisted"){
                         foreach ($token as $key => $value) {
                             NotificationController::sendPush($value, "Application Shortlisted", "Your application for ".$jobvacancy['title']."is shortlisted by".$company['name'].".", "Job", "");
                         }
-                        $notif_list = ['id_category' => 1, 'id_user' => $user_id, 'message' => 'Your application for '.$jobvacancy['title'].' in '.$company['name'].'is shorlisted.'];
+                        $notif_list = ['id_category' => 1, 'id_user' => $user_id, 'title' => 'Application Shortlisted','body' => 'Your application for '.$jobvacancy['title'].' in '.$company['name'].'is shorlisted.'];
                         UserNotification::create($notif_list);
                     }
 

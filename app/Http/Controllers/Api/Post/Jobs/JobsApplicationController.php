@@ -74,7 +74,7 @@ class JobsApplicationController extends Controller
                         foreach($token as $key => $value) {
                             NotificationController::sendPush($value, "New Job Applicant", "A new applicant for ".$jobvacancy['title'], "Job", ""); 
                         }
-                        $notif_list = ['id_category' => 2, 'id_user' => $company_user['id_user'], 'message' => 'A new applicant for '.$jobvacancy['title'].'.'];
+                        $notif_list = ['id_category' => 2, 'id_user' => $company_user['id_user'], 'title' => 'New Job Applicant', 'body' => 'A new applicant for '.$jobvacancy['title'].'.'];
                         UserNotification::create($notif_list);
 
                         return  response()->json(new ValueMessage(['value'=>1,'message'=>'Post Jobs Application Success!','data'=>  ""]), 200);;
