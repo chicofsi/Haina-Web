@@ -215,6 +215,13 @@ class JobsVacancyController extends Controller
                         $notif_list = ['id_category' => 1, 'id_user' => $user_id, 'message' => 'Your application for '.$jobvacancy['title'].' in '.$company['name'].'is rejected.'];
                         UserNotification::create($notif_list);
                     }
+                    else if($request->status == "shortlisted"){
+                        foreach ($token as $key => $value) {
+                            NotificationController::sendPush($value, "Application Shortlisted", "Your application for ".$jobvacancy['title']."is shortlisted by".$company['name'].".", "Job", "");
+                        }
+                        $notif_list = ['id_category' => 1, 'id_user' => $user_id, 'message' => 'Your application for '.$jobvacancy['title'].' in '.$company['name'].'is shorlisted.'];
+                        UserNotification::create($notif_list);
+                    }
 
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Job Application Status Updated!','data'=>  '']), 200);
