@@ -66,7 +66,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('vacancy/getskill'  , [JobsSkillController::class, 'getJobsSkill']);
 		Route::post('vacancy/removeskill'  , [JobsSkillController::class, 'removeJobsSkill']);
 
-		Route::post('jobs/check'  , [JobsApplicationController::class, 'checkApplied']);
+		Route::post('check'  , [JobsApplicationController::class, 'checkApplied']);
 
 	});
 
