@@ -10,6 +10,8 @@ use App\Http\Resources\JobVacancy as JobVacancyResource;
 use App\Http\Resources\JobApplication as JobApplicationResource;
 use App\Http\Resources\JobApplicant as JobApplicantResource;
 
+use App\Http\Controllers\Api\Notification\NotificationController;
+
 use App\Models\PersonalAccessToken;
 use App\Models\JobVacancy;
 use App\Models\JobApplicant;
@@ -60,6 +62,20 @@ class JobsApplicationController extends Controller
                             ]);
 
                         //
+                        $company_user = Company::where('id', $jobvacancy['id_company'])->first();
+
+                        $token = [];
+                        $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $company_user['id_user'])->get();
+
+                        foreach($usertoken as $key => $value){
+                            array_push($token, $value->name); 
+                        }
+
+                        foreach($token as $key => $value) {
+                            NotificationController::sendPush($value, "New Job Applicant", "A new applicant for ".$jobvacancy['title'], "Job", ""); 
+                        }
+                        $notif_list = ['id_category' => 2, 'id_user' => $company_user['id_user'], 'title' => 'New Job Applicant', 'body' => 'A new applicant for '.$jobvacancy['title'].'.'];
+                        UserNotification::create($notif_list);
 
                         return  response()->json(new ValueMessage(['value'=>1,'message'=>'Post Jobs Application Success!','data'=>  ""]), 200);;
 
