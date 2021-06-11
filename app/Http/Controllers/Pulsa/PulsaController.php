@@ -504,7 +504,6 @@ class PulsaController extends Controller
 
                 $bill = json_decode($bodyresponse);
                 $bill->product_code = $request->product_code;
-
                 if(isset($bill->data->bill_period)){
                     $bill->data->bill_date = $bill->data->bill_period;
                     unset($bill->data->bill_period);
