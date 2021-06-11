@@ -296,7 +296,7 @@ class TicketController extends Controller
                     if($bodyresponse->respMessage=="member authentication failed"){
                         return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
                     }else if($bodyresponse->respMessage=="airline access code is empty or not valid"){
-                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Code Wrong!','data'=> $bodyresponse->airlineAccessCode]), 401);;
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Code Wrong!','data'=> $bodyresponse->airlineAccessCode]), 403);;
                     }
                 }else{
                     $data=[

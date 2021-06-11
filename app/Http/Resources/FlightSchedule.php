@@ -19,6 +19,12 @@ class FlightSchedule extends JsonResource
         $airline=Airlines::where('airline_code',$this->airlineID)->first();
         foreach ($this->segment as $key => $value) {
             $flightdetail[$key]=$value;
+            $flightTime[$key]=[
+                "origin" => $value->flightDetail[0]->fdOrigin,
+                "destination" => $value->flightDetail[0]->fdDestination,
+                "depart_time"=>$value->flightDetail[0]->fdDepartTime,
+                "arrival_time"=>$value->flightDetail[0]->fdArrivalTime
+            ];
         }
 
         return [
@@ -29,6 +35,7 @@ class FlightSchedule extends JsonResource
             'origin' => $this->jiOrigin,
             'destination' => $this->jiDestination,
             'flight_detail' => $flightdetail,
+            'flight_time' => $flightTime,
             'price' => $this->sumPrice,
             'journey_references' => $this->journeyReference
         ];
