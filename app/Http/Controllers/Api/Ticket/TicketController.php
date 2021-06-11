@@ -744,9 +744,9 @@ class TicketController extends Controller
                     $pax_data[$key]['passportIssuedDate'] = $value['passport_issued_date'] ;
                     $pax_data[$key]['passportExpiredDate'] = $value['passport_expired_date'] ;
                 }
-                foreach ($value['addons'] as $k => $v) {
-                    $pax_data[$key]['addOns'][$k]=
-                }
+                // foreach ($value['addons'] as $k => $v) {
+                //     $pax_data[$key]['addOns'][$k]=
+                // }
             }
             try {
                 $body=[
