@@ -37,7 +37,7 @@ class FlightSchedule extends JsonResource
             'flight_detail' => $flightdetail,
             'flight_time' => $flightTime,
             'price' => $this->sumPrice,
-            'journey_references' => $this->journeyReference
+            'journey_references' => $this->journeyReference 
         ];
     }
 }

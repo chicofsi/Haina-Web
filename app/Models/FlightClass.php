@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Airlines extends Model
+class FlightClass extends Model
 {
     use HasFactory;
     /**
@@ -13,16 +13,15 @@ class Airlines extends Model
      *
      * @var array
      */
-    protected $table = 'airlines';
-    protected $primaryKey = null;
-    public $incrementing = false;
+    protected $table = 'flight_class';
+
     protected $fillable = [
-        'airline_code', 'airline_name', 'image'
+        'name', 'code'
     ];
 
     public $timestamps = false;
 
     public function flightbookingdetails(){
-     return $this->hasMany('App\Models\FlightBookingDetails','airline_code','airline_code');
+     return $this->hasMany('App\Models\FlightBookingDetails','id_class','id');
     }
 }

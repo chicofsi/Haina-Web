@@ -20,4 +20,12 @@ class Airports extends Model
 
     public $timestamps = false;
 
+
+    public function depart(){
+     return $this->hasMany('App\Models\FlightBookingDetails','depart_from','iata');
+    }
+
+    public function arrival(){
+     return $this->hasMany('App\Models\FlightBookingDetails','depart_to','iata');
+    }
 }
