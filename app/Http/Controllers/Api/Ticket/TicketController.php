@@ -247,7 +247,6 @@ class TicketController extends Controller
             'origin' => 'required',
             'destination' => 'required',
             'depart_date' => 'required',
-            'return_date' => 'required',
             'adult' => 'required',
             'child' => 'required',
             'infant' => 'required'
@@ -325,18 +324,20 @@ class TicketController extends Controller
                         return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Code Wrong!','data'=> $bodyresponse->airlineAccessCode]), 403);
                     }
                 }else{
-
-                    FlightBookingSession::create([
+                    $body=[
                         'id_user' => Auth::id(),
                         'trip_type' => $trip_type,
                         'origin' => $origin,
                         'destination' => $destination,
                         'depart_date'=>$depart_date,
-                        'return_date'=>$return_date,
                         'pax_adult'=>$adult,
                         'pax_child'=>$child,
                         'pax_infant'=>$infant
-                    ]);
+                    ];
+                    if($return_date){
+                        $body['return_date']=$return_date;
+                    }
+                    FlightBookingSession::create($body);
 
                     $data=[
                         "total_airline"=>$bodyresponse->totalAirline
@@ -376,8 +377,8 @@ class TicketController extends Controller
         }else{
             $validator = Validator::make($request->all(), [
                 'airline' => 'required',
-                'depart_reference' =>'required',
-                'return_reference' =>'required'
+                'depart' =>'required',
+                'return' =>'required'
             ]);
 
             if ($validator->fails()) {
@@ -391,11 +392,11 @@ class TicketController extends Controller
                 $destination=$bookingsession->destination;
                 $depart_date=$bookingsession->depart_date;
                 $return_date=$bookingsession->return_date;
-                $adult=$bookingsession->adult;
-                $child=$bookingsession->child;
-                $infant=$bookingsession->infant;
-                $depart_reference=$request->depart_reference;
-                $return_reference=$request->return_reference;
+                $adult=$bookingsession->pax_adult;
+                $child=$bookingsession->pax_child;
+                $infant=$bookingsession->pax_infant;
+                $depart_reference=$request->depart['journey_references'];
+                $return_reference=$request->return['journey_references'];
                 
 
                 try {
@@ -464,180 +465,187 @@ class TicketController extends Controller
 
     public function getAirlineAddons(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'airline' => 'required',
-            'trip_type' => 'required',
-            'origin' => 'required',
-            'destination' => 'required',
-            'depart_date' => 'required',
-            'adult' => 'required',
-            'child' => 'required',
-            'infant' => 'required',
-            'depart_reference' => 'required',
-            'contact_title' => 'required',
-            'contact_first_name' => 'required',
-            'contact_last_name' => 'required',
-            'contact_country_code_phone' => 'required',
-            'contact_area_code_phone' => 'required',
-            'contact_remaining_phone_no' => 'required',
-            'pax_details' => 'required'
-        ]);
+        $bookingsession=$this->checkSession(Auth::id());
+        if(! $bookingsession){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Search Flight Schedule First!','data'=> '']), 401);
+        }else if($bookingsession->depart_reference==null){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Search Price First!','data'=> '']), 401);
+        }
+        else{
+            $validator = Validator::make($request->all(), [
+                'contact_title' => 'required',
+                'contact_first_name' => 'required',
+                'contact_last_name' => 'required',
+                'contact_country_code_phone' => 'required',
+                'contact_area_code_phone' => 'required',
+                'contact_remaining_phone_no' => 'required',
+                'pax_details' => 'required'
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 400);
-        }else{
-            $userid=$this->username;
-            $token=$this->checkLoginUser();
-            $trip_type=$request->trip_type;
-            $airline=$request->airline;
-            $origin=$request->origin;
-            $destination=$request->destination;
-            $depart_date=$request->depart_date;
-            $return_date=$request->return_date;
-            $adult=$request->adult;
-            $child=$request->child;
-            $infant=$request->infant;
-            $depart_reference=$request->depart_reference;
-            $return_reference=$request->return_reference;
-            if(null !== $request->airline_access_code){
-                $airline_access_code=$request->airline_access_code;
+            if ($validator->fails()) {
+                return response()->json(['error'=>$validator->errors()], 400);
             }else{
-                $airline_access_code=0;
-            }
+                $userid=$this->username;
+                $token=$this->checkLoginUser();
+                $trip_type=$bookingsession->trip_type;
+                $airline=$bookingsession->airline_id;
+                $origin=$bookingsession->origin;
+                $destination=$bookingsession->destination;
+                $depart_date=$bookingsession->depart_date;
+                $return_date=$bookingsession->return_date;
+                $adult=$bookingsession->pax_adult;
+                $child=$bookingsession->pax_child;
+                $infant=$bookingsession->pax_infant;
+                $depart_reference=$bookingsession->depart_reference;
+                $return_reference=$bookingsession->return_reference;
 
-            $pax_details=$request->pax_details;
-            foreach ($pax_details as $key => $value) {
+                $pax_details=$request->pax_details;
+                foreach ($pax_details as $key => $value) {
 
-                $pax_data[$key]=[
-                    "IDNumber" => $value['id_number'] ,
-                    "title" => $value['title'] ,
-                    "firstName" => $value['first_name'] ,
-                    "lastName" => $value['last_name'] ,
-                    "birthDate" => $value['birth_date'] ,
-                    "gender" => $value['gender'] ,
-                    "nationality" => $value['nationality'] ,
-                    "birthCountry" => $value['birth_country'] ,
-                    "parent" => $value['parent'] ,
-                    "type"=> $value['type'] ,
-                ];
-                if($value['passport_number']){
-                    $pax_data[$key]['passportNumber'] = $value['passport_number'] ;
-                    $pax_data[$key]['passportIssuedCountry'] = $value['passport_issued_country'] ;
-                    $pax_data[$key]['passportIssuedDate'] = $value['passport_issued_date'] ;
-                    $pax_data[$key]['passportExpiredDate'] = $value['passport_expired_date'] ;
-                }
-            }
-            try {
-                $body=[
-                    'userID'=>$userid,
-                    'accessToken'=>$token,
-                    'airlineID'=>$airline,
-                    'tripType'=>$trip_type,
-                    'origin'=>$origin,
-                    'destination'=>$destination,
-                    'departDate'=>$depart_date,
-                    'returnDate'=>$return_date,
-                    'paxAdult'=>$adult,
-                    'paxChild'=>$child,
-                    'paxInfant'=>$infant,
-                    'airlineAccessCode'=>$airline_access_code,
-                    'schDepart'=>$depart_reference,
-                    'schReturn'=>$return_reference,
-                    'contactTitle' => $request->contact_title,
-                    'contactFirstName' => $request->contact_first_name,
-                    'contactLastName' => $request->contact_last_name,
-                    'contactCountryCodePhone' => $request->contact_country_code_phone,
-                    'contactAreaCodePhone' => $request->contact_area_code_phone,
-                    'contactRemainingPhoneNo' => $request->contact_remaining_phone_no,
-                    'insurance' => $request->insurance,
-                    'paxDetails' => $pax_data 
-                ];
-                $response=$this->client->request(
-                    'POST',
-                    'airline/baggageandmeal',
-                    [
-                        'form_params' => $body,
-                        'on_stats' => function (TransferStats $stats) use (&$url) {
-                            $url = $stats->getEffectiveUri();
-                        }
-                    ]  
-                );
-
-                $bodyresponse=json_decode($response->getBody()->getContents());
-
-
-                DarmawisataRequest::insert(
-                    [
-                        'request'=>json_encode($body),
-                        'response'=>json_encode($bodyresponse),
-                        'status'=>$bodyresponse->status,
-                        'url'=>$url,
-                        'response_code'=>$response->getStatusCode()
-                    ]
-                );
-                if($bodyresponse->status=="FAILED"){
-                    if($bodyresponse->respMessage=="member authentication failed"){
-                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
-                    }else if($bodyresponse->respMessage=="airline access code is empty or not valid"){
-                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Code Wrong!','data'=> $bodyresponse->airlineAccessCode]), 401);;
+                    $pax_data[$key]=[
+                        "IDNumber" => $value['id_number'] ,
+                        "title" => $value['title'] ,
+                        "firstName" => $value['first_name'] ,
+                        "lastName" => $value['last_name'] ,
+                        "birthDate" => $value['birth_date'] ,
+                        "gender" => $value['gender'] ,
+                        "nationality" => $value['nationality'] ,
+                        "birthCountry" => $value['birth_country'] ,
+                        "parent" => $value['parent'] ,
+                        "type"=> $value['type'] ,
+                    ];
+                    if($value['passport_number']){
+                        $pax_data[$key]['passportNumber'] = $value['passport_number'] ;
+                        $pax_data[$key]['passportIssuedCountry'] = $value['passport_issued_country'] ;
+                        $pax_data[$key]['passportIssuedDate'] = $value['passport_issued_date'] ;
+                        $pax_data[$key]['passportExpiredDate'] = $value['passport_expired_date'] ;
                     }
-                }else{
-                    
-                    
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
                 }
-            }catch(RequestException $e) {
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+                try {
+                    $body=[
+                        'userID'=>$userid,
+                        'accessToken'=>$token,
+                        'airlineID'=>$airline,
+                        'tripType'=>$trip_type,
+                        'origin'=>$origin,
+                        'destination'=>$destination,
+                        'departDate'=>$depart_date,
+                        'returnDate'=>$return_date,
+                        'paxAdult'=>$adult,
+                        'paxChild'=>$child,
+                        'paxInfant'=>$infant,
+                        'schDepart'=>$depart_reference,
+                        'schReturn'=>$return_reference,
+                        'contactTitle' => $request->contact_title,
+                        'contactFirstName' => $request->contact_first_name,
+                        'contactLastName' => $request->contact_last_name,
+                        'contactCountryCodePhone' => $request->contact_country_code_phone,
+                        'contactAreaCodePhone' => $request->contact_area_code_phone,
+                        'contactRemainingPhoneNo' => $request->contact_remaining_phone_no,
+                        'insurance' => $request->insurance,
+                        'paxDetails' => $pax_data 
+                    ];
+                    $response=$this->client->request(
+                        'POST',
+                        'airline/baggageandmeal',
+                        [
+                            'form_params' => $body,
+                            'on_stats' => function (TransferStats $stats) use (&$url) {
+                                $url = $stats->getEffectiveUri();
+                            }
+                        ]  
+                    );
+
+                    $bodyresponse=json_decode($response->getBody()->getContents());
+
+
+                    DarmawisataRequest::insert(
+                        [
+                            'request'=>json_encode($body),
+                            'response'=>json_encode($bodyresponse),
+                            'status'=>$bodyresponse->status,
+                            'url'=>$url,
+                            'response_code'=>$response->getStatusCode()
+                        ]
+                    );
+                    if($bodyresponse->status=="FAILED"){
+                        if($bodyresponse->respMessage=="member authentication failed"){
+                            return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+                        }else if($bodyresponse->respMessage=="airline access code is empty or not valid"){
+                            return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Code Wrong!','data'=> $bodyresponse->airlineAccessCode]), 401);;
+                        }
+                    }else{
+                        $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->delete();
+                        foreach ($pax_details as $key => $value) {
+                            $pax_data=[
+                                'id_flight_booking_session' => $bookingsession->id,
+                                "id_number" => $value['id_number'] ,
+                                "title" => $value['title'] ,
+                                "first_name" => $value['first_name'] ,
+                                "last_name" => $value['last_name'] ,
+                                "birth_date" => $value['birth_date'] ,
+                                "gender" => $value['gender'] ,
+                                "nationality" => $value['nationality'] ,
+                                "birth_country" => $value['birth_country'] ,
+                                "parent" => $value['parent'] ,
+                                "type"=> $value['type'] ,
+                            ];
+                            if($value['passport_number']){
+                                $pax_data['passport_number'] = $value['passport_number'] ;
+                                $pax_data['passport_issued_country'] = $value['passport_issued_country'] ;
+                                $pax_data['passport_issued_date'] = $value['passport_issued_date'] ;
+                                $pax_data['passport_expired_date'] = $value['passport_expired_date'] ;
+                            }
+                            $passangersession=FlightPassengerSession::create($pax_data);
+                        }
+                        
+                        $bookingsession=FlightBookingSession::where('id_user',Auth::id())->update([
+                            'contact_title' => $request->contact_title,
+                            'contact_first_name' => $request->contact_first_name,
+                            'contact_last_name' => $request->contact_last_name,
+                            'contact_country_code_phone' => $request->contact_country_code_phone,
+                            'contact_area_code' => $request->contact_area_code_phone,
+                            'contact_remaining_phone_no' => $request->contact_remaining_phone_no,
+                            'insurance' => $request->insurance,
+                        ]);
+                        
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
+                    }
+                }catch(RequestException $e) {
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+                }
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
             }
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
         }
     }
 
     public function getAirlineSeat(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'airline' => 'required',
-            'trip_type' => 'required',
-            'origin' => 'required',
-            'destination' => 'required',
-            'depart_date' => 'required',
-            'adult' => 'required',
-            'child' => 'required',
-            'infant' => 'required',
-            'depart_reference' => 'required',
-            'contact_title' => 'required',
-            'contact_first_name' => 'required',
-            'contact_last_name' => 'required',
-            'contact_country_code_phone' => 'required',
-            'contact_area_code_phone' => 'required',
-            'contact_remaining_phone_no' => 'required',
-            'pax_details' => 'required'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 400);
-        }else{
+        $bookingsession=$this->checkSession(Auth::id());
+        $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->get();
+        if(! $bookingsession){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Search Flight Schedule First!','data'=> '']), 401);
+        }else if($bookingsession->depart_reference==null){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Search Price First!','data'=> '']), 401);
+        }else if ($passangersession->isEmpty()) {
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Search Addons First!','data'=> '']), 401);
+        }
+        else{
             $userid=$this->username;
             $token=$this->checkLoginUser();
-            $trip_type=$request->trip_type;
-            $airline=$request->airline;
-            $origin=$request->origin;
-            $destination=$request->destination;
-            $depart_date=$request->depart_date;
-            $return_date=$request->return_date;
-            $adult=$request->adult;
-            $child=$request->child;
-            $infant=$request->infant;
-            $depart_reference=$request->depart_reference;
-            $return_reference=$request->return_reference;
-            if(null !== $request->airline_access_code){
-                $airline_access_code=$request->airline_access_code;
-            }else{
-                $airline_access_code=0;
-            }
+            $trip_type=$bookingsession->trip_type;
+            $airline=$bookingsession->airline_id;
+            $origin=$bookingsession->origin;
+            $destination=$bookingsession->destination;
+            $depart_date=$bookingsession->depart_date;
+            $return_date=$bookingsession->return_date;
+            $adult=$bookingsession->adult;
+            $child=$bookingsession->child;
+            $infant=$bookingsession->infant;
+            $depart_reference=$bookingsession->depart_reference;
+            $return_reference=$bookingsession->return_reference;
 
-            $pax_details=$request->pax_details;
-            foreach ($pax_details as $key => $value) {
+            foreach ($passangersession as $key => $value) {
 
                 $pax_data[$key]=[
                     "IDNumber" => $value['id_number'] ,
@@ -671,16 +679,15 @@ class TicketController extends Controller
                     'paxAdult'=>$adult,
                     'paxChild'=>$child,
                     'paxInfant'=>$infant,
-                    'airlineAccessCode'=>$airline_access_code,
                     'schDepart'=>$depart_reference,
                     'schReturn'=>$return_reference,
-                    'contactTitle' => $request->contact_title,
-                    'contactFirstName' => $request->contact_first_name,
-                    'contactLastName' => $request->contact_last_name,
-                    'contactCountryCodePhone' => $request->contact_country_code_phone,
-                    'contactAreaCodePhone' => $request->contact_area_code_phone,
-                    'contactRemainingPhoneNo' => $request->contact_remaining_phone_no,
-                    'insurance' => $request->insurance,
+                    'contactTitle' => $bookingsession->contact_title,
+                    'contactFirstName' => $bookingsession->contact_first_name,
+                    'contactLastName' => $bookingsession->contact_last_name,
+                    'contactCountryCodePhone' => $bookingsession->contact_country_code_phone,
+                    'contactAreaCodePhone' => $bookingsession->contact_area_code,
+                    'contactRemainingPhoneNo' => $bookingsession->contact_remaining_phone_no,
+                    'insurance' => $bookingsession->insurance,
                     'paxDetails' => $pax_data 
                 ];
                 $response=$this->client->request(
@@ -721,6 +728,7 @@ class TicketController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
             }
             return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
+        
         }
     }
 
