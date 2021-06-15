@@ -135,6 +135,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/test',[TicketController::class, 'testOCR']);
 		Route::post('/addons',[TicketController::class, 'getAirlineAddons']);
 		Route::post('/seat',[TicketController::class, 'getAirlineSeat']);
+		Route::post('/setaddons',[TicketController::class, 'setPassengerAddons']);
+		Route::post('/passenger',[TicketController::class, 'setPassenger']);
 
 	});
 	
