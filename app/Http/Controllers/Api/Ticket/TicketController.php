@@ -445,6 +445,33 @@ class TicketController extends Controller
                             return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Code Wrong!','data'=> $bodyresponse->airlineAccessCode]), 401);;
                         }
                     }else{
+                        foreach ($request->depart['flight_detail'] as $key => $value) {
+                            $tripdepart=FlightTripSession::create([
+                                "id_flight_booking_session" => $bookingsession->id,
+                                "type" => "depart",
+                                "airline_code" => $value->flightDetail[0]->airlineCode,
+                                "flight_number" => $value->flightDetail[0]->flightNumber,
+                                "sch_origin" => $value->flightDetail[0]->fdOrigin,
+                                "sch_destination" => $value->flightDetail[0]->fdDestination,
+                                "sch_depart_time" => $value->flightDetail[0]->fdDepartTime,
+                                "sch_arrival_time" => $value->flightDetail[0]->fdArrivalTime,
+                                "flight_class" => $value->availableDetail[0]->flightClass,
+                            ]);
+                        }
+                        foreach ($request->return['flight_detail'] as $key => $value) {
+                            $tripdepart=FlightTripSession::create([
+                                "id_flight_booking_session" => $bookingsession->id,
+                                "type" => "return",
+                                "airline_code" => $value->flightDetail[0]->airlineCode,
+                                "flight_number" => $value->flightDetail[0]->flightNumber,
+                                "sch_origin" => $value->flightDetail[0]->fdOrigin,
+                                "sch_destination" => $value->flightDetail[0]->fdDestination,
+                                "sch_depart_time" => $value->flightDetail[0]->fdDepartTime,
+                                "sch_arrival_time" => $value->flightDetail[0]->fdArrivalTime,
+                                "flight_class" => $value->availableDetail[0]->flightClass,
+                            ]);
+                        }
+                        
                         $bookingsession=FlightBookingSession::where('id_user',Auth::id())->update([
                             'airline_id'=>$airline,
                             'depart_reference'=>$depart_reference,
