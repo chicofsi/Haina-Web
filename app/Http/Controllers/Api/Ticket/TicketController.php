@@ -240,6 +240,7 @@ class TicketController extends Controller
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Airline Routes Success!','data'=> $airports]), 200);
     }
 
+    //step 1
     public function getAirlineSchedule(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -360,6 +361,8 @@ class TicketController extends Controller
             return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
         }
     }
+
+    //step 2
     public function checkSession($id_user)
     {
         $bookingsession=FlightBookingSession::where('id_user',$id_user)->first();
@@ -369,6 +372,8 @@ class TicketController extends Controller
             return false;
         }
     }
+
+    //step 3
     public function getAirlinePrice(Request $request)
     {
         $bookingsession=$this->checkSession(Auth::id());
@@ -500,10 +505,71 @@ class TicketController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
             }
         }
-        
     }
 
+    //step 4
+    public function setPassenger(Request $request)
+    {
+        $bookingsession=$this->checkSession(Auth::id());
 
+        $validator = Validator::make($request->all(), [
+            'contact_title' => 'required',
+            'contact_first_name' => 'required',
+            'contact_last_name' => 'required',
+            'contact_country_code_phone' => 'required',
+            'contact_area_code_phone' => 'required',
+            'contact_remaining_phone_no' => 'required',
+            'pax_details' => 'required'
+        ]);
+        if(! $bookingsession){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Search Flight Schedule First!','data'=> '']), 401);
+        }else if($bookingsession->depart_reference==null){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Search Price First!','data'=> '']), 401);
+        }else{
+            if ($validator->fails()) {
+                return response()->json(['error'=>$validator->errors()], 400);
+            }else{
+                $pax_details=$request->pax_details;
+
+                $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->delete();
+                foreach ($pax_details as $key => $value) {
+                    $pax_data=[
+                        'id_flight_booking_session' => $bookingsession->id,
+                        "id_number" => $value['id_number'] ,
+                        "title" => $value['title'] ,
+                        "first_name" => $value['first_name'] ,
+                        "last_name" => $value['last_name'] ,
+                        "birth_date" => $value['birth_date'] ,
+                        "gender" => $value['gender'] ,
+                        "nationality" => $value['nationality'] ,
+                        "birth_country" => $value['birth_country'] ,
+                        "parent" => $value['parent'] ,
+                        "type"=> $value['type'] ,
+                    ];
+                    if($value['passport_number']){
+                        $pax_data['passport_number'] = $value['passport_number'] ;
+                        $pax_data['passport_issued_country'] = $value['passport_issued_country'] ;
+                        $pax_data['passport_issued_date'] = $value['passport_issued_date'] ;
+                        $pax_data['passport_expired_date'] = $value['passport_expired_date'] ;
+                    }
+                    $passangersession=FlightPassengerSession::create($pax_data);
+                }
+                $bookingsession=FlightBookingSession::where('id_user',Auth::id())->update([
+                    'contact_title' => $request->contact_title,
+                    'contact_first_name' => $request->contact_first_name,
+                    'contact_last_name' => $request->contact_last_name,
+                    'contact_country_code_phone' => $request->contact_country_code_phone,
+                    'contact_area_code' => $request->contact_area_code_phone,
+                    'contact_remaining_phone_no' => $request->contact_remaining_phone_no,
+                    'insurance' => $request->insurance,
+                ]);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Set Passenger Data Success!','data'=> '']), 200);
+
+            }
+        }
+    }
+
+    //step 5
     public function getAirlineAddons(Request $request)
     {
         $bookingsession=$this->checkSession(Auth::id());
@@ -616,6 +682,7 @@ class TicketController extends Controller
         }
     }
 
+    //step 6
     public function getAirlineSeat(Request $request)
     {
         $bookingsession=$this->checkSession(Auth::id());
@@ -726,68 +793,8 @@ class TicketController extends Controller
 
         }
     }
-    
-    public function setPassenger(Request $request)
-    {
-        $bookingsession=$this->checkSession(Auth::id());
 
-        $validator = Validator::make($request->all(), [
-            'contact_title' => 'required',
-            'contact_first_name' => 'required',
-            'contact_last_name' => 'required',
-            'contact_country_code_phone' => 'required',
-            'contact_area_code_phone' => 'required',
-            'contact_remaining_phone_no' => 'required',
-            'pax_details' => 'required'
-        ]);
-        if(! $bookingsession){
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Search Flight Schedule First!','data'=> '']), 401);
-        }else if($bookingsession->depart_reference==null){
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Search Price First!','data'=> '']), 401);
-        }else if ($passangersession->isEmpty()) {
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Search Addons First!','data'=> '']), 401);
-        }else{
-            if ($validator->fails()) {
-                return response()->json(['error'=>$validator->errors()], 400);
-            }else{
-                $pax_details=$request->pax_details;
-
-                $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->delete();
-                foreach ($pax_details as $key => $value) {
-                    $pax_data=[
-                        'id_flight_booking_session' => $bookingsession->id,
-                        "id_number" => $value['id_number'] ,
-                        "title" => $value['title'] ,
-                        "first_name" => $value['first_name'] ,
-                        "last_name" => $value['last_name'] ,
-                        "birth_date" => $value['birth_date'] ,
-                        "gender" => $value['gender'] ,
-                        "nationality" => $value['nationality'] ,
-                        "birth_country" => $value['birth_country'] ,
-                        "parent" => $value['parent'] ,
-                        "type"=> $value['type'] ,
-                    ];
-                    if($value['passport_number']){
-                        $pax_data['passport_number'] = $value['passport_number'] ;
-                        $pax_data['passport_issued_country'] = $value['passport_issued_country'] ;
-                        $pax_data['passport_issued_date'] = $value['passport_issued_date'] ;
-                        $pax_data['passport_expired_date'] = $value['passport_expired_date'] ;
-                    }
-                    $passangersession=FlightPassengerSession::create($pax_data);
-                }
-                $bookingsession=FlightBookingSession::where('id_user',Auth::id())->update([
-                    'contact_title' => $request->contact_title,
-                    'contact_first_name' => $request->contact_first_name,
-                    'contact_last_name' => $request->contact_last_name,
-                    'contact_country_code_phone' => $request->contact_country_code_phone,
-                    'contact_area_code' => $request->contact_area_code_phone,
-                    'contact_remaining_phone_no' => $request->contact_remaining_phone_no,
-                    'insurance' => $request->insurance,
-                ]);
-            }
-        }
-    }
-
+    //step 7
     public function setPassengerAddons(Request $request)
     {
         $bookingsession=$this->checkSession(Auth::id());
@@ -808,8 +815,10 @@ class TicketController extends Controller
                 return response()->json(['error'=>$validator->errors()], 400);
             }else{
                 $pax_details=$request->pax_details;
+
                 foreach ($pax_details as $key => $value) {
                     $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->where('id_number',$value['id_number'])->first();
+                    $addonssession=FlightAddonsSession::where('id_flight_passenger_session',$passangersession->id)->delete();
 
                     $pax_data[$key]=[
                         "IDNumber" => $value['id_number'],
@@ -823,23 +832,25 @@ class TicketController extends Controller
                         "parent" => $passangersession->parent,
                         "type"=> $passangersession->type,
                     ];
-                    foreach ($pax_details['trip'] as $key => $value) {
-                        $trip=FlightTripSession::where('id_flight_booking_session',$bookingsession->id)->where('sch_origin',$value->origin)->where('sch_destination',$value->destination)->first();
+                    foreach ($value['trip'] as $key => $value) {
+                        $trip=FlightTripSession::where('id_flight_booking_session',$bookingsession->id)->where('sch_origin',$value['origin'])->where('sch_destination',$value['destination'])->first();
                         $addonssession=FlightAddonsSession::create([
                             "id_flight_passenger_session" => $passangersession->id,
                             "id_flight_trip_session" => $trip->id,
-                            "baggage_string" => $value->baggage,
-                            "seat" => $value->seat,
-                            "compartment" => $value->compartment,
-                            "meals" => json_encode($value->meals)
+                            "baggage_string" => $value['baggage'],
+                            "seat" => $value['seat'],
+                            "compartment" => $value['compartment'],
+                            "meals" => json_encode($value['meals'])
                         ]);
                     }
                 }
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Set Passenger Addons Success!','data'=> '']), 200);
+
             }
         }
-
     }
 
+    //step 8
     public function setAirlineBooking(Request $request)
     {
         $bookingsession=$this->checkSession(Auth::id());

@@ -126,15 +126,14 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
 	Route::group(['prefix' => 'ticket'], function() {
 
-		Route::get('/login',[TicketController::class, 'login']);
 		Route::post('/airport',[TicketController::class, 'getAirport']);
 		Route::post('/airline',[TicketController::class, 'getAirline']);
 		Route::post('/schedule',[TicketController::class, 'getAirlineSchedule']);
 		Route::post('/price',[TicketController::class, 'getAirlinePrice']);
 		Route::post('/route',[TicketController::class, 'getRoute']);
 		Route::post('/test',[TicketController::class, 'testOCR']);
-		Route::post('/addons',[TicketController::class, 'getAirlineAddons']);
-		Route::post('/seat',[TicketController::class, 'getAirlineSeat']);
+		Route::get('/addons',[TicketController::class, 'getAirlineAddons']);
+		Route::get('/seat',[TicketController::class, 'getAirlineSeat']);
 		Route::post('/setaddons',[TicketController::class, 'setPassengerAddons']);
 		Route::post('/passenger',[TicketController::class, 'setPassenger']);
 
