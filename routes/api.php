@@ -138,6 +138,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/passenger',[TicketController::class, 'setPassenger']);
 		Route::post('/booking',[TicketController::class, 'setAirlineBooking']);
 
+		Route::get('/nationality',[TicketController::class, 'getNationality']);
+
 	});
 	
 });
