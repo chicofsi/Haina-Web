@@ -136,6 +136,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::get('/seat',[TicketController::class, 'getAirlineSeat']);
 		Route::post('/setaddons',[TicketController::class, 'setPassengerAddons']);
 		Route::post('/passenger',[TicketController::class, 'setPassenger']);
+		Route::post('/booking',[TicketController::class, 'setAirlineBooking']);
 
 	});
 	
