@@ -15,7 +15,7 @@ use App\Models\HotelDarmaBookingPaxes;
 
 use App\Http\Resources\ValueMessage;
 
-class HotelController extends Controller
+class HotelDarmaController extends Controller
 {
 
     public function __construct()
