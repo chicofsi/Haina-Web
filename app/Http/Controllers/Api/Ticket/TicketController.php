@@ -867,7 +867,7 @@ class TicketController extends Controller
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Search Price First!','data'=> '']), 401);
         }else if ($passangersession->isEmpty()) {
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Search Addons First!','data'=> '']), 401);
-        }else if($addons){
+        }else if(!isset($addons)){
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Set Passanger Addons First!','data'=> '']), 401);
         }
         else{
