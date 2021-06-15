@@ -171,6 +171,59 @@ class MidtransController extends Controller
                 ]);
             return $hotelbookingpayment;
         }
+    }else if($request->custom_field1=="Flight"){
+
+            $transaction = FlightBooking::where('order_id',$order_id)->with('flightbookingdetails')->first();
+
+            $token = [];
+            $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $transaction['id_user'])->get();
+
+            $flight_details = FlightBookingDetails::where('id_flight_book', $transaction->id)->with('depart','arrival')->first();
+            $transaction_amount = number_format($transaction['amount'], 2, ",", ".");
+
+            foreach($usertoken as $key => $value){
+                array_push($token, $value); 
+            }
+
+            $status="";
+            if($transaction_status=='settlement'){
+                $settlement_time=date("Y-m-d h:m:s",strtotime($request->settlement_time));
+                $status='PAID';
+                NotificationController::sendPush($token, "Payment successful", "Your Rp ".$transaction_amount." payment for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to." is successful", "Flight");
+            }else if($transaction_status=='pending'){
+                $settlement_time=null;
+                $status='UNPAID';
+                NotificationController::sendPush($token, "Waiting for payment", "There is a pending payment for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to.". Please finish payment in 24 hours", "Flight");
+            }else if($transaction_status=='expire'){
+                $settlement_time=null;
+                $status='CANCELLED';
+            }else if($transaction_status=='cancel'){
+                $settlement_time=null;
+                $status='CANCELLED';
+                NotificationController::sendPush($token, "Booking cancelled", "Your booking for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to." has been cancelled.", "Hotel");
+            }
+
+            $flightbooking=FlightBooking::where('order_id',$order_id)->update(['status'=>$status]);
+            $flightbooking=FlightBooking::where('order_id',$order_id)->with('flightbookingdetails')->first();
+
+            foreach ($request['va_numbers'] as $key => $value) {
+                $va_number=$value['va_number'];
+                $payment=PaymentMethod::where('name',$value['bank'])->first();
+            }
+
+            $flightbookingpayment=FlightBookingPayment::updateOrCreate(
+                [
+                    'booking_id' => $flightbooking->id
+                ],
+                [
+                    'midtrans_id' => $transaction_id,
+                    'payment_method_id' => $payment->id,
+                    'settlement_time' => $settlement_time,
+                    'payment_status' => $transaction_status,
+                    'va_number' => $va_number
+                ]);
+            return $flightbookingpayment;
+        }
 
     }
 
