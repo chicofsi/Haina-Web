@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\Hotel;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\TransferStats;
@@ -124,7 +126,7 @@ class HotelDarmaController extends Controller
 
     public function deleteSession($id_user)
     {
-        $hotel_booking=HotelDarmaBookingSession::where('id_user',$id_user)->get();
+        $hotel_booking=HotelDarmaBookingSession::where('user_id',$id_user)->get();
         foreach ($hotel_booking as $key => $value) {
 
             $room_req = HotelDarmaBookingRoomReq::where('id_booking_session', $value->id)->get();
@@ -139,7 +141,7 @@ class HotelDarmaController extends Controller
 
 
         }
-        $hotel_booking=HotelDarmaBookingSession::where('id_user',$id_user)->delete();    
+        $hotel_booking=HotelDarmaBookingSession::where('user_id',$id_user)->delete();    
     }
 
     public function getCountry(Request $request){
@@ -246,7 +248,7 @@ class HotelDarmaController extends Controller
         try {
             $response=$this->client->request(
                 'POST',
-                'Hotel/Passport',
+                'Hotel/City5',
                 [
                     'form_params' => $body,
                     'on_stats' => function (TransferStats $stats) use (&$url) {
@@ -333,8 +335,7 @@ class HotelDarmaController extends Controller
             'country_id' => 'required',
             'city_id' => 'required',
             'check_in_date' => 'required',
-            'check_out_date' => 'required',
-            'room_request' => 'required'
+            'check_out_date' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -347,8 +348,8 @@ class HotelDarmaController extends Controller
             $passport = $request->pax_passport;
             $country = $request->country_id;
             $city = $request->city_id;
-            $checkin = $request->check_in;
-            $checkout = $request->check_out;
+            $checkin = $request->check_in_date;
+            $checkout = $request->check_out_date;
             $room_request = [
                 'roomType' => "Single",
                 'isRequestChildBed' => false,
@@ -365,7 +366,7 @@ class HotelDarmaController extends Controller
                     'cityID' => $city,
                     'checkInDate' => $checkin,
                     'checkOutDate' => $checkout,
-                    'roomRequest' => $room_request
+                    'roomRequest' => array($room_request)
                 ];
                 $response=$this->client->request(
                     'POST',
@@ -395,17 +396,16 @@ class HotelDarmaController extends Controller
                     if($bodyresponse->respMessage=="member authentication failed"){
                         return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
                     }else if($bodyresponse->respMessage=="wrong format request or null mandatory data"){
-                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Data is incomplete!','data'=> $bodyresponse->airlineAccessCode]), 403);
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Data is incomplete!','data'=> '']), 403);
                     }
                 }else{
                     $body = [
-                        'userID' => $userid,
-                        'accessToken' => $token,
-                        'paxPassport' => $passport,
-                        'countryID' => $country,
-                        'cityID' => $city,
-                        'checkInDate' => $checkin,
-                        'checkOutDate' => $checkout,
+                        'user_id' => $userid,
+                        'pax_passport' => $passport,
+                        'country_id' => $country,
+                        'city_id' => $city,
+                        'check_in_date' => $checkin,
+                        'check_out_date' => $checkout
                     ];
     
                     $booksession = HotelDarmaBookingSession::create($body);
