@@ -33,6 +33,7 @@ use App\Http\Controllers\Api\Hotel\HotelRoomController;
 use App\Http\Controllers\Api\Hotel\HotelRoomImageController;
 use App\Http\Controllers\Api\Hotel\HotelRoomBedTypeController;
 use App\Http\Controllers\Api\Hotel\FacilitiesController;
+use App\Http\Controllers\Api\Hotel\HotelDarmaController;
 use App\Http\Controllers\Api\Ticket\TicketController;
 
 /*
@@ -140,6 +141,13 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
 		Route::get('/nationality',[TicketController::class, 'getNationality']);
 
+	});
+
+	Route::group(['prefix' => 'hotel_darma'], function(){
+		//HotelDarmaController
+
+		Route::post('/search_hotel', [HotelDarmaController::class, 'searchHotel']);
+		Route::post('/cities', [HotelDarmaController::class, 'getCity']);
 	});
 	
 });
