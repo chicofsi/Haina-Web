@@ -229,7 +229,7 @@ class HotelController extends Controller
         $userid = $this->username;
         $token = $this->checkLoginUser();
         $country = $request->country_id;
-        $cityfilter = $request->city_filer;
+        $cityfilter = $request->city_filter;
 
         $body = [
             'userID'=>$userid,
