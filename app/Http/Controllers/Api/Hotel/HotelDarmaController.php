@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\TransferStats;
+use GuzzleHttp\Psr7;
+use GuzzleHttp\Exception\RequestException;
+
 use App\Models\HotelDarma;
 use App\Models\DarmawisataSession;
 use App\Models\DarmawisataRequest;
