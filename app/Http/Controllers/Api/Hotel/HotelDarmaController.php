@@ -555,7 +555,7 @@ class HotelDarmaController extends Controller
 
                         unset($bodyresponse->hotelInfo->nearbyProperty);
 
-                        $hotel = HotelDarma::where('id_darma', $bookingsession->hotel_id)->first();
+                        $hotel = HotelDarma::where('id_darma', $hotelid)->first();
 
                         if(!$hotel){
                             $hoteldata = [
@@ -567,7 +567,7 @@ class HotelDarmaController extends Controller
                                 'hotel_email' => $bodyresponse->hotelInfo->email, 
                                 'hotel_rating' => $bodyresponse->hotelInfo->rating, 
                                 'hotel_long' => $bodyresponse->hotelInfo->longitude, 
-                                'hotel_lat' => $bodyresponse->hotelInfo->latitiude, 
+                                'hotel_lat' => $bodyresponse->hotelInfo->latitude, 
                                 'id_darma' => $bodyresponse->hotelInfo->ID
                             ];
 
