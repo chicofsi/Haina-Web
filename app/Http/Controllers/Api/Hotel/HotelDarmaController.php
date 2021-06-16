@@ -138,8 +138,6 @@ class HotelDarmaController extends Controller
 
             $room_req = HotelDarmaBookingRoomReq::where('id_booking_session', $value->id)->delete();
 
-            $passenger=FlightPassengerSession::where('id_flight_booking_session',$value->id)->get();
-
 
         }
         $hotel_booking=HotelDarmaBookingSession::where('user_id',$id_user)->delete();    
@@ -421,10 +419,10 @@ class HotelDarmaController extends Controller
 
                     $roomreq_session = [
                         'id_booking_session' => $booksession->id,
-                        'room_type' => $bodyresponse->roomRequest['roomType'],
-                        'is_request_child_bed' => $bodyresponse->roomRequest['isRequestChildBed'],
-                        'child_num' => $bodyresponse->roomRequest['childNum'],
-                        'child_age' => implode(",",$bodyresponse->roomRequest['childAges'])
+                        'room_type' => $bodyresponse->roomRequest[0]->roomType,
+                        'is_request_child_bed' => $bodyresponse->roomRequest[0]->isRequestChildBed,
+                        'child_num' => $bodyresponse->roomRequest[0]->childNum,
+                        'child_age' => implode(",",array($bodyresponse->roomRequest[0]->childAges))
                     ];
     
                     $roomrequestdata = HotelDarmaBookingRoomReq::create($roomreq_session);
@@ -479,8 +477,25 @@ class HotelDarmaController extends Controller
 
                 $room_req_data = HotelDarmaBookingRoomReq::select('room_type', 'is_request_child_bed', 'child_num', 'child_age')->where('id_booking_session',$bookingsession->id)->first();
 
+                if($room_req_data['room_type'] == 0){
+                    $roomtype = "Single";
+                }
+                else if($room_req_data['room_type'] == 1){
+                    $roomtype = "Double";
+                }
+                else if($room_req_data['room_type'] == 2){
+                    $roomtype = "Twin";
+                }
+                else if($room_req_data['room_type'] == 3){
+                    $roomtype = "Triple";
+                }
+                else if($room_req_data['room_type'] == 4){
+                    $roomtype = "Quad";
+                }
+                
+
                 $room_request = [
-                    'roomType' => $room_req_data['room_type'],
+                    'roomType' => $roomtype,
                     'isRequestChildBed' => $room_req_data['is_request_child_bed'],
                     'childNum' => $room_req_data['child_num'],
                     'childAges' => explode(',', $room_req_data['child_age'])
@@ -535,7 +550,7 @@ class HotelDarmaController extends Controller
                             'internal_code'=>$bodyresponse->hotelInfo->internalCode
                         ]);
 
-                        unset($bodyresponse['nearbyProperty']);
+                        unset($bodyresponse->hotelInfo->nearbyProperty);
                         
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
                         //
@@ -583,8 +598,24 @@ class HotelDarmaController extends Controller
 
                 $room_req_data = HotelDarmaBookingRoomReq::select('room_type', 'is_request_child_bed', 'child_num', 'child_age')->where('id_booking_session',$bookingsession->id)->first();
 
+                if($room_req_data['room_type'] == 0){
+                    $roomtype = "Single";
+                }
+                else if($room_req_data['room_type'] == 1){
+                    $roomtype = "Double";
+                }
+                else if($room_req_data['room_type'] == 2){
+                    $roomtype = "Twin";
+                }
+                else if($room_req_data['room_type'] == 3){
+                    $roomtype = "Triple";
+                }
+                else if($room_req_data['room_type'] == 4){
+                    $roomtype = "Quad";
+                }
+
                 $room_request = [
-                    'roomType' => $room_req_data['room_type'],
+                    'roomType' => $roomtype,
                     'isRequestChildBed' => $room_req_data['is_request_child_bed'],
                     'childNum' => $room_req_data['child_num'],
                     'childAges' => explode(',', $room_req_data['child_age'])
