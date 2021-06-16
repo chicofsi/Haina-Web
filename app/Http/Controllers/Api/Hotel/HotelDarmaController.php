@@ -413,11 +413,19 @@ class HotelDarmaController extends Controller
     
                     $booksession = HotelDarmaBookingSession::create($body);
     
-                    foreach($bodyresponse->roomRequest as $key => $value){
-                        $roomreq_session[$key] = $value;
-                    }
+                    //foreach($bodyresponse->roomRequest as $key => $value){
+                    //    $roomreq_session[$key] = $value;
+                    //}
     
-                    $roomreq_session['id_booking_session'] = $booksession->id;
+                    //$roomreq_session['id_booking_session'] = $booksession->id;
+
+                    $roomreq_session = [
+                        'id_booking_session' => $booksession->id,
+                        'room_type' => $bodyresponse->roomRequest['roomType'],
+                        'is_request_child_bed' => $bodyresponse->roomRequest['isRequestChildBed'],
+                        'child_num' => $bodyresponse->roomRequest['childNum'],
+                        'child_age' => implode(",",$bodyresponse->roomRequest['childAges'])
+                    ];
     
                     $roomrequestdata = HotelDarmaBookingRoomReq::create($roomreq_session);
                     
