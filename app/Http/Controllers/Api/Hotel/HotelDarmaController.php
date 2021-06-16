@@ -864,7 +864,7 @@ class HotelDarmaController extends Controller
                         'id_room_req' => $room_req_update->id,
                         'title' => $value['title'],
                         'first_name' => $value['first_name'],
-                        'last_name' => $value->['last_name']
+                        'last_name' => $value['last_name']
                     ];
 
                     $newPaxes = HotelDarmaRoom::create($newPaxesData);
