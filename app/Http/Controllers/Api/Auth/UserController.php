@@ -86,6 +86,7 @@ class UserController extends Controller
     public function loginWithGoogle(Request $request)
     {
         // Launch Firebase Auth
+
         $auth = app('firebase.auth');
         // Retrieve the Firebase credential's token
         $idTokenString = $request->firebase_token;
