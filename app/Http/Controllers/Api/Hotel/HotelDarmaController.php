@@ -575,7 +575,8 @@ class HotelDarmaController extends Controller
                         }
 
                         foreach($bodyresponse->hotelInfo->rooms as $key => $value){
-                            $room = HotelDarmaRoom::where('id_darma_room', $value->ID)->get();
+                            return("a");
+                            $room = HotelDarmaRoom::where('id_darma_room', $value->ID)->first();
 
                             if(!$room){
                                 if(strpos($value->name, 'Twin') !== false ){
