@@ -610,6 +610,7 @@ class TicketController extends Controller
                     }
                     $passangersession=FlightPassengerSession::create($pax_data);
                 }
+                $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->get();
                 $bookingsession=FlightBookingSession::where('id_user',Auth::id())->update([
                     'contact_title' => $request->contact_title,
                     'contact_first_name' => $request->contact_first_name,
@@ -619,7 +620,6 @@ class TicketController extends Controller
                     'contact_remaining_phone_no' => $request->contact_remaining_phone_no,
                     'insurance' => $request->insurance,
                 ]);
-                $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->get();
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Set Passenger Data Success!','data'=> $passangersession]), 200);
 
             }
@@ -874,7 +874,7 @@ class TicketController extends Controller
                 $pax_details=$request->pax_details;
 
                 foreach ($pax_details as $key => $value) {
-                    $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->where('id_number',$value['id'])->first();
+                    $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->where('id',$value['id'])->first();
                     $addonssession=FlightAddonsSession::where('id_flight_passenger_session',$passangersession->id)->delete();
 
                     foreach ($value['trip'] as $key => $value) {
