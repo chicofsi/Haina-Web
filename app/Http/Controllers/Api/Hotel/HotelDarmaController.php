@@ -739,7 +739,7 @@ class HotelDarmaController extends Controller
                         $bookingsession=HotelDarmaBookingSession::where('user_id',Auth::id())->update([
                             'room_id'=>$roomid,
                             'breakfast'=>$breakfast,
-                            'cancel_policy'=>$bodyrepsonse->cancelPolicy,
+                            'cancel_policy'=>$bodyresponse->cancelPolicy,
                             'agent_os_ref' => $idbooking
                         ]);
 
