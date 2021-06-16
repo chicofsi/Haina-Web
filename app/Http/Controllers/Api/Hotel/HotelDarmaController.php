@@ -14,6 +14,9 @@ use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
 
 use App\Models\HotelDarma;
+use App\Models\HotelDarmaBooking;
+use App\Models\HotelDarmaPayment;
+use App\Models\HotelDarmaRoom;
 use App\Models\DarmawisataSession;
 use App\Models\DarmawisataRequest;
 use App\Models\HotelDarmaBookingSession;
@@ -551,6 +554,59 @@ class HotelDarmaController extends Controller
                         ]);
 
                         unset($bodyresponse->hotelInfo->nearbyProperty);
+
+                        $hotel = HotelDarma::where('id_darma', $bookingsession->hotel_id)->first();
+
+                        if(!$hotel){
+                            $hoteldata = [
+                                'hotel_name' => $bodyresponse->hotelInfo->name,
+                                'hotel_address' => $bodyresponse->hotelInfo->address,
+                                'hotel_phone' => $bodyresponse->hotelInfo->phone, 
+                                'city_id' => $bodyresponse->cityID, 
+                                'hotel_website' => $bodyresponse->hotelInfo->website, 
+                                'hotel_email' => $bodyresponse->hotelInfo->email, 
+                                'hotel_rating' => $bodyresponse->hotelInfo->rating, 
+                                'hotel_long' => $bodyresponse->hotelInfo->longitude, 
+                                'hotel_lat' => $bodyresponse->hotelInfo->latitiude, 
+                                'id_darma' => $bodyresponse->hotelInfo->ID
+                            ];
+
+                            $newhotel = HotelDarma::create($hoteldata);
+                        }
+
+                        foreach($bodyresponse->hotelInfo->rooms as $key => $value){
+                            $room = HotelDarmaRoom::where('id_darma_room', $value->ID);
+
+                            if(!$room){
+                                if(strpos($value->name, 'Twin') !== false ){
+                                    $roomtype = 3;
+                                }
+                                else if(strpos($value->name, 'Double') !== false ){
+                                    $roomtype = 2;
+                                }
+                                else{
+                                    $roomtype = 1;
+                                } 
+
+                                $hotel = HotelDarma::where('id_darma', $bookingsession->hotel_id)->first();
+    
+                                $newRoomData = [
+                                    'hotel_id' => $hotel->id,
+                                    'room_name' => $value->name,
+                                    'room_type' => $roomtype,
+                                    'room_image' => $value->image,
+                                    'room_price' => $value->price,
+                                    'breakfast' => $value->breakfast,
+                                    'id_darma_room' => $value->ID
+                                ];
+
+                                $newRoom = HotelDarmaRoom::create($newroomData);
+                            }
+                            
+
+                        }
+
+                        
                         
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
                         //
@@ -669,10 +725,23 @@ class HotelDarmaController extends Controller
                         }
                     }
                     else{
+                        do{
+                            $order_id = Str::random(10);
+                            $order_id = strtoupper($order_id);
+                            $checking_id = HotelDarmaBooking::where('order_id', $order_id)->get();
+                        }
+                        while(!$checking_id->isEmpty());
+            
+                        $idbooking = $order_id;
+
                         $bookingsession=HotelDarmaBookingSession::where('user_id',Auth::id())->update([
                             'room_id'=>$roomid,
-                            'breakfast'=>$breakfast
+                            'breakfast'=>$breakfast,
+                            'cancel_policy'=>$bodyrepsonse->cancelPolicy,
+                            'agent_os_ref' => $idbooking
                         ]);
+
+
                         
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
                     }
@@ -686,9 +755,149 @@ class HotelDarmaController extends Controller
 
         }
 
-        
+    }
 
 
+    //MidTrans
+    public function chargeMidtrans($transaction,$payment)
+	{
+		$username="SB-Mid-server-uUu-OOYw1hyxA9QH8wAbtDRl";
+		$url="https://api.sandbox.midtrans.com/v2/charge";
+		$data_array =  [
+		    "payment_type"        => $payment->category->url,
+		    "bank_transfer"       => [
+		    	"bank"               => $payment->name
+		    ],
+            "custom_field1"        => "Hotel",
+		    "transaction_details" => array(
+		        "order_id"            => $transaction->agent_os_ref,
+		        "gross_amount"		  => $transaction->total_price
+		    ),
+		];
+
+		$header="Authorization: Basic ".base64_encode($username.":");
+		// return json_encode($data_array)."BLABLABLAB".$header."davdavd".$username.":";
+		$make_call = $this->callAPI($url, json_encode($data_array),$header);
+		return $make_call;
+	}
+
+    //callAPI
+    function callAPI( $url, $data, $header = false){
+		$curl = curl_init();
+      	curl_setopt($curl, CURLOPT_POST, 1);
+      	if ($data)
+      	   	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+
+		// OPTIONS:
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+		if(!$header){
+	       	curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+	       	   	'Content-Type: application/json',
+	       	));
+	   	}else{
+	   	    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+	   	       	'Content-Type: application/json',
+	   	       	$header
+	   	    ));
+	   	}
+		// EXECUTE:
+		$result = curl_exec($curl);
+		if(!$result){die("Connection Failure");}
+		curl_close($curl);
+		return $result;
+	}
+
+    //Search #3.5 - Make Local Booking
+
+    public function createBooking(Request $request){
+        $bookingsession=$this->checkSession(Auth::id());
+        if(! $bookingsession){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Search Hotel First!','data'=> '']), 401);
+        }
+        else{
+            $validator = Validator::make($request->all(), [
+                'email' => 'required',
+                'phone' => 'required',
+                'paxes' => 'required',
+                'smoking_room' => 'required',
+                'special_request' => 'required'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error'=>$validator->errors()], 400);
+            }
+            else{
+                $hotel = HotelDarma::where('id_darma', $bookingsession->hotel_id)->first();
+                $room = HotelDarmaRoom::where('id_darma_room', $bookingsession->room_id)->first();
+
+                $body = [
+                    'hotel_id' => $hotel->id,
+                    'room_id' => $room->id,
+                    'user_id' => Auth::id(),
+                    'reservation_no' => null,
+                    'agent_os_ref' => $bookingsession->agent_os_ref,
+                    'booking_date' => null,
+                    'check_in' => $bookingsession->check_in_date,
+                    'check_out' => $bookingsession->check_out_date,
+                    'total_price' => $room->price,
+                    'requests' => $request->special_request,
+                    'breakfast' => $room->breakfast,
+                    'status' => 'UNPAID',
+                    'cancelation_policy' => $bookingsession->cancel_policy
+                ];
+
+                $room_req_update = HotelDarmaBookingRoomReq::where('id_booking_session',$bookingsession->id)->update([
+                    'smoking_room' => $request->smoking_room,
+                    'phone' => $request->phone,
+                    'email' => $request->email
+                ]);
+
+                foreach($request->paxes as $key => $value){
+                    $room_req_update = HotelDarmaBookingRoomReq::where('id_booking_session',$bookingsession->id)->first();
+
+                    $newPaxesData = [
+                        'id_room_req' => $room_req_update->id,
+                        'title' => $value->title,
+                        'first_name' => $value->first_name,
+                        'last_name' => $value->last_name
+                    ];
+
+                    $newPaxes = HotelDarmaRoom::create($newPaxesData);
+                }
+
+                $payment = PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
+                $newbooking = HotelDarmaBooking::create($body);
+                $newbooking['payment_data'] = json_decode($this->chargeMidtrans($newbooking, $payment));
+
+                if($newbooking){
+                    $booking_data = HotelDarmaBooking::where('id',$newbooking->id)->first();
+                    
+                    $data['payment_type'] = $newbooking->payment_data->payment_type;
+                    $data['amount']=$newbooking->payment_data->gross_amount;
+                    $data['payment_status']=$newbooking->payment_data->transaction_status;
+                    foreach ($newbooking->payment_data->va_numbers as $key => $value) {
+                        $data['virtual_account']=$value->va_number;
+                        $data['bank']=$value->bank;
+                    }
+
+                    $newbooking_data['payment'] = $data;
+                }
+
+                $hotel_payment = HotelDarmaPayment::create([
+                    'booking_id' => $newbooking_data->id,
+                    'payment_method_id' => $request->id_payment_method,
+                    'midtrans_id' => '',
+                    'va_number' => $newbooking_data->payment['virtual_account'],
+                    'settlement_time' => null,
+                    'payment_status' => 'pending'
+                ]);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Create Booking Success!','data'=>  $newbooking_data, $hotel_payment]), 200);
+            }
+            
+        }
     }
 
 }

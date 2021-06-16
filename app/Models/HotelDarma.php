@@ -15,7 +15,8 @@ class HotelDarma extends Model
     public $timestamps = false;
 
     protected $fillable = [ 
-        'hotel_name', 'hotel_address', 'hotel_phone', 'city_id', 'hotel_website', 'hotel_email', 'hotel_rating', 'hotel_long', 'hotel_lat' 
+        'hotel_name', 'hotel_address', 'hotel_phone', 'city_id', 'hotel_website', 'hotel_email', 'hotel_rating', 
+        'hotel_long', 'hotel_lat', 'id_darma'
     ];
 
     public function city(){
