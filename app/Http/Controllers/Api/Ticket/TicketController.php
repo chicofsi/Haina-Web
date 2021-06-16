@@ -619,7 +619,8 @@ class TicketController extends Controller
                     'contact_remaining_phone_no' => $request->contact_remaining_phone_no,
                     'insurance' => $request->insurance,
                 ]);
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Set Passenger Data Success!','data'=> '']), 200);
+                $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->get();
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Set Passenger Data Success!','data'=> $passangersession]), 200);
 
             }
         }
@@ -873,21 +874,9 @@ class TicketController extends Controller
                 $pax_details=$request->pax_details;
 
                 foreach ($pax_details as $key => $value) {
-                    $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->where('id_number',$value['id_number'])->first();
+                    $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->where('id_number',$value['id'])->first();
                     $addonssession=FlightAddonsSession::where('id_flight_passenger_session',$passangersession->id)->delete();
 
-                    $pax_data[$key]=[
-                        "IDNumber" => $value['id_number'],
-                        "title" => $passangersession->title,
-                        "firstName" => $passangersession->first_name,
-                        "lastName" => $passangersession->last_name,
-                        "birthDate" => $passangersession->birth_date,
-                        "gender" => $passangersession->gender,
-                        "nationality" => $passangersession->nationality,
-                        "birthCountry" => $passangersession->birth_country,
-                        "parent" => $passangersession->parent,
-                        "type"=> $passangersession->type,
-                    ];
                     foreach ($value['trip'] as $key => $value) {
                         $trip=FlightTripSession::where('id_flight_booking_session',$bookingsession->id)->where('sch_origin',$value['origin'])->where('sch_destination',$value['destination'])->first();
                         $addons=[
