@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\TransferStats;
@@ -729,7 +730,7 @@ class HotelDarmaController extends Controller
                         do{
                             $order_id = Str::random(10);
                             $order_id = strtoupper($order_id);
-                            $checking_id = HotelDarmaBooking::where('order_id', $order_id)->get();
+                            $checking_id = HotelDarmaBooking::where('agent_os_ref', $order_id)->get();
                         }
                         while(!$checking_id->isEmpty());
             
@@ -738,7 +739,7 @@ class HotelDarmaController extends Controller
                         $bookingsession=HotelDarmaBookingSession::where('user_id',Auth::id())->update([
                             'room_id'=>$roomid,
                             'breakfast'=>$breakfast,
-                            'cancel_policy'=>$bodyrepsonse->cancelPolicy,
+                            'cancel_policy'=>$bodyresponse->cancelPolicy,
                             'agent_os_ref' => $idbooking
                         ]);
 
@@ -858,6 +859,7 @@ class HotelDarmaController extends Controller
                 foreach($request->paxes as $key => $value){
                     $room_req_update = HotelDarmaBookingRoomReq::where('id_booking_session',$bookingsession->id)->first();
 
+                    return($value);
                     $newPaxesData = [
                         'id_room_req' => $room_req_update->id,
                         'title' => $value->title,
