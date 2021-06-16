@@ -400,7 +400,7 @@ class HotelDarmaController extends Controller
                     }
                 }else{
                     $body = [
-                        'user_id' => $userid,
+                        'user_id' => Auth::id(),
                         'pax_passport' => $passport,
                         'country_id' => $country,
                         'city_id' => $city,

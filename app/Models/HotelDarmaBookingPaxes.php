@@ -11,6 +11,7 @@ class HotelDarmaBookingPaxes extends Model
     use HasFactory;
 
     protected $table = 'hotel_darma_booking_paxes';
+    public $timestamps = false;
 
     protected $fillable = [ 
         'id_room_req', 'title', 'first_name', 'last_name' 
