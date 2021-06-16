@@ -872,7 +872,7 @@ class HotelDarmaController extends Controller
                 $newbooking['payment_data'] = json_decode($this->chargeMidtrans($newbooking, $payment));
 
                 if($newbooking){
-                    $booking_data = HotelDarmaBooking::where('id',$newbooking->id)->first();
+                    $newbooking_data = HotelDarmaBooking::where('id',$newbooking->id)->first();
                     
                     $data['payment_type'] = $newbooking->payment_data->payment_type;
                     $data['amount']=$newbooking->payment_data->gross_amount;
