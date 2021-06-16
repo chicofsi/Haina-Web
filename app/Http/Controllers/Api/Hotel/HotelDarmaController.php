@@ -578,7 +578,6 @@ class HotelDarmaController extends Controller
                             $room = HotelDarmaRoom::where('id_darma_room', $value->ID)->first();
 
                             if(!$room){
-                            return("a");
                                 
                                 if(strpos($value->name, 'Twin') !== false ){
                                     $roomtype = 3;
@@ -602,7 +601,7 @@ class HotelDarmaController extends Controller
                                     'id_darma_room' => $value->ID
                                 ];
 
-                                $newRoom = HotelDarmaRoom::create($newroomData);
+                                $newRoom = HotelDarmaRoom::create($newRoomData);
                             }
                             
 
