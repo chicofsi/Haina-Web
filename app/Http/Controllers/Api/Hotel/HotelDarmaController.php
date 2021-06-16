@@ -588,7 +588,7 @@ class HotelDarmaController extends Controller
                                     $roomtype = 1;
                                 } 
 
-                                $hotel = HotelDarma::where('id_darma', $bookingsession->hotel_id)->first();
+                                $hotel = HotelDarma::where('id_darma', $hotelid)->first();
     
                                 $newRoomData = [
                                     'hotel_id' => $hotel->id,
