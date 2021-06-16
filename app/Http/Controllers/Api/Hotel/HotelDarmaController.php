@@ -575,10 +575,11 @@ class HotelDarmaController extends Controller
                         }
 
                         foreach($bodyresponse->hotelInfo->rooms as $key => $value){
-                            return("a");
                             $room = HotelDarmaRoom::where('id_darma_room', $value->ID)->first();
 
                             if(!$room){
+                            return("a");
+                                
                                 if(strpos($value->name, 'Twin') !== false ){
                                     $roomtype = 3;
                                 }
