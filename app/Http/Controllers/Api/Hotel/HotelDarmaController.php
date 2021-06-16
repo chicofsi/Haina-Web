@@ -730,7 +730,7 @@ class HotelDarmaController extends Controller
                         do{
                             $order_id = Str::random(10);
                             $order_id = strtoupper($order_id);
-                            $checking_id = HotelDarmaBooking::where('order_id', $order_id)->get();
+                            $checking_id = HotelDarmaBooking::where('agent_os_ref', $order_id)->get();
                         }
                         while(!$checking_id->isEmpty());
             
