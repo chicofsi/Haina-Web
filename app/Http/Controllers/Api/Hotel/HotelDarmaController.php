@@ -594,7 +594,7 @@ class HotelDarmaController extends Controller
                                 $newRoomData = [
                                     'hotel_id' => $hotel->id,
                                     'room_name' => $value->name,
-                                    'room_type' => $roomtype,
+                                    'room_type_id' => $roomtype,
                                     'room_image' => $value->image,
                                     'room_price' => $value->price,
                                     'breakfast' => $value->breakfast,
