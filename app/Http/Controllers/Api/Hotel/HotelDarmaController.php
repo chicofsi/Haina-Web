@@ -853,13 +853,14 @@ class HotelDarmaController extends Controller
                 $room_req_update = HotelDarmaBookingRoomReq::where('id_booking_session',$bookingsession->id)->update([
                     'smoking_room' => $request->smoking_room,
                     'phone' => $request->phone,
-                    'email' => $request->email
+                    'email' => $request->email,
+                    'request_description' => $request->special_request
                 ]);
 
                 foreach($request->paxes as $key => $value){
                     $room_req_update = HotelDarmaBookingRoomReq::where('id_booking_session',$bookingsession->id)->first();
 
-                    return($value);
+                    return($value->title);
                     $newPaxesData = [
                         'id_room_req' => $room_req_update->id,
                         'title' => $value->title,
