@@ -13,7 +13,8 @@ class HotelDarmaBookingSession extends Model
     protected $table = 'hotel_darma_booking_session';
 
     protected $fillable = [ 
-        'user_id', 'pax_passport', 'country_id', 'city_id', 'check_in_date', 'check_out_date', 'hotel_id', 'room_id', 'internal_code', 'breakfast', 'agent_os_ref'
+        'user_id', 'pax_passport', 'country_id', 'city_id', 'check_in_date', 'check_out_date', 'hotel_id', 'room_id', 
+        'internal_code', 'breakfast', 'agent_os_ref', 'cancel_policy'
     ];
 
     public function users(){
