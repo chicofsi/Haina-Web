@@ -109,20 +109,32 @@ class UserController extends Controller
         }
 
         // Retrieve the UID (User ID) from the verified Firebase credential's token
-        $uid = $verifiedIdToken->getClaim('sub');
+        $uid = $verifiedIdToken->claims()->get('sub');
 
-        // Retrieve the user model linked with the Firebase UID
-        $user = User::where('firebase_uid',$uid)->first();
+        $data = $auth->getUser($uid);
+
+        $user=User::where('email',$data->email)->first();
+        if($user){
+            User::where('email',$data->email)->update([
+                'firebase_uid'=>$data->uid
+            ]);
+            $success['token'] =  $user->createToken($request->device_token)->plainTextToken;
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Login Success!','data'=> $success]), $this->successStatus);
+        }else{
+            $user=UserGoogle::updateOrCreate([
+                'uid' => $data->uid,
+            ],
+            [
+                'display_name' => $data->displayName,
+                'email' => $data->email,
+            ]);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Please Continue Registration!','data'=> ""]), $this->successStatus);
+
+
+        }
         
-        // Here you could check if the user model exist and if not create it
-        // For simplicity we will ignore this step
-
-
-        $success['token'] =  $user->createToken($request->device_token)->plainTextToken;
-
         
-        
-        return response()->json(new ValueMessage(['value'=>1,'message'=>'Login Success!','data'=> $success]), $this->successStatus);
     }
 
     public function register(Request $request)

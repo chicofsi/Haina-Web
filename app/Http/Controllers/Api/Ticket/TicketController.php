@@ -947,7 +947,7 @@ class TicketController extends Controller
             }
             foreach ($departsession as $key => $value) {
                 $depart_reference[$key]=[
-                    "airlineCode" => $value->airline_code,
+                    "airlineCode" => $bookingsession->airline_id,
                     "flightNumber"=> $value->flight_number,
                     "schOrigin"=> $value->sch_origin,
                     "schDestination"=> $value->sch_destination,
@@ -959,6 +959,7 @@ class TicketController extends Controller
                     "garudaAvailability"=> strval($value->garuda_availability)
                 ];
             }
+
             $returnsession=FlightTripSession::where('type','return')->where('id_flight_booking_session',$bookingsession->id)->get();
 
             if($returnsession->isEmpty()){
@@ -1079,6 +1080,9 @@ class TicketController extends Controller
                         return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Code Wrong!','data'=> $bodyresponse->airlineAccessCode]), 401);;
                     }
                 }else{
+
+                    $this->setBooking();
+
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
                 }
             }catch(RequestException $e) {
@@ -1088,4 +1092,10 @@ class TicketController extends Controller
         
         }
     }
+
+    public function setBooking($value='')
+    {
+        
+    }
+
 }
