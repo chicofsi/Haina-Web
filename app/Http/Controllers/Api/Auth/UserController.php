@@ -15,6 +15,7 @@ use Firebase\Auth\Token\Exception\InvalidToken;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserLogs;
+use App\Models\UserGoogle;
 
 class UserController extends Controller
 {
