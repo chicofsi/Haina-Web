@@ -904,7 +904,18 @@ class HotelDarmaController extends Controller
             $breakfast = $bookingsession->breakfast;
 
             $room_req_data = HotelDarmaBookingRoomReq::where('id_booking_session',$bookingsession->id)->first();
+
+            $paxes_array = [];
             $getpaxes = HotelDarmaBookingPaxes::where('id_room_req', $room_req_data->id)->get();
+
+            foreach($getpaxes as $key => $value){
+                $pax->title = $value->title;
+                $pax->firstName = $value->first_name;
+                $pax->lastName = $value->last_name;
+
+                array_push($paxes_array, $pax);
+            }
+
             $booking_data = HotelDarmaBooking::where('agent_os_ref', $bookingsession->agent_os_ref)->first();
 
             if($room_req_data['room_type'] == 0){
@@ -928,8 +939,8 @@ class HotelDarmaController extends Controller
                 'isRequestChildBed' => $room_req_data['is_request_child_bed'],
                 'childNum' => $room_req_data['child_num'],
                 'childAges' => explode(',', $room_req_data['child_age']),
-                'paxes' => array($getpaxes),
-                'isSmokingRoom' => $room_req_data['is_smoking_room'],
+                'paxes' => $paxes_array,
+                'isSmokingRoom' => $room_req_data['smoking_room'],
                 'phone' => $room_req_data['phone'],
                 'email' => $room_req_data['email'],
                 'requestDescription' => $room_req_data['request_description'],
