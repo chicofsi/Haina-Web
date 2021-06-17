@@ -181,7 +181,7 @@ class MidtransController extends Controller
             $token = [];
             $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $transaction['user_id'])->get();
 
-            $hotel_name = HotelDarma::select('hotel_name')->where('id', $transaction->hotel->id)->first();
+            $hotel_name = HotelDarma::select('hotel_name')->where('id', $transaction->hotel_id)->first();
             $hotel_amount = number_format($transaction['total_price'], 2, ",", ".");
 
             foreach($usertoken as $key => $value){
@@ -192,18 +192,18 @@ class MidtransController extends Controller
             if($transaction_status=='settlement'){
                 $settlement_time=date("Y-m-d h:m:s",strtotime($request->settlement_time));
                 $status='PAID';
-                NotificationController::sendPush($token, "Payment successful", "Your Rp ".$hotel_amount."payment for booking at".$hotel_name." is successful", "Hotel");
+                //NotificationController::sendPush($token, "Payment successful", "Your Rp ".$hotel_amount."payment for booking at".$hotel_name." is successful", "Hotel");
             }else if($transaction_status=='pending'){
                 $settlement_time=null;
                 $status='UNPAID';
-                NotificationController::sendPush($token, "Waiting for payment", "There is a pending payment for booking at ".$hotel_name.". Please finish payment in 24 hours", "Hotel");
+                //NotificationController::sendPush($token, "Waiting for payment", "There is a pending payment for booking at ".$hotel_name.". Please finish payment in 24 hours", "Hotel");
             }else if($transaction_status=='expire'){
                 $settlement_time=null;
                 $status='CANCELLED';
             }else if($transaction_status=='cancel'){
                 $settlement_time=null;
                 $status='CANCELLED';
-                NotificationController::sendPush($token, "Booking cancelled", "Your booking for ".$hotel_name." has been cancelled.", "Hotel");
+                //NotificationController::sendPush($token, "Booking cancelled", "Your booking for ".$hotel_name." has been cancelled.", "Hotel");
             }
 
             $hotelbooking=HotelDarmaBooking::where('agent_os_ref',$order_id)->update(['status'=>$status]);
