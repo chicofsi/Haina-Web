@@ -18,7 +18,7 @@ class FLightTripSession extends Model
     public $timestamps = false;
 
     protected $fillable = [ 
-        'id_flight_booking_session', 'type', 'airline_code', 'flight_number', 'sch_origin', 'sch_destination', 'detail_schedule', 'sch_depart_time', 'sch_arrival_time', 'flight_class', 'garuda_number', 'garuda_availability'
+        'id_flight_details_session', 'type', 'airline_code', 'flight_number', 'sch_origin', 'sch_destination', 'detail_schedule', 'sch_depart_time', 'sch_arrival_time', 'flight_class', 'garuda_number', 'garuda_availability'
     ];
 
     public function flightbookingsession(){

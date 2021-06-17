@@ -481,10 +481,17 @@ class TicketController extends Controller
                     }else{
                         FlightTripSession::where('id_flight_booking_session',$bookingsession->id)->delete();
                         FlightDetailsSession::where('id_flight_booking_session',$bookingsession->id)->delete();
-
+                        $detailssession=FlightDetailsSession::create([
+                            "id_flight_booking_session" => $bookingsession->id,
+                            "airline_code" => $request->depart->airline_code,
+                            "depart_from" => $request->depart->origin,
+                            "depart_to" => $request->depart->destination,
+                            "depart_date" => $request->depart->depart_time,
+                            "arrival_date" => $request->depart->arrival_time,
+                        ]);
                         foreach ($request->depart['flight_detail'] as $key => $value) {
                             $tripdepart=FlightTripSession::create([
-                                "id_flight_booking_session" => $bookingsession->id,
+                                "id_flight_details_session" => $bookingsession->id,
                                 "type" => "depart",
                                 "airline_code" => $value['flightDetail'][0]['airlineCode'],
                                 "flight_number" => $value['flightDetail'][0]['flightNumber'],
