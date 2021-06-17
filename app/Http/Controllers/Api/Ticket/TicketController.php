@@ -24,6 +24,7 @@ use App\Models\FlightBookingSession;
 use App\Models\FlightTripSession;
 use App\Models\FlightPassengerSession;
 use App\Models\FlightAddonsSession;
+use App\Models\FlightDetailsSession;
 
 
 class TicketController extends Controller
