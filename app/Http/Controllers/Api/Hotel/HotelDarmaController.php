@@ -845,7 +845,7 @@ class HotelDarmaController extends Controller
                     'booking_date' => null,
                     'check_in' => $bookingsession->check_in_date,
                     'check_out' => $bookingsession->check_out_date,
-                    'total_price' => $room->price,
+                    'total_price' => $room->room_price,
                     'requests' => $request->special_request,
                     'breakfast' => $room->breakfast,
                     'status' => 'UNPAID',
