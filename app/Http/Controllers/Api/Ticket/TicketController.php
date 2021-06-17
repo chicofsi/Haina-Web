@@ -90,40 +90,13 @@ class TicketController extends Controller
 
     public function checkLoginUser()
     {
-        $token=DarmawisataSession::where('id_user',Auth::id())->first();
+        $token=DarmawisataSession::where('id_user',Auth::id())->whereRaw('WHERE created_at < DATE_SUB( NOW(), INTERVAL 15 MINUTE )')->first();
         if($token){
-            $token=$token->access_token;
-            try {
-                $response=$this->client->request(
-                    'POST',
-                    'airline/list',
-                    [
-                        'form_params' => [
-                            'userID'=>$this->username,
-                            'accessToken'=>$token
-                        ],
-                        'on_stats' => function (TransferStats $stats) use (&$url) {
-                            $url = $stats->getEffectiveUri();
-                        }
-                    ]  
-                );
-
-                $bodyresponse=json_decode($response->getBody()->getContents());
-                //return $response;
-                if($bodyresponse->status=="FAILED"){
-                    return $this->login();
-
-                }else{
-                    return $token;
-                }
-            }catch(RequestException $e) {
-                return;
-            }
+            return $token;
         }else{
+            DarmawisataSession::where('id_user',Auth::id())->delete();
             return $this->login();
-
         }
-        
     }
     public function deleteSession($id_user)
     {
