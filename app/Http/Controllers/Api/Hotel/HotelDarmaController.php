@@ -867,7 +867,7 @@ class HotelDarmaController extends Controller
                         'last_name' => $value['last_name']
                     ];
 
-                    $newPaxes = HotelDarmaRoom::create($newPaxesData);
+                    $newPaxes = HotelDarmaBookingPaxes::create($newPaxesData);
                 }
 
                 $payment = PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
