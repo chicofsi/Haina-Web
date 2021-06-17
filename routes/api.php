@@ -146,6 +146,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	Route::group(['prefix' => 'hotel_darma'], function(){
 		//HotelDarmaController
 
+		Route::post('/issue_booking', [HotelDarmaController::class, 'issueBooking']);
 		Route::post('/create_booking', [HotelDarmaController::class, 'createBooking']);
 		Route::post('/price_policy', [HotelDarmaController::class, 'showPricePolicy']);
 		Route::post('/search_room', [HotelDarmaController::class, 'searchRoom']);
