@@ -92,7 +92,7 @@ class TicketController extends Controller
     {
         $token=DarmawisataSession::where('id_user',Auth::id())->whereRaw(' created_at > DATE_SUB( NOW(), INTERVAL 15 MINUTE )')->first();
         if($token){
-            return $token;
+            return $token->access_token;
         }else{
             DarmawisataSession::where('id_user',Auth::id())->delete();
             return $this->login();
