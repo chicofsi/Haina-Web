@@ -23,6 +23,8 @@ use App\Models\DarmawisataRequest;
 use App\Models\HotelDarmaBookingSession;
 use App\Models\HotelDarmaBookingRoomReq;
 use App\Models\HotelDarmaBookingPaxes;
+use App\Models\PaymentMethod;
+use App\Models\PaymentMethodCategory;
 
 use App\Http\Resources\ValueMessage;
 
@@ -853,21 +855,21 @@ class HotelDarmaController extends Controller
                 $room_req_update = HotelDarmaBookingRoomReq::where('id_booking_session',$bookingsession->id)->update([
                     'smoking_room' => $request->smoking_room,
                     'phone' => $request->phone,
-                    'email' => $request->email
+                    'email' => $request->email,
+                    'request_description' => $request->special_request
                 ]);
 
                 foreach($request->paxes as $key => $value){
                     $room_req_update = HotelDarmaBookingRoomReq::where('id_booking_session',$bookingsession->id)->first();
 
-                    return($value);
                     $newPaxesData = [
                         'id_room_req' => $room_req_update->id,
-                        'title' => $value->title,
-                        'first_name' => $value->first_name,
-                        'last_name' => $value->last_name
+                        'title' => $value['title'],
+                        'first_name' => $value['first_name'],
+                        'last_name' => $value['last_name']
                     ];
 
-                    $newPaxes = HotelDarmaRoom::create($newPaxesData);
+                    $newPaxes = HotelDarmaBookingPaxes::create($newPaxesData);
                 }
 
                 $payment = PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
