@@ -909,9 +909,12 @@ class HotelDarmaController extends Controller
             $getpaxes = HotelDarmaBookingPaxes::where('id_room_req', $room_req_data->id)->get();
 
             foreach($getpaxes as $key => $value){
-                $pax->title = $value->title;
-                $pax->firstName = $value->first_name;
-                $pax->lastName = $value->last_name;
+
+                $pax = [
+                    'title' => $value->title,
+                    'firstName' => $value->first_name,
+                    'lastName' => $value->last_name
+                ];
 
                 array_push($paxes_array, $pax);
             }
