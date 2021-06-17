@@ -1067,7 +1067,7 @@ class HotelDarmaController extends Controller
                 }
             }
             else{
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Booking List Success!','data'=> $bodyresponse->cities]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Booking List Success!','data'=> $bodyresponse->hotelBookingList]), 200);
             }
         }catch(RequestException $e) {
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
@@ -1118,7 +1118,7 @@ class HotelDarmaController extends Controller
                 }
             }
             else{
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Booking Detail Success!','data'=> $bodyresponse->cities]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Booking Detail Success!','data'=> $bodyresponse->bookingDetail]), 200);
             }
         }catch(RequestException $e) {
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
