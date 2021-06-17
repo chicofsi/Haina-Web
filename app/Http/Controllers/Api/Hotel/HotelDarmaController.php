@@ -835,8 +835,8 @@ class HotelDarmaController extends Controller
                 ]);
 
                 $room_req = HotelDarmaBookingRoomReq::where('id_booking_session',$bookingsession->id)->first();
-                $checkpaxes = HotelDarmaBookingPaxes::where('id_room_req', $room_req->id)->get();
-
+                $checkpaxes = HotelDarmaBookingPaxes::where('id_room_req', $room_req->id)->first();
+                
                 if(! $checkpaxes){
                     foreach($request->paxes as $key => $value){
                     
@@ -847,7 +847,7 @@ class HotelDarmaController extends Controller
                             'first_name' => $value['first_name'],
                             'last_name' => $value['last_name']
                         ];
-    
+                        
                         $newPaxes = HotelDarmaBookingPaxes::create($newPaxesData);
                     }
                 }           
