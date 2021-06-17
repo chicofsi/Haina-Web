@@ -24,6 +24,9 @@ use App\Models\HotelBooking;
 use App\Models\EspayRequest;
 use App\Models\HotelBookingPayment;
 use App\Models\PersonalAccessToken;
+use App\Models\HotelDarmaPayment;
+use App\Models\HotelDarmaBooking;
+use App\Models\HotelDarma;
 
 use App\Models\User;
 use DateTime;
@@ -223,7 +226,7 @@ class MidtransController extends Controller
                     'va_number' => $va_number
                 ]);
             return $hotelbookingpayment;
-            
+
         }else if($request->custom_field1=="Flight"){
 
             $transaction = FlightBooking::where('order_id',$order_id)->with('flightbookingdetails')->first();
