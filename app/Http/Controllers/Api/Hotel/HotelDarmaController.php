@@ -95,40 +95,13 @@ class HotelDarmaController extends Controller
 
     public function checkLoginUser()
     {
-        $token=DarmawisataSession::where('id_user',Auth::id())->first();
+        $token=DarmawisataSession::where('id_user',Auth::id())->whereRaw(' created_at > DATE_SUB( NOW(), INTERVAL 15 MINUTE )')->first();
         if($token){
-            $token=$token->access_token;
-            try {
-                $response=$this->client->request(
-                    'POST',
-                    'airline/list',
-                    [
-                        'form_params' => [
-                            'userID'=>$this->username,
-                            'accessToken'=>$token
-                        ],
-                        'on_stats' => function (TransferStats $stats) use (&$url) {
-                            $url = $stats->getEffectiveUri();
-                        }
-                    ]  
-                );
-
-                $bodyresponse=json_decode($response->getBody()->getContents());
-                //return $response;
-                if($bodyresponse->status=="FAILED"){
-                    return $this->login();
-
-                }else{
-                    return $token;
-                }
-            }catch(RequestException $e) {
-                return;
-            }
+            return $token->access_token;
         }else{
+            DarmawisataSession::where('id_user',Auth::id())->delete();
             return $this->login();
-
         }
-        
     }
 
     public function deleteSession($id_user)
@@ -859,18 +832,23 @@ class HotelDarmaController extends Controller
                     'request_description' => $request->special_request
                 ]);
 
-                foreach($request->paxes as $key => $value){
-                    $room_req_update = HotelDarmaBookingRoomReq::where('id_booking_session',$bookingsession->id)->first();
+                $room_req = HotelDarmaBookingRoomReq::where('id_booking_session',$bookingsession->id)->first();
+                $checkpaxes = HotelDarmaBookingPaxes::where('id_room_req', $room_req->id)->get();
 
-                    $newPaxesData = [
-                        'id_room_req' => $room_req_update->id,
-                        'title' => $value['title'],
-                        'first_name' => $value['first_name'],
-                        'last_name' => $value['last_name']
-                    ];
+                if(! $checkpaxes){
+                    foreach($request->paxes as $key => $value){
+                    
 
-                    $newPaxes = HotelDarmaBookingPaxes::create($newPaxesData);
-                }
+                        $newPaxesData = [
+                            'id_room_req' => $room_req->id,
+                            'title' => $value['title'],
+                            'first_name' => $value['first_name'],
+                            'last_name' => $value['last_name']
+                        ];
+    
+                        $newPaxes = HotelDarmaBookingPaxes::create($newPaxesData);
+                    }
+                }           
 
                 $payment = PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
                 $newbooking = HotelDarmaBooking::create($body);
