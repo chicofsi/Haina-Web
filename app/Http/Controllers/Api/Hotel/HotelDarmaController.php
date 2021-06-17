@@ -899,6 +899,7 @@ class HotelDarmaController extends Controller
             $checkin = $bookingsession->check_in_date;
             $checkout = $bookingsession->check_out_date;
             $hotelid = $bookingsession->hotel_id;
+            $room_id = $bookingsession->room_id;
             $internalcode = $bookingsession->internal_code;
             $breakfast = $bookingsession->breakfast;
 
