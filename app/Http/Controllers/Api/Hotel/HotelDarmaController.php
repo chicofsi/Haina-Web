@@ -747,7 +747,7 @@ class HotelDarmaController extends Controller
 		    "bank_transfer"       => [
 		    	"bank"               => $payment->name
 		    ],
-            "custom_field1"        => "Hotel",
+            "custom_field1"        => "HotelDarma",
 		    "transaction_details" => array(
 		        "order_id"            => $transaction->agent_os_ref,
 		        "gross_amount"		  => $transaction->total_price
