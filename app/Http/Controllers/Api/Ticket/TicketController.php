@@ -90,11 +90,10 @@ class TicketController extends Controller
 
     public function checkLoginUser()
     {
-        $token=DarmawisataSession::where('id_user',Auth::id())->whereRaw(' created_at > DATE_SUB( NOW(), INTERVAL 15 MINUTE )')->first();
+        $token=DarmawisataSession::where('id_user',Auth::id())->whereRaw(' created_at BETWEEN DATE_SUB(NOW() , INTERVAL 15 MINUTE) AND NOW()')->first();
         if($token){
             return $token->access_token;
         }else{
-            DarmawisataSession::where('id_user',Auth::id())->delete();
             return $this->login();
         }
     }
@@ -480,6 +479,8 @@ class TicketController extends Controller
                         }
                     }else{
                         FlightTripSession::where('id_flight_booking_session',$bookingsession->id)->delete();
+                        FlightDetailsSession::where('id_flight_booking_session',$bookingsession->id)->delete();
+
                         foreach ($request->depart['flight_detail'] as $key => $value) {
                             $tripdepart=FlightTripSession::create([
                                 "id_flight_booking_session" => $bookingsession->id,
@@ -1055,9 +1056,40 @@ class TicketController extends Controller
         }
     }
 
-    public function setBooking($value='')
-    {
+    // public function setBooking($amount)
+    // {
+    //     $bookingsession=$this->checkSession(Auth::id());
+    //     $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->get();
+    //     $tripsession=FlightTripSession::where('id_flight_booking_session',$bookingsession->id)->get();
+
+    //     $flightbooking=FlightBooking::create([
+    //         "order_id"=> $this->generateOrderId(),
+    //         "id_user" => Auth::id(),
+    //         "trip_type" =>$bookingsession->trip_type,
+    //         "customer_email" => Auth::user()->email,
+    //         "amount" => $amount,
+    //         "status" => "pending",
+    //         "booking_date" => date("Y-m-d h:m:s")
+    //     ]);
+
+    //     $
+
+    // }
+
+    function generateOrderId() {
+        $randomString = '';
+        do{
+            $length = 10;
+            $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $charactersLength = strlen($characters);
+            for ($i = 0; $i < $length; $i++) {
+                $randomString .= $characters[rand(0, $charactersLength - 1)];
+            }
+
+        }while (FlightBooking::where('order_id',$randomString)->first());
         
+        return $randomString;
     }
+
 
 }

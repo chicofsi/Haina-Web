@@ -120,7 +120,7 @@ class UserController extends Controller
             User::where('email',$data->email)->update([
                 'firebase_uid'=>$data->uid
             ]);
-            $success=  $user->createToken($request->device_token)->plainTextToken;
+            $success = $user->createToken($request->device_token)->plainTextToken;
 
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Login Success!','data'=> $success]), $this->successStatus);
         }else{
