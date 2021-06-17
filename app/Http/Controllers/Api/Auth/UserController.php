@@ -58,7 +58,7 @@ class UserController extends Controller
             if(auth()->guard('web-users')->attempt($request->only('email','password'))){
 
                 $user = auth()->guard('web-users')->user();
-                $success['token'] =  $user->createToken($request->device_token)->plainTextToken;
+                $success=  $user->createToken($request->device_token)->plainTextToken;
 
                 UserLogs::create([
                    'id_user' => $user->id,
@@ -156,6 +156,13 @@ class UserController extends Controller
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Field Empty!','data'=> $validator->errors()]), 400);         
         }else{
             $input = $request->all();
+
+            $usergoogle=UserGoogle::where('email',$request->email)->first();
+            if($usergoogle){
+                $input['firebase_uid']=$usergoogle->uid;
+                UserGoogle::where('email',$request->email)->delete();
+            }
+            
             $input['password'] = Hash::make($request['password']);
             $user = User::create($input);
             $success['token'] =  $user->createToken($request->device_token)->plainTextToken;
