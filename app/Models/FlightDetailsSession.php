@@ -16,7 +16,7 @@ class FLightDetailsSession extends Model
     protected $table = 'flight_details_session';
 
     protected $fillable = [ 
-        'id_flight_booking_session', 'airline_code', 'depart_from', 'depart_to', 'depart_date', 'arrival_date', 'total_passanger'
+        'id_flight_booking_session','type', 'airline_code', 'depart_from', 'depart_to', 'depart_date', 'arrival_date', 'total_passanger'
     ];
 
     

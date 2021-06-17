@@ -107,8 +107,14 @@ class TicketController extends Controller
             foreach ($passenger as $k => $v) {
                 $addons=FlightAddonsSession::where('id_flight_passenger_session',$v->id)->delete();
             }
-            $flighttrip=FlightTripSession::where('id_flight_booking_session', $value->id)->delete();
             $passenger=FlightPassengerSession::where('id_flight_booking_session',$value->id)->delete();
+
+            $detailssession=FlightDetailsSession::where('id_flight_booking_session',$value->id)->get();
+            foreach ($detailssession as $k => $v) {
+                $flighttrip=FlightTripSession::where('id_flight_details_session', $v->id)->delete();
+            }
+            $detailssession=FlightDetailsSession::where('id_flight_booking_session',$value->id)->delete();
+
 
         }        
         $flightbooking=FlightBookingSession::where('id_user',$id_user)->delete();
@@ -292,9 +298,6 @@ class TicketController extends Controller
                 $airline_access_code=0;
             }
 
-            if($adult==3){
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Code Wrong!','data'=> "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"]), 403);
-            }
 
             try {
                 $body=[
@@ -479,19 +482,24 @@ class TicketController extends Controller
                             return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Code Wrong!','data'=> $bodyresponse->airlineAccessCode]), 401);;
                         }
                     }else{
-                        FlightTripSession::where('id_flight_booking_session',$bookingsession->id)->delete();
+                        $detailssession=FlightDetailsSession::where('id_flight_booking_session',$bookingsession->id)->get();
+                        foreach ($detailssession as $key => $value) {
+                            FlightTripSession::where('id_flight_details_session',$value->id)->delete();
+                        }
+
                         FlightDetailsSession::where('id_flight_booking_session',$bookingsession->id)->delete();
                         $detailssession=FlightDetailsSession::create([
                             "id_flight_booking_session" => $bookingsession->id,
-                            "airline_code" => $request->depart->airline_code,
-                            "depart_from" => $request->depart->origin,
-                            "depart_to" => $request->depart->destination,
-                            "depart_date" => $request->depart->depart_time,
-                            "arrival_date" => $request->depart->arrival_time,
+                            "type" => "depart",
+                            "airline_code" => $request->depart['airline_code'],
+                            "depart_from" => $request->depart['origin'],
+                            "depart_to" => $request->depart['destination'],
+                            "depart_date" => $request->depart['depart_time'],
+                            "arrival_date" => $request->depart['arrival_time'],
                         ]);
                         foreach ($request->depart['flight_detail'] as $key => $value) {
                             $tripdepart=FlightTripSession::create([
-                                "id_flight_details_session" => $bookingsession->id,
+                                "id_flight_details_session" => $detailssession->id,
                                 "type" => "depart",
                                 "airline_code" => $value['flightDetail'][0]['airlineCode'],
                                 "flight_number" => $value['flightDetail'][0]['flightNumber'],
@@ -506,9 +514,19 @@ class TicketController extends Controller
                             ]);
                         }
                         if(isset($request->return['flight_detail'])){
+
+                            $detailssession=FlightDetailsSession::create([
+                                "id_flight_booking_session" => $bookingsession->id,
+                                "type" => "return",
+                                "airline_code" => $request->depart->airline_code,
+                                "depart_from" => $request->depart->origin,
+                                "depart_to" => $request->depart->destination,
+                                "depart_date" => $request->depart->depart_time,
+                                "arrival_date" => $request->depart->arrival_time,
+                            ]);
                             foreach ($request->return['flight_detail'] as $key => $value) {
                                 $tripdepart=FlightTripSession::create([
-                                    "id_flight_booking_session" => $bookingsession->id,
+                                    "id_flight_details_session" => $detailssession->id,
                                     "type" => "return",
                                     "airline_code" => $value['flightDetail'][0]['airlineCode'],
                                     "flight_number" => $value['flightDetail'][0]['flightNumber'],
