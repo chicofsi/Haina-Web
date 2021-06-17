@@ -1009,7 +1009,8 @@ class HotelDarmaController extends Controller
                 else{
                     $booking_issue = HotelDarmaBooking::where('agent_os_ref',$bodyresponse->agentOsRef)->update([
                         'reservation_no' => $bodyresponse->reservationNo,
-                        'booking_date' => $bodyresponse->bookingDate
+                        'booking_date' => $bodyresponse->bookingDate,
+                        'os_ref_no' => $bodyresponse->osRefNo
                     ]);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
@@ -1022,6 +1023,107 @@ class HotelDarmaController extends Controller
             return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
         }
 
+    }
+
+    public function getBookingList(Request $request){
+        $userid=$this->username;
+        $token=$this->checkLoginUser();
+
+        $body = [
+            'userID'=>$userid,
+            'accessToken'=>$token,
+            'filterDate' => 'Booking',
+            'dateStart' => $request->date_start,
+            'dateEnd' => $request->date_end
+        ];
+
+
+        try {
+            $response=$this->client->request(
+                'POST',
+                'Hotel/BookingList',
+                [
+                    'form_params' => $body,
+                    'on_stats' => function (TransferStats $stats) use (&$url) {
+                        $url = $stats->getEffectiveUri();
+                    }
+                ]  
+            );
+
+            $bodyresponse=json_decode($response->getBody()->getContents());
+            DarmawisataRequest::insert(
+                [
+                    'request'=>json_encode($body),
+                    'response'=>json_encode($bodyresponse),
+                    'status'=>$bodyresponse->status,
+                    'url'=>$url,
+                    'response_code'=>$response->getStatusCode()
+                ]
+            );
+            //return $response;
+            if($bodyresponse->status=="FAILED"){
+                if($bodyresponse->respMessage=="member authentication failed"){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Booking List Success!','data'=> $bodyresponse->cities]), 200);
+            }
+        }catch(RequestException $e) {
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+        }
+        return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
+    }
+
+    public function getBookingDetail(Request $request){
+        $userid=$this->username;
+        $token=$this->checkLoginUser();
+
+        $booking = HotelDarmaBooking::where('reservation_no', $request->reservation_no)->first();
+
+        $body = [
+            'userID'=>$userid,
+            'accessToken'=>$token,
+            'osRefNo' => $booking['os_ref_no'],
+            'reservationNo' => $request->reservation_no,
+            'agentOsRef' => $booking['agent_os_ref']
+        ];
+
+        try {
+            $response=$this->client->request(
+                'POST',
+                'Hotel/BookingDetail',
+                [
+                    'form_params' => $body,
+                    'on_stats' => function (TransferStats $stats) use (&$url) {
+                        $url = $stats->getEffectiveUri();
+                    }
+                ]  
+            );
+
+            $bodyresponse=json_decode($response->getBody()->getContents());
+            DarmawisataRequest::insert(
+                [
+                    'request'=>json_encode($body),
+                    'response'=>json_encode($bodyresponse),
+                    'status'=>$bodyresponse->status,
+                    'url'=>$url,
+                    'response_code'=>$response->getStatusCode()
+                ]
+            );
+            //return $response;
+            if($bodyresponse->status=="FAILED"){
+                if($bodyresponse->respMessage=="member authentication failed"){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Booking Detail Success!','data'=> $bodyresponse->cities]), 200);
+            }
+        }catch(RequestException $e) {
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+        }
+        return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);        
     }
 
 }
