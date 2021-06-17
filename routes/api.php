@@ -151,6 +151,10 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/price_policy', [HotelDarmaController::class, 'showPricePolicy']);
 		Route::post('/search_room', [HotelDarmaController::class, 'searchRoom']);
 		Route::post('/search_hotel', [HotelDarmaController::class, 'searchHotel']);
+
+		Route::post('/booking_list', [HotelDarmaController::class, 'getBookingList']);
+		Route::post('/booking_detail', [HotelDarmaController::class, 'getBookingDetail']);
+
 		Route::post('/cities', [HotelDarmaController::class, 'getCity']);
 		Route::post('/countries', [HotelDarmaController::class, 'getCountry']);
 		Route::post('/passports', [HotelDarmaController::class, 'getPassport']);
