@@ -847,7 +847,7 @@ class HotelDarmaController extends Controller
                             'first_name' => $value['first_name'],
                             'last_name' => $value['last_name']
                         ];
-                        return("paxes = ".$newPaxesData);
+                        
                         $newPaxes = HotelDarmaBookingPaxes::create($newPaxesData);
                     }
                 }           
