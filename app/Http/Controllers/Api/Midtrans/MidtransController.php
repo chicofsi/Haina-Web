@@ -170,8 +170,7 @@ class MidtransController extends Controller
                     'va_number' => $va_number
                 ]);
             return $hotelbookingpayment;
-        }
-    }else if($request->custom_field1=="Flight"){
+        }else if($request->custom_field1=="Flight"){
 
             $transaction = FlightBooking::where('order_id',$order_id)->with('flightbookingdetails')->first();
 
