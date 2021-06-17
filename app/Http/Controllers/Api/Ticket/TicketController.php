@@ -909,7 +909,7 @@ class TicketController extends Controller
             }
             foreach ($departsession as $key => $value) {
                 $depart_reference[$key]=[
-                    "airlineCode" => $bookingsession->airline_id,
+                    "airlineCode" => $value->airline_code,
                     "flightNumber"=> $value->flight_number,
                     "schOrigin"=> $value->sch_origin,
                     "schDestination"=> $value->sch_destination,
