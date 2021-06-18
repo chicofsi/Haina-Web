@@ -28,6 +28,7 @@ use App\Models\DarmawisataRequest;
 use App\Models\HotelDarmaBookingSession;
 use App\Models\HotelDarmaBookingRoomReq;
 use App\Models\HotelDarmaBookingPaxes;
+use App\Models\HotelDarmaPaxesList;
 use App\Models\PaymentMethod;
 use App\Models\PaymentMethodCategory;
 
@@ -671,21 +672,11 @@ class HotelDarmaController extends Controller
                             if(!$checkfacility){
                                 $newFacility = HotelDarmaFacilitiesList::create($facility);
 
-                                $hotelfacility = [
-                                    'hotel_id' => $hotel->id,
-                                    'facilities_id' => $newFacility->id
-                                ];
-
-                                $newHotelFacility = HotelDarmaFacilities::create($hotelfacility);
                             }
-                            else{
-                                $hotelfacility = [
-                                    'hotel_id' => $hotel->id,
-                                    'facilities_id' => $checkfacility->id
-                                ];
+                            
+                            $checkfacility = HotelDarmaFacilitiesList::where('name',$value)->first();
+                            $hotel->facilities()->attach($checkfacility->id);
 
-                                $newHotelFacility = HotelDarmaFacilities::create($hotelfacility);
-                            }
                         }
 
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
@@ -1018,7 +1009,7 @@ class HotelDarmaController extends Controller
                     'firstName' => $value->first_name,
                     'lastName' => $value->last_name
                 ];
-
+                
                 array_push($paxes_array, $pax);
             }
 
@@ -1115,6 +1106,19 @@ class HotelDarmaController extends Controller
                         'booking_date' => $bodyresponse->bookingDate,
                         'os_ref_no' => $bodyresponse->osRefNo
                     ]);
+
+                    $bookingid = HotelDarmaBooking::where('agent_os_ref',$bodyresponse->agentOsRef)->first();
+
+                    foreach($getpaxes as $key => $value){
+                        $booking_paxes_data = [
+                            'booking_id' => $bookingid['id'],
+                            'title' => $value->title,
+                            'first_name' => $value->first_name,
+                            'last_name' => $value->last_name
+                        ];
+
+                        $booking_paxes = HotelDarmaPaxesList::create($booking_paxes_data);
+                    }
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
                 }
