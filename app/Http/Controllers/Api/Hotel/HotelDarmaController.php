@@ -602,7 +602,6 @@ class HotelDarmaController extends Controller
                             'internal_code'=>$bodyresponse->hotelInfo->internalCode
                         ]);
 
-                        $this->getImages($hotelid);
 
                         unset($bodyresponse->hotelInfo->nearbyProperty);
 
@@ -655,6 +654,8 @@ class HotelDarmaController extends Controller
                                 $newRoom = HotelDarmaRoom::create($newRoomData);
                             }
                         }
+
+                        $this->getImages($hotelid);
 
                         foreach($bodyresponse->facilities as $key => $value){
 
