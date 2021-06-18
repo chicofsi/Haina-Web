@@ -656,6 +656,35 @@ class HotelDarmaController extends Controller
                             }
                         }
 
+                        foreach($bodyresponse->facilities as $key => $value){
+
+                            $facility = [
+                                'name' => $value
+                            ];
+
+                            $hotel = HotelDarma::where('id_darma', $hotelid)->first();
+                            $checkfacility = HotelDarmaFacilitiesList::where('name',$value)->first();
+
+                            if(!$checkfacility){
+                                $newFacility = HotelDarmaFacilitiesList::create($facility);
+
+                                $hotelfacility = [
+                                    'hotel_id' => $hotel->id,
+                                    'facilities_id' => $newFacility->id
+                                ];
+
+                                $newHotelFacility = HotelDarmaFacilities::create($hotelfacility);
+                            }
+                            else{
+                                $hotelfacility = [
+                                    'hotel_id' => $hotel->id,
+                                    'facilities_id' => $checkfacility->id
+                                ];
+
+                                $newHotelFacility = HotelDarmaFacilities::create($hotelfacility);
+                            }
+                        }
+
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
                         //
                     }
