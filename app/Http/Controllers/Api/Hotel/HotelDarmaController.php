@@ -1063,7 +1063,7 @@ class HotelDarmaController extends Controller
                     'breakfast' => $breakfast,
                     'roomRequest' => array($room_request),
                     'bedType' => $bedType,
-                    'agentOsRef' => $booking_data->agent_os_ref
+                    'agentOsRef' => $booking_data['agent_os_ref']
                 ];
 
                 $response=$this->client->request(
