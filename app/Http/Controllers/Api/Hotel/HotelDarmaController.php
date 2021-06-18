@@ -657,7 +657,7 @@ class HotelDarmaController extends Controller
 
                         $this->getImages($hotelid);
 
-                        foreach($bodyresponse->facilities as $key => $value){
+                        foreach($bodyresponse->hotelInfo->facilities as $key => $value){
 
                             $facility = [
                                 'name' => $value
