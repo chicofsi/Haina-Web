@@ -11,6 +11,8 @@ class HotelDarmaRoomFacilitiesList extends Model
 
     protected $table = 'hotel_darma_room_facilities_list';
 
+    public $timestamps = false;
+
     protected $fillable = [ 
         'name'
     ];
