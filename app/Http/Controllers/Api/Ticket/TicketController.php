@@ -880,7 +880,7 @@ class TicketController extends Controller
 
                     foreach ($detailssession as $k => $v) {
                         foreach ($value['trip'] as $key => $value) {
-                            $trip=FlightTripSession::where('id_flight_detail_session',$v->id)->where('sch_origin',$value['origin'])->where('sch_destination',$value['destination'])->first();
+                            $trip=FlightTripSession::where('id_flight_details_session',$v->id)->where('sch_origin',$value['origin'])->where('sch_destination',$value['destination'])->first();
                             $addons=[
                                 "id_flight_passenger_session" => $passangersession->id,
                                 "id_flight_trip_session" => $trip->id,
