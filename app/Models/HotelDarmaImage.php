@@ -15,6 +15,8 @@ class HotelDarmaImage extends Model
      */
     protected $table = 'hotel_darma_images';
 
+    public $timestamps = false;
+
     protected $fillable = [ 
         'hotel_id', 'image'
     ];

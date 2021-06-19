@@ -17,12 +17,18 @@ use GuzzleHttp\Exception\RequestException;
 use App\Models\HotelDarma;
 use App\Models\HotelDarmaBooking;
 use App\Models\HotelDarmaPayment;
+use App\Models\HotelDarmaFacilities;
+use App\Models\HotelDarmaFacilitiesList;
+use App\Models\HotelDarmaRoomFacilitiesList;
+use App\Models\HotelDarmaRoomFacilities;
 use App\Models\HotelDarmaRoom;
+use App\Models\HotelDarmaImage;
 use App\Models\DarmawisataSession;
 use App\Models\DarmawisataRequest;
 use App\Models\HotelDarmaBookingSession;
 use App\Models\HotelDarmaBookingRoomReq;
 use App\Models\HotelDarmaBookingPaxes;
+use App\Models\HotelDarmaPaxesList;
 use App\Models\PaymentMethod;
 use App\Models\PaymentMethodCategory;
 
@@ -419,6 +425,72 @@ class HotelDarmaController extends Controller
            
     }
 
+
+    public function getImages($hotel_id){
+        $userid=$this->username;
+        $token=$this->checkLoginUser();
+        
+        $body = [
+            'userID'=>$userid,
+            'accessToken'=>$token,
+            'hotelID'=>$hotel_id
+        ];
+
+        try{
+            $response=$this->client->request(
+                'POST',
+                'Hotel/Images5',
+                [
+                    'form_params' => $body,
+                    'on_stats' => function (TransferStats $stats) use (&$url) {
+                        $url = $stats->getEffectiveUri();
+                    }
+                ]  
+            );
+
+            $bodyresponse=json_decode($response->getBody()->getContents());
+    
+    
+                DarmawisataRequest::insert(
+                    [
+                        'request'=>json_encode($body),
+                        'response'=>json_encode($bodyresponse),
+                        'status'=>$bodyresponse->status,
+                        'url'=>$url,
+                        'response_code'=>$response->getStatusCode()
+                    ]
+                );
+    
+                if($bodyresponse->status=="FAILED"){
+                    if($bodyresponse->respMessage=="member authentication failed"){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+                    }else if($bodyresponse->respMessage=="wrong format request or null mandatory data"){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Data is incomplete!','data'=> '']), 403);
+                    }
+                }
+                else{
+                    $hotel = HotelDarma::where('id_darma', $hotel_id)->first();
+
+                    $hotelimagecheck = HotelDarmaImage::where('hotel_id', $hotel['id'])->first();
+
+                    if(! $hotelimagecheck){
+                        foreach($bodyresponse->images as $key => $value){
+                            $hotelimage = [
+                                'hotel_id' => $hotel['id'],
+                                'image' => $value
+                            ];
+
+                            $newimage = HotelDarmaImage::create($hotelimage);
+                        }
+                    }
+
+                }
+        }
+        catch(RequestException $e){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Data not Get!','data'=> '']), 401);
+        }
+    }
+
     //Search #1.5 - Check Session
 
     public function checkSession($id_user){
@@ -533,6 +605,7 @@ class HotelDarmaController extends Controller
                             'internal_code'=>$bodyresponse->hotelInfo->internalCode
                         ]);
 
+
                         unset($bodyresponse->hotelInfo->nearbyProperty);
 
                         $hotel = HotelDarma::where('id_darma', $hotelid)->first();
@@ -583,6 +656,27 @@ class HotelDarmaController extends Controller
 
                                 $newRoom = HotelDarmaRoom::create($newRoomData);
                             }
+                        }
+
+                        $this->getImages($hotelid);
+
+                        foreach($bodyresponse->hotelInfo->facilities as $key => $value){
+
+                            $facility = [
+                                'name' => $value
+                            ];
+
+                            $hotel = HotelDarma::where('id_darma', $hotelid)->first();
+                            $checkfacility = HotelDarmaFacilitiesList::where('name',$value)->first();
+
+                            if(!$checkfacility){
+                                $newFacility = HotelDarmaFacilitiesList::create($facility);
+
+                            }
+                            
+                            $checkfacility = HotelDarmaFacilitiesList::where('name',$value)->first();
+                            $hotel->facilities()->attach($checkfacility->id);
+
                         }
 
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
@@ -915,7 +1009,7 @@ class HotelDarmaController extends Controller
                     'firstName' => $value->first_name,
                     'lastName' => $value->last_name
                 ];
-
+                
                 array_push($paxes_array, $pax);
             }
 
@@ -969,7 +1063,7 @@ class HotelDarmaController extends Controller
                     'breakfast' => $breakfast,
                     'roomRequest' => array($room_request),
                     'bedType' => $bedType,
-                    'agentOsRef' => $booking_data->agent_os_ref
+                    'agentOsRef' => $bookingsession->agent_os_ref
                 ];
 
                 $response=$this->client->request(
@@ -1012,6 +1106,19 @@ class HotelDarmaController extends Controller
                         'booking_date' => $bodyresponse->bookingDate,
                         'os_ref_no' => $bodyresponse->osRefNo
                     ]);
+
+                    $bookingid = HotelDarmaBooking::where('agent_os_ref',$bodyresponse->agentOsRef)->first();
+
+                    foreach($getpaxes as $key => $value){
+                        $booking_paxes_data = [
+                            'booking_id' => $bookingid['id'],
+                            'title' => $value->title,
+                            'first_name' => $value->first_name,
+                            'last_name' => $value->last_name
+                        ];
+
+                        $booking_paxes = HotelDarmaPaxesList::create($booking_paxes_data);
+                    }
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
                 }
