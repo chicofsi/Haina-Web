@@ -18,6 +18,4 @@ class FLightDetailsSession extends Model
     protected $fillable = [ 
         'id_flight_booking_session','type', 'airline_code', 'depart_from', 'depart_to', 'depart_date', 'arrival_date', 'total_passanger'
     ];
-
-    
 }

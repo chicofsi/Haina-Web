@@ -876,18 +876,22 @@ class TicketController extends Controller
                 foreach ($pax_details as $key => $value) {
                     $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->where('id',$value['id'])->first();
                     $addonssession=FlightAddonsSession::where('id_flight_passenger_session',$passangersession->id)->delete();
+                    $detailssession=FlightDetailsSession::where('id_flight_booking_session',$bookingsession->id)->get();
 
-                    foreach ($value['trip'] as $key => $value) {
-                        $trip=FlightTripSession::where('id_flight_booking_session',$bookingsession->id)->where('sch_origin',$value['origin'])->where('sch_destination',$value['destination'])->first();
-                        $addons=[
-                            "id_flight_passenger_session" => $passangersession->id,
-                            "id_flight_trip_session" => $trip->id,
-                            "baggage_string" => $value['baggage'],
-                            "seat" => $value['seat'],
-                            "compartment" => $value['compartment'],
-                            "meals" => json_encode($value['meals'])
-                        ];
-                        $addonssession=FlightAddonsSession::create($addons);
+                    foreach ($detailssession as $k => $v) {
+                        foreach ($value['trip'] as $key => $value) {
+                            $trip=FlightTripSession::where('id_flight_detail_session',$v->id)->where('sch_origin',$value['origin'])->where('sch_destination',$value['destination'])->first();
+                            $addons=[
+                                "id_flight_passenger_session" => $passangersession->id,
+                                "id_flight_trip_session" => $trip->id,
+                                "baggage_string" => $value['baggage'],
+                                "seat" => $value['seat'],
+                                "compartment" => $value['compartment'],
+                                "meals" => json_encode($value['meals'])
+                            ];
+                            $addonssession=FlightAddonsSession::create($addons);
+                        }
+                        
                     }
                 }
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Set Passenger Addons Success!','data'=> '']), 200);
