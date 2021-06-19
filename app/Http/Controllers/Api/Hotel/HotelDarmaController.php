@@ -679,6 +679,28 @@ class HotelDarmaController extends Controller
 
                         }
 
+
+                        //belum dites - buat add fungsi fasilitas room//
+                        foreach($bodyresponse->hotelInfo->rooms as $key => $value){
+                            foreach($value->facilities as $key_room => $value_room){
+
+                                $roomfacility = [
+                                    'name' => $value_room
+                                ];
+
+                                $room = HotelDarmaRoom::where('id_darma_room', $value->ID)->first();
+                                $checkfacility = HotelDarmaRoomFacilitiesList::where('name', $value_room)->first();
+
+                                if(!$checkfacility){
+                                    $newFacility = HotelDarmaRoomFacilitiesList::create($roomfacility);
+                                }
+
+                                $checkfacility = HotelDarmaRoomFacilitiesList::where('name',$value_room)->first();
+                                $room->room_facilities()->attach($checkfacility->id);
+
+                            }
+                        }
+
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
                         //
                     }
