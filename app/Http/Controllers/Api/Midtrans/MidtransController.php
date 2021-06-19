@@ -74,7 +74,7 @@ class MidtransController extends Controller
             }
 
             if($transaction_status=='settlement'){
-                $settlement_time=date("Y-m-d h:m:s",strtotime($request->settlement_time));
+                $settlement_time=date("Y-m-d H:m:s",strtotime($request->settlement_time));
                 $status='process';
                 foreach ($token as $key => $value) {
                     NotificationController::sendPush($value, "Payment successful", "Your Rp ".$transaction_amount." payment for ".$transaction_product." is successful", "Transaction","finish");
@@ -137,7 +137,7 @@ class MidtransController extends Controller
 
             $status="";
             if($transaction_status=='settlement'){
-                $settlement_time=date("Y-m-d h:m:s",strtotime($request->settlement_time));
+                $settlement_time=date("Y-m-d H:m:s",strtotime($request->settlement_time));
                 $status='PAID';
                 NotificationController::sendPush($token, "Payment successful", "Your Rp ".$hotel_amount."payment for booking at".$hotel_name." is successful", "Hotel");
             }else if($transaction_status=='pending'){
@@ -190,7 +190,7 @@ class MidtransController extends Controller
 
             $status="";
             if($transaction_status=='settlement'){
-                $settlement_time=date("Y-m-d h:m:s",strtotime($request->settlement_time));
+                $settlement_time=date("Y-m-d H:m:s",strtotime($request->settlement_time));
                 $status='PAID';
                 //NotificationController::sendPush($token, "Payment successful", "Your Rp ".$hotel_amount."payment for booking at".$hotel_name." is successful", "Hotel");
             }else if($transaction_status=='pending'){
@@ -243,7 +243,7 @@ class MidtransController extends Controller
 
             $status="";
             if($transaction_status=='settlement'){
-                $settlement_time=date("Y-m-d h:m:s",strtotime($request->settlement_time));
+                $settlement_time=date("Y-m-d H:m:s",strtotime($request->settlement_time));
                 $status='PAID';
                 NotificationController::sendPush($token, "Payment successful", "Your Rp ".$transaction_amount." payment for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to." is successful", "Flight");
             }else if($transaction_status=='pending'){
