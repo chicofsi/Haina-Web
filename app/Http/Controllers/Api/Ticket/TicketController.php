@@ -960,21 +960,22 @@ class TicketController extends Controller
                 $return_reference="";
             }else{
                 $return_reference=[];
+                foreach ($tripsession['return'] as $key => $value) {
+                    $return_reference[$key]=[
+                        "airlineCode" => $value->airline_code,
+                        "flightNumber"=> $value->flight_number,
+                        "schOrigin"=> $value->sch_origin,
+                        "schDestination"=> $value->sch_destination,
+                        "detailSchedule"=> $value->detail_schedule,
+                        "schDepartTime"=> str_replace(" ", "T", strval($value->sch_depart_time)),
+                        "schArrivalTime"=> str_replace(" ", "T", strval($value->sch_arrival_time)),
+                        "flightClass"=> $value->flight_class,
+                        "garudaNumber"=> strval($value->garuda_number),
+                        "garudaAvailability"=> strval($value->garuda_availability)
+                    ];
+                }
             }
-            foreach ($tripsession['return'] as $key => $value) {
-                $return_reference[$key]=[
-                    "airlineCode" => $value->airline_code,
-                    "flightNumber"=> $value->flight_number,
-                    "schOrigin"=> $value->sch_origin,
-                    "schDestination"=> $value->sch_destination,
-                    "detailSchedule"=> $value->detail_schedule,
-                    "schDepartTime"=> str_replace(" ", "T", strval($value->sch_depart_time)),
-                    "schArrivalTime"=> str_replace(" ", "T", strval($value->sch_arrival_time)),
-                    "flightClass"=> $value->flight_class,
-                    "garudaNumber"=> strval($value->garuda_number),
-                    "garudaAvailability"=> strval($value->garuda_availability)
-                ];
-            }
+            
             
 
             foreach ($passangersession as $key => $value) {
