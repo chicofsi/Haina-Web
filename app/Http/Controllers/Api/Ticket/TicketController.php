@@ -905,7 +905,10 @@ class TicketController extends Controller
     {
         $bookingsession=$this->checkSession(Auth::id());
         $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->get();
-        $tripsession=FlightTripSession::where('id_flight_booking_session',$bookingsession->id)->get();
+        $detailssession=FlightDetailsSession::where('id_flight_booking_session',$bookingsession->id)->get();
+        foreach ($detailssession as $key => $value) {
+            $tripsession[$value->type]=FlightTripSession::where('id_flight_booking_session',$bookingsession->id)->get();
+        }
         foreach ($passangersession as $key => $value) {
             $addons[$key]=FlightAddonsSession::where('id_flight_passenger_session',$value->id)->get();
         }
@@ -931,14 +934,12 @@ class TicketController extends Controller
             $child=strval($bookingsession->pax_child);
             $infant=strval($bookingsession->pax_infant);
 
-            $departsession=FlightTripSession::where('type','depart')->where('id_flight_booking_session',$bookingsession->id)->get();
-            if($departsession->isEmpty()){
+            if($tripsession['depart']->isEmpty()){
                 $depart_reference="";
-
             }else{
                 $depart_reference=[];
             }
-            foreach ($departsession as $key => $value) {
+            foreach ($tripsession['depart'] as $key => $value) {
                 $depart_reference[$key]=[
                     "airlineCode" => $value->airline_code,
                     "flightNumber"=> $value->flight_number,
@@ -953,15 +954,12 @@ class TicketController extends Controller
                 ];
             }
 
-            $returnsession=FlightTripSession::where('type','return')->where('id_flight_booking_session',$bookingsession->id)->get();
-
-            if($returnsession->isEmpty()){
+            if($tripsession['return']->isEmpty()){
                 $return_reference="";
-
             }else{
                 $return_reference=[];
             }
-            foreach ($returnsession as $key => $value) {
+            foreach ($tripsession['return'] as $key => $value) {
                 $return_reference[$key]=[
                     "airlineCode" => $value->airline_code,
                     "flightNumber"=> $value->flight_number,
@@ -971,8 +969,8 @@ class TicketController extends Controller
                     "schDepartTime"=> str_replace(" ", "T", strval($value->sch_depart_time)),
                     "schArrivalTime"=> str_replace(" ", "T", strval($value->sch_arrival_time)),
                     "flightClass"=> $value->flight_class,
-                    "garudaNumber"=> $value->garuda_number,
-                    "garudaAvailability"=> $value->garuda_availability
+                    "garudaNumber"=> strval($value->garuda_number),
+                    "garudaAvailability"=> strval($value->garuda_availability)
                 ];
             }
             
