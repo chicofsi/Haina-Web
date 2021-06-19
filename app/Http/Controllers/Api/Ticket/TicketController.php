@@ -954,7 +954,9 @@ class TicketController extends Controller
                 ];
             }
 
-            if($tripsession['return']->isEmpty()){
+            $returndetails=FlightDetailsSession::where('id_flight_booking_session',$bookingsession->id)->where('type','return')->get();
+
+            if($returndetails->isEmpty()){
                 $return_reference="";
             }else{
                 $return_reference=[];
