@@ -91,7 +91,7 @@ class TicketController extends Controller
 
     public function checkLoginUser()
     {
-        $token=DarmawisataSession::where('id_user',Auth::id())->whereRaw(' created_at BETWEEN DATE_SUB(date("'.Date('Y-m-d H:m:s').'") , INTERVAL 15 MINUTE) AND date("'.Date('Y-m-d H:m:s').'")')->first();
+        $token=DarmawisataSession::where('id_user',Auth::id())->whereRaw(' created BETWEEN DATE_SUB(now() , INTERVAL 15 MINUTE) AND now()')->first();
         if($token){
             return $token->access_token;
         }else{
