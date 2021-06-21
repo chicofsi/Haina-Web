@@ -16,7 +16,7 @@ class FLightBookingDetails extends Model
     protected $table = 'flight_booking_details';
 
     protected $fillable = [ 
-        'id_flight_book', 'airline_code', 'depart_from', 'depart_to', 'depart_date', 'arrival_date', 'depart_time', 'arrival_time', 'flight_number', 'pnr', 'total_passanger', 'id_class'
+        'id_flight_book', 'airline_code', 'depart_from', 'depart_to', 'depart_date', 'arrival_date', 'pnr'
     ];
 
     public function airlines(){
@@ -31,16 +31,16 @@ class FLightBookingDetails extends Model
         return $this->belongsTo('App\Models\Airports', 'depart_to', 'iata');
     }
 
-    public function class(){
-        return $this->belongsTo('App\Models\FlightClass', 'id_class', 'id');
-    }
-
     public function flightbooking(){
         return $this->belongsTo('App\Models\FlightBooking', 'id_flight_book', 'id');
     }
     
-    public function flightpassanger(){
-    	return $this->hasMany('App\Models\FlightPassanger','id_flight_book_detail','id');
+    public function flightpassenger(){
+    	return $this->hasMany('App\Models\FlightPassenger','id_flight_book_detail','id');
+    }
+
+    public function flighttrip(){
+        return $this->hasMany('App\Models\FlightTrip','id_flight_booking_detail','id');
     }
     
 }

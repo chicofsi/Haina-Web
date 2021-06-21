@@ -16,7 +16,7 @@ class Passangers extends Model
     protected $table = 'passengers';
 
     protected $fillable = [ 
-        'user_id', 'title', 'first_name', 'last_name', 'date_of_birth', 'gender', 'type', 'id_number'
+        'user_id', 'title', 'first_name', 'last_name', 'date_of_birth', 'gender', 'type', 'id_number', 'nationality', 'birth_country', 'parent'
     ];
     public $timestamps = false;
     

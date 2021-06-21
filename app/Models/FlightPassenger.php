@@ -16,12 +16,12 @@ class FlightPassenger extends Model
     protected $table = 'flight_passenger';
 
     protected $fillable = [ 
-        'id_flight_book_detail', 'id_passenger', 'price',
+        'id_flight_trip', 'id_passenger', 'price',
     ];
     public $timestamps = false;
 
-    public function flightbookingdetails(){
-        return $this->belongsTo('App\Models\FlightBookingDetails', 'id_flight_book_detail', 'id');
+    public function flighttrip(){
+        return $this->belongsTo('App\Models\FlightTrip', 'id_flight_trip', 'id');
     }
 
     public function passenger(){
