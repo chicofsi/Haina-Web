@@ -660,23 +660,47 @@ class HotelDarmaController extends Controller
 
                         $this->getImages($hotelid);
 
-                        foreach($bodyresponse->hotelInfo->facilities as $key => $value){
+                        if($bodyresponse->hotelInfo->facilities != null){
+                            foreach($bodyresponse->hotelInfo->facilities as $key => $value){
 
-                            $facility = [
-                                'name' => $value
-                            ];
+                                $facility = [
+                                    'name' => $value
+                                ];
+    
+                                $hotel = HotelDarma::where('id_darma', $hotelid)->first();
+                                $checkfacility = HotelDarmaFacilitiesList::where('name',$value)->first();
+    
+                                if(!$checkfacility){
+                                    $newFacility = HotelDarmaFacilitiesList::create($facility);
+    
+                                }
+                                
+                                $checkfacility = HotelDarmaFacilitiesList::where('name',$value)->first();
+                                $hotel->facilities()->attach($checkfacility->id);
+    
+                            }
+                        }
+                        
 
-                            $hotel = HotelDarma::where('id_darma', $hotelid)->first();
-                            $checkfacility = HotelDarmaFacilitiesList::where('name',$value)->first();
+                        //belum dites - buat add fungsi fasilitas room//
+                        foreach($bodyresponse->hotelInfo->rooms as $key => $value){
+                            foreach($value['facilities'] as $key_room => $value_room){
 
-                            if(!$checkfacility){
-                                $newFacility = HotelDarmaFacilitiesList::create($facility);
+                                $roomfacility = [
+                                    'name' => $value_room
+                                ];
+
+                                $room = HotelDarmaRoom::where('id_darma_room', $value->ID)->first();
+                                $checkfacility = HotelDarmaRoomFacilitiesList::where('name', $value_room)->first();
+
+                                if(!$checkfacility){
+                                    $newFacility = HotelDarmaRoomFacilitiesList::create($roomfacility);
+                                }
+
+                                $checkfacility = HotelDarmaRoomFacilitiesList::where('name',$value_room)->first();
+                                $room->facilities()->attach($checkfacility->id);
 
                             }
-                            
-                            $checkfacility = HotelDarmaFacilitiesList::where('name',$value)->first();
-                            $hotel->facilities()->attach($checkfacility->id);
-
                         }
 
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
