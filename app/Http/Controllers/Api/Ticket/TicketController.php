@@ -935,7 +935,7 @@ class TicketController extends Controller
             $infant=strval($bookingsession->pax_infant);
 
             if($tripsession['depart']->isEmpty()){
-                $depart_reference="";
+                $depart_reference=null;
             }else{
                 $depart_reference=[];
             }
@@ -957,7 +957,7 @@ class TicketController extends Controller
             $returndetails=FlightDetailsSession::where('id_flight_booking_session',$bookingsession->id)->where('type','return')->get();
 
             if($returndetails->isEmpty()){
-                $return_reference="";
+                $return_reference=null;
             }else{
                 $return_reference=[];
                 foreach ($tripsession['return'] as $key => $value) {
