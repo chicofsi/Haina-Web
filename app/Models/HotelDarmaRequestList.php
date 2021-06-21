@@ -14,11 +14,17 @@ class HotelDarmaRequestList extends Model
     public $timestamps = false;
 
     protected $fillable = [ 
-        'description'
+        'id', 'hotel_id', 'description'
     ];
 
+    public function hotel(){
+        return $this->belongsTo('App\Models\HotelDarma', 'hotel_id', 'id');
+    }
+
+    /*
     public function request(){
         return $this->belongsToMany(HotelDarmaBooking::class, 'hotel_darma_requests', 'request_id', 'booking_id');
     }
+    */
 
 }

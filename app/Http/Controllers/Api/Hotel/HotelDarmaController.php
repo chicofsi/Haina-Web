@@ -29,6 +29,7 @@ use App\Models\HotelDarmaBookingSession;
 use App\Models\HotelDarmaBookingRoomReq;
 use App\Models\HotelDarmaBookingPaxes;
 use App\Models\HotelDarmaPaxesList;
+use App\Models\HotelDarmaRequestList;
 use App\Models\PaymentMethod;
 use App\Models\PaymentMethodCategory;
 
@@ -681,8 +682,6 @@ class HotelDarmaController extends Controller
                             }
                         }
                         
-
-                        //belum dites - buat add fungsi fasilitas room//
                         foreach($bodyresponse->hotelInfo->rooms as $key => $value){
                             foreach((array) $value->facilites as $key_room => $value_room){
 
@@ -838,7 +837,27 @@ class HotelDarmaController extends Controller
                             'agent_os_ref' => $idbooking
                         ]);
 
+                        $hotel = HotelDarma::where('id_darma', $hotelid)->first();
 
+                        if(!$hotel[request_array]){
+                            $hotelRequest = HotelDarma::where('id_booking_session',$hotel['id'])->update([
+                                'request_array' => $bodyresponse->specialRequestArrayRequired
+                            ]);
+                        }
+
+                        foreach($bodyresponse->specialRequestArray as $key => $value){
+                            $arrayRequest = [
+                                "id" => $value->ID,
+                                "hotel_id" => $hotel['id'],
+                                "description" => $value->description
+                            ];
+
+                            $hotel_request = HotelDarmaRequestList::where('id', $value->ID)->where('hotel_id', $hotel['id'])->first();
+
+                            if(!$hotel_request){
+                                $newRequest = HotelDarmaRequestList::create($arrayRequest);
+                            }
+                        }
                         
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
                     }
@@ -1055,17 +1074,51 @@ class HotelDarmaController extends Controller
                 $roomtype = "Quad";
             }
 
-            $room_request = [
-                'roomType' => $roomtype,
-                'isRequestChildBed' => $room_req_data['is_request_child_bed'],
-                'childNum' => $room_req_data['child_num'],
-                'childAges' => explode(',', $room_req_data['child_age']),
-                'paxes' => $paxes_array,
-                'isSmokingRoom' => $room_req_data['smoking_room'],
-                'phone' => $room_req_data['phone'],
-                'email' => $room_req_data['email'],
-                'requestDescription' => $room_req_data['request_description'],
-            ];
+            $hotel = HotelDarma::where('id_darma', $bookingsession->hotel_id)->first();
+
+            if($hotel['array_request'] == true){
+                $request_id = explode(',', $room_req_data['request_description']);
+                $special_request = [];
+
+                foreach($request_id as $key => $value){
+
+                    $getDesc = HotelDarmaRequestList::where('id', $value)->where('hotel_id', $hotel['id'])->first();
+
+                    $new_request = (object) [
+                        "ID" => $getDesc['id'],
+                        "description" => $getDesc['description']
+                    ];
+
+                    array_push($special_request, $new_request);
+
+                }
+
+                $room_request = [
+                    'roomType' => $roomtype,
+                    'isRequestChildBed' => $room_req_data['is_request_child_bed'],
+                    'childNum' => $room_req_data['child_num'],
+                    'childAges' => explode(',', $room_req_data['child_age']),
+                    'paxes' => $paxes_array,
+                    'isSmokingRoom' => $room_req_data['smoking_room'],
+                    'phone' => $room_req_data['phone'],
+                    'email' => $room_req_data['email'],
+                    'specialRequestArray' => $special_request,
+                    'requestDescription' => "None"
+                ];
+            }
+            else{
+                $room_request = [
+                    'roomType' => $roomtype,
+                    'isRequestChildBed' => $room_req_data['is_request_child_bed'],
+                    'childNum' => $room_req_data['child_num'],
+                    'childAges' => explode(',', $room_req_data['child_age']),
+                    'paxes' => $paxes_array,
+                    'isSmokingRoom' => $room_req_data['smoking_room'],
+                    'phone' => $room_req_data['phone'],
+                    'email' => $room_req_data['email'],
+                    'requestDescription' => $room_req_data['request_description']
+                ];
+            }
 
             $bedType = [
                 'ID' => 0,
