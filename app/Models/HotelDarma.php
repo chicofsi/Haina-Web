@@ -16,7 +16,7 @@ class HotelDarma extends Model
 
     protected $fillable = [ 
         'hotel_name', 'hotel_address', 'hotel_phone', 'city_id', 'hotel_website', 'hotel_email', 'hotel_rating', 
-        'hotel_long', 'hotel_lat', 'id_darma'
+        'hotel_long', 'hotel_lat', 'id_darma', 'request_array'
     ];
 
     public function city(){
@@ -33,6 +33,10 @@ class HotelDarma extends Model
 
     public function facilities(){
         return $this->belongsToMany(HotelDarmaFacilitiesList::class, 'hotel_darma_facilities', 'hotel_id', 'facilities_id');
+    }
+
+    public function request(){
+        return $this->hasMany('App\Models\HotelDarmaRequestList', 'hotel_id');
     }
 
 }
