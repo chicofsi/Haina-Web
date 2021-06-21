@@ -26,7 +26,7 @@ class HotelDarmaRoom extends Model
         return $this->hasOne('App\Models\HotelDarmaRoomType', 'id', 'room_type_id');
     }
 
-    public function room_facilities(){
+    public function facilities(){
         return $this->belongsToMany(HotelDarmaRoomFacilitiesList::class, 'hotel_darma_room_facilities', 'hotel_room_id', 'facilities_id');
     }
     
