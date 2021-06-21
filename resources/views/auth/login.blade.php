@@ -10,8 +10,8 @@
 
     <title>Login</title>
 
-    <link href="css/style.css" rel="stylesheet">
-    <link href="css/style-responsive.css" rel="stylesheet">
+    <link href="{{ url('vendor/adminex/adminex/adminex/html') }}/css/style.css" rel="stylesheet">
+    <link href="{{ url('vendor/adminex/adminex/adminex/html') }}/css/style-responsive.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -37,8 +37,8 @@
                 <i class="fa fa-check"></i>
             </button>
 
-            
-            
+
+
 
         </div>
 
@@ -51,9 +51,9 @@
 <!-- Placed js at the end of the document so the pages load faster -->
 
 <!-- Placed js at the end of the document so the pages load faster -->
-<script src="js/jquery-1.10.2.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/modernizr.min.js"></script>
+<script src="{{ url('vendor/adminex/adminex/adminex/html') }}/js/jquery-1.10.2.min.js"></script>
+<script src="{{ url('vendor/adminex/adminex/adminex/html') }}/js/bootstrap.min.js"></script>
+<script src="{{ url('vendor/adminex/adminex/adminex/html') }}/js/modernizr.min.js"></script>
 
 </body>
 </html>
