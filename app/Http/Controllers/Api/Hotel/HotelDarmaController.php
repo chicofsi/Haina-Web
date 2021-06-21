@@ -684,7 +684,7 @@ class HotelDarmaController extends Controller
 
                         //belum dites - buat add fungsi fasilitas room//
                         foreach($bodyresponse->hotelInfo->rooms as $key => $value){
-                            foreach($value->facilites as $key_room => $value_room){
+                            foreach($value['facilites'] as $key_room => $value_room){
 
                                 $roomfacility = [
                                     'name' => $value_room
