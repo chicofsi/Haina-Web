@@ -1087,25 +1087,25 @@ class TicketController extends Controller
         }
     }
 
-    // public function setBooking($amount)
-    // {
-    //     $bookingsession=$this->checkSession(Auth::id());
-    //     $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->get();
-    //     $tripsession=FlightTripSession::where('id_flight_booking_session',$bookingsession->id)->get();
+    public function setBooking($amount)
+    {
+        $bookingsession=$this->checkSession(Auth::id());
+        $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->get();
+        $tripsession=FlightTripSession::where('id_flight_booking_session',$bookingsession->id)->get();
 
-    //     $flightbooking=FlightBooking::create([
-    //         "order_id"=> $this->generateOrderId(),
-    //         "id_user" => Auth::id(),
-    //         "trip_type" =>$bookingsession->trip_type,
-    //         "customer_email" => Auth::user()->email,
-    //         "amount" => $amount,
-    //         "status" => "pending",
-    //         "booking_date" => date("Y-m-d h:m:s")
-    //     ]);
+        // $flightbooking=FlightBooking::create([
+        //     "order_id"=> $this->generateOrderId(),
+        //     "id_user" => Auth::id(),
+        //     "trip_type" =>$bookingsession->trip_type,
+        //     "customer_email" => Auth::user()->email,
+        //     "amount" => $amount,
+        //     "status" => "pending",
+        //     "booking_date" => date("Y-m-d h:m:s")
+        // ]);
 
-    //     $
+        
 
-    // }
+    }
 
     function generateOrderId() {
         $randomString = '';
