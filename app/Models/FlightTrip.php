@@ -18,7 +18,7 @@ class FLightTrip extends Model
     protected $fillable = [ 
         'id_flight_booking_detail', 'airline_code', 'flight_number', 'origin', 'destination', 'detail_schedule', 'depart_time', 'arrival_time', 'flight_class', 'garuda_number', 'garuda_availability'
     ];
-    protected $timestamps=false;
+    public $timestamps=false;
 
     public function flightbookingdetails(){
         return $this->belongsTo('App\Models\FlightBookingDetails', 'id_flight_booking_detail', 'id');
