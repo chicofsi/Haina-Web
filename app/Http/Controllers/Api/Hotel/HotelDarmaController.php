@@ -14,6 +14,7 @@ use GuzzleHttp\TransferStats;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
 
+use App\Models\City;
 use App\Models\HotelDarma;
 use App\Models\HotelDarmaBooking;
 use App\Models\HotelDarmaPayment;
@@ -171,6 +172,12 @@ class HotelDarmaController extends Controller
             dd($e);
             return;
         }
+    }
+
+    public function getIndoCities(){
+        $cities = City::all()->get();
+
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Passport List Success!','data'=> $cities]), 200);
     }
 
     public function getPassport(Request $request){
