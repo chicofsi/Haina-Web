@@ -177,6 +177,12 @@ class HotelDarmaController extends Controller
     public function getIndoCities(){
         $cities = City::all();
 
+        foreach($cities as $key=>$value){
+            if($value->image = null){
+                $value->image = "https://images.bisnis-cdn.com/posts/2017/12/02/714525/nhantasari191117-1.jpg";
+            }
+        }
+
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Passport List Success!','data'=> $cities]), 200);
     }
 
