@@ -504,7 +504,7 @@ class HotelDarmaController extends Controller
                                 'hotel_name' => $value->name,
                                 'hotel_address' => $value->address,
                                 'hotel_phone' => $value->phone, 
-                                'city_id' => $request->cityID, 
+                                'city_id' => $request->city_id, 
                                 'hotel_website' => $value->website, 
                                 'hotel_email' => $value->email, 
                                 'hotel_rating' => $value->rating, 
