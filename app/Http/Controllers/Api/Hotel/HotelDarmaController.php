@@ -175,7 +175,7 @@ class HotelDarmaController extends Controller
     }
 
     public function getIndoCities(){
-        $cities = City::all()->get();
+        $cities = City::all();
 
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Passport List Success!','data'=> $cities]), 200);
     }
