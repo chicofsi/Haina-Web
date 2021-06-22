@@ -382,6 +382,10 @@ class HotelDarmaController extends Controller
                         }
                     }
 
+                    $firstimage = HotelDarmaImage::where('hotel_id', $hotel['id'])->first();
+
+                    return $firstimage;
+
                 }
         }
         catch(RequestException $e){
@@ -678,7 +682,7 @@ class HotelDarmaController extends Controller
                             }
                         }
 
-                        $this->getImages($hotelid);
+                        //$this->getImages($hotelid);
 
                         if($bodyresponse->hotelInfo->facilities != null){
                             foreach($bodyresponse->hotelInfo->facilities as $key => $value){
