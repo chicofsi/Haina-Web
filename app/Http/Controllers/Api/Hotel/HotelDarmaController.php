@@ -495,7 +495,26 @@ class HotelDarmaController extends Controller
     
                     $roomrequestdata = HotelDarmaBookingRoomReq::create($roomreq_session);
 
+
                     foreach($bodyresponse->hotels as $key => $value){
+
+                        $hotel = HotelDarma::where('id_darma', $value->ID)->first();
+
+                        if(!$hotel){
+                            $hoteldata = [
+                                'hotel_name' => $value->name,
+                                'hotel_address' => $value->address,
+                                'hotel_phone' => $value->phone, 
+                                'city_id' => $request->cityID, 
+                                'hotel_website' => $value->website, 
+                                'hotel_email' => $value->email, 
+                                'hotel_rating' => $value->rating, 
+                                'id_darma' => $value->ID
+                            ];
+
+                            $newhotel = HotelDarma::create($hoteldata);
+                        }
+
                         $image = $this->getImages($value->ID);
 
                         $value->image = $image; 
@@ -632,24 +651,12 @@ class HotelDarmaController extends Controller
 
                         unset($bodyresponse->hotelInfo->nearbyProperty);
 
-                        $hotel = HotelDarma::where('id_darma', $hotelid)->first();
+                        //$hotel = HotelDarma::where('id_darma', $hotelid)->first();
 
-                        if(!$hotel){
-                            $hoteldata = [
-                                'hotel_name' => $bodyresponse->hotelInfo->name,
-                                'hotel_address' => $bodyresponse->hotelInfo->address,
-                                'hotel_phone' => $bodyresponse->hotelInfo->phone, 
-                                'city_id' => $bodyresponse->cityID, 
-                                'hotel_website' => $bodyresponse->hotelInfo->website, 
-                                'hotel_email' => $bodyresponse->hotelInfo->email, 
-                                'hotel_rating' => $bodyresponse->hotelInfo->rating, 
-                                'hotel_long' => $bodyresponse->hotelInfo->longitude, 
-                                'hotel_lat' => $bodyresponse->hotelInfo->latitude, 
-                                'id_darma' => $bodyresponse->hotelInfo->ID
-                            ];
-
-                            $newhotel = HotelDarma::create($hoteldata);
-                        }
+                        $newhotel = HotelDarma::where('id_darma', $hotelid)->update([
+                            'hotel_long' => $bodyresponse->hotelInfo->longitude, 
+                            'hotel_lat' => $bodyresponse->hotelInfo->latitude, 
+                        ]);
 
                         foreach($bodyresponse->hotelInfo->rooms as $key => $value){
                             $room = HotelDarmaRoom::where('id_darma_room', $value->ID)->first();
