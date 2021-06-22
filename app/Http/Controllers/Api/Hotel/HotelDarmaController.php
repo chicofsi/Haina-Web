@@ -178,7 +178,7 @@ class HotelDarmaController extends Controller
         $cities = City::all();
 
         foreach($cities as $key=>$value){
-            if($value->image = null){
+            if($value->image == null){
                 $value->image = "https://images.bisnis-cdn.com/posts/2017/12/02/714525/nhantasari191117-1.jpg";
             }
         }
