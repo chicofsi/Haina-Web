@@ -368,7 +368,7 @@ class HotelDarmaController extends Controller
                 }
                 else{
                     $hotel = HotelDarma::where('id_darma', $hotel_id)->first();
-
+                    return $hotel;
                     $hotelimagecheck = HotelDarmaImage::where('hotel_id', $hotel['id'])->first();
 
                     if(! $hotelimagecheck){
@@ -497,8 +497,6 @@ class HotelDarmaController extends Controller
 
 
                     foreach($bodyresponse->hotels as $key => $value){
-
-                        $hotel = HotelDarma::where('id_darma', $value->ID)->first();
 
                         if(!$hotel){
                             $hoteldata = [
