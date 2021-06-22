@@ -496,7 +496,7 @@ class HotelDarmaController extends Controller
                     $roomrequestdata = HotelDarmaBookingRoomReq::create($roomreq_session);
 
                     foreach($bodyresponse->hotels as $key => $value){
-                        $image = getImages($value->ID);
+                        $image = $this->getImages($value->ID);
 
                         $value->image = $image; 
                     }
