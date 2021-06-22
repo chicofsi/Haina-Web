@@ -497,6 +497,7 @@ class HotelDarmaController extends Controller
 
 
                     foreach($bodyresponse->hotels as $key => $value){
+                        $hotel = HotelDarma::where('id_darma', $value->ID)->first();
 
                         if(!$hotel){
                             $hoteldata = [
