@@ -324,6 +324,71 @@ class HotelDarmaController extends Controller
         }
     }
 
+    public function getImages($hotel_id){
+        $userid=$this->username;
+        $token=$this->checkLoginUser();
+        
+        $body = [
+            'userID'=>$userid,
+            'accessToken'=>$token,
+            'hotelID'=>$hotel_id
+        ];
+
+        try{
+            $response=$this->client->request(
+                'POST',
+                'Hotel/Images5',
+                [
+                    'form_params' => $body,
+                    'on_stats' => function (TransferStats $stats) use (&$url) {
+                        $url = $stats->getEffectiveUri();
+                    }
+                ]  
+            );
+
+            $bodyresponse=json_decode($response->getBody()->getContents());
+    
+    
+                DarmawisataRequest::insert(
+                    [
+                        'request'=>json_encode($body),
+                        'response'=>json_encode($bodyresponse),
+                        'status'=>$bodyresponse->status,
+                        'url'=>$url,
+                        'response_code'=>$response->getStatusCode()
+                    ]
+                );
+    
+                if($bodyresponse->status=="FAILED"){
+                    if($bodyresponse->respMessage=="member authentication failed"){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+                    }else if($bodyresponse->respMessage=="wrong format request or null mandatory data"){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Data is incomplete!','data'=> '']), 403);
+                    }
+                }
+                else{
+                    $hotel = HotelDarma::where('id_darma', $hotel_id)->first();
+
+                    $hotelimagecheck = HotelDarmaImage::where('hotel_id', $hotel['id'])->first();
+
+                    if(! $hotelimagecheck){
+                        foreach($bodyresponse->images as $key => $value){
+                            $hotelimage = [
+                                'hotel_id' => $hotel['id'],
+                                'image' => $value
+                            ];
+
+                            $newimage = HotelDarmaImage::create($hotelimage);
+                        }
+                    }
+
+                }
+        }
+        catch(RequestException $e){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Data not Get!','data'=> '']), 401);
+        }
+    }
+
     //Search #1 - Search All Hotel in City
 
     public function searchHotel(Request $request){
@@ -445,71 +510,6 @@ class HotelDarmaController extends Controller
            
     }
 
-
-    public function getImages($hotel_id){
-        $userid=$this->username;
-        $token=$this->checkLoginUser();
-        
-        $body = [
-            'userID'=>$userid,
-            'accessToken'=>$token,
-            'hotelID'=>$hotel_id
-        ];
-
-        try{
-            $response=$this->client->request(
-                'POST',
-                'Hotel/Images5',
-                [
-                    'form_params' => $body,
-                    'on_stats' => function (TransferStats $stats) use (&$url) {
-                        $url = $stats->getEffectiveUri();
-                    }
-                ]  
-            );
-
-            $bodyresponse=json_decode($response->getBody()->getContents());
-    
-    
-                DarmawisataRequest::insert(
-                    [
-                        'request'=>json_encode($body),
-                        'response'=>json_encode($bodyresponse),
-                        'status'=>$bodyresponse->status,
-                        'url'=>$url,
-                        'response_code'=>$response->getStatusCode()
-                    ]
-                );
-    
-                if($bodyresponse->status=="FAILED"){
-                    if($bodyresponse->respMessage=="member authentication failed"){
-                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
-                    }else if($bodyresponse->respMessage=="wrong format request or null mandatory data"){
-                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Data is incomplete!','data'=> '']), 403);
-                    }
-                }
-                else{
-                    $hotel = HotelDarma::where('id_darma', $hotel_id)->first();
-
-                    $hotelimagecheck = HotelDarmaImage::where('hotel_id', $hotel['id'])->first();
-
-                    if(! $hotelimagecheck){
-                        foreach($bodyresponse->images as $key => $value){
-                            $hotelimage = [
-                                'hotel_id' => $hotel['id'],
-                                'image' => $value
-                            ];
-
-                            $newimage = HotelDarmaImage::create($hotelimage);
-                        }
-                    }
-
-                }
-        }
-        catch(RequestException $e){
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Data not Get!','data'=> '']), 401);
-        }
-    }
 
     //Search #1.5 - Check Session
 
