@@ -425,6 +425,12 @@ class HotelDarmaController extends Controller
                     ];
     
                     $roomrequestdata = HotelDarmaBookingRoomReq::create($roomreq_session);
+
+                    foreach($bodyresponse->hotels as $key => $value){
+                        $image = getImages($value->ID);
+
+                        $value->image = $image; 
+                    }
                     
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
     
