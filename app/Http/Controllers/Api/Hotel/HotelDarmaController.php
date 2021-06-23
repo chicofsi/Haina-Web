@@ -741,7 +741,7 @@ class HotelDarmaController extends Controller
 
                             foreach($value->facilities as $facility){
                                 $checkcommon = HotelDarmaCommonFacility::where('name', 'like', '%'.$facility.'%')->first();
-
+                                return($checkcommon);
                                 if( in_array($checkcommon, $common_facility, false)){
                                     array_push($checkcommon, $common_facility);
                                 }
