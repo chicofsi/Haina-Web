@@ -729,6 +729,8 @@ class HotelDarmaController extends Controller
                         }
                         */
 
+                        $common_facility = [];
+
                         foreach($bodyresponse->hotelInfo->facility as $key => $value){
 
                             $checkfacility = HotelDarmaFacilitiesGroup::where('name', $value->facilityGroupName)->first();
@@ -737,7 +739,17 @@ class HotelDarmaController extends Controller
                                 $value->icon = $checkfacility['icon'];
                             }
 
+                            foreach($value->facilities as $facility){
+                                $checkcommon = HotelDarmaCommonFacility::where('name', 'like', '%'.$facility.'%')->first();
+
+                                if( in_array($checkcommon, $common_facility) == false){
+                                    array_push($checkcommon, $common_facility);
+                                }
+                            }
+
                         }
+
+                        $bodyresponse->hotelInfo->common_facility = $common_facility;
 
 
                         foreach($bodyresponse->hotelInfo->rooms as $key => $value){
