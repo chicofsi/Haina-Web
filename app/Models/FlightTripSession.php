@@ -18,11 +18,11 @@ class FLightTripSession extends Model
     public $timestamps = false;
 
     protected $fillable = [ 
-        'id_flight_details_session', 'type', 'airline_code', 'flight_number', 'sch_origin', 'sch_destination', 'detail_schedule', 'sch_depart_time', 'sch_arrival_time', 'flight_class', 'garuda_number', 'garuda_availability'
+        'id_flight_trip_session', 'type', 'airline_code', 'flight_number', 'sch_origin', 'sch_destination', 'detail_schedule', 'sch_depart_time', 'sch_arrival_time', 'flight_class', 'garuda_number', 'garuda_availability'
     ];
 
-    public function flightbookingsession(){
-        return $this->belongsTo('App\Models\FlightBookingSession', 'id_flight_booking_session', 'id');
+    public function flighttripsession(){
+        return $this->belongsTo('App\Models\FlightTripSession', 'id_flight_trip_session', 'id');
     }
 
     public function flightaddonssession(){

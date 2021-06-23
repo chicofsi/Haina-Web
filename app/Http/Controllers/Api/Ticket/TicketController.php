@@ -736,6 +736,67 @@ class TicketController extends Controller
                         return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Code Wrong!','data'=> $bodyresponse->airlineAccessCode]), 401);;
                     }
                 }else{
+                    try {
+                        $body=[
+                            'userID'=>$userid,
+                            'accessToken'=>$token,
+                            'airlineID'=>$airline,
+                            'tripType'=>$trip_type,
+                            'origin'=>$origin,
+                            'destination'=>$destination,
+                            'departDate'=>$depart_date,
+                            'returnDate'=>$return_date,
+                            'paxAdult'=>$adult,
+                            'paxChild'=>$child,
+                            'paxInfant'=>$infant,
+                            'schDepart'=>$depart_reference,
+                            'schReturn'=>$return_reference,
+                            'contactTitle' => $bookingsession->contact_title,
+                            'contactFirstName' => $bookingsession->contact_first_name,
+                            'contactLastName' => $bookingsession->contact_last_name,
+                            'contactCountryCodePhone' => $bookingsession->contact_country_code_phone,
+                            'contactAreaCodePhone' => $bookingsession->contact_area_code,
+                            'contactRemainingPhoneNo' => $bookingsession->contact_remaining_phone_no,
+                            'insurance' => $bookingsession->insurance,
+                            'paxDetails' => $pax_data 
+                        ];
+                        $responsee=$this->client->request(
+                            'POST',
+                            'airline/seat',
+                            [
+                                'form_params' => $body,
+                                'on_stats' => function (TransferStats $stats) use (&$url) {
+                                    $url = $stats->getEffectiveUri();
+                                }
+                            ]  
+                        );
+
+                        $bodyresponsee=json_decode($responsee->getBody()->getContents());
+
+
+                        DarmawisataRequest::insert(
+                            [
+                                'request'=>json_encode($body),
+                                'response'=>json_encode($bodyresponsee),
+                                'status'=>$bodyresponsee->status,
+                                'url'=>$url,
+                                'response_code'=>$responsee->getStatusCode()
+                            ]
+                        );
+                        if($bodyresponsee->status=="FAILED"){
+                            if($bodyresponsee->respMessage=="member authentication failed"){
+                                return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+                            }else if($bodyresponsee->respMessage=="airline access code is empty or not valid"){
+                                return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Code Wrong!','data'=> $bodyresponsee->airlineAccessCode]), 401);;
+                            }
+                        }else{
+                            $data["addOns"]=$bodyresponse->addOns;
+                            $data["seatAddOns"]=$bodyresponsee->seatAddOns;
+                            return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $data]), 200);
+                        }
+                    }catch(RequestException $e) {
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+                    }
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
                 }
             }catch(RequestException $e) {
@@ -1169,12 +1230,16 @@ class TicketController extends Controller
 
             $flightbookingdetails = FlightBookingDetails::where('id_flight_book',$flightbooking->id)->get();
             foreach ($flightbookingdetails as $key_details => $value_details) {
-                $flighttrip=FlightTrip::where('id_flight_details_session',$value_details->id)->get();
+                $flighttrip=FlightTrip::where('id_flight_booking_detail',$value_details->id)->with('flightaddonssession')->get();
                 foreach ($flighttrip as $key_trip => $value_trip) {
                     $flightpassenger=FlightPassenger::create([
                         "id_passenger" => $passenger->id,
                         "id_flight_trip" => $value_trip->id
                     ]);
+                    // $flightaddons = FlightAddons::create([
+                    //     "id_flight_passenger" => $flightpassenger,
+                    //     ba
+                    // ])
                 }
             }
 
