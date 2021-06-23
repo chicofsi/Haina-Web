@@ -793,7 +793,7 @@ class TicketController extends Controller
                             foreach ($bodyresponsee->seatAddOns as $key => $value) {
                                 foreach ($bodyresponse->addOns as $k => $v) {
                                     if($value->origin==$v->origin && $value->destination==$v->destination){
-                                        $v['seatInfos']=$value->infos;
+                                        $bodyresponse->addOns[$k]['seatInfos']=$value->infos;
                                     }
                                 }
                             }
