@@ -734,7 +734,7 @@ class HotelDarmaController extends Controller
                             $checkfacility = HotelDarmaFacilitiesGroup::where('name', $value->facilityGroupName)->first();
 
                             if($checkfacility){
-                                $key->icon = $checkfacility['icon'];
+                                $value->icon = $checkfacility['icon'];
                             }
 
                         }
