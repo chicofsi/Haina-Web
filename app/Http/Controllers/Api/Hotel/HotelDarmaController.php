@@ -739,9 +739,9 @@ class HotelDarmaController extends Controller
                                 $value->icon = $checkfacility['icon'];
                             }
 
-                            foreach($value->facilities as $facility){
-                                $checkcommon = HotelDarmaCommonFacility::where('name', 'like', '%'.$facility.'%')->first();
-                                return($checkcommon);
+                            foreach($value->facilities as $facility => $facility_name){
+                                $checkcommon = HotelDarmaCommonFacility::where('name', 'like', '%'.$facility_name.'%')->first();
+                                //return($checkcommon);
                                 if( in_array($checkcommon, $common_facility, false)){
                                     array_push($checkcommon, $common_facility);
                                 }
