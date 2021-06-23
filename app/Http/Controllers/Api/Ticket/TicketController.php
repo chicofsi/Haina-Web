@@ -790,9 +790,14 @@ class TicketController extends Controller
                                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Code Wrong!','data'=> $bodyresponsee->airlineAccessCode]), 401);;
                             }
                         }else{
-                            $data["addOns"]=$bodyresponse->addOns;
-                            $data["seatAddOns"]=$bodyresponsee->seatAddOns;
-                            return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $data]), 200);
+                            foreach ($bodyresponsee->seatAddOns as $key => $value) {
+                                foreach ($bodyresponse->addOns as $k => $v) {
+                                    if($value->origin==$v->origin && $value->destination==$v->destination){
+                                        $v['seatInfos']=$value->infos;
+                                    }
+                                }
+                            }
+                            return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse->addOns]), 200);
                         }
                     }catch(RequestException $e) {
                         return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
