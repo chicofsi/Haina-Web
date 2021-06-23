@@ -525,11 +525,11 @@ class TicketController extends Controller
                             $detailssession=FlightDetailsSession::create([
                                 "id_flight_booking_session" => $bookingsession->id,
                                 "type" => "return",
-                            "airline_code" => $request->depart['airline_code'],
-                            "depart_from" => $request->depart['origin'],
-                            "depart_to" => $request->depart['destination'],
-                            "depart_date" => $request->depart['depart_time'],
-                            "arrival_date" => $request->depart['arrival_time'],
+                                "airline_code" => $request->depart['airline_code'],
+                                "depart_from" => $request->depart['origin'],
+                                "depart_to" => $request->depart['destination'],
+                                "depart_date" => $request->depart['depart_time'],
+                                "arrival_date" => $request->depart['arrival_time'],
                             ]);
                             foreach ($request->return['flight_detail'] as $key => $value) {
                                 $tripdepart=FlightTripSession::create([
