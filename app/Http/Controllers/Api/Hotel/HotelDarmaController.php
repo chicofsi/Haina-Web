@@ -103,7 +103,7 @@ class HotelDarmaController extends Controller
 
     public function checkLoginUser()
     {
-        $token=DarmawisataSession::where('id_user',Auth::id())->whereRaw(' created_at > DATE_SUB( NOW(), INTERVAL 15 MINUTE )')->first();
+        $token=DarmawisataSession::where('id_user',Auth::id())->whereRaw(' created BETWEEN DATE_SUB(now() , INTERVAL 15 MINUTE) AND now()')->first();
         if($token){
             return $token->access_token;
         }else{
