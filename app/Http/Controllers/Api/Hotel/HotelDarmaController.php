@@ -702,8 +702,9 @@ class HotelDarmaController extends Controller
                         }
 
                         $this->getImages($hotelid);
-
+                        /*
                         if($bodyresponse->hotelInfo->facilities != null){
+                            
                             foreach($bodyresponse->hotelInfo->facilities as $key => $value){
 
                                 $facility = [
@@ -722,8 +723,21 @@ class HotelDarmaController extends Controller
                                 $hotel->facilities()->attach($checkfacility->id);
     
                             }
+                            
                         }
-                        
+                        */
+
+                        foreach($bodyresponse->hotelInfo->facility as $key => $value){
+
+                            $checkfacility = HotelDarmaFacilitiesGroup::where('name', $value->facilityGroupName)->first();
+
+                            if($checkfacility){
+                                $key->icon = $checkfacility['icon'];
+                            }
+
+                        }
+
+
                         foreach($bodyresponse->hotelInfo->rooms as $key => $value){
                             foreach((array) $value->facilites as $key_room => $value_room){
 
