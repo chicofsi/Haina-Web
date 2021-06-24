@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\Midtrans;
 
 use App\Http\Controllers\Controller;
+
+use App\Http\Controllers\Api\Hotel\HotelDarmaController;
 use App\Http\Controllers\Api\Notification\NotificationController;
 use Illuminate\Http\Request;
 use App\Http\Resources\ValueMessage;
@@ -192,11 +194,13 @@ class MidtransController extends Controller
             if($transaction_status=='settlement'){
                 $settlement_time=date("Y-m-d H:m:s",strtotime($request->settlement_time));
                 $status='PAID';
-                //NotificationController::sendPush($token, "Payment successful", "Your Rp ".$hotel_amount."payment for booking at".$hotel_name." is successful", "Hotel");
+                NotificationController::sendPush($token, "Payment successful", "Your Rp ".$hotel_amount."payment for booking at".$hotel_name." is successful", "Hotel");
+                HotelDarmaController::issueBooking();
+
             }else if($transaction_status=='pending'){
                 $settlement_time=null;
                 $status='UNPAID';
-                //NotificationController::sendPush($token, "Waiting for payment", "There is a pending payment for booking at ".$hotel_name.". Please finish payment in 24 hours", "Hotel");
+                NotificationController::sendPush($token, "Waiting for payment", "There is a pending payment for booking at ".$hotel_name.". Please finish payment in 24 hours", "Hotel");
             }else if($transaction_status=='expire'){
                 $settlement_time=null;
                 $status='CANCELLED';
