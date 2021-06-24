@@ -915,7 +915,7 @@ class HotelDarmaController extends Controller
                             ]);
                         }
 
-                        foreach($bodyresponse->specialRequestArray as $key => $value){
+                        foreach((array)$bodyresponse->specialRequestArray as $key => $value){
                             $arrayRequest = [
                                 "id" => $value->ID,
                                 "hotel_id" => $hotel['id'],
