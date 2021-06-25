@@ -37,6 +37,7 @@ use App\Models\PaymentMethod;
 use App\Models\PaymentMethodCategory;
 
 use App\Http\Resources\ValueMessage;
+use App\Http\Resources\HotelDarmaBookingResource;
 
 class HotelDarmaController extends Controller
 {
@@ -1280,6 +1281,23 @@ class HotelDarmaController extends Controller
     }
 
     public function getBookingList(Request $request){
+        $booking = HotelDarmaBooking::where('user_id', Auth::user()->id)->get();
+
+        if($booking){
+            foreach($booking as $key => $value){
+                $booking_data[$key] = new HotelDarmaBookingResource($value);
+            }
+
+
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0, 'message'=>'Data Not Found!', 'data'=> '']), 404);
+        }
+
+    }
+
+    /*
+    public function getBookingList(Request $request){
         $userid=$this->username;
         $token=$this->checkLoginUser();
 
@@ -1328,6 +1346,7 @@ class HotelDarmaController extends Controller
         }
         return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
     }
+    */
 
     public function getBookingDetail(Request $request){
         $userid=$this->username;
