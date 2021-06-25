@@ -1288,6 +1288,7 @@ class HotelDarmaController extends Controller
                 $booking_data[$key] = new HotelDarmaBookingResource($value);
             }
 
+            return response()->json(new ValueMessage(['value'=>1, 'message'=>'Get Booking List Success', 'data'=> $booking_data]), 200);
 
         }
         else{

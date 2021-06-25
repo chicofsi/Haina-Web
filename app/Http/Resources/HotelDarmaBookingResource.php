@@ -4,19 +4,20 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+use App\Models\HotelDarma;
+
 class HotelDarmaBookingResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
+
     public function toArray($request)
     {
+
+        $hotel = HotelDarma::where('id', $this->hotel_id)->first();
+
         return [
             'id' => $this->id,
             'hotel_id' => $this->hotel_id,
+            'hotel_name' => $hotel['hotel_name'],
             'room_id' => $this->room_id,
             'user_id' => $this->user_id,
             'check_in' => $this->check_in,
