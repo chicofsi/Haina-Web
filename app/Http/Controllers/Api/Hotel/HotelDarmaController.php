@@ -1281,14 +1281,20 @@ class HotelDarmaController extends Controller
     }
 
     public function getBookingList(Request $request){
-        $booking = HotelDarmaBooking::where('user_id', Auth::user()->id)->get();
+        $booking = HotelDarmaBooking::where('user_id', Auth::id())->get();
 
         if($booking){
-            foreach($booking as $key => $value){
-                $booking_data[$key] = new HotelDarmaBookingResource($value);
-            }
+            $user_id = Auth::id();
 
-            return response()->json(new ValueMessage(['value'=>1, 'message'=>'Get Booking List Success', 'data'=> $booking_data]), 200);
+            $paidtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->where('status', 'PAID')->orderBy('updated_at', 'DESC')->get();
+            $unpaidtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->where('status', 'UNPAID')->orderBy('updated_at', 'DESC')->get();
+            $canceltrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->where('status', 'CANCELLED')->orderBy('updated_at', 'DESC')->get();
+
+            $data['paid'] = $paidtrans->values();
+            $data['unpaid'] = $unpaidtrans->values();
+            $data['cancelled'] = $canceltrans->values();
+
+            return response()->json(new ValueMessage(['value'=>1, 'message'=>'Get Data Success!', 'data'=> $data]), 200); 
 
         }
         else{
