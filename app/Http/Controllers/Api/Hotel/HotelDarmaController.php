@@ -49,7 +49,7 @@ class HotelDarmaController extends Controller
         $this->client = new Client([
             'verify' => false,
             'base_uri' => 'https://61.8.74.42:7080/h2h/',
-            'timeout'  => 300.0
+            'timeout'  => 600.0
         ]);
     }
 
