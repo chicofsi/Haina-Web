@@ -1157,7 +1157,7 @@ class TicketController extends Controller
                     }
                 }else{
 
-                    $this->setBooking();
+                    $this->setBooking($request->amount);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
                 }
@@ -1168,7 +1168,7 @@ class TicketController extends Controller
         }
     }
 
-    public function setBooking(Request $request)
+    public function setBooking($amount)
     {
         $bookingsession=$this->checkSession(Auth::id());
         $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->get();
@@ -1179,7 +1179,7 @@ class TicketController extends Controller
             "id_user" => Auth::id(),
             "trip_type" =>$bookingsession->trip_type,
             "customer_email" => Auth::user()->email,
-            "amount" => $request->amount,
+            "amount" => $amount,
             "status" => "pending",
             "booking_date" => date("Y-m-d h:m:s")
         ]);
