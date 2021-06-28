@@ -961,6 +961,7 @@ class TicketController extends Controller
                     $detailssession=FlightDetailsSession::where('id_flight_booking_session',$bookingsession->id)->get();
 
                     foreach ($detailssession as $k => $v) {
+                        dd($value['trip']);
                         foreach ($value['trip'] as $key => $value) {
                             $trip=FlightTripSession::where('id_flight_details_session',$v->id)->where('sch_origin',$value['origin'])->where('sch_destination',$value['destination'])->first();
                             $addons=[
