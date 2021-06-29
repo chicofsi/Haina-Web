@@ -1317,7 +1317,7 @@ class HotelDarmaController extends Controller
             foreach($unpaidtrans as $key => $value){
                 $bookingpaxes = HotelDarmaBookingSession::where('user_id', Auth::id())->first();
                 $roomreq = HotelDarmaBookingRoomReq::where('id_booking_session', $bookingpaxes['id'])->first();
-                $total_guest = HotelDarmaBookingPaxes::where('id_room_req', $room_req['id'])->count();
+                $total_guest = HotelDarmaBookingPaxes::where('id_room_req', $roomreq['id'])->count();
                 $value->total_guests = $total_guest;
 
                 $total_night = strtotime($value->check_out) - strtotime($value->check_in);
