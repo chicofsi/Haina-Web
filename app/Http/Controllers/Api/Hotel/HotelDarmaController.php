@@ -1322,6 +1322,13 @@ class HotelDarmaController extends Controller
 
                 $total_night = strtotime($value->check_out) - strtotime($value->check_in);
                 $value->total_nights = $total_night / 86400;
+
+                $payment_method = HotelDarmaPayment::where('booking_id', $value->id)->first();
+                $payment = PaymentMethod::where('id',$payment_method['payment_method_id'])->with('category')->first();
+                $value->payment_method = $payment;
+
+                $images = HotelDarmaImage::where('hotel_id', $value->hotel_id)->get();
+                $value->images = $images;
             }
             foreach($canceltrans as $key => $value){
 
