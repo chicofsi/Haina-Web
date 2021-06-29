@@ -706,7 +706,7 @@ class HotelDarmaController extends Controller
                             }
                         }
 
-                        $this->getImages($hotelid);
+                        $image = $this->getImages($hotelid);
                         /*
                         if($bodyresponse->hotelInfo->facilities != null){
                             
