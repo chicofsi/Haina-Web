@@ -1305,7 +1305,21 @@ class HotelDarmaController extends Controller
                 $value->total_guests = $total_guest;
 
                 $total_night = strtotime($value->check_out) - strtotime($value->check_in);
-                $value->total_nights = $total_night;
+                $value->total_nights = $total_night / 86400;
+            }
+            foreach($unpaidtrans as $key => $value){
+                $total_guest = HotelDarmaPaxesList::where('booking_id', $value->id)->count();
+                $value->total_guests = $total_guest;
+
+                $total_night = strtotime($value->check_out) - strtotime($value->check_in);
+                $value->total_nights = $total_night / 86400;
+            }
+            foreach($canceltrans as $key => $value){
+                $total_guest = HotelDarmaPaxesList::where('booking_id', $value->id)->count();
+                $value->total_guests = $total_guest;
+
+                $total_night = strtotime($value->check_out) - strtotime($value->check_in);
+                $value->total_nights = $total_night / 86400;
             }
 
             $data['paid'] = $paidtrans->values();
