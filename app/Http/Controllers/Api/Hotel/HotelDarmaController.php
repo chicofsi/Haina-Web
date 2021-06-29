@@ -911,9 +911,17 @@ class HotelDarmaController extends Controller
                         $hotel = HotelDarma::where('id_darma', $hotelid)->first();
 
                         if(!$hotel['request_array'] || $hotel['request_array'] != $bodyresponse->specialRequestArrayRequired){
-                            $hotelRequest = HotelDarma::where('id',$hotel['id'])->update([
-                                'request_array' => $bodyresponse->specialRequestArrayRequired
-                            ]);
+                            if($bodyresponse->specialRequestArrayRequired == true){
+                                $hotelRequest = HotelDarma::where('id',$hotel['id'])->update([
+                                    'request_array' => 1
+                                ]);
+                            }
+                            else{
+                                $hotelRequest = HotelDarma::where('id',$hotel['id'])->update([
+                                    'request_array' => 0
+                                ]);
+                            }
+                            
                         }
 
                         foreach((array)$bodyresponse->specialRequestArray as $key => $value){
