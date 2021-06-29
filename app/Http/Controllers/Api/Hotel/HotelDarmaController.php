@@ -1302,10 +1302,10 @@ class HotelDarmaController extends Controller
 
             foreach($paidtrans as $key => $value){
                 $total_guest = HotelDarmaPaxesList::where('booking_id', $value->id)->count();
-                $key['total_guests'] = $total_guest;
+                $value->total_guests = $total_guest;
 
                 $total_night = strtotime($value->check_out) - strtotime($value->check_in);
-                $key['total_nights'] = $total_night;
+                $value->total_nights = $total_night;
             }
 
             $data['paid'] = $paidtrans->values();
