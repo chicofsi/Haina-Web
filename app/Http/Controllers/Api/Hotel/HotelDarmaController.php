@@ -1335,6 +1335,21 @@ class HotelDarmaController extends Controller
 
     }
 
+    public function cancel(Request $request){
+        $booking = HotelDarmaBooking::where('id', $request->booking_id)->first();
+
+        if($booking){
+            $cancelbooking = HotelDarmaBooking::where('id', $request->booking_id)->update([
+                'status' => 'CANCELLED'
+            ]);
+
+            return response()->json(new ValueMessage(['value'=>0, 'message'=>'Booking cancelled!', 'data'=> $booking]), 200);
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0, 'message'=>'Booking Data Not Found!', 'data'=> '']), 404);
+        }
+    }
+
     /*
     public function getBookingList(Request $request){
         $userid=$this->username;

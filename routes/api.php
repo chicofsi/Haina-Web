@@ -158,6 +158,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/booking_list', [HotelDarmaController::class, 'getBookingList']);
 		Route::post('/booking_detail', [HotelDarmaController::class, 'getBookingDetail']);
 
+		Route::post('/cancel', [HotelDarmaController::class, 'cancel']);
+
 		Route::post('/all_cities', [HotelDarmaController::class, 'getIndoCities']);
 		Route::post('/cities', [HotelDarmaController::class, 'getCity']);
 		Route::post('/countries', [HotelDarmaController::class, 'getCountry']);
