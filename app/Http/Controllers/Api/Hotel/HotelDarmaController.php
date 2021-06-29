@@ -1296,9 +1296,9 @@ class HotelDarmaController extends Controller
         if($booking){
             $user_id = Auth::id();
 
-            $paidtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->where('status', 'PAID')->orderBy('updated_at', 'DESC')->get();
-            $unpaidtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->where('status', 'UNPAID')->orderBy('updated_at', 'DESC')->get();
-            $canceltrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->where('status', 'CANCELLED')->orderBy('updated_at', 'DESC')->get();
+            $paidtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room', 'image')->where('status', 'PAID')->orderBy('updated_at', 'DESC')->get();
+            $unpaidtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room', 'image')->where('status', 'UNPAID')->orderBy('updated_at', 'DESC')->get();
+            $canceltrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room', 'image')->where('status', 'CANCELLED')->orderBy('updated_at', 'DESC')->get();
 
             foreach($paidtrans as $key => $value){
                 $total_guest = HotelDarmaPaxesList::where('booking_id', $value->id)->count();
@@ -1306,17 +1306,20 @@ class HotelDarmaController extends Controller
 
                 $total_night = strtotime($value->check_out) - strtotime($value->check_in);
                 $value->total_nights = $total_night / 86400;
+
+                $payment_method = HotelDarmaPayment::where('booking_id', $value->id)->first();
+                $payment = PaymentMethod::where('id',$payment_method['payment_method_id'])->with('category')->first();
             }
             foreach($unpaidtrans as $key => $value){
-                $total_guest = HotelDarmaPaxesList::where('booking_id', $value->id)->count();
+                $bookingpaxes = HotelDarmaBookingSession::where('user_id', Auth::id())->first();
+                $roomreq = HotelDarmaRoomRequest::where('id_booking_session', $bookingpaxes['id'])->first();
+                $total_guest = HotelDarmaBookingPaxes::where('id_room_req', $room_req['id'])->count();
                 $value->total_guests = $total_guest;
 
                 $total_night = strtotime($value->check_out) - strtotime($value->check_in);
                 $value->total_nights = $total_night / 86400;
             }
             foreach($canceltrans as $key => $value){
-                $total_guest = HotelDarmaPaxesList::where('booking_id', $value->id)->count();
-                $value->total_guests = $total_guest;
 
                 $total_night = strtotime($value->check_out) - strtotime($value->check_in);
                 $value->total_nights = $total_night / 86400;
