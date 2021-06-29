@@ -39,6 +39,8 @@ use App\Models\PaymentMethodCategory;
 use App\Http\Resources\ValueMessage;
 use App\Http\Resources\HotelDarmaBookingResource;
 
+use DateTime;
+
 class HotelDarmaController extends Controller
 {
 
@@ -1297,6 +1299,14 @@ class HotelDarmaController extends Controller
             $paidtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->where('status', 'PAID')->orderBy('updated_at', 'DESC')->get();
             $unpaidtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->where('status', 'UNPAID')->orderBy('updated_at', 'DESC')->get();
             $canceltrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->where('status', 'CANCELLED')->orderBy('updated_at', 'DESC')->get();
+
+            foreach($paidtrans as $key => $value){
+                $total_guest = HotelDarmaPaxesList::where('booking_id', $value->id)->count();
+                $key['total_guests'] = $total_guest;
+
+                $total_night = strtotime($value->check_out) - strtotime($value->check_in);
+                $key['total_nights'] = $total_night;
+            }
 
             $data['paid'] = $paidtrans->values();
             $data['unpaid'] = $unpaidtrans->values();
