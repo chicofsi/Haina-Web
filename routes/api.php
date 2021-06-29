@@ -35,6 +35,7 @@ use App\Http\Controllers\Api\Hotel\HotelRoomBedTypeController;
 use App\Http\Controllers\Api\Hotel\FacilitiesController;
 use App\Http\Controllers\Api\Hotel\HotelDarmaController;
 use App\Http\Controllers\Api\Ticket\TicketController;
+use App\Http\Controllers\Api\Property\PropertyDataController;
 
 /*
 |--------------------------------------------------------------------------
@@ -164,6 +165,14 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/cities', [HotelDarmaController::class, 'getCity']);
 		Route::post('/countries', [HotelDarmaController::class, 'getCountry']);
 		Route::post('/passports', [HotelDarmaController::class, 'getPassport']);
+	});
+
+	Route::group(['prefix' => 'property'], function(){
+
+		Route::post('/my_property', [PropertyDataController::class, 'showMyProperty']);
+		Route::post('/show_property', [PropertyDataController::class, 'showAvailableProperty']);
+		Route::post('/new_property', [PropertyDataController::class, 'addProperty']);
+
 	});
 	
 });
