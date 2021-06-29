@@ -1350,7 +1350,7 @@ class HotelDarmaController extends Controller
                 'status' => 'CANCELLED'
             ]);
 
-            return response()->json(new ValueMessage(['value'=>0, 'message'=>'Booking cancelled!', 'data'=> $booking]), 200);
+            return response()->json(new ValueMessage(['value'=>1, 'message'=>'Booking cancelled!', 'data'=> $booking]), 200);
         }
         else{
             return response()->json(new ValueMessage(['value'=>0, 'message'=>'Booking Data Not Found!', 'data'=> '']), 404);
