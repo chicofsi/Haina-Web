@@ -1332,7 +1332,8 @@ class HotelDarmaController extends Controller
 
                     }
                     
-                    $value->special_request = (object)(array)$special_request;
+                    $spec = (array)$special_request;
+                    $value->special_request = (object)$spec;
                 }
                 else{
                     $value->special_request = $value->requests;
@@ -1373,7 +1374,8 @@ class HotelDarmaController extends Controller
 
                     }
 
-                    $value->special_request = (object)(array) $special_request;
+                    $spec = (array)$special_request;
+                    $value->special_request = (object)$spec;
                 }
                 else{
                     $value->special_request = $value->requests;
