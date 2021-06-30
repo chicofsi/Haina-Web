@@ -1332,11 +1332,11 @@ class HotelDarmaController extends Controller
 
                     }
                     
-                    $spec = (array)$special_request;
-                    $value->special_request = (object)$spec;
+                    //$spec = (array)$special_request;
+                    //$value->special_request = (object)$spec;
                 }
                 else{
-                    $value->special_request = $value->requests;
+                    //$value->special_request = $value->requests;
                 }
 
             }
@@ -1374,11 +1374,11 @@ class HotelDarmaController extends Controller
 
                     }
 
-                    $spec = (array)$special_request;
-                    $value->special_request = (object)$spec;
+                    //$spec = (array)$special_request;
+                    //$value->special_request = (object)$spec;
                 }
                 else{
-                    $value->special_request = $value->requests;
+                    //$value->special_request = $value->requests;
                 }
             }
             foreach($canceltrans as $key => $value){
