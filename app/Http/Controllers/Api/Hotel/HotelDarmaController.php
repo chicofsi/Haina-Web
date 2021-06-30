@@ -1333,7 +1333,7 @@ class HotelDarmaController extends Controller
                     
                     //dd($special_request);
                     $spec = (object)$special_request;
-                    $value->special_request = $spec;
+                    return $spec;
                 }
                 else{
                     //$value->special_request = $value->requests;
