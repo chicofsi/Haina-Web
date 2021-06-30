@@ -80,8 +80,43 @@ class PropertyDataController extends Controller
         }
     }
 
+    public function storeImage(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_property' => 'required',
+            'images' => 'required|mimes:png,jpg|max:4096'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $files = $request->file('images');
+            $property = PropertyData::where('id', $request->id_property)->first();
+
+            $num = 1;
+            foreach($files as $file){
+
+                $fileName = str_replace(' ','-', $property['property_type'].'_'.$property['name'].'_'.$num);
+                $guessExtension = $file->guessExtension();
+                $store = $file->storeAs('public/post/image/property',$fileName.'.'.$guessExtension);
+
+                $property_image = PropertyImageData::create([
+                    'id_property' => $request->id_property,
+                    'filename' => $fileName,
+                    'path' => substr($store,7)
+                ]);
+
+                $num += 1; 
+            }
+
+            $posted_images = PropertyImageData::where('id_property', $request->id_property)->get();
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Jobs Success!','data'=> $posted_images]), 200);
+        }
+    }
+
     public function showAvailableProperty(){
-        $property = PropertyData::where('id_user', 'not like', Auth::user()->id)->with('images')->get();
+        $property = PropertyData::where('id_user', 'not like', Auth::user()->id)->where('status', "available")->with('images')->get();
 
         if(!$property){
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Property Not Found!','data'=> '']), 404);
@@ -89,6 +124,49 @@ class PropertyDataController extends Controller
         else{
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Property loaded successfully!','data'=> $property]), 200);
         }
+    }
+
+    public function createTransaction(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_property' => 'required',
+            'transaction_type' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $property = PropertyData::where('id', $request->id_property)->first();
+
+            if(!$property){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Property Not Found!','data'=> '']), 404);
+            }
+            else if($property['status'] == "available"){
+                try{
+
+                    $property_transaction = [
+                        'id_owner' => $property['id_user'],
+                        'id_buyer_tenant' => Auth::id(),
+                        'id_property' => $request->id_property,
+                        'transaction_date' => date("Y-m-d H:i:s"),
+                        'transaction_type' => $request->transaction_type,
+                        'transaction_status' => "waiting"
+                    ];
+    
+                    $new_transaction = PropertyTransaction::create($property_transaction);
+    
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Create Transaction Success!','data'=> $new_transaction]), 200);
+    
+                }
+                catch(Exception $e){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Error Creating Transaction!','data'=> '']), 404);
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Property Unavailable!','data'=> '']), 404);
+            }
+        }
+
     }
 
 }
