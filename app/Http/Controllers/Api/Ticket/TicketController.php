@@ -1244,7 +1244,11 @@ class TicketController extends Controller
 
             $flightbookingdetails = FlightBookingDetails::where('id_flight_book',$flightbooking->id)->get();
             foreach ($flightbookingdetails as $key_details => $value_details) {
-                $flighttrip=FlightTrip::where('id_flight_booking_detail',$value_details->id)->with('flightaddonssession')->get();
+
+                $flighttripsession=FlightTripSession::where('id_flight_detail_session',$detailssession['id'])->with('flightaddonssession')->first();
+
+                $flighttrip=FlightTrip::where('id_flight_booking_detail',$value_details->id)->get();
+                $flighttrip->flightaddonssession = $flighttripsession->flightaddonssession;
                 foreach ($flighttrip as $key_trip => $value_trip) {
                     $flightpassenger=FlightPassenger::create([
                         "id_passenger" => $passenger->id,
