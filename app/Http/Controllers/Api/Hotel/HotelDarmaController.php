@@ -1315,7 +1315,7 @@ class HotelDarmaController extends Controller
                 $value->images = $images;
 
                 $hotel = HotelDarma::where('id', $value->hotel_id)->first();
-                /*
+                
                 if($hotel['request_array'] == true){
                     $request_id = explode(',', $value->requests);
                     $special_request = [];
@@ -1333,13 +1333,14 @@ class HotelDarmaController extends Controller
 
                     }
                     
-                    //$spec = (array)$special_request;
-                    //$value->special_request = (object)$spec;
+                    $spec = (object)$special_request;
+                    dd($spec);
+                    //$value->special_request = $spec;
                 }
                 else{
                     //$value->special_request = $value->requests;
                 }
-                */
+                
 
             }
             foreach($unpaidtrans as $key => $value){
