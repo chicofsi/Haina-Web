@@ -1313,6 +1313,31 @@ class HotelDarmaController extends Controller
 
                 $images = HotelDarmaImage::where('hotel_id', $value->hotel_id)->get();
                 $value->images = $images;
+
+                $hotel = HotelDarma::where('hotel_id', $value->hotel_id)->first();
+                if($hotel['request_array'] == true){
+                    $request_id = explode(',', $value->requests);
+                    $special_request = [];
+
+                    foreach($request_id as $key => $value){
+
+                        $getDesc = HotelDarmaRequestList::where('id', $value)->where('hotel_id', $hotel['id'])->first();
+
+                        $new_request = (object) [
+                            "ID" => $getDesc['id'],
+                            "description" => $getDesc['description']
+                        ];
+
+                        array_push($special_request, $new_request);
+
+                    }
+
+                    $value->special_request = $special_request;
+                }
+                else{
+                    $value->special_request = $value->requests;
+                }
+
             }
             foreach($unpaidtrans as $key => $value){
                 $bookingpaxes = HotelDarmaBookingSession::where('user_id', Auth::id())->first();
@@ -1329,6 +1354,30 @@ class HotelDarmaController extends Controller
 
                 $images = HotelDarmaImage::where('hotel_id', $value->hotel_id)->get();
                 $value->images = $images;
+
+                $hotel = HotelDarma::where('hotel_id', $value->hotel_id)->first();
+                if($hotel['request_array'] == true){
+                    $request_id = explode(',', $value->requests);
+                    $special_request = [];
+
+                    foreach($request_id as $key => $value){
+
+                        $getDesc = HotelDarmaRequestList::where('id', $value)->where('hotel_id', $hotel['id'])->first();
+
+                        $new_request = (object) [
+                            "ID" => $getDesc['id'],
+                            "description" => $getDesc['description']
+                        ];
+
+                        array_push($special_request, $new_request);
+
+                    }
+
+                    $value->special_request = $special_request;
+                }
+                else{
+                    $value->special_request = $value->requests;
+                }
             }
             foreach($canceltrans as $key => $value){
 
