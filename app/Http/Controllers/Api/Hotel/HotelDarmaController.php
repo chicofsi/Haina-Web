@@ -1320,9 +1320,9 @@ class HotelDarmaController extends Controller
                     $request_id = explode(',', $value->requests);
                     $special_request = [];
 
-                    foreach($request_id as $key => $value){
+                    foreach($request_id as $key_req => $value_req){
 
-                        $getDesc = HotelDarmaRequestList::where('id', $value)->where('hotel_id', $hotel['id'])->first();
+                        $getDesc = HotelDarmaRequestList::where('id', $value_req)->where('hotel_id', $hotel['id'])->first();
 
                         $new_request = (object) [
                             "ID" => $getDesc['id'],
