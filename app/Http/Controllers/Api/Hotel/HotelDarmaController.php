@@ -1323,8 +1323,18 @@ class HotelDarmaController extends Controller
                     foreach($request_id as $key_req => $value_req){
 
                         $getDesc = HotelDarmaRequestList::where('id', $value_req)->where('hotel_id', $hotel['id'])->first();
-                        dd($getDesc['id']);
+
+                        $new_request = (object) [
+                            "ID" => $getDesc['id'],
+                            "description" => $getDesc['description']
+                        ];
+                        dd($new_request);
+                        array_push($special_request, $new_request);
+
                     }
+                    
+                    $spec = (object)$special_request;
+                    $value->special_request = $spec;
                 }
                 else{
                     //$value->special_request = $value->requests;
