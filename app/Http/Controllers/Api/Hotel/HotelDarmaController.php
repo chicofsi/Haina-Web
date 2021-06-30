@@ -1331,9 +1331,10 @@ class HotelDarmaController extends Controller
                         array_push($special_request, $new_request);
                     }
                     
-                    dd($special_request);
-                    //$spec = (object)$special_request;
-                    //$value->special_request = $spec;
+                    //dd($special_request);
+                    $spec = (object)$special_request;
+                    $value->special_request = $spec;
+                    $value->save();
                 }
                 else{
                     //$value->special_request = $value->requests;
