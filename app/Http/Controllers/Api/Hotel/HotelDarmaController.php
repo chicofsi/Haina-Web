@@ -1331,8 +1331,8 @@ class HotelDarmaController extends Controller
                         array_push($special_request, $new_request);
 
                     }
-                    dd($special_request);
-                    $value->special_request = (object)$special_request;
+                    
+                    $value->special_request = (object)(array)$special_request;
                 }
                 else{
                     $value->special_request = $value->requests;
@@ -1373,7 +1373,7 @@ class HotelDarmaController extends Controller
 
                     }
 
-                    $value->special_request = (object) $special_request;
+                    $value->special_request = (object)(array) $special_request;
                 }
                 else{
                     $value->special_request = $value->requests;
