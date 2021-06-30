@@ -1314,7 +1314,7 @@ class HotelDarmaController extends Controller
                 $images = HotelDarmaImage::where('hotel_id', $value->hotel_id)->get();
                 $value->images = $images;
 
-                $hotel = HotelDarma::where('hotel_id', $value->hotel_id)->first();
+                $hotel = HotelDarma::where('id', $value->hotel_id)->first();
                 if($hotel['request_array'] == true){
                     $request_id = explode(',', $value->requests);
                     $special_request = [];
@@ -1355,7 +1355,7 @@ class HotelDarmaController extends Controller
                 $images = HotelDarmaImage::where('hotel_id', $value->hotel_id)->get();
                 $value->images = $images;
 
-                $hotel = HotelDarma::where('hotel_id', $value->hotel_id)->first();
+                $hotel = HotelDarma::where('id', $value->hotel_id)->first();
                 if($hotel['request_array'] == true){
                     $request_id = explode(',', $value->requests);
                     $special_request = [];
