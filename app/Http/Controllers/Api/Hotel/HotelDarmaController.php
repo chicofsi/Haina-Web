@@ -1323,7 +1323,7 @@ class HotelDarmaController extends Controller
                     foreach($request_id as $key_req => $value_req){
 
                         $getDesc = HotelDarmaRequestList::where('id', $value_req)->where('hotel_id', $hotel['id'])->first();
-                        dd($getDesc);
+                        dd($getDesc['id']);
                     }
                 }
                 else{
