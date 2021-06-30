@@ -1338,7 +1338,7 @@ class HotelDarmaController extends Controller
                     $spec = $value->requests;
                 }
 
-                $value->special_request = $spec;
+                $value->special_request = "obj";
                 
 
             }
