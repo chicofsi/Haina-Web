@@ -1329,9 +1329,9 @@ class HotelDarmaController extends Controller
                             "description" => $getDesc['description']
                         ];
                         array_push($special_request, $new_request);
-                        dd($special_request);
                     }
                     
+                    dd($special_request);
                     //$spec = (object)$special_request;
                     //$value->special_request = $spec;
                 }
