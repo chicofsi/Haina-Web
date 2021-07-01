@@ -1315,19 +1315,19 @@ class HotelDarmaController extends Controller
                 $value->images = $images;
 
                 $hotel = HotelDarma::where('id', $value->hotel_id)->first();
-                
+                $special_request = [];
                 
                 if($hotel['request_array'] == true){
                     $request_id = explode(',', $value->requests);
-                    $special_request = [];
+                    
 
                     foreach($request_id as $key_req => $value_req){
 
                         $getDesc = HotelDarmaRequestList::where('id', $value_req)->where('hotel_id', $hotel['id'])->first();
 
                         $new_request = (object) [
-                            "ID" => $getDesc->id,
-                            "description" => $getDesc->description
+                            "ID" => $getDesc['id'],
+                            "description" => $getDesc['description']
                         ];
                         array_push($special_request, $new_request);
                     }
