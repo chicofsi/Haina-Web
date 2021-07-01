@@ -115,8 +115,15 @@ class PropertyDataController extends Controller
         }
     }
 
-    public function showAvailableProperty(){
-        $property = PropertyData::where('id_user', 'not like', Auth::user()->id)->where('status', "available")->with('images')->get();
+    public function showAvailableProperty(Request $request){
+        $property = PropertyData::where('id_user', 'not like', Auth::user()->id)->where('status', "available")->with('images', 'owner')->get();
+
+        if($request->property_type !== null){
+            $property = $property->where('property_type', $request->property_type);
+        }
+        if($request->condition != null){
+            $property = $property->where('condition', $request->condition);
+        }
 
         if(!$property){
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Property Not Found!','data'=> '']), 404);
