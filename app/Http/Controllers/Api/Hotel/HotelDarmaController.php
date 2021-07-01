@@ -1327,7 +1327,7 @@ class HotelDarmaController extends Controller
 
                         $new_request = (object) [
                             "ID" => $getDesc['id'] ?? '0',
-                            "description" => $getDesc['description'] ?? 'None'
+                            "description" => $getDesc['description'] ?? $value_req
                         ];
                         array_push($special_request, $new_request);
                     }
@@ -1369,7 +1369,7 @@ class HotelDarmaController extends Controller
 
                         $new_request = (object) [
                             "ID" => $getDesc['id'] ?? '0',
-                            "description" => $getDesc['description'] ?? 'None'
+                            "description" => $getDesc['description'] ?? $value_req
                         ];
                         array_push($special_request, $new_request);
                     }
