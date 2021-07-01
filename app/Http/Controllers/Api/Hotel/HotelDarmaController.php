@@ -1326,8 +1326,8 @@ class HotelDarmaController extends Controller
                         $getDesc = HotelDarmaRequestList::where('id', $value_req)->where('hotel_id', $hotel['id'])->first();
 
                         $new_request = (object) [
-                            "ID" => $getDesc['id'],
-                            "description" => $getDesc['description']
+                            "ID" => $getDesc['id'] ?? '0',
+                            "description" => $getDesc['description'] ?? 'None'
                         ];
                         array_push($special_request, $new_request);
                     }
