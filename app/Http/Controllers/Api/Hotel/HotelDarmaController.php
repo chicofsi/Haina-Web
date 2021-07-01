@@ -1371,6 +1371,7 @@ class HotelDarmaController extends Controller
                             "ID" => $getDesc['id'] ?? '0',
                             "description" => $getDesc['description'] ?? $value_req
                         ];
+                        dd($new_request);
                         array_push($special_request, $new_request);
                     }
                     
