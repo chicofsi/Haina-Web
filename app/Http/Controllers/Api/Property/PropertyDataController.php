@@ -128,13 +128,13 @@ class PropertyDataController extends Controller
             $property = $property->where('selling_price', '>=', $request->sell_price_min);
         }
         if($request->sell_price_max != null){
-            $property = $property->where('selling_price', '<=', $request->sell_price_min);
+            $property = $property->where('selling_price', '<=', $request->sell_price_max);
         }
         if($request->rent_price_min != null){
             $property = $property->where('rental_price', '>=', $request->rent_price_min);
         }
         if($request->rent_price_max != null){
-            $property = $property->where('rental_price', '<=', $request->rent_price_min);
+            $property = $property->where('rental_price', '<=', $request->rent_price_max);
         }
 
 
