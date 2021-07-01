@@ -124,11 +124,27 @@ class PropertyDataController extends Controller
         if($request->condition != null){
             $property = $property->where('condition', $request->condition);
         }
+        if($request->sell_price_min != null){
+            $property = $property->where('selling_price', '>=', $request->sell_price_min);
+        }
+        if($request->sell_price_max != null){
+            $property = $property->where('selling_price', '<=', $request->sell_price_min);
+        }
+        if($request->rent_price_min != null){
+            $property = $property->where('rental_price', '>=', $request->rent_price_min);
+        }
+        if($request->rent_price_max != null){
+            $property = $property->where('rental_price', '<=', $request->rent_price_min);
+        }
 
-        if(!$property){
+
+        if(!$property || empty($property)){
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Property Not Found!','data'=> '']), 404);
         }
         else{
+            unset($property->owner->firebase_uid);
+            unset($property->owner->email_verified_at);
+
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Property loaded successfully!','data'=> $property]), 200);
         }
     }
