@@ -1359,6 +1359,7 @@ class HotelDarmaController extends Controller
                 $value->images = $images;
 
                 $hotel = HotelDarma::where('id', $value->hotel_id)->first();
+                $special_request = [];
                 if($hotel['request_array'] == true){
                     $request_id = explode(',', $value->requests);
                     
@@ -1371,7 +1372,7 @@ class HotelDarmaController extends Controller
                             "ID" => $getDesc['id'] ?? '0',
                             "description" => $getDesc['description'] ?? $value_req
                         ];
-                        dd($new_request);
+                        
                         array_push($special_request, $new_request);
                     }
                     
