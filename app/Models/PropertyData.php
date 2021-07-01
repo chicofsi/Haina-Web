@@ -17,7 +17,7 @@ class PropertyData extends Model
 
     //
     public function owner(){
-    	return $this->belongsTo('App\Models\User','id_owner','id');
+    	return $this->belongsTo('App\Models\User','id_user','id');
     }
 
     public function city(){
