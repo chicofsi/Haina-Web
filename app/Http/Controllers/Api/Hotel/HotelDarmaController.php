@@ -1359,31 +1359,27 @@ class HotelDarmaController extends Controller
                 $value->images = $images;
 
                 $hotel = HotelDarma::where('id', $value->hotel_id)->first();
-                /*
                 if($hotel['request_array'] == true){
                     $request_id = explode(',', $value->requests);
-                    $special_request = [];
+                    
 
-                    foreach($request_id as $key => $value){
+                    foreach($request_id as $key_req => $value_req){
 
-                        $getDesc = HotelDarmaRequestList::where('id', $value)->where('hotel_id', $hotel['id'])->first();
+                        $getDesc = HotelDarmaRequestList::where('id', $value_req)->where('hotel_id', $hotel['id'])->first();
 
                         $new_request = (object) [
-                            "ID" => $getDesc['id'],
-                            "description" => $getDesc['description']
+                            "ID" => $getDesc['id'] ?? '0',
+                            "description" => $getDesc['description'] ?? 'None'
                         ];
-
                         array_push($special_request, $new_request);
-
                     }
-
-                    //$spec = (array)$special_request;
-                    //$value->special_request = (object)$spec;
+                    
+                    //dd($special_request);
+                    $value->special_request = $special_request;
                 }
                 else{
-                    //$value->special_request = $value->requests;
+                    $value->special_request = $value->requests;
                 }
-                */
             }
             foreach($canceltrans as $key => $value){
 
