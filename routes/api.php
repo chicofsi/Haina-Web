@@ -174,6 +174,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/new_property', [PropertyDataController::class, 'addProperty']);
 		Route::post('/upload_image', [PropertyDataController::class, 'storeImage']);
 		Route::post('/new_transaction', [PropertyDataController::class, 'createTransaction']);
+		Route::post('/my_transaction_list', [PropertyDataController::class, 'showPropertyTransactionList']);
+		Route::post('/my_property_transaction_list', [PropertyDataController::class, 'showMyPropertyTransactionList']);
 
 	});
 	
