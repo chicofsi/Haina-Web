@@ -142,8 +142,8 @@ class PropertyDataController extends Controller
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Property Not Found!','data'=> '']), 404);
         }
         else{
-            unset($property->owner->firebase_uid);
-            unset($property->owner->email_verified_at);
+            //unset($property->owner->firebase_uid);
+            //unset($property->owner->email_verified_at);
 
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Property loaded successfully!','data'=> $property]), 200);
         }
