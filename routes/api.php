@@ -126,6 +126,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
 	Route::post('/pending_transaction'  , [PulsaController::class, 'pendingTransactionList']);
 
+	Route::get('/post_category',[PostCategoryController::class, 'getCategory']);
+
 	Route::group(['prefix' => 'ticket'], function() {
 
 		Route::post('/airport',[TicketController::class, 'getAirport']);
