@@ -105,13 +105,13 @@ class PropertyDataController extends Controller
                     'filename' => $fileName,
                     'path' => substr($store,7)
                 ]);
-
+                dd($property_image);
                 $num += 1; 
             }
 
             $posted_images = PropertyImageData::where('id_property', $request->id_property)->get();
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Jobs Success!','data'=> $posted_images]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Image Success!','data'=> $posted_images]), 200);
         }
     }
 
