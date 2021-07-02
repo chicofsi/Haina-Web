@@ -128,17 +128,17 @@ class PropertyDataController extends Controller
             $property = $property->where('selling_price', '>=', $request->sell_price_min);
         }
         if($request->sell_price_max != null){
-            $property = $property->where('selling_price', '<=', $request->sell_price_max);
+            $property = $property->where('selling_price', '<=', $request->sell_price_max)->where('selling_price', '>', 0);
         }
         if($request->rent_price_min != null){
             $property = $property->where('rental_price', '>=', $request->rent_price_min);
         }
         if($request->rent_price_max != null){
-            $property = $property->where('rental_price', '<=', $request->rent_price_max);
+            $property = $property->where('rental_price', '<=', $request->rent_price_max)->where('rental_price', '>', 0);
         }
 
 
-        if(!$property || empty($property)){
+        if(!$property || $property == []){
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Property Not Found!','data'=> '']), 404);
         }
         else{
