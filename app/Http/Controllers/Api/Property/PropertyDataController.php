@@ -95,6 +95,7 @@ class PropertyDataController extends Controller
             $property = PropertyData::where('id', $request->id_property)->first();
 
             $num = 1;
+            dd($files);
             foreach($files as $file){
 
                 $fileName = str_replace(' ','-', $property['property_type'].'_'.$property['name'].'_'.$num);
