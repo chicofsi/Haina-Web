@@ -36,6 +36,7 @@ use App\Http\Controllers\Api\Hotel\FacilitiesController;
 use App\Http\Controllers\Api\Hotel\HotelDarmaController;
 use App\Http\Controllers\Api\Ticket\TicketController;
 use App\Http\Controllers\Api\Property\PropertyDataController;
+use App\Http\Controllers\Api\PostCategoryController;
 
 /*
 |--------------------------------------------------------------------------
