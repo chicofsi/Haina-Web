@@ -138,7 +138,7 @@ class PropertyDataController extends Controller
         }
 
 
-        if(!$property || $property == []){
+        if(!$property || count($property) == 0){
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Property Not Found!','data'=> '']), 404);
         }
         else{
