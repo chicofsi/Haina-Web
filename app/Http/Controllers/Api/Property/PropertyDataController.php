@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 use App\Models\City;
@@ -83,7 +84,7 @@ class PropertyDataController extends Controller
     public function storeImage(Request $request){
         $validator = Validator::make($request->all(), [
             'id_property' => 'required',
-            'images' => 'required|mimes:png,jpg|max:4096'
+            'images' => 'required|image|mimes:png,jpg|max:4096'
         ]);
 
         if ($validator->fails()) {
@@ -98,14 +99,14 @@ class PropertyDataController extends Controller
 
                 $fileName = str_replace(' ','-', $property['property_type'].'_'.$property['name'].'_'.$num);
                 $guessExtension = $file->guessExtension();
-                $store = $file->storeAs('public/post/image/property',$fileName.'.'.$guessExtension);
+                $store = Storage::disk('public')->putFileAs('property/image/',$fileName.'.'.$guessExtension);
 
                 $property_image = PropertyImageData::create([
                     'id_property' => $request->id_property,
                     'filename' => $fileName,
-                    'path' => substr($store,7)
+                    'path' => $store
                 ]);
-                dd($property_image);
+                //dd($property_image);
                 $num += 1; 
             }
 
