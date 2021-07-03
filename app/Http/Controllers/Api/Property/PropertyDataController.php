@@ -100,12 +100,12 @@ class PropertyDataController extends Controller
             else{
                 $num = 1;
                 $files = $request->file('images');
-                foreach($files as $file){
+                //foreach($files as $file){
 
                     $fileName = str_replace(' ','-', $property['property_type'].'_'.$property['name'].'_'.$num);
-                    $guessExtension = $file->guessExtension();
+                    $guessExtension = $files->guessExtension();
                     dd($guessExtension);
-                    $store = Storage::disk('public')->putFileAs('property/image/'.$request->id_property, $file ,$fileName.'.'.$guessExtension);
+                    $store = Storage::disk('public')->putFileAs('property/image/'.$request->id_property, $files ,$fileName.'.'.$guessExtension);
 
 
                     $property_image = PropertyImageData::create([
@@ -114,8 +114,8 @@ class PropertyDataController extends Controller
                         'path' => $store
                     ]);
                     //dd($property_image);
-                    $num += 1; 
-                }
+                    //$num += 1; 
+                //}
 
                 $posted_images = PropertyImageData::where('id_property', $request->id_property)->get();
 
