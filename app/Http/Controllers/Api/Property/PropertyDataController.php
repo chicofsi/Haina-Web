@@ -104,7 +104,7 @@ class PropertyDataController extends Controller
 
                     $fileName = str_replace(' ','-', $property['property_type'].'_'.$property['name'].'_'.$num);
                     $guessExtension = $files->guessExtension();
-                    dd($guessExtension);
+                    //dd($guessExtension);
                     $store = Storage::disk('public')->putFileAs('property/image/'.$request->id_property, $files ,$fileName.'.'.$guessExtension);
 
 
