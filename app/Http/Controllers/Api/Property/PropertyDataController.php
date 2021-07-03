@@ -161,7 +161,7 @@ class PropertyDataController extends Controller
     public function createTransaction(Request $request){
         $validator = Validator::make($request->all(), [
             'id_property' => 'required',
-            'transaction_type' => 'required'
+            'transaction_type' => 'required|in:buy, rental'
         ]);
 
         if ($validator->fails()) {
@@ -174,25 +174,33 @@ class PropertyDataController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Property Not Found!','data'=> '']), 404);
             }
             else if($property['status'] == "available"){
-                try{
+                if($request->transaction_type == "buy" && $property['selling_price'] == null){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Property not for sale!','data'=> '']), 404);
+                }
+                else if($request->transaction_type == "rental" && $property['rental_price'] == null){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Property not for rent!','data'=> '']), 404);
+                }
+                else{
+                    try{
 
-                    $property_transaction = [
-                        'id_owner' => $property['id_user'],
-                        'id_buyer_tenant' => Auth::id(),
-                        'id_property' => $request->id_property,
-                        'transaction_date' => date("Y-m-d H:i:s"),
-                        'transaction_type' => $request->transaction_type,
-                        'transaction_status' => "waiting"
-                    ];
-    
-                    $new_transaction = PropertyTransaction::create($property_transaction);
-    
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Create Transaction Success!','data'=> $new_transaction]), 200);
-    
-                }
-                catch(Exception $e){
-                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Error Creating Transaction!','data'=> '']), 404);
-                }
+                        $property_transaction = [
+                            'id_owner' => $property['id_user'],
+                            'id_buyer_tenant' => Auth::id(),
+                            'id_property' => $request->id_property,
+                            'transaction_date' => date("Y-m-d H:i:s"),
+                            'transaction_type' => $request->transaction_type,
+                            'transaction_status' => "waiting"
+                        ];
+        
+                        $new_transaction = PropertyTransaction::create($property_transaction);
+        
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Create Transaction Success!','data'=> $new_transaction]), 200);
+        
+                    }
+                    catch(Exception $e){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Error Creating Transaction!','data'=> '']), 404);
+                    }
+                }   
             }
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Property Unavailable!','data'=> '']), 404);
