@@ -84,7 +84,7 @@ class PropertyDataController extends Controller
     public function storeImage(Request $request){
         $validator = Validator::make($request->all(), [
             'id_property' => 'required',
-            'images' => 'required|image|mimes:png,jpg|max:4096'
+            ['images' => 'required|image|mimes:png,jpg|max:4096']
         ]);
 
         if ($validator->fails()) {
