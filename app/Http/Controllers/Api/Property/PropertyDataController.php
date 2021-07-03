@@ -173,6 +173,9 @@ class PropertyDataController extends Controller
             if(!$property){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Property Not Found!','data'=> '']), 404);
             }
+            else if($property['id_user'] == Auth::id()){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot do transaction with own property!','data'=> '']), 401);
+            }
             else if($property['status'] == "available"){
                 if($request->transaction_type == "buy" && $property['selling_price'] == null){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Property not for sale!','data'=> '']), 404);
