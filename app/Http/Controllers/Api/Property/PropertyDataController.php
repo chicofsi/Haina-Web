@@ -91,29 +91,34 @@ class PropertyDataController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $files = $request->file('images');
+            
             $property = PropertyData::where('id', $request->id_property)->first();
 
-            $num = 1;
-            dd($files);
-            foreach($files as $file){
-
-                $fileName = str_replace(' ','-', $property['property_type'].'_'.$property['name'].'_'.$num);
-                $guessExtension = $file->guessExtension();
-                $store = Storage::disk('public')->putFileAs('property/image/',$fileName.'.'.$guessExtension);
-
-                $property_image = PropertyImageData::create([
-                    'id_property' => $request->id_property,
-                    'filename' => $fileName,
-                    'path' => $store
-                ]);
-                //dd($property_image);
-                $num += 1; 
+            if(!$property){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Property Not Found!','data'=> '']), 404);
             }
+            else{
+                $num = 1;
+                $files = $request->file('images');
+                foreach($files as $file){
 
-            $posted_images = PropertyImageData::where('id_property', $request->id_property)->get();
+                    $fileName = str_replace(' ','-', $property['property_type'].'_'.$property['name'].'_'.$num);
+                    $guessExtension = $file->guessExtension();
+                    $store = Storage::disk('public')->putFileAs('property/image/'.$request->id_property, $file ,$fileName.'.'.$guessExtension);
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Image Success!','data'=> $posted_images]), 200);
+                    $property_image = PropertyImageData::create([
+                        'id_property' => $request->id_property,
+                        'filename' => $fileName,
+                        'path' => $store
+                    ]);
+                    //dd($property_image);
+                    $num += 1; 
+                }
+
+                $posted_images = PropertyImageData::where('id_property', $request->id_property)->get();
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Image Success!','data'=> $posted_images]), 200);
+            }
         }
     }
 
