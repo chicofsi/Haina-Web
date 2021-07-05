@@ -234,7 +234,7 @@ class PropertyDataController extends Controller
             }
             else{
                 $update = PropertyTransaction::where('id', $request->id_transaction)->update([
-                    'status' => $request->status
+                    'transaction_status' => $request->status
                 ]);
     
                 if($request->status == "done"){
@@ -253,7 +253,7 @@ class PropertyDataController extends Controller
     public function showPropertyTransactionList(){
         $transaction = PropertyTransaction::where('id_buyer_tenant', Auth::id())->with('property', 'owner')->get();
 
-        if(!$transaction){
+        if(!$transaction || count($transaction) == 0){
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Not Found!','data'=> '']), 404);
         }
         else{
@@ -265,7 +265,7 @@ class PropertyDataController extends Controller
     public function showMyPropertyTransactionList(){
         $transaction = PropertyTransaction::where('id_owner', Auth::id())->with('property', 'buyer')->get();
 
-        if(!$transaction){
+        if(!$transaction  || count($transaction) == 0){
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Not Found!','data'=> '']), 404);
         }
         else{
