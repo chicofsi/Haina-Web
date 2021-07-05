@@ -194,6 +194,10 @@ class PropertyDataController extends Controller
                             'transaction_type' => $request->transaction_type,
                             'transaction_status' => "waiting"
                         ];
+
+                        $property = PropertyData::where('id', $request->id_property)->update([
+                            'status' => "in_transaction"
+                        ]);
         
                         $new_transaction = PropertyTransaction::create($property_transaction);
         
@@ -214,7 +218,7 @@ class PropertyDataController extends Controller
 
     public function updateTransaction(Request $request){
         $validator = Validator::make($request->all(), [
-            'id_property' => 'required',
+            'id_transaction' => 'required',
             'status' => 'in:in_transaction, done'
         ]);
 
@@ -222,9 +226,26 @@ class PropertyDataController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $property = PropertyData::where('id', $request->id_property)->update([
-                'status' => $request->status
-            ]);
+
+            $transaction = PropertyTransaction::where('id', $request->id_transaction)->first();
+
+            if(!$transaction){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Not Found!','data'=> '']), 404);
+            }
+            else{
+                $update = PropertyTransaction::where('id', $request->id_transaction)->update([
+                    'status' => $request->status
+                ]);
+    
+                if($request->status == "done"){
+                    $property = PropertyData::where('id', $transaction['id_property'])->update([
+                        'status' => $request->status
+                    ]);
+                }
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Updated!','data'=> $update]), 404);
+
+            }
   
         }
     }
