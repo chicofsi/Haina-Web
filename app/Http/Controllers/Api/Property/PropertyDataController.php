@@ -16,6 +16,8 @@ use App\Models\PropertyData;
 use App\Models\PropertyImageData;
 use App\Models\PropertyTransaction;
 
+use App\Http\Controllers\Api\Notification\NotificationController;
+
 use DateTime;
 
 use App\Http\Resources\ValueMessage;
@@ -200,6 +202,21 @@ class PropertyDataController extends Controller
                         ]);
         
                         $new_transaction = PropertyTransaction::create($property_transaction);
+
+                        //notif
+                        $token = [];
+                        $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $property['id_user'])->get();
+                        $buyer = User::where('id', $property['id_user'])->first();
+                        $buyername = substr($buyer['fullname'], 0, strpos($buyer['fullname'], ' '));
+
+                        foreach($usertoken as $key => $value){
+                            array_push($token, $value->name); 
+                        }
+
+                        foreach ($token as $key => $value) {
+                            NotificationController::sendPush($value, "Someone is interested with your property!", $buyername." did a ".$request->transaction_type." transaction with ".$property['name'], "Property", "");
+                        }
+                        //
         
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Create Transaction Success!','data'=> $new_transaction]), 200);
         
