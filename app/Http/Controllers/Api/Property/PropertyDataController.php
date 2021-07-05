@@ -36,7 +36,7 @@ class PropertyDataController extends Controller
 
     public function addProperty(Request $request){
         $validator = Validator::make($request->all(), [
-            'property_type' => 'in:office, warehouse, house, apartment',
+            'property_type' => 'in:office,warehouse,house,apartment',
             'name' => 'required',
             'condition' => 'required',
             'year' => 'required',
@@ -161,7 +161,7 @@ class PropertyDataController extends Controller
     public function createTransaction(Request $request){
         $validator = Validator::make($request->all(), [
             'id_property' => 'required',
-            'transaction_type' => 'required|in:buy, rental'
+            'transaction_type' => 'required|in:buy,rental'
         ]);
 
         if ($validator->fails()) {
@@ -219,7 +219,7 @@ class PropertyDataController extends Controller
     public function updateTransaction(Request $request){
         $validator = Validator::make($request->all(), [
             'id_transaction' => 'required',
-            'status' => 'in:in_transaction, done'
+            'status' => 'in:in_transaction,done'
         ]);
 
         if ($validator->fails()) {
