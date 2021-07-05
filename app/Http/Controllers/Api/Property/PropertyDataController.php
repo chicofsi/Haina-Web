@@ -232,6 +232,9 @@ class PropertyDataController extends Controller
             if(!$transaction){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Not Found!','data'=> '']), 404);
             }
+            else if($transaction['transaction_status'] == "done"){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Is Already Finalized!','data'=> '']), 401);
+            }
             else{
                 $update = PropertyTransaction::where('id', $request->id_transaction)->update([
                     'transaction_status' => $request->status
@@ -243,7 +246,7 @@ class PropertyDataController extends Controller
                     ]);
                 }
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Updated!','data'=> $update]), 404);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Updated!','data'=> $transaction]), 404);
 
             }
   
