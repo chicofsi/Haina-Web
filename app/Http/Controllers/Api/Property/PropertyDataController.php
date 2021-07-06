@@ -163,8 +163,8 @@ class PropertyDataController extends Controller
                 $facility_id = explode(',', $value->facilities);
                 $property_facility = [];
 
-                foreach($facility_id as $key => $value){
-                    $getProp = PropertyFacility::where('id', $value)->first();
+                foreach($facility_id as $key_prop => $value_prop){
+                    $getProp = PropertyFacility::where('id', $value_prop)->first();
 
                     $facility = (object) [
                         "id_facility" => $getProp['id'] ?? '0',
@@ -174,7 +174,7 @@ class PropertyDataController extends Controller
                     array_push($property_facility, $facility);
                 }
 
-                dd($property_facility);
+                //dd($property_facility);
                 $value->facilities = $property_facility;
             }
 
