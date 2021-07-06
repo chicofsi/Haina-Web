@@ -174,7 +174,7 @@ class PropertyDataController extends Controller
                     array_push($property_facility, $facility);
                 }
 
-                //dd($property_facility);
+                dd($property_facility);
                 $value->facilities = $property_facility;
             }
 
