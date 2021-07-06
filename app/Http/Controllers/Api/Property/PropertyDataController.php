@@ -159,7 +159,7 @@ class PropertyDataController extends Controller
             //unset($property->owner->firebase_uid);
             //unset($property->owner->email_verified_at);
 
-            foreach(Sproperty as $key->$value){
+            foreach($property as $key->$value){
                 $facility_id = explode(',', $value->facilities);
                 $property_facility = [];
 
