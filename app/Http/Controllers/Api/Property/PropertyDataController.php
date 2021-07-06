@@ -256,11 +256,31 @@ class PropertyDataController extends Controller
                 $update = PropertyTransaction::where('id', $request->id_transaction)->update([
                     'transaction_status' => $request->status
                 ]);
-    
-                if($request->status == "done"){
+
+                $token = [];
+                $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $transaction['id_buyer_tenant'])->get();
+
+                foreach($usertoken as $key => $value){
+                    array_push($token, $value->name); 
+                }
+
+                $property = PropertyData::where('id', $transaction['id_property'])->first();
+
+                if($request->status == "in_transaction"){
+
+                    foreach ($token as $key => $value) {
+                        NotificationController::sendPush($value, "Your transaction is being processed", "Transaction for ".$property['name']." is being processed", "Property", "");
+                    }
+
+                }
+                else if($request->status == "done"){
                     $property = PropertyData::where('id', $transaction['id_property'])->update([
                         'status' => $request->status
                     ]);
+
+                    foreach ($token as $key => $value) {
+                        NotificationController::sendPush($value, "Your transaction is finished", "Transaction for ".$property['name']." is being finished", "Property", "");
+                    }
                 }
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Updated!','data'=> $transaction]), 404);
