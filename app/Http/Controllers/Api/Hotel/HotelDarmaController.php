@@ -381,13 +381,14 @@ class HotelDarmaController extends Controller
                     if(! $hotelimagecheck){
                         foreach($bodyresponse->images as $key => $value){
                             //fungsi intervention image
-                            $filename = str_replace(' ','-', 'hotel_'.$hotel['name'].'_'.substr($value, -1));
-                            Image::make($value)->save(public_path('hotel/' . $filename));
+                            //$filename = str_replace(' ','-', 'hotel_'.$hotel['name'].'_'.substr($value, -1));
+                            //Image::make($value)->save(public_path('hotel/' . $filename));
                             //
                             $hotelimage = [
                                 'hotel_id' => $hotel['id'],
                                 'image' => $value,
-                                'path' => "hotel/".$filename
+                                'path' => ''
+                                //'path' => "hotel/".$filename
                             ];
 
                             $newimage = HotelDarmaImage::create($hotelimage);
