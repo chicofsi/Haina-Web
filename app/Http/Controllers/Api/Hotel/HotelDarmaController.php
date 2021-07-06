@@ -41,7 +41,7 @@ use App\Http\Resources\HotelDarmaBookingResource;
 
 use DateTime;
 
-use Intervention\Image\ImageManagerStatic as Image;
+//use Intervention\Image\ImageManagerStatic as Image;
 
 class HotelDarmaController extends Controller
 {
