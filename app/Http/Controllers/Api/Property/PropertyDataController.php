@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Models\PropertyData;
 use App\Models\PropertyImageData;
 use App\Models\PropertyTransaction;
+use App\Models\PropertyFacility;
 
 use App\Http\Controllers\Api\Notification\NotificationController;
 
@@ -48,6 +49,7 @@ class PropertyDataController extends Controller
             'longitude' => 'required',
             'selling_price' => 'required',
             'rental_price' => 'required',
+            'facilities' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -68,6 +70,7 @@ class PropertyDataController extends Controller
                     'longitude' => $request->longitude,
                     'selling_price' => $request->selling_price,
                     'rental_price' => $request->rental_price,
+                    'facilities' => $request->facilities,
                     'post_date' => date("Y-m-d H:i:s"),
                     'status' => 'available'
                 ];
@@ -155,6 +158,19 @@ class PropertyDataController extends Controller
         else{
             //unset($property->owner->firebase_uid);
             //unset($property->owner->email_verified_at);
+
+            foreach(Sproperty as $key->$value){
+                $facility_id = explode(',', $value->facilities);
+                $property_facility = [];
+
+                foreach($facility_id as $key => $value){
+                    $facility = PropertyFacility::where('id', $value)->first();
+
+                    array_push($property_facility, $facility);
+                }
+
+                $value->facilities = $property_facility;
+            }
 
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Property loaded successfully!','data'=> $property]), 200);
         }
