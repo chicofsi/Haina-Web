@@ -41,6 +41,8 @@ use App\Http\Resources\HotelDarmaBookingResource;
 
 use DateTime;
 
+use Intervention\Image\ImageManagerStatic as Image;
+
 class HotelDarmaController extends Controller
 {
 
@@ -373,17 +375,23 @@ class HotelDarmaController extends Controller
                 }
                 else{
                     $hotel = HotelDarma::where('id_darma', $hotel_id)->first();
-                    return $hotel;
+                    //return $hotel;
                     $hotelimagecheck = HotelDarmaImage::where('hotel_id', $hotel['id'])->first();
 
                     if(! $hotelimagecheck){
                         foreach($bodyresponse->images as $key => $value){
+                            //fungsi intervention image
+                            $filename = str_replace(' ','-', 'hotel_'.$hotel['name'].'_'.substr($value, -1));
+                            Image::make($value)->save(public_path('hotel/' . $filename));
+                            //
                             $hotelimage = [
                                 'hotel_id' => $hotel['id'],
-                                'image' => $value
+                                'image' => $value,
+                                'path' => "hotel/".$filename
                             ];
 
                             $newimage = HotelDarmaImage::create($hotelimage);
+
                         }
                     }
 
