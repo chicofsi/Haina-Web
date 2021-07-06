@@ -18,7 +18,7 @@ class HotelDarmaImage extends Model
     public $timestamps = false;
 
     protected $fillable = [ 
-        'hotel_id', 'image', 'path'
+        'hotel_id', 'image'
     ];
 
     public function hotel(){
