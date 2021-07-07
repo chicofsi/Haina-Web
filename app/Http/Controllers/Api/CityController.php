@@ -22,7 +22,7 @@ class CityController extends Controller
         if($request->name != null){
             $city = $city->where('name', 'like', '%'.$request->name.'%');
         }
-        else if($request->id_province != null){
+        if($request->id_province != null){
             $city = $city->where('id_province', $request->id_province);
         }
 
