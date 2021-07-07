@@ -342,7 +342,7 @@ class PropertyDataController extends Controller
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Facilities Not Found!','data'=> '']), 404);
         }
         else{
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Displayed!','data'=> $facilities]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Facilities List Successfully Displayed!','data'=> $facilities]), 200);
         }
     }
 
