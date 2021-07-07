@@ -114,17 +114,17 @@ class PropertyDataController extends Controller
         }
         else{
             $num = 1;
-            
+
             foreach($files as $file){
 
                 $fileName = str_replace(' ','-', $property['property_type'].'_'.$property['name'].'_'.$num);
                 $guessExtension = $file->guessExtension();
                 //dd($guessExtension);
-                $store = Storage::disk('public')->putFileAs('property/image/'.$request->id_property, $file ,$fileName.'.'.$guessExtension);
+                $store = Storage::disk('public')->putFileAs('property/image/'.$id, $file ,$fileName.'.'.$guessExtension);
 
 
                 $property_image = PropertyImageData::create([
-                    'id_property' => $request->id_property,
+                    'id_property' => $id,
                     'filename' => $fileName,
                     'path' => $store
                 ]);
@@ -132,7 +132,7 @@ class PropertyDataController extends Controller
                 $num += 1; 
             }
 
-            $posted_images = PropertyImageData::where('id_property', $request->id_property)->get();
+            $posted_images = PropertyImageData::where('id_property', $id)->get();
 
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Image Success!','data'=> $posted_images]), 200);
         }
