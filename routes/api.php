@@ -37,6 +37,7 @@ use App\Http\Controllers\Api\Hotel\HotelDarmaController;
 use App\Http\Controllers\Api\Ticket\TicketController;
 use App\Http\Controllers\Api\Property\PropertyDataController;
 use App\Http\Controllers\Api\PostCategoryController;
+use App\Http\Controllers\Api\CityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -186,6 +187,9 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	});
 	
 });
+
+Route::post('/cityList', [CityController::class, 'getCity']);
+Route::post('/provinceList', [CityController::class, 'getProvince']);
 
 Route::post('/providers'  , [PulsaController::class, 'getProviders']);
 Route::post('/category'  , [PulsaController::class, 'getProductCategory']);
