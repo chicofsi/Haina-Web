@@ -305,7 +305,7 @@ class PropertyDataController extends Controller
                     }
                 }
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Updated!','data'=> $transaction]), 404);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Updated!','data'=> $transaction]), 200);
 
             }
   
@@ -319,7 +319,7 @@ class PropertyDataController extends Controller
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Not Found!','data'=> '']), 404);
         }
         else{
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Displayed!','data'=> $transaction]), 404);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Displayed!','data'=> $transaction]), 200);
         }
 
     }
@@ -331,7 +331,18 @@ class PropertyDataController extends Controller
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Not Found!','data'=> '']), 404);
         }
         else{
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Displayed!','data'=> $transaction]), 404);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Displayed!','data'=> $transaction]), 200);
+        }
+    }
+
+    public function listFacility(){
+        $facilities = PropertyFacility::all();
+
+        if(!$facilities || count($facility) == 0){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Facilities Not Found!','data'=> '']), 404);
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Displayed!','data'=> $facilities]), 200);
         }
     }
 

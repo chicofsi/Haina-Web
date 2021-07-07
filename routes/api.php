@@ -171,7 +171,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	});
 
 	Route::group(['prefix' => 'property'], function(){
-
+		Route::get('/facility', [PropertyDataController::class, 'listFacility']);
 		Route::post('/my_property', [PropertyDataController::class, 'showMyProperty']);
 		Route::post('/show_property', [PropertyDataController::class, 'showAvailableProperty']);
 		Route::post('/new_property', [PropertyDataController::class, 'addProperty']);
