@@ -338,7 +338,7 @@ class PropertyDataController extends Controller
     public function listFacility(){
         $facilities = PropertyFacility::all();
 
-        if(!$facilities || count($facility) == 0){
+        if(!$facilities || count($facilities) == 0){
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Facilities Not Found!','data'=> '']), 404);
         }
         else{
