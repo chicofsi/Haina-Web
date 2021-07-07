@@ -1531,12 +1531,12 @@ class HotelDarmaController extends Controller
         return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);        
     }
 
-    public function testImage($hotel_id){
-        $image = HotelDarmaImage::where('hotel_id', $hotel_id)->first();
+    public function testImage(Request $request){
+        $image = HotelDarmaImage::where('hotel_id', $request->hotel_id)->first();
 
         $image_id = substr($image['image'], strpos($image['image'],"=") + 1);
 
-        $hotel = HotelDarma::where('id', $hotel_id)->first();
+        $hotel = HotelDarma::where('id', $request->hotel_id)->first();
 
         try {
             $response=$this->client->request(
