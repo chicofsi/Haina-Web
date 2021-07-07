@@ -1531,4 +1531,28 @@ class HotelDarmaController extends Controller
         return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);        
     }
 
+    public function testImage($hotel_id){
+        $image = HotelDarmaImage::where('hotel_id', $hotel_id)->first();
+
+        $image_id = substr($image['image'], strpos($image['image'],"=") + 1);
+
+        $hotel = HotelDarma::where('id', $hotel_id)->first();
+
+        try {
+            $response=$this->client->request(
+                'GET',
+                'hotel/logo?id='.$image_id,
+                [
+                    'sink' => storage_path('hotel/'.str_replace(' ','-', 'hotel_'.$hotel['name'].'_'.substr($image_id, -1)).'.jpeg')
+                ]
+            );
+        }
+        catch(RequestException $e) {
+            if ($e->hasResponse()) {
+                $response = $e->getResponse();
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Storing Error!','data'=> $response->getStatusCode()." ".$response->getReasonPhrase()." ".$response->getBody()]), 401);
+            } 
+        }
+    }
+
 }

@@ -168,6 +168,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/cities', [HotelDarmaController::class, 'getCity']);
 		Route::post('/countries', [HotelDarmaController::class, 'getCountry']);
 		Route::post('/passports', [HotelDarmaController::class, 'getPassport']);
+
+		Route::post('/testimage', [HotelDarmaController::class, 'testImage']);
 	});
 
 	Route::group(['prefix' => 'property'], function(){
