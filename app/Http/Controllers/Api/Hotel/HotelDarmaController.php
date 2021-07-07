@@ -1547,7 +1547,7 @@ class HotelDarmaController extends Controller
                     'GET',
                     'hotel/logo?id='.$image_id,
                     [
-                        'sink' => storage_path('hotel/'.str_replace(' ','-', 'hotel_'.$hotel['name'].'_'.substr($image_id, -1)).'.jpeg')
+                        'sink' => storage_path('app/public/hotel'.str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg')
                     ]
                 );
             }
