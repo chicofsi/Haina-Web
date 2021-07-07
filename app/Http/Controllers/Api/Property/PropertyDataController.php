@@ -52,7 +52,8 @@ class PropertyDataController extends Controller
             'address' => 'required',
             'selling_price' => 'required',
             'rental_price' => 'required',
-            'facilities' => 'required'
+            'facilities' => 'required',
+            //['images' => 'required|image|mimes:png,jpg|max:4096']
         ]);
 
         if ($validator->fails()) {
@@ -90,7 +91,7 @@ class PropertyDataController extends Controller
                 else{
                     $newproperty = PropertyData::create($property);
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Create Property Success!','data'=> $property]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Create Property Success!','data'=> $newproperty->id]), 200);
                 }
 
             }
