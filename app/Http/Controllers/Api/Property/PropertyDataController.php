@@ -53,7 +53,7 @@ class PropertyDataController extends Controller
             'selling_price' => 'required',
             'rental_price' => 'required',
             'facilities' => 'required',
-            //['images' => 'required|image|mimes:png,jpg|max:4096']
+            ['images' => 'required|image|mimes:png,jpg|max:4096']
         ]);
 
         if ($validator->fails()) {
@@ -91,7 +91,10 @@ class PropertyDataController extends Controller
                 else{
                     $newproperty = PropertyData::create($property);
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Create Property Success!','data'=> $newproperty->id]), 200);
+                    $files = $request->file('images');
+                    $this->storeImage($newproperty->id, $files);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Create Property Success!','data'=> $newproperty]), 200);
                 }
 
             }
@@ -101,6 +104,41 @@ class PropertyDataController extends Controller
         }
     }
 
+    public function storeImage($id, $files){
+        
+
+        $property = PropertyData::where('id', $id)->first();
+
+        if(!$property){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Property Not Found!','data'=> '']), 404);
+        }
+        else{
+            $num = 1;
+            
+            foreach($files as $file){
+
+                $fileName = str_replace(' ','-', $property['property_type'].'_'.$property['name'].'_'.$num);
+                $guessExtension = $file->guessExtension();
+                //dd($guessExtension);
+                $store = Storage::disk('public')->putFileAs('property/image/'.$request->id_property, $file ,$fileName.'.'.$guessExtension);
+
+
+                $property_image = PropertyImageData::create([
+                    'id_property' => $request->id_property,
+                    'filename' => $fileName,
+                    'path' => $store
+                ]);
+                //dd($property_image);
+                $num += 1; 
+            }
+
+            $posted_images = PropertyImageData::where('id_property', $request->id_property)->get();
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Image Success!','data'=> $posted_images]), 200);
+        }
+    }
+
+    /*
     public function storeImage(Request $request){
         $validator = Validator::make($request->all(), [
             'id_property' => 'required',
@@ -143,6 +181,7 @@ class PropertyDataController extends Controller
             }
         }
     }
+    */
 
     public function showAvailableProperty(Request $request){
         $property = PropertyData::where('id_user', 'not like', Auth::user()->id)->where('status', "available")->with('images', 'owner')->get();
