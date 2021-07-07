@@ -20,7 +20,7 @@ class CityController extends Controller
         $city = City::all();
 
         if($request->name != null){
-            $city = $city->whereRaw('`name` like = %?%', $request->name);
+            $city = $city->where('name', 'like', '%'.$request->name.'%');
         }
         if($request->id_province != null){
             $city = $city->where('id_province', $request->id_province);
@@ -38,7 +38,7 @@ class CityController extends Controller
     public function getProvince(Request $request){
         if($request->name != null){
             $province = Province::where('name', 'like', '%'.$request->name.'%');
-
+            dd($province);
             if(!$province || count($province) == 0){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No Province Found!','data'=> '']), 404);
             }else{
