@@ -40,13 +40,16 @@ class PropertyDataController extends Controller
     public function addProperty(Request $request){
         $validator = Validator::make($request->all(), [
             'property_type' => 'in:office,warehouse,house,apartment',
-            'name' => 'required',
+            'title' => 'required',
             'condition' => 'required',
+            'building_area'=> 'required',
+            'bedroom' => 'required',
+            'bathroom' => 'required',
+            'floor_level' => 'required',
             'year' => 'required',
+            'certificate_type' => 'in:SHM,HGB,SHMSRS,Girik',
             'id_city' => 'required',
             'address' => 'required',
-            'latitude' => 'required',
-            'longitude' => 'required',
             'selling_price' => 'required',
             'rental_price' => 'required',
             'facilities' => 'required'
@@ -61,13 +64,19 @@ class PropertyDataController extends Controller
                 $property = [
                     'id_user' => Auth::id(),
                     'property_type' => $request->property_type,
-                    'name' => $request->name,
+                    'title' => $request->title,
                     'condition' => $request->condition,
+                    'building_area' => $request->building_area,
+                    'land_area' => $request->land_area ?? null,
+                    'bedroom' => $request->bedroom,
+                    'bathroom' => $request->bathroom,
+                    'floor_level' => $request->floor_level,
                     'year' => $request->year,
+                    'certificate_type' => $request->certificate_type,
                     'id_city' => $request->id_city,
                     'address' => $request->address,
-                    'latitude' => $request->latitude,
-                    'longitude' => $request->longitude,
+                    'latitude' => $request->latitude ?? '0',
+                    'longitude' => $request->longitude ?? '0',
                     'selling_price' => $request->selling_price,
                     'rental_price' => $request->rental_price,
                     'facilities' => $request->facilities,
@@ -75,9 +84,14 @@ class PropertyDataController extends Controller
                     'status' => 'available'
                 ];
 
-                $newproperty = PropertyData::create($property);
+                if($property['land_area'] != null && $property['building_area'] > $property['land_area']){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Invalid building area','data'=> '']), 404);
+                }
+                else{
+                    $newproperty = PropertyData::create($property);
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Create Property Success!','data'=> $property]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Create Property Success!','data'=> $property]), 200);
+                }
 
             }
             catch(Exception $e){
