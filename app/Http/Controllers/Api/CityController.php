@@ -20,8 +20,7 @@ class CityController extends Controller
         $city = City::all();
 
         if($request->name != null){
-            //dd($request->name);
-            $city = City::where('name', 'like', '%'.$request->name.'%');
+            $city = $city->whereRaw('name like = %'.$request->name.'%');
         }
         if($request->id_province != null){
             $city = $city->where('id_province', $request->id_province);
