@@ -19,11 +19,14 @@ class CityController extends Controller
     public function getCity(Request $request){
         $city = City::all();
 
-        if($request->name != null){
+        if($request->name != null && $request->id_province == null){
             $city = City::where('name', 'like', '%'.$request->name.'%')->get();
         }
-        if($request->id_province != null){
-            $city = $city->where('id_province', $request->id_province);
+        else if($request->name == null && $request->id_province != null){
+            $city = City::where('id_province', $request->id_province)->get();
+        }
+        else{
+            $city = City::where('name', 'like', '%'.$request->name.'%')->where('id_province', $request->id_province)->get();
         }
 
         if(!$city || count($city) == 0){
