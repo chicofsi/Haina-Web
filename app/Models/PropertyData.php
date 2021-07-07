@@ -12,7 +12,7 @@ class PropertyData extends Model
     protected $table = 'property_data_master';
 
     protected $fillable = [
-    	 'id_user', 'property_type', 'name', 'condition', 'year', 'id_city', 'address', 'latitude', 'longitude', 'selling_price', 'rental_price', 'facilities', 'post_date', 'description', 'status'
+    	 'id_user', 'property_type', 'title', 'condition', 'building_area', 'land_area', 'bedroom', 'bathroom', 'floor_level', 'year', 'certificate_type', 'id_city', 'address', 'latitude', 'longitude', 'selling_price', 'rental_price', 'facilities', 'post_date', 'description', 'status'
     ];
 
     //
