@@ -1542,12 +1542,10 @@ class HotelDarmaController extends Controller
 
             $hotel = HotelDarma::where('id', $request->hotel_id)->first();
 
-            dd("https://61.8.74.42:7080/h2h/hotel/logo?id=".$image_id);
-
             try {
                 $response=$this->client->request(
                     'GET',
-                    'hotel/logo?id='.$image_id,
+                    'hotel/Image?ID='.$image_id,
                     [
                         'sink' => storage_path('app/public/hotel'.str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg')
                     ]
