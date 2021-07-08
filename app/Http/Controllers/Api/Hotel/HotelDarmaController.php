@@ -1535,7 +1535,7 @@ class HotelDarmaController extends Controller
         $image = HotelDarmaImage::where('hotel_id', $request->hotel_id)->first();
 
         if(!$image){
-
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'No Images!','data'=> '']), 404);
         }
         else{
             $image_id = substr($image['image'], strpos($image['image'],"=") + 1);
