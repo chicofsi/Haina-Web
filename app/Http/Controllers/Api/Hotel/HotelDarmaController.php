@@ -1551,8 +1551,9 @@ class HotelDarmaController extends Controller
                     //]
                 );
 
-                dd($response->getBody()->getContents());
-                $bodyresponse=json_decode($response->getBody()->getContents());
+                $file = $response->getBody()->getContents();
+                $filename = str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg';
+                $file->move('hotel', $filename);
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Images stored!','data'=> '']), 200);
             }
