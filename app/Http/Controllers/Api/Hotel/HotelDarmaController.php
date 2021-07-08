@@ -1567,7 +1567,7 @@ class HotelDarmaController extends Controller
                 //$filename = str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg';
                 //$temp->move('hotel', $filename);
 
-                $update_path = HotelDarmaImage::where('image', 'like', '%'.$image_id.'%')->update([
+                $update_path = HotelDarmaImage::where('id', $image['id'])->update([
                     'path' => 'http://testgit.hainaservice.com/images/hotel/'.$filename
                 ]);
 
