@@ -1542,20 +1542,16 @@ class HotelDarmaController extends Controller
 
             $hotel = HotelDarma::where('id', $request->hotel_id)->first();
 
-            $temp = tmpfile();
-
             try {
                 $response=$this->client->request(
                     'GET',
                     'hotel/Image?ID='.$image_id,
-                    [
-                        'sink' => $temp
-                        //'sink' => storage_path('hotel/'.str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg')
-                    ]
                 );
-                dd($temp);
+
+                $file = $response->getBody()->getContents();
+                dd($file);
                 $filename = str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg';
-                $temp->move('hotel', $filename);
+                $file->move('hotel', $filename);
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Images stored!','data'=> '']), 200);
             }
