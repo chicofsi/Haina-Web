@@ -1553,13 +1553,13 @@ class HotelDarmaController extends Controller
 
             
             try {
-                
+                $filename = str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg';
                 $response=$this->client->request(
                     'GET',
                     'hotel/Image?ID='.$image_id,
                     [
                         //'sink' => $temp
-                        'sink' => public_path('images/hotel/'.str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg')
+                        'sink' => public_path('images/hotel/'.$filename)
                     ]
                 );
 
@@ -1567,7 +1567,11 @@ class HotelDarmaController extends Controller
                 //$filename = str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg';
                 //$temp->move('hotel', $filename);
 
-                //return response()->json(new ValueMessage(['value'=>1,'message'=>'Images stored!','data'=> '']), 200);
+                $update_path = HotelDarmaImage::where('image', 'like', '%'.$image_id.'%')->update([
+                    'path' => 'http://testgit.hainaservice.com/images/hotel/'.$filename
+                ]);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Images stored!','data'=> '']), 200);
             }
             catch(RequestException $e) {
                 if ($e->hasResponse()) {
