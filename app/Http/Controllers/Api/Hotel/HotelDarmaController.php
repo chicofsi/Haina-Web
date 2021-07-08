@@ -1542,6 +1542,8 @@ class HotelDarmaController extends Controller
 
             $hotel = HotelDarma::where('id', $request->hotel_id)->first();
 
+            dd("https://61.8.74.42:7080/h2h/hotel/logo?id=".$image_id);
+
             try {
                 $response=$this->client->request(
                     'GET',
