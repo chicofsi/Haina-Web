@@ -1566,11 +1566,11 @@ class HotelDarmaController extends Controller
                 );
 
                 //$file = $response->getBody()->getContents();
-                dd(Stemp);
-                $filename = str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg';
-                $temp->move('hotel', $filename);
+                return $temp;
+                //$filename = str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg';
+                //$temp->move('hotel', $filename);
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Images stored!','data'=> '']), 200);
+                //return response()->json(new ValueMessage(['value'=>1,'message'=>'Images stored!','data'=> '']), 200);
             }
             catch(RequestException $e) {
                 if ($e->hasResponse()) {
