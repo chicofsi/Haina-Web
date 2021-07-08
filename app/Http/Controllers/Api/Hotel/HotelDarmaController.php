@@ -1553,7 +1553,7 @@ class HotelDarmaController extends Controller
 
             
             try {
-                public_path();exit;
+                return public_path();exit;
                 
                 $response=$this->client->request(
                     'GET',
