@@ -1566,6 +1566,7 @@ class HotelDarmaController extends Controller
                 );
 
                 //$file = $response->getBody()->getContents();
+                dd(Stemp);
                 $filename = str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg';
                 $temp->move('hotel', $filename);
 
