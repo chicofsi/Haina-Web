@@ -1551,7 +1551,7 @@ class HotelDarmaController extends Controller
                     //]
                 );
 
-                dd($repsonse);
+                dd($response);
                 $bodyresponse=json_decode($response->getBody()->getContents());
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Images stored!','data'=> '']), 200);
