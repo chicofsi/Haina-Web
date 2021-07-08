@@ -1546,10 +1546,13 @@ class HotelDarmaController extends Controller
                 $response=$this->client->request(
                     'GET',
                     'hotel/Image?ID='.$image_id,
-                    [
-                        'sink' => storage_path('hotel/'.str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg')
-                    ]
+                    //[
+                    //    'sink' => storage_path('hotel/'.str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg')
+                    //]
                 );
+
+                dd($repsonse);
+                $bodyresponse=json_decode($response->getBody()->getContents());
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Images stored!','data'=> '']), 200);
             }
