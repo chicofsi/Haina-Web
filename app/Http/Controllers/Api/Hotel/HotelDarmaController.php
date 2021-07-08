@@ -1553,7 +1553,7 @@ class HotelDarmaController extends Controller
                         //'sink' => storage_path('hotel/'.str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg')
                     ]
                 );
-
+                dd($temp);
                 $filename = str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg';
                 $temp->move('hotel', $filename);
 
