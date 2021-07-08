@@ -1559,7 +1559,7 @@ class HotelDarmaController extends Controller
                     'hotel/Image?ID='.$image_id,
                     [
                         //'sink' => $temp
-                        'sink' => public_path('hotel/'.str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg')
+                        'sink' => public_path('images/hotel/'.str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg')
                     ]
                 );
 
