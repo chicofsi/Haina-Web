@@ -1542,14 +1542,8 @@ class HotelDarmaController extends Controller
 
             $hotel = HotelDarma::where('id', $request->hotel_id)->first();
 
-            $arrContextOptions=array(
-                "ssl"=>array(
-                    "verify_peer"=>false,
-                    "verify_peer_name"=>false,
-                ),
-            );  
-
-            return file_get_contents("https://61.8.74.42:7080/H2H/hotel/Image?ID=3994828-1", false, stream_context_create($arrContextOptions));
+    
+            //return file_get_contents("https://61.8.74.42:7080/H2H/hotel/Image?ID=3994828-1");
 
 
             //[
@@ -1557,18 +1551,23 @@ class HotelDarmaController extends Controller
               //  'sink' => storage_path('hotel/'.str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg')
             //]
 
-            /*
+            
             try {
+
+                $temp = null;
                 
                 $response=$this->client->request(
                     'GET',
                     'hotel/Image?ID='.$image_id,
-
+                    [
+                        'sink' => $temp
+                        //'sink' => storage_path('hotel/'.str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg')
+                    ]
                 );
 
-                $file = $response->getBody()->getContents();
+                //$file = $response->getBody()->getContents();
                 $filename = str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg';
-                $file->move('hotel', $filename);
+                $temp->move('hotel', $filename);
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Images stored!','data'=> '']), 200);
             }
@@ -1578,7 +1577,7 @@ class HotelDarmaController extends Controller
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Storing Error!','data'=> $response->getStatusCode()." ".$response->getReasonPhrase()." ".$response->getBody()]), 401);
                 } 
             }
-            */
+            
 
             
         }
