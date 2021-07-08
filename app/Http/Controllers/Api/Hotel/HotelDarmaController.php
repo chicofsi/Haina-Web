@@ -1553,14 +1553,13 @@ class HotelDarmaController extends Controller
 
             
             try {
-                return public_path();exit;
                 
                 $response=$this->client->request(
                     'GET',
                     'hotel/Image?ID='.$image_id,
                     [
                         //'sink' => $temp
-                        'sink' => storage_path('hotel/'.str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg')
+                        'sink' => public_path('hotel/'.str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg')
                     ]
                 );
 
