@@ -1550,6 +1550,10 @@ class HotelDarmaController extends Controller
                         'sink' => storage_path('app/public/hotel'.str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg')
                     ]
                 );
+
+                $bodyresponse=json_decode($response->getBody()->getContents());
+
+                return $bodyresponse;
             }
             catch(RequestException $e) {
                 if ($e->hasResponse()) {
