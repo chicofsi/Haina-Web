@@ -1542,14 +1542,24 @@ class HotelDarmaController extends Controller
 
             $hotel = HotelDarma::where('id', $request->hotel_id)->first();
 
+            return file_get_contents("https://61.8.74.42:7080/H2H/hotel/Image?ID=3994828-1");
+
+
+            //[
+                //'sink' => $temp;
+              //  'sink' => storage_path('hotel/'.str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg')
+            //]
+
+            /*
             try {
+                
                 $response=$this->client->request(
                     'GET',
                     'hotel/Image?ID='.$image_id,
+
                 );
 
                 $file = $response->getBody()->getContents();
-                dd($file);
                 $filename = str_replace(' ','-', 'hotel_'.$hotel['hotel_name'].'_'.substr($image_id, -1)).'.jpeg';
                 $file->move('hotel', $filename);
 
@@ -1561,6 +1571,9 @@ class HotelDarmaController extends Controller
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Storing Error!','data'=> $response->getStatusCode()." ".$response->getReasonPhrase()." ".$response->getBody()]), 401);
                 } 
             }
+            */
+
+            
         }
     }
 
