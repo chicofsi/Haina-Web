@@ -1542,8 +1542,14 @@ class HotelDarmaController extends Controller
 
             $hotel = HotelDarma::where('id', $request->hotel_id)->first();
 
-            header('Content-Type: image/jpeg');
-            return file_get_contents("https://61.8.74.42:7080/H2H/hotel/Image?ID=3994828-1");
+            $arrContextOptions=array(
+                "ssl"=>array(
+                    "verify_peer"=>false,
+                    "verify_peer_name"=>false,
+                ),
+            );  
+
+            return file_get_contents("https://61.8.74.42:7080/H2H/hotel/Image?ID=3994828-1", false, stream_context_create($arrContextOptions));
 
 
             //[
