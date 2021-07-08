@@ -1542,6 +1542,8 @@ class HotelDarmaController extends Controller
 
             $hotel = HotelDarma::where('id', $request->hotel_id)->first();
 
+            $temp = tmpfile();
+
             try {
                 $response=$this->client->request(
                     'GET',
