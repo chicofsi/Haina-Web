@@ -415,6 +415,9 @@ class PropertyDataController extends Controller
         if(!$property){
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Property Not Found!','data'=> '']), 404);
         }
+        else if($property['id_user'] != Auth::id()){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+        }
         else if($property['status'] != "available"){
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot Delete In Transaction Property!','data'=> '']), 404);
         }
