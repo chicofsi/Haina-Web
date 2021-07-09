@@ -1242,7 +1242,101 @@ class TicketController extends Controller
 
             $flightbookingdetails = FlightBookingDetails::where('id_flight_book',$flightbooking->id)->get();
             foreach ($flightbookingdetails as $key_details => $value_details) {
-                $flighttrip=FlightTrip::where('id_flight_booking_detail',$value_details->id)->with('flightaddonssession')->get();
+                $flighttrip=FlightTrip::where('id_flight_booking_detail',$value_details->id)->with('flightbookingdetails')->get();
+                foreach ($flighttrip as $key_trip => $value_trip) {
+                    $flightpassenger=FlightPassenger::create([
+                        "id_passenger" => $passenger->id,
+                        "id_flight_trip" => $value_trip->id
+                    ]);
+                    // $flightaddons = FlightAddons::create([
+                    //     "id_flight_passenger" => $flightpassenger,
+                    //     ba
+                    // ])
+                }
+            }
+
+
+            
+        }
+
+        
+
+    }
+    public function setBooking(Request $response)
+    {
+        $bookingsession=$this->checkSession(Auth::id());
+        $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->get();
+        $detailssession=FlightDetailsSession::with('flighttripsession')->where('id_flight_booking_session',$bookingsession->id)->get();
+
+        $flightbooking=FlightBooking::create([
+            "order_id"=> $this->generateOrderId(),
+            "id_user" => Auth::id(),
+            "trip_type" =>$bookingsession->trip_type,
+            "customer_email" => Auth::user()->email,
+            "amount" => $response->ticketPrice,
+            "status" => "pending",
+            "booking_date" => date("Y-m-d h:m:s")
+        ]);
+
+        foreach ($detailssession as $key => $value) {
+            $flightbookingdetails = FlightBookingDetails::create([
+                "id_flight_book" => $flightbooking->id,
+                "airline_code" => $value->airline_code,
+                "depart_from" => $value->depart_from, 
+                "depart_to" => $value->depart_to, 
+                "depart_date" => $value->depart_date, 
+                "arrival_date" => $value->arrival_date, 
+            ]);
+            foreach ($value->flighttripsession as $k => $val) {
+                $flighttripsession=FlightTripSession::where('id',$val->id)->with('flightaddonssession')->first();
+                $flighttrip=FlightTrip::create([
+                    "id_flight_booking_detail" => $flightbookingdetails->id,
+                    "airline_code" => $val->airline_code,
+                    "flight_number" => $val->flight_number,
+                    "origin" => $val->sch_origin,
+                    "destination" => $val->sch_destination,
+                    "detail_schedule" => $val->detail_schedule,
+                    "depart_time" => $val->sch_depart_time,
+                    "arrival_time" => $val->sch_arrival_time,
+                    "flight_class" => $val->flight_class,
+                    "garuda_number" => $val->garuda_number,
+                    "garuda_availability" => $val->garuda_availability
+                ]);
+
+            }
+
+        }
+        foreach ($passangersession as $key => $value) {
+            $passenger=Passengers::updateOrCreate([
+                "user_id" => Auth::id(),
+                "first_name" => $value->first_name,
+                "last_name" => $value->last_name,
+                "id_number" => $value->id_number
+            ],
+            [
+                "title" => $value->title,
+                "date_of_birth" => $value->birth_date,
+                "gender" => $value->gender,
+                "type" => $value->type,
+                "nationality" => $value->nationality,
+                "birth_country" => $value->birth_country,
+                "parent" => $value->parent
+            ]);
+            if($value->passport_number){
+                $passengerpassport=PassengerPassport::updateOrCreate([
+                    "id_passenger" => $flightpassenger->id,
+                    "passport_number" => $value->passport_number,
+                ],
+                [
+                    "passport_issued_date" => $value->passport_issued_date,
+                    "passport_issued_country" => $value->passport_issued_country,
+                    "passport_expired_date" => $value->passport_expired_date
+                ]);
+            }
+
+            $flightbookingdetails = FlightBookingDetails::where('id_flight_book',$flightbooking->id)->get();
+            foreach ($flightbookingdetails as $key_details => $value_details) {
+                $flighttrip=FlightTrip::where('id_flight_booking_detail',$value_details->id)->with('flightbookingdetails')->get();
                 foreach ($flighttrip as $key_trip => $value_trip) {
                     $flightpassenger=FlightPassenger::create([
                         "id_passenger" => $passenger->id,
