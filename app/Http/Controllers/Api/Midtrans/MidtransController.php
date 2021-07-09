@@ -195,7 +195,7 @@ class MidtransController extends Controller
                 $settlement_time=date("Y-m-d H:m:s",strtotime($request->settlement_time));
                 $status='PAID';
                 NotificationController::sendPush($token, "Payment successful", "Your Rp ".$hotel_amount."payment for booking at".$hotel_name." is successful", "Hotel", "finish");
-                //HotelDarmaController::issueBooking();
+                HotelDarmaController::issueBooking();
 
             }else if($transaction_status=='pending'){
                 $settlement_time=null;
