@@ -30,6 +30,7 @@ use App\Models\FlightBooking;
 use App\Models\FlightTrip;
 use App\Models\FlightPassenger;
 use App\Models\FlightAddons;
+use App\Models\FlightAddonsMeal;
 use App\Models\FlightBookingDetails;
 use App\Models\Passengers;
 
