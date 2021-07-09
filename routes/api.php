@@ -183,7 +183,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/update_transaction', [PropertyDataController::class, 'updateTransaction']);
 		Route::post('/my_transaction_list', [PropertyDataController::class, 'showPropertyTransactionList']);
 		Route::post('/my_property_transaction_list', [PropertyDataController::class, 'showMyPropertyTransactionList']);
-
+		Route::post('/delete', [PropertyDataController::class, 'deleteProperty']);
 	});
 	
 });

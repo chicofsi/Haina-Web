@@ -325,8 +325,8 @@ class PropertyDataController extends Controller
             if(!$transaction){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Not Found!','data'=> '']), 404);
             }
-            else if($transaction['transaction_status'] == "done"){
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Is Already Finalized!','data'=> '']), 401);
+            else if($transaction['transaction_status'] == "done" || $transaction['transaction_status'] == "cancel"){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Is Already Finalized/Cancelled!','data'=> '']), 401);
             }
             else{
                 $update = PropertyTransaction::where('id', $request->id_transaction)->update([
@@ -356,6 +356,15 @@ class PropertyDataController extends Controller
 
                     foreach ($token as $key => $value) {
                         NotificationController::sendPush($value, "Your transaction is finished", "Transaction for ".$property['name']." is being finished", "Property", "");
+                    }
+                }
+                else if($request->status == "cancel"){
+                    $property = PropertyData::where('id', $transaction['id_property'])->update([
+                        'status' => 'available'
+                    ]);
+
+                    foreach ($token as $key => $value) {
+                        NotificationController::sendPush($value, "Your transaction is cancelled", "Transaction for ".$property['name']." is being cancelled", "Property", "");
                     }
                 }
 
@@ -398,6 +407,33 @@ class PropertyDataController extends Controller
         else{
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Facilities List Successfully Displayed!','data'=> $facilities]), 200);
         }
+    }
+
+    public function deleteProperty(Request $request){
+        $property = PropertyData::where('id', $request->id_property)->first();
+
+        if(!$property){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Property Not Found!','data'=> '']), 404);
+        }
+        else if($property['id_user'] != Auth::id()){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+        }
+        else if($property['status'] != "available"){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot Delete In Transaction Property!','data'=> '']), 404);
+        }
+        else{
+            $property_image = PropertyImageData::where('id_property', $property['id'])->get();
+
+            foreach($property_image as $key => $value){
+                Storage::disk('public')->delete($value->path);
+            }
+
+            PropertyImageData::where('id_property', $property['id'])->delete();
+            PropertyData::where('id', $property['id'])->delete();
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Property Deleted!','data'=> $property]), 200);
+        }
+
     }
 
 }

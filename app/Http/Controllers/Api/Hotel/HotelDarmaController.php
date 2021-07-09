@@ -1114,7 +1114,7 @@ class HotelDarmaController extends Controller
         }
     }
 
-    public function issueBooking(Request $request){
+    public function issueBooking(){
         $bookingsession=$this->checkSession(Auth::id());
         if(! $bookingsession){
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Search Hotel First!','data'=> '']), 401);
@@ -1559,7 +1559,7 @@ class HotelDarmaController extends Controller
                     'hotel/Image?ID='.$image_id,
                     [
                         //'sink' => $temp
-                        'sink' => public_path('images/gallery/'.$filename)
+                        'sink' => storage_path('images/hotel/'.$filename)
                     ]
                 );
 
@@ -1568,7 +1568,7 @@ class HotelDarmaController extends Controller
                 //$temp->move('hotel', $filename);
 
                 $update_path = HotelDarmaImage::where('id', $image['id'])->update([
-                    'path' => 'http://testgit.hainaservice.com/images/hotel/'.$filename
+                    'path' => 'http://testgit.hainaservice.com/images/gallery/'.$filename
                 ]);
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Images stored!','data'=> '']), 200);
