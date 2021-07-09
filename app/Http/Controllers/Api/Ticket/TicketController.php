@@ -1306,6 +1306,9 @@ class TicketController extends Controller
             }
 
         }
+
+
+        $flightbookingdetails = FlightBookingDetails::where('id_flight_book',$flightbooking->id)->get();
         foreach ($passangersession as $key => $value) {
             $passenger=Passengers::updateOrCreate([
                 "user_id" => Auth::id(),
@@ -1333,8 +1336,6 @@ class TicketController extends Controller
                     "passport_expired_date" => $value->passport_expired_date
                 ]);
             }
-
-            $flightbookingdetails = FlightBookingDetails::where('id_flight_book',$flightbooking->id)->get();
             foreach ($flightbookingdetails as $key_details => $value_details) {
                 $flighttrip=FlightTrip::where('id_flight_booking_detail',$value_details->id)->with('flightbookingdetails')->get();
                 foreach ($flighttrip as $key_trip => $value_trip) {
@@ -1342,6 +1343,7 @@ class TicketController extends Controller
                         "id_passenger" => $passenger->id,
                         "id_flight_trip" => $value_trip->id
                     ]);
+                    dd($flightpassenger);
                     // $flightaddons = FlightAddons::create([
                     //     "id_flight_passenger" => $flightpassenger,
                     //     ba
