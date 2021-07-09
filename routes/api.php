@@ -146,7 +146,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
 		Route::get('/nationality',[TicketController::class, 'getNationality']);
 
-		Route::post('/testbooking',[TicketController::class, 'setBooking']);
+		Route::post('/testbooking',[TicketController::class, 'setBookingManual']);
 
 
 	});

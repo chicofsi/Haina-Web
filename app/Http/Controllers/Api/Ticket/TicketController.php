@@ -1262,7 +1262,7 @@ class TicketController extends Controller
         
 
     }
-    public function setBooking(Request $response)
+    public function setBookingManual(Request $response)
     {
         $bookingsession=$this->checkSession(Auth::id());
         $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->get();
