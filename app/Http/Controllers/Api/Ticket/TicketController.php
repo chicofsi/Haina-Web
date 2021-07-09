@@ -1343,11 +1343,26 @@ class TicketController extends Controller
                         "id_passenger" => $passenger->id,
                         "id_flight_trip" => $value_trip->id
                     ]);
-                    dd($flightpassenger);
-                    // $flightaddons = FlightAddons::create([
-                    //     "id_flight_passenger" => $flightpassenger,
-                    //     ba
-                    // ])
+                    $addonssession=FlightAddonsSession::where('id_flight_passenger_session',$value->id)->with('flighttripsession')->get();
+                    foreach ($addonssession as $key_addons => $value_addons) {
+                        if($value_addons->flighttripsession->sch_origin==$value_trip->origin && $value_addons->flighttripsession->sch_destination==$value_trip->destination){
+                            $flightaddons = FlightAddons::create([
+                                "id_flight_passenger" => $flightpassenger->id,
+                                "baggage" => $value_addons->baggage_string,
+                                "seat" => $value_addons->seat,
+                                "compartment" => $value_addons->compartment,
+                            ]);
+                            $meals=json_decode($value_addons->meals);
+                            foreach ($meals as $key_meals => $value_meals) {
+                                FlightAddonsMeal::create([
+                                    "id_flight_addons"=>$flightaddons->id,
+                                    "meal" => $value_meals
+                                ]);
+                            }
+                        }
+                    }
+                    
+                    
                 }
             }
 
