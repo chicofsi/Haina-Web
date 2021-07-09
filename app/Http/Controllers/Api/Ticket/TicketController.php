@@ -1276,7 +1276,9 @@ class TicketController extends Controller
             "customer_email" => Auth::user()->email,
             "amount" => $response->ticketPrice,
             "status" => "pending",
-            "booking_date" => date("Y-m-d h:m:s")
+            "booking_date" => date("Y-m-d h:m:s"),
+            "airline_booking_code" => $response->bookingCodeAirline,
+            "timelimit" => $response->timeLimit
         ]);
 
         foreach ($detailssession as $key => $value) {
