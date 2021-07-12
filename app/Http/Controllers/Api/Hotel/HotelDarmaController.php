@@ -1559,7 +1559,7 @@ class HotelDarmaController extends Controller
                     'hotel/Image?ID='.$image_id,
                     [
                         //'sink' => $temp
-                        'sink' => storage_path('hotel/'.$filename)
+                        'sink' => storage_path('app/public/hotel/'.$filename)
                     ]
                 );
 
