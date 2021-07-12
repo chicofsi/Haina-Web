@@ -1559,7 +1559,7 @@ class HotelDarmaController extends Controller
                     'hotel/Image?ID='.$image_id,
                     [
                         //'sink' => $temp
-                        'sink' => storage_path('images/hotel/'.$filename)
+                        'sink' => storage_path('hotel/'.$filename)
                     ]
                 );
 
@@ -1568,7 +1568,7 @@ class HotelDarmaController extends Controller
                 //$temp->move('hotel', $filename);
 
                 $update_path = HotelDarmaImage::where('id', $image['id'])->update([
-                    'path' => 'http://testgit.hainaservice.com/images/gallery/'.$filename
+                    'path' => 'http://hainaservice.com/storage/hotel/'.$filename
                 ]);
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Images stored!','data'=> '']), 200);
