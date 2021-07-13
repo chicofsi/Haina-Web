@@ -120,9 +120,9 @@ class PropertyDataController extends Controller
             foreach($files as $file){
 
                 $fileName = str_replace(' ','-', $property['property_type'].'_'.$property['title'].'_'.$num);
-                $guessExtension = $files->guessExtension();
+                $guessExtension = $file->guessExtension();
                 //dd($guessExtension);
-                $store = Storage::disk('public')->putFileAs('property/image/'.$id, $files ,$fileName.'.'.$guessExtension);
+                $store = Storage::disk('public')->putFileAs('property/image/'.$id, $file ,$fileName.'.'.$guessExtension);
 
 
                 $property_image = PropertyImageData::create([
