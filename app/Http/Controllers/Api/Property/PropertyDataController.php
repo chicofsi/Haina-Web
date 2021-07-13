@@ -53,8 +53,8 @@ class PropertyDataController extends Controller
             'selling_price' => 'required',
             'rental_price' => 'required',
             'facilities' => 'required',
-            'images' => 'required'
-            //['images' => 'required|image|mimes:png,jpg|max:4096']
+            //'images' => 'required'
+            ['images' => 'required|image|mimes:png,jpg|max:4096']
         ]);
 
         if ($validator->fails()) {
@@ -117,7 +117,7 @@ class PropertyDataController extends Controller
         else{
             $num = 1;
 
-            //foreach($files as $file){
+            foreach($files as $file){
 
                 $fileName = str_replace(' ','-', $property['property_type'].'_'.$property['title'].'_'.$num);
                 $guessExtension = $files->guessExtension();
@@ -132,7 +132,7 @@ class PropertyDataController extends Controller
                 ]);
                 //dd($property_image);
                 $num += 1; 
-            //}
+            }
 
             $posted_images = PropertyImageData::where('id_property', $id)->get();
 
