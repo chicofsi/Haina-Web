@@ -53,8 +53,9 @@ class PropertyDataController extends Controller
             'selling_price' => 'required',
             'rental_price' => 'required',
             'facilities' => 'required',
+            'description' => 'required',
             //'images' => 'required'
-            ['images' => 'required|image|mimes:png,jpg|max:4096']
+            ['images' => 'required|image|mimes:png,jpg|max:2048']
         ]);
 
         if ($validator->fails()) {
@@ -83,6 +84,7 @@ class PropertyDataController extends Controller
                     'rental_price' => $request->rental_price,
                     'facilities' => $request->facilities,
                     'post_date' => date("Y-m-d H:i:s"),
+                    'description' => $request->description,
                     'status' => 'available'
                 ];
 
