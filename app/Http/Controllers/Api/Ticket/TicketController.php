@@ -1158,7 +1158,7 @@ class TicketController extends Controller
                     }
                 }else{
 
-                    $this->setBooking($bodyresponse);
+                    $this->setBooking($bodyresponse,$request->id_payment_method);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
                 }
@@ -1169,7 +1169,7 @@ class TicketController extends Controller
         }
     }
 
-    public function setBooking($response)
+    public function setBooking($response,$id_payment_method)
     {
         $bookingsession=$this->checkSession(Auth::id());
         $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->get();
@@ -1182,7 +1182,9 @@ class TicketController extends Controller
             "customer_email" => Auth::user()->email,
             "amount" => $response->ticketPrice,
             "status" => "pending",
-            "booking_date" => date("Y-m-d h:m:s")
+            "booking_date" => date("Y-m-d h:m:s"),
+            "airline_booking_code" => $response->bookingCodeAirline,
+            "timelimit" => $response->timeLimit
         ]);
 
         foreach ($detailssession as $key => $value) {
@@ -1213,6 +1215,9 @@ class TicketController extends Controller
             }
 
         }
+
+
+        $flightbookingdetails = FlightBookingDetails::where('id_flight_book',$flightbooking->id)->get();
         foreach ($passangersession as $key => $value) {
             $passenger=Passengers::updateOrCreate([
                 "user_id" => Auth::id(),
@@ -1240,8 +1245,6 @@ class TicketController extends Controller
                     "passport_expired_date" => $value->passport_expired_date
                 ]);
             }
-
-            $flightbookingdetails = FlightBookingDetails::where('id_flight_book',$flightbooking->id)->get();
             foreach ($flightbookingdetails as $key_details => $value_details) {
                 $flighttrip=FlightTrip::where('id_flight_booking_detail',$value_details->id)->with('flightbookingdetails')->get();
                 foreach ($flighttrip as $key_trip => $value_trip) {
@@ -1249,20 +1252,81 @@ class TicketController extends Controller
                         "id_passenger" => $passenger->id,
                         "id_flight_trip" => $value_trip->id
                     ]);
-                    // $flightaddons = FlightAddons::create([
-                    //     "id_flight_passenger" => $flightpassenger,
-                    //     ba
-                    // ])
+                    $addonssession=FlightAddonsSession::where('id_flight_passenger_session',$value->id)->with('flighttripsession')->get();
+                    foreach ($addonssession as $key_addons => $value_addons) {
+                        if($value_addons->flighttripsession->sch_origin==$value_trip->origin && $value_addons->flighttripsession->sch_destination==$value_trip->destination){
+                            $flightaddons = FlightAddons::create([
+                                "id_flight_passenger" => $flightpassenger->id,
+                                "baggage" => $value_addons->baggage_string,
+                                "seat" => $value_addons->seat,
+                                "compartment" => $value_addons->compartment,
+                            ]);
+                            $meals=json_decode($value_addons->meals);
+                            foreach ($meals as $key_meals => $value_meals) {
+                                FlightAddonsMeal::create([
+                                    "id_flight_addons"=>$flightaddons->id,
+                                    "meal" => $value_meals
+                                ]);
+                            }
+                        }
+                    }
                 }
             }
 
-
             
         }
-
-        
-
+        $payment=PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
+        $this->chargeMidtrans($flightbooking,$payment);
     }
+
+    public function chargeMidtrans($transaction,$payment)
+    {
+        $username="SB-Mid-server-uUu-OOYw1hyxA9QH8wAbtDRl";
+        $url="https://api.sandbox.midtrans.com/v2/charge";
+        $data_array =  array(
+            "payment_type"          => $payment->category->url,
+            "bank_transfer"         => array(
+                "bank"              => $payment->name
+            ),
+            "custom_field1"        => "Flight",
+            "transaction_details"   => array(
+                "order_id"          => $transaction->order_id,
+                "gross_amount"      => $transaction->amount
+            ),
+        );
+
+        $header="Authorization: Basic ".base64_encode($username.":");
+        $make_call = $this->callAPI($url, json_encode($data_array),$header);
+        return $make_call;
+    }
+
+    function callAPI( $url, $data, $header = false){
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_POST, 1);
+        if ($data)
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+
+        // OPTIONS:
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        if(!$header){
+            curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/json',
+            ));
+        }else{
+            curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/json',
+                $header
+            ));
+        }
+        // EXECUTE:
+        $result = curl_exec($curl);
+        if(!$result){die("Connection Failure");}
+        curl_close($curl);
+        return $result;
+    }
+
     public function setBookingManual(Request $response)
     {
         $bookingsession=$this->checkSession(Auth::id());
@@ -1364,17 +1428,11 @@ class TicketController extends Controller
                             }
                         }
                     }
-                    
-                    
                 }
             }
 
-
             
         }
-
-        
-
     }
 
     function generateOrderId() {
@@ -1391,6 +1449,4 @@ class TicketController extends Controller
         
         return $randomString;
     }
-
-
 }
