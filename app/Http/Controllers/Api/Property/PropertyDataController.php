@@ -232,13 +232,11 @@ class PropertyDataController extends Controller
                     array_push($property_facility, $facility);
                 }
 
-                foreach($value->city as $keycity => $valuecity){
-                    $provinceid = $valuecity->id_province;
+                    $provinceid = $value->city->id_province;
 
                     $province = Province::where('id', $provinceid);
 
-                    $valuecity->province = $province['name'];
-                }
+                    $value->city->province = $province['name'];
 
                 //dd($property_facility);
                 $value->facilities = $property_facility;
