@@ -53,7 +53,7 @@ class PropertyDataController extends Controller
             'selling_price' => 'required',
             'rental_price' => 'required',
             'facilities' => 'required',
-            'images' => 'required|image|mimes:png,jpg,jpeg|max:4096'
+            'images' => 'required'
             //['images' => 'required|image|mimes:png,jpg|max:4096']
         ]);
 
