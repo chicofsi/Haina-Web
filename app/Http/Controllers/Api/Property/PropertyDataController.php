@@ -92,6 +92,7 @@ class PropertyDataController extends Controller
                     $newproperty = PropertyData::create($property);
 
                     $files = $request->file('images');
+                    dd($newproperty->id);
                     $this->storeImage($newproperty->id, $files);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Create Property Success!','data'=> $newproperty]), 200);
