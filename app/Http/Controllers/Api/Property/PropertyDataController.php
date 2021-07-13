@@ -235,7 +235,7 @@ class PropertyDataController extends Controller
 
                     $provinceid = $value->city->id_province;
 
-                    $province = Province::where('id', $provinceid);
+                    $province = Province::where('id', $provinceid)->first();
 
                     $value->city->province = $province['name'];
 
