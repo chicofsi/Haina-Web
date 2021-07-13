@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 
 use App\Models\City;
 use App\Models\User;
+use App\Models\Province;
 use App\Models\PropertyData;
 use App\Models\PropertyImageData;
 use App\Models\PropertyTransaction;
