@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 
 use App\Models\City;
 use App\Models\User;
+use App\Models\Province;
 use App\Models\PropertyData;
 use App\Models\PropertyImageData;
 use App\Models\PropertyTransaction;
@@ -53,7 +54,9 @@ class PropertyDataController extends Controller
             'selling_price' => 'required',
             'rental_price' => 'required',
             'facilities' => 'required',
-            ['images' => 'required|image|mimes:png,jpg|max:4096']
+            'description' => 'required',
+            //'images' => 'required'
+            ['images' => 'required|image|mimes:png,jpg|max:2048']
         ]);
 
         if ($validator->fails()) {
@@ -82,6 +85,7 @@ class PropertyDataController extends Controller
                     'rental_price' => $request->rental_price,
                     'facilities' => $request->facilities,
                     'post_date' => date("Y-m-d H:i:s"),
+                    'description' => $request->description,
                     'status' => 'available'
                 ];
 
@@ -92,6 +96,7 @@ class PropertyDataController extends Controller
                     $newproperty = PropertyData::create($property);
 
                     $files = $request->file('images');
+                    //dd($newproperty->id);
                     $this->storeImage($newproperty->id, $files);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Create Property Success!','data'=> $newproperty]), 200);
@@ -117,7 +122,7 @@ class PropertyDataController extends Controller
 
             foreach($files as $file){
 
-                $fileName = str_replace(' ','-', $property['property_type'].'_'.$property['name'].'_'.$num);
+                $fileName = str_replace(' ','-', $property['property_type'].'_'.$property['title'].'_'.$num);
                 $guessExtension = $file->guessExtension();
                 //dd($guessExtension);
                 $store = Storage::disk('public')->putFileAs('property/image/'.$id, $file ,$fileName.'.'.$guessExtension);
@@ -126,7 +131,7 @@ class PropertyDataController extends Controller
                 $property_image = PropertyImageData::create([
                     'id_property' => $id,
                     'filename' => $fileName,
-                    'path' => $store
+                    'path' => 'http://hainaservice.com/storage/'.$store
                 ]);
                 //dd($property_image);
                 $num += 1; 
@@ -184,7 +189,7 @@ class PropertyDataController extends Controller
     */
 
     public function showAvailableProperty(Request $request){
-        $property = PropertyData::where('id_user', 'not like', Auth::user()->id)->where('status', "available")->with('images', 'owner')->get();
+        $property = PropertyData::where('id_user', 'not like', Auth::user()->id)->where('status', "available")->with('images', 'owner', 'city')->get();
 
         if($request->property_type !== null){
             $property = $property->where('property_type', $request->property_type);
@@ -227,6 +232,12 @@ class PropertyDataController extends Controller
 
                     array_push($property_facility, $facility);
                 }
+
+                    $provinceid = $value->city->id_province;
+
+                    $province = Province::where('id', $provinceid)->first();
+
+                    $value->city->province = $province['name'];
 
                 //dd($property_facility);
                 $value->facilities = $property_facility;
