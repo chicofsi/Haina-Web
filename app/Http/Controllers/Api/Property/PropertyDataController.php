@@ -131,7 +131,7 @@ class PropertyDataController extends Controller
                 $property_image = PropertyImageData::create([
                     'id_property' => $id,
                     'filename' => $fileName,
-                    'path' => $store
+                    'path' => 'http://hainaservice.com/storage/'.$store
                 ]);
                 //dd($property_image);
                 $num += 1; 
