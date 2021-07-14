@@ -30,10 +30,36 @@ class PropertyDataController extends Controller
     public function showMyProperty(){
         $property = PropertyData::where('id_user', Auth::user()->id)->with('images')->get();
 
-        if(!$property){
+        if(!$property || count($property) == 0){
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Property Not Found!','data'=> '']), 404);
         }
         else{
+            foreach($property as $key=>$value){
+                $facility_id = explode(',', $value->facilities);
+                $property_facility = [];
+
+                foreach($facility_id as $key_prop => $value_prop){
+                    $getProp = PropertyFacility::where('id', $value_prop)->first();
+
+                    $facility = (object) [
+                        "id_facility" => $getProp['id'] ?? '0',
+                        "facility_name" => $getProp['name'] ?? ' ',
+                        "facility_name_zh" => $getProp['name_zh'] ?? ' '
+                    ];
+
+                    array_push($property_facility, $facility);
+                }
+
+                    $provinceid = $value->city->id_province;
+
+                    $province = Province::where('id', $provinceid)->first();
+
+                    $value->city->province = $province['name'];
+
+                //dd($property_facility);
+                $value->facilities = $property_facility;
+            }
+
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Property loaded successfully!','data'=> $property]), 200);
         }
     }
@@ -227,7 +253,8 @@ class PropertyDataController extends Controller
 
                     $facility = (object) [
                         "id_facility" => $getProp['id'] ?? '0',
-                        "facility_name" => $getProp['name'] ?? ' '
+                        "facility_name" => $getProp['name'] ?? ' ',
+                        "facility_name_zh" => $getProp['name_zh'] ?? ' '
                     ];
 
                     array_push($property_facility, $facility);
