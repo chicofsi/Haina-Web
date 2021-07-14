@@ -115,7 +115,7 @@ class PropertyDataController extends Controller
                     'status' => 'available'
                 ];
 
-                if($property['land_area'] != null && $property['building_area'] > $property['land_area'] && property['property_type'] == "house"){
+                if($property['land_area'] != null && $property['building_area'] > $property['land_area'] && $property['property_type'] == "house"){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Invalid building area','data'=> '']), 404);
                 }
                 else{
