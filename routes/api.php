@@ -188,7 +188,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	});
 
 	Route::group(['prefix' => 'forum'], function(){
-		Route::get('/subforum', [ForumController::class, 'createSubforum']);
+		Route::get('/subforum', [ForumController::class, 'showAllSubforum']);
 
 		Route::post('/new_subforum', [ForumController::class, 'createSubforum']);
 		Route::post('/new_comment', [ForumController::class, 'createComment']);
