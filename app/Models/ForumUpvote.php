@@ -12,7 +12,7 @@ class ForumUpvote extends Model
     protected $table = 'forum_upvote';
 
     protected $fillable = [
-    	 'user_id', 'post_id', 'content'
+    	 'user_id', 'post_id'
     ];
 
     public function posts(){

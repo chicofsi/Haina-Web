@@ -152,40 +152,7 @@ class ForumController extends Controller
         
         $post = ForumPost::where('id', $id)->first();
 
-        if(!$property){
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
-        }
-        else{
-            $num = 1;
-
-            foreach($files as $file){
-
-                $fileName = str_replace(' ','-', $post['title'].'_'.$num);
-                $guessExtension = $file->guessExtension();
-                //dd($guessExtension);
-                $store = Storage::disk('public')->putFileAs('forum/post/'.$id, $file ,$fileName.'.'.$guessExtension);
-
-
-                $ppost_image = ForumImage::create([
-                    'post_id' => $id,
-                    'filename' => $fileName,
-                    'path' => 'http://hainaservice.com/storage/'.$store
-                ]);
-                //dd($property_image);
-                $num += 1; 
-            }
-
-            $posted_images = ForumImage::where('post_id', $id)->get();
-
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Image Success!','data'=> $posted_images]), 200);
-        }
-    }
-
-    public function storeImage($id, $files){
-        
-        $post = ForumPost::where('id', $id)->first();
-
-        if(!$property){
+        if(!$post){
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
         }
         else{
@@ -214,7 +181,7 @@ class ForumController extends Controller
         }
     }
 
-    public storeVideo($id, $video){
+    public function storeVideo($id, $video){
         $post = ForumPost::where('id', $id)->first();
 
         if(!$property){
@@ -235,6 +202,21 @@ class ForumController extends Controller
             $posted_video = ForumVideo::where('post_id', $id)->get();
 
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Videoe Success!','data'=> $posted_video]), 200);
+        }
+    }
+
+    public function giveUpvote(Request $request){
+        $check = Post::where('id', $request->post_id)->first();
+
+        if($check){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
+        }
+        else{
+            $new_upvote = ForumUpvote::create([
+                'user_id' => Auth::id(),
+                'post_id' => $request->post_id()
+            ]);
+
         }
     }
 
