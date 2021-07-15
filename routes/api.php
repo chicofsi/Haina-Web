@@ -187,7 +187,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/delete', [PropertyDataController::class, 'deleteProperty']);
 	});
 
-	Route::group(['prefix' => 'property'], function(){
+	Route::group(['prefix' => 'forum'], function(){
 		Route::get('/subforum', [ForumController::class, 'createSubforum']);
 
 		Route::post('/new_subforum', [ForumController::class, 'createSubforum']);
