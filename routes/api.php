@@ -186,6 +186,15 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/my_property_transaction_list', [PropertyDataController::class, 'showMyPropertyTransactionList']);
 		Route::post('/delete', [PropertyDataController::class, 'deleteProperty']);
 	});
+
+	Route::group(['prefix' => 'property'], function(){
+		Route::get('/subforum', [ForumController::class, 'createSubforum']);
+
+		Route::post('/new_subforum', [ForumController::class, 'createSubforum']);
+		Route::post('/new_comment', [ForumController::class, 'createComment']);
+		Route::post('/new_post', [ForumController::class, 'createPost']);
+		
+	});
 	
 });
 
