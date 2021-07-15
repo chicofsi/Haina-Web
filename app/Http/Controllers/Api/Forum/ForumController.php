@@ -30,32 +30,212 @@ class ForumController extends Controller
 
     public function createSubforum (Request $request){
 
-        $check = Subforum::where('name', $request->name)->first();
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'description' => 'required' 
+        ]);
 
-        if($check){
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Subforum already exists!','data'=> '']), 401);
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $subforum = [
-                'name' => $request->name,
-                'description' => $request->description
-            ];
 
-            $new_subforum = Subforum::create($subforum);
+            $check = Subforum::where('name', $request->name)->first();
 
-            $new_mod = ForumMod::create([
-                'user_id' => Auth::id(),
-                'role' => 'mod',
-                'subforum_id' => $new_subforum->id
-            ]);
+            if($check){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Subforum already exists!','data'=> '']), 401);
+            }
+            else{
+                $subforum = [
+                    'name' => $request->name,
+                    'description' => $request->description
+                ];
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Subforum successfully created!','data'=> $new_subforum]), 200);
+                $new_subforum = Subforum::create($subforum);
+
+                $new_mod = ForumMod::create([
+                    'user_id' => Auth::id(),
+                    'role' => 'mod',
+                    'subforum_id' => $new_subforum->id
+                ]);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Subforum successfully created!','data'=> $new_subforum]), 200);
+            }
         }
 
     }
 
-    public function createPost(Request $request){
+    public function showAllSubforum(){
+        $check = Subforum::all();
 
+        if(count($check) != 0){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Subforum found!','data'=> $check]), 200);
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'No subforum found!','data'=> '']), 404);
+        }
+    }
+
+    public function createPost(Request $request){
+        $validator = Validator::make($request->all(), [
+            'subforum_id' => 'required',
+            'title' => 'required',
+            'content' => 'required',
+            ['images' => 'image|mimes:png,jpg|max:1024'],
+            'video' => 'video|mimes:mp4,mov,3gp,qt|max:10000'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+
+            $check = ForumPost::where('subforum_id', $request->subforum_id)->where('user_id', Auth::id())->where('title', $request->title)->first();
+
+            if($check){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'You have created the same topic in the subforum!','data'=> '']), 401);
+            }
+            else{
+                $post = [
+                    'user_id' => Auth::id(),
+                    'subforum_id' => $request->subforum_id,
+                    'title' => $request->title,
+                    'content' => $request->content
+                ];
+
+                $new_post = ForumPost::create($post);
+
+                if($request->images){
+                    $files = $request->file('images');
+                    $this->storeImage($new_post->id, $files);
+                }
+                if($request->video){
+
+                }
+
+            }
+        }
+
+    }
+
+    public function deletePost(Request $request){
+        
+    }
+
+    public function createComment(Request $request){
+        $validator = Validator::make($request->all(), [
+            'post_id' => 'required',
+            'content' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $comment = [
+                'user_id' => Auth::id(),
+                'post_id' => $request->post_id,
+                'content' => $request->content
+            ];
+
+            $new_comment = ForumComment::create($comment);
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Comment Success!','data'=> $new_comment]), 200);
+        }
+    }
+
+    public function deleteComment(Request $request){
+
+    }
+
+    public function storeImage($id, $files){
+        
+        $post = ForumPost::where('id', $id)->first();
+
+        if(!$property){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
+        }
+        else{
+            $num = 1;
+
+            foreach($files as $file){
+
+                $fileName = str_replace(' ','-', $post['title'].'_'.$num);
+                $guessExtension = $file->guessExtension();
+                //dd($guessExtension);
+                $store = Storage::disk('public')->putFileAs('forum/post/'.$id, $file ,$fileName.'.'.$guessExtension);
+
+
+                $ppost_image = ForumImage::create([
+                    'post_id' => $id,
+                    'filename' => $fileName,
+                    'path' => 'http://hainaservice.com/storage/'.$store
+                ]);
+                //dd($property_image);
+                $num += 1; 
+            }
+
+            $posted_images = ForumImage::where('post_id', $id)->get();
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Image Success!','data'=> $posted_images]), 200);
+        }
+    }
+
+    public function storeImage($id, $files){
+        
+        $post = ForumPost::where('id', $id)->first();
+
+        if(!$property){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
+        }
+        else{
+            $num = 1;
+
+            foreach($files as $file){
+
+                $fileName = str_replace(' ','-', $post['title'].'_'.$num);
+                $guessExtension = $file->guessExtension();
+                //dd($guessExtension);
+                $store = Storage::disk('public')->putFileAs('forum/post/'.$id, $file ,$fileName.'.'.$guessExtension);
+
+
+                $post_image = ForumImage::create([
+                    'post_id' => $id,
+                    'filename' => $fileName,
+                    'path' => 'http://hainaservice.com/storage/'.$store
+                ]);
+                //dd($property_image);
+                $num += 1; 
+            }
+
+            $posted_images = ForumImage::where('post_id', $id)->get();
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Image Success!','data'=> $posted_images]), 200);
+        }
+    }
+
+    public storeVideo($id, $video){
+        $post = ForumPost::where('id', $id)->first();
+
+        if(!$property){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
+        }
+        else{
+            $fileName = str_replace(' ','-', 'video-'.$post['title']);
+            $guessExtension = $file->guessExtension();
+            //dd($guessExtension);
+            $store = Storage::disk('public')->putFileAs('forum/post/'.$id, $video ,$fileName.'.'.$guessExtension);
+
+            $post_video = ForumVideo::create([
+                'post_id' => $id,
+                'filename' => $fileName,
+                'path' => 'http://hainaservice.com/storage/'.$store
+            ]);
+
+            $posted_video = ForumVideo::where('post_id', $id)->get();
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Videoe Success!','data'=> $posted_video]), 200);
+        }
     }
 
 }
