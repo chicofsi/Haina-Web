@@ -223,7 +223,7 @@ class PropertyDataController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $property = PropertyData::where('id', $request->property_id)->with('images', 'owner', 'city')->first();
+            $property = PropertyData::where('id', $request->id_property)->with('images', 'owner', 'city')->first();
 
             if(!$property){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Property not found!','data'=> '']), 404);
