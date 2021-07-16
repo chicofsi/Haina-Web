@@ -235,7 +235,7 @@ class PropertyDataController extends Controller
                     'views' => $view
                 ]);
 
-                $facility_id = explode(',', $value->facilities);
+                $facility_id = explode(',', $property->facilities);
                 $property_facility = [];
 
                 foreach($facility_id as $key_prop => $value_prop){
@@ -250,14 +250,14 @@ class PropertyDataController extends Controller
                     array_push($property_facility, $facility);
                 }
 
-                    $provinceid = $value->city->id_province;
+                    $provinceid = $property->city->id_province;
 
                     $province = Province::where('id', $provinceid)->first();
 
-                    $value->city->province = $province['name'];
+                    $property->city->province = $province['name'];
 
                 //dd($property_facility);
-                $value->facilities = $property_facility;
+                $property->facilities = $property_facility;
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Property loaded successfully!','data'=> $property]), 200);
             }
