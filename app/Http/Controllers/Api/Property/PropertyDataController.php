@@ -335,7 +335,7 @@ class PropertyDataController extends Controller
                             'id_property' => $request->id_property,
                             'transaction_date' => date("Y-m-d H:i:s"),
                             'transaction_type' => $request->transaction_type,
-                            'transaction_status' => "waiting"
+                            'transaction_status' => "pending"
                         ];
 
                         $property = PropertyData::where('id', $request->id_property)->update([
@@ -377,7 +377,7 @@ class PropertyDataController extends Controller
     public function updateTransaction(Request $request){
         $validator = Validator::make($request->all(), [
             'id_transaction' => 'required',
-            'status' => 'in:in_transaction,done'
+            'status' => 'in:done,cancel'
         ]);
 
         if ($validator->fails()) {
@@ -407,14 +407,7 @@ class PropertyDataController extends Controller
 
                 $property = PropertyData::where('id', $transaction['id_property'])->first();
 
-                if($request->status == "in_transaction"){
-
-                    foreach ($token as $key => $value) {
-                        NotificationController::sendPush($value, "Your transaction is being processed", "Transaction for ".$property['name']." is being processed", "Property", "");
-                    }
-
-                }
-                else if($request->status == "done"){
+                if($request->status == "done"){
                     $property = PropertyData::where('id', $transaction['id_property'])->update([
                         'status' => $request->status
                     ]);
