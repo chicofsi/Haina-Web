@@ -76,6 +76,22 @@ class ForumController extends Controller
         }
     }
 
+    public function showAllPost(Request $request){
+        $validator = Validator::make($request->all(), [
+            'subforum_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $list_post = ForumPost::where('subforum_id', $request->subforum_id)->get();
+
+            
+
+        }
+    }
+
     public function createPost(Request $request){
         $validator = Validator::make($request->all(), [
             'subforum_id' => 'required',
@@ -110,7 +126,7 @@ class ForumController extends Controller
                     $this->storeImage($new_post->id, $files);
                 }
                 if($request->video){
-                    
+
                 }
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'New Post Successfully Posted!','data'=> $new_post]), 200);
@@ -203,22 +219,81 @@ class ForumController extends Controller
 
             $posted_video = ForumVideo::where('post_id', $id)->get();
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Videoe Success!','data'=> $posted_video]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Video Success!','data'=> $posted_video]), 200);
         }
     }
 
     public function giveUpvote(Request $request){
-        $check = Post::where('id', $request->post_id)->first();
+        $validator = Validator::make($request->all(), [
+            'post_id' => 'required',
+        ]);
 
-        if($check){
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $new_upvote = ForumUpvote::create([
-                'user_id' => Auth::id(),
-                'post_id' => $request->post_id()
-            ]);
+            $check = Post::where('id', $request->post_id)->first();
 
+            if($check){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
+            }
+            else{
+                if($check['user_id'] == Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot Own Upvote Post!','data'=> '']), 401);
+                }
+                else{
+                    $new_upvote = ForumUpvote::create([
+                        'user_id' => Auth::id(),
+                        'post_id' => $request->post_id()
+                    ]);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Upvote Success!','data'=> $new_upvote]), 200);
+                }
+
+            }
+        }
+    }
+
+    public function assignMod(Request $request){
+        $validator = Validator::make($request->all(), [
+            'subforum_id' => 'required',
+            'user_id' => 'required',
+            'role' => 'in:mod|submod'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $checkmod = ForumMod::where('user_id', Auth::id())->where('subforum_id', $request->subforum_id)->first();
+
+            if(!$checkmod){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+            }
+            else{
+                $check_candidate = ForumMod::where('user_id', $request->user_id)->where('subforum_id', $request->subforum_id)->first();
+
+                if($check_candidate){
+                    $update_mod = ForumMod::where('user_id', $request->user_id)->where('subforum_id', $request->subforum_id)->update(
+                        [
+                            'role' => $request->role
+                        ]
+                    );
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Update Mod Success!','data'=> $update_mod]), 200);
+
+                }
+                else{
+                    $new_mod = ForumMod::create([
+                        'user_id' => $request->user_id,
+                        'role' => $request->role,
+                        'subforum_id' => $request->subforum_id
+                    ]);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Assign New Mod Success!','data'=> $new_mod]), 200);
+                }
+                
+            }
         }
     }
 
