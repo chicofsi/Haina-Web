@@ -235,6 +235,30 @@ class PropertyDataController extends Controller
                     'views' => $view
                 ]);
 
+                $facility_id = explode(',', $value->facilities);
+                $property_facility = [];
+
+                foreach($facility_id as $key_prop => $value_prop){
+                    $getProp = PropertyFacility::where('id', $value_prop)->first();
+
+                    $facility = (object) [
+                        "id_facility" => $getProp['id'] ?? '0',
+                        "facility_name" => $getProp['name'] ?? ' ',
+                        "facility_name_zh" => $getProp['name_zh'] ?? ' '
+                    ];
+
+                    array_push($property_facility, $facility);
+                }
+
+                    $provinceid = $value->city->id_province;
+
+                    $province = Province::where('id', $provinceid)->first();
+
+                    $value->city->province = $province['name'];
+
+                //dd($property_facility);
+                $value->facilities = $property_facility;
+
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Property loaded successfully!','data'=> $property]), 200);
             }
             
