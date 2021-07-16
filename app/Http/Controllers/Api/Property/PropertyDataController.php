@@ -216,7 +216,7 @@ class PropertyDataController extends Controller
 
     public function getPropertyDetail(Request $request){
         $validator = Validator::make($request->all(), [
-            'property_id' => 'required'
+            'id_property' => 'required'
         ]);
 
         if ($validator->fails()) {
