@@ -74,7 +74,7 @@ class PropertyDataController extends Controller
             'bathroom' => 'required',
             'floor_level' => 'required',
             'year' => 'required',
-            'certificate_type' => 'in:SHM,HGB,SHMSRS,Girik',
+            //'certificate_type' => 'in:SHM,HGB,SHMSRS,Girik',
             'id_city' => 'required',
             'address' => 'required',
             'selling_price' => 'required',
@@ -482,7 +482,7 @@ class PropertyDataController extends Controller
 
                 $updated_property = $property->update($update);
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Property Data Updated!','data'=> $updated_property]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Property Data Updated!','data'=> $property]), 200);
             }
         }
 
