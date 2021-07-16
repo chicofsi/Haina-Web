@@ -214,6 +214,33 @@ class PropertyDataController extends Controller
     }
     */
 
+    public function getPropertyDetail(Request $request){
+        $validator = Validator::make($request->all(), [
+            'property_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $property = PropertyData::where('id', $request->property_id)->with('images', 'owner', 'city')->first();
+
+            if(!$property){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Property not found!','data'=> '']), 404);
+            }
+            else{
+                $view = $property['views'] + 1;
+
+                $upd_view = $property->update([
+                    'views' => $view
+                ]);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Property loaded successfully!','data'=> $property]), 200);
+            }
+            
+        }
+    }
+
     public function showAvailableProperty(Request $request){
         $property = PropertyData::where('id_user', 'not like', Auth::user()->id)->where('status', "available")->with('images', 'owner', 'city')->get();
 
