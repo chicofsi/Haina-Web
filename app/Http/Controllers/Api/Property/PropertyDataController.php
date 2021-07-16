@@ -445,6 +445,49 @@ class PropertyDataController extends Controller
 
     }
 
+    public function updatePropertyDetail(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_property' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $property = PropertyData::where('id', $request->id_property)->first();
+
+            if(!$property){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Property Not Found!','data'=> '']), 404);
+            }
+            else if($property['id_user'] != Auth::id()){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+            }
+            else if($property['status'] != "available"){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot Change Property in Transaction!','data'=> '']), 401);
+            }
+            else{
+                $update = 
+                [
+                    'title' => $request->title ?? $property['title'],
+                    'building_area' => $request->building_area ?? $property['building_area'],
+                    'land_area' => $request->land_area ?? $property['land_area'],
+                    'bedroom' => $request->bedroom ?? $property['bedroom'],
+                    'bathroom' => $request->bathroom ?? $property['bathroom'],
+                    'certificate_type' => $request->certificate_type ?? $property['certificate_type'],
+                    'selling_price' => $request->selling_price ?? $property['selling_price'],
+                    'rental_price' => $request->rental_price ?? $property['rental_price'],
+                    'facilities' => $request->facilities ?? $property['facilities'],
+                    'description' => $request->description ?? $property['description']
+                ];
+
+                $updated_property = $property->update($update);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Property Data Updated!','data'=> $updated_property]), 200);
+            }
+        }
+
+    }
+
     public function showMyPropertyTransactionList(){
         $transaction = PropertyTransaction::where('id_owner', Auth::id())->with('property', 'buyer')->get();
 

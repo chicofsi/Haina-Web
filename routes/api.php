@@ -180,6 +180,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/show_property', [PropertyDataController::class, 'showAvailableProperty']);
 		Route::post('/new_property', [PropertyDataController::class, 'addProperty']);
 		Route::post('/view_property', [PropertyDataController::class, 'getPropertyDetail']);
+		Route::post('/update_property', [PropertyDataController::class, 'updatePropertyDetail']);
 		Route::post('/upload_image', [PropertyDataController::class, 'storeImage']);
 		Route::post('/new_transaction', [PropertyDataController::class, 'createTransaction']);
 		Route::post('/update_transaction', [PropertyDataController::class, 'updateTransaction']);
