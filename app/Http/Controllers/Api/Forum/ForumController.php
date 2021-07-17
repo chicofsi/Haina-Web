@@ -126,8 +126,8 @@ class ForumController extends Controller
                     $this->storeImage($new_post->id, $files);
                 }
                 if($request->video){
-                    $files = $request->file('video');
-                    $this->storeVideo($new_post->id, $files);
+                    $video = $request->file('video');
+                    $this->storeVideo($new_post->id, $video);
                 }
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'New Post Successfully Posted!','data'=> $new_post]), 200);
@@ -203,7 +203,7 @@ class ForumController extends Controller
     public function storeVideo($id, $video){
         $post = ForumPost::where('id', $id)->first();
 
-        if(!$property){
+        if(!$post){
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
         }
         else{
