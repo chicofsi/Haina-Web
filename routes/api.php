@@ -195,6 +195,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/new_subforum', [ForumController::class, 'createSubforum']);
 		Route::post('/new_comment', [ForumController::class, 'createComment']);
 		Route::post('/new_post', [ForumController::class, 'createPost']);
+		Route::post('/video', [ForumController::class, 'storeVideo']);
 		
 	});
 	
