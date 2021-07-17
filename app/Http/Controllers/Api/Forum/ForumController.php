@@ -87,7 +87,7 @@ class ForumController extends Controller
         else{
             $list_post = ForumPost::where('subforum_id', $request->subforum_id)->get();
 
-            
+
 
         }
     }
@@ -98,7 +98,7 @@ class ForumController extends Controller
             'title' => 'required',
             'content' => 'required',
             ['images' => 'image|mimes:png,jpg|max:1024'],
-            'video' => 'video|mimes:mp4,mov,3gp,qt|max:10000'
+            'video' => 'mimes:mp4,mov,3gp,qt|max:12000'
         ]);
 
         if ($validator->fails()) {
