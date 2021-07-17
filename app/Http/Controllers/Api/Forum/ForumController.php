@@ -208,7 +208,7 @@ class ForumController extends Controller
         }
         else{
             $fileName = str_replace(' ','-', 'video-'.$post['title']);
-            $guessExtension = $file->guessExtension();
+            $guessExtension = $video->guessExtension();
             //dd($guessExtension);
             $store = Storage::disk('public')->putFileAs('forum/post/'.$id, $video ,$fileName.'.'.$guessExtension);
 
