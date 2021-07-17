@@ -127,7 +127,7 @@ class ForumController extends Controller
                 }
                 if($request->video){
                     $files = $request->file('video');
-                    $this->storeImage($new_post->id, $files);
+                    $this->storeVideo($new_post->id, $files);
                 }
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'New Post Successfully Posted!','data'=> $new_post]), 200);
