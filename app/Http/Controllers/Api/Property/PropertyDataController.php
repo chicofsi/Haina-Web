@@ -365,7 +365,7 @@ class PropertyDataController extends Controller
 
                         $new_transaction = PropertyTransaction::create($property_transaction);
 
-                        $property = PropertyData::where('id', $request->id_property)->update([
+                        $property_upd = PropertyData::where('id', $request->id_property)->update([
                             'status' => "in_transaction"
                         ]);
 
