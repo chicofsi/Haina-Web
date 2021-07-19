@@ -93,7 +93,7 @@ class ForumController extends Controller
                 $likes = count(ForumUpvote::where('post_id', $value->id)->get());
 
                 $lastpost = null;
-                $check_comment = ForumComment::where('post_id', $value->id)->orderBy('created_at', 'desc')->get();
+                $check_comment = ForumComment::where('post_id', $value->id)->orderBy('created_at', 'desc')->first();
 
                 $author = User::where('id', $value->user_id)->first();
 
@@ -101,7 +101,7 @@ class ForumController extends Controller
                     $lastpost = $value->updated_at;
                 }
                 else{
-                    $lastpost = $check_comment->first();
+                    $lastpost = $check_comment['created_at'];
                 }
 
                 $list = (object) [
@@ -109,9 +109,9 @@ class ForumController extends Controller
                     'title' => $value->title,
                     'author' => $author['username'],
                     'like_count' => $likes,
-                    'comment_count' => count($check_comment),
+                    'comment_count' => count(ForumComment::where('post_id', $value->id)->get()),
                     'created' => $value->created_at,
-                    'last_update' => $lastpost['created_at']
+                    'last_update' => $lastpost
                 ];
 
                 array_push($threads, $list);
@@ -279,7 +279,7 @@ class ForumController extends Controller
                 $check_duplicate = ForumUpvote::where('post_id', $request->post_id)->where('user_id', Auth::id())->first();
 
                 if($check['user_id'] == Auth::id()){
-                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot Own Upvote Post!','data'=> '']), 401);
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot Upvote Own Post!','data'=> '']), 401);
                 }
                 else if($check_duplicate){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot Upvote More Than Once!','data'=> '']), 401);
