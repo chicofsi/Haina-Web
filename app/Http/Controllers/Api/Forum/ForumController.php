@@ -118,7 +118,7 @@ class ForumController extends Controller
 
             }
 
-            $threads = collect($threads)->sortBy('like_count')->groupBy('created_at')->toArray();
+            $threads = collect($threads)->sortBy('like_count')->groupBy('created_at', 'desc')->toArray();
 
             if(count($threads) == 0){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No threads found!','data'=> '']), 404);
@@ -196,6 +196,49 @@ class ForumController extends Controller
     }
 
     public function deletePost(Request $request){
+        $validator = Validator::make($request->all(), [
+            'post_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $checkpost = ForumPost::where('id', $request->post_id)->first();
+            $checkcomment = ForumComment::where('post_id', $request->post_id)->get();
+            $checkimage = ForumImage::where('post_id', $request->post_id)->get();
+            $checkvideo = ForumVideo::where('post_id', $request->post_id)->get();
+            $checkupvote = ForumUpvote::where('post_id', $request->post_id)->get();
+
+            $subforum = ForumPost::select('subforum_id')->where('id',$checkpost['id'])->first();
+            $checkmod = ForumMod::where('user_id', Auth::id())->where('subforum_id', $subforum['subforum_id'])->first();
+
+            if(!$checkpost){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
+            }
+            else if($checkpost['user_id'] != Auth::id() && !$checkmod){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+            }
+            else{
+                if($checkcomment){
+                    $delete_comment = ForumComment::where('post_id', $request->post_id)->delete();
+                }
+                if($checkimage){
+                    $delete_image = ForumImage::where('post_id', $request->post_id)->delete();
+                }
+                if($checkvideo){
+                    $delete_video = ForumVideo::where('post_id', $request->post_id)->delete();
+                }
+                if($checkupvote){
+                    $delete_upvote = ForumUpvote::where('post_id', $request->post_id)->delete();
+                }
+                
+                $delete_post = ForumComment::where('id', $request->post_id)->delete();
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Post deleted successfully','data'=> $checkpost]), 200);
+            
+            }
+        }
         
     }
 
