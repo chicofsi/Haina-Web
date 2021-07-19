@@ -18,6 +18,7 @@ use App\Models\PropertyImageData;
 use App\Models\PropertyTransaction;
 use App\Models\PropertyFacility;
 
+use App\Models\PersonalAccessToken;
 use App\Http\Controllers\Api\Notification\NotificationController;
 
 use DateTime;
