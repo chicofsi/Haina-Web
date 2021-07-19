@@ -287,7 +287,7 @@ class ForumController extends Controller
                 else{
                     $new_upvote = ForumUpvote::create([
                         'user_id' => Auth::id(),
-                        'post_id' => $request->post_id()
+                        'post_id' => $request->post_id
                     ]);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Upvote Success!','data'=> $new_upvote]), 200);
