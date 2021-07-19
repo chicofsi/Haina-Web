@@ -87,7 +87,39 @@ class ForumController extends Controller
         else{
             $list_post = ForumPost::where('subforum_id', $request->subforum_id)->get();
 
+            $threads = [];
 
+            foreach($list_post as $key => $value){
+                $likes = count(ForumUpvote::where('post_id', $value->id)->get());
+
+                $lastpost = null;
+                $check_comment = ForumComment::where('post_id', $value->id)->orderBy('created_at', 'desc')->first();
+
+                if(!$check_comment){
+                    $lastpost = $value->updated_at;
+                }
+                else{
+                    $lastpost = $check_comment['created_at'];
+                }
+
+                $list = (object) [
+                    $title => $value->title,
+                    $author => $value->user_id,
+                    $like_count => $likes,
+                    $created => $value->created_at,
+                    $last_update => $lastpost
+                ];
+
+                array_push($threads, $list);
+
+            }
+
+            if(count($threads) == 0){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No threads found!','data'=> '']), 404);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Threads displayed successfully!','data'=> $threads]), 404);
+            }
 
         }
     }
