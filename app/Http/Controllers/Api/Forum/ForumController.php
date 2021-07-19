@@ -103,11 +103,11 @@ class ForumController extends Controller
                 }
 
                 $list = (object) [
-                    $title => $value->title,
-                    $author => $value->user_id,
-                    $like_count => $likes,
-                    $created => $value->created_at,
-                    $last_update => $lastpost
+                    'title' => $value->title,
+                    'author' => $value->user_id,
+                    'like_count' => $likes,
+                    'created' => $value->created_at,
+                    'last_update' => $lastpost
                 ];
 
                 array_push($threads, $list);
