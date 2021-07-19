@@ -93,19 +93,23 @@ class ForumController extends Controller
                 $likes = count(ForumUpvote::where('post_id', $value->id)->get());
 
                 $lastpost = null;
-                $check_comment = ForumComment::where('post_id', $value->id)->orderBy('created_at', 'desc')->first();
+                $check_comment = ForumComment::where('post_id', $value->id)->orderBy('created_at', 'desc')->get();
+
+                $author = User::where('id', $value->user_id)->first();
 
                 if(!$check_comment){
                     $lastpost = $value->updated_at;
                 }
                 else{
-                    $lastpost = $check_comment['created_at'];
+                    $lastpost = $check_comment[0]['created_at'];
                 }
 
                 $list = (object) [
+                    'id' => $value->id,
                     'title' => $value->title,
-                    'author' => $value->user_id,
+                    'author' => $author['username'],
                     'like_count' => $likes,
+                    'comment_count' => count($check_comment),
                     'created' => $value->created_at,
                     'last_update' => $lastpost
                 ];
