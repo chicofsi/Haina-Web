@@ -101,7 +101,7 @@ class ForumController extends Controller
                     $lastpost = $value->updated_at;
                 }
                 else{
-                    $lastpost = $check_comment[0]['created_at'];
+                    $lastpost = $check_comment->first()->created_at;
                 }
 
                 $list = (object) [
