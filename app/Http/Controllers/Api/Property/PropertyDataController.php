@@ -345,10 +345,10 @@ class PropertyDataController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot do transaction with own property!','data'=> '']), 401);
             }
             else if($property['status'] == "available"){
-                if($request->transaction_type == "buy" && $property['selling_price'] == null){
+                if($request->transaction_type == "buy" && $property['selling_price'] == 0){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Property not for sale!','data'=> '']), 404);
                 }
-                else if($request->transaction_type == "rental" && $property['rental_price'] == null){
+                else if($request->transaction_type == "rental" && $property['rental_price'] == 0){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Property not for rent!','data'=> '']), 404);
                 }
                 else{
