@@ -101,7 +101,7 @@ class ForumController extends Controller
                     $lastpost = $value->updated_at;
                 }
                 else{
-                    $lastpost = $check_comment->first()->created_at;
+                    $lastpost = $check_comment->first();
                 }
 
                 $list = (object) [
@@ -111,7 +111,7 @@ class ForumController extends Controller
                     'like_count' => $likes,
                     'comment_count' => count($check_comment),
                     'created' => $value->created_at,
-                    'last_update' => $lastpost
+                    'last_update' => $lastpost['created_at']
                 ];
 
                 array_push($threads, $list);
@@ -269,14 +269,20 @@ class ForumController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $check = Post::where('id', $request->post_id)->first();
+            $check = ForumPost::where('id', $request->post_id)->first();
+            
 
-            if($check){
+            if(!$check){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
             }
             else{
+                $check_duplicate = ForumUpvote::where('post_id', $request->post_id)->where('user_id', Auth::id())->first();
+
                 if($check['user_id'] == Auth::id()){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot Own Upvote Post!','data'=> '']), 401);
+                }
+                else if($check_duplicate){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot Upvote More Than Once!','data'=> '']), 401);
                 }
                 else{
                     $new_upvote = ForumUpvote::create([
