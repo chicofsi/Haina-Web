@@ -362,11 +362,11 @@ class PropertyDataController extends Controller
                             'transaction_status' => "pending"
                         ];
 
+                        $new_transaction = PropertyTransaction::create($property_transaction);
+
                         $property = PropertyData::where('id', $request->id_property)->update([
                             'status' => "in_transaction"
                         ]);
-        
-                        $new_transaction = PropertyTransaction::create($property_transaction);
 
                         //notif
                         $token = [];

@@ -118,7 +118,7 @@ class ForumController extends Controller
 
             }
 
-            $threads = collect($threads)->sortBy('like_count', 'last_update')->toArray();
+            $threads = collect($threads)->sortBy('like_count')->groupBy('created_at')->toArray();
 
             if(count($threads) == 0){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No threads found!','data'=> '']), 404);
