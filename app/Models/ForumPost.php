@@ -21,6 +21,10 @@ class ForumPost extends Model
 
     public function user(){
         return $this->belongsTo('App\Models\User','user_id','id');
-    } 
+    }
+    
+    public function comments(){
+        return $this->hasMany('App\Models\ForumComment','post_id','id');
+    }
 
 }

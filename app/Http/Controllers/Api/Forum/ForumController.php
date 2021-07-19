@@ -124,9 +124,29 @@ class ForumController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No threads found!','data'=> '']), 404);
             }
             else{
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Threads displayed successfully!','data'=> $threads]), 404);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Threads displayed successfully!','data'=> $threads]), 200);
             }
 
+        }
+    }
+
+    public function showPost (Request $request){
+        $validator = Validator::make($request->all(), [
+            'post_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $post_detail = ForumPost::where('id', $request->post_id)->with('comments')->first();
+
+            if(!$post_detail){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Post not found!','data'=> '']), 404);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Post displayed successfully!','data'=> $post_detail]), 200);
+            }
         }
     }
 
