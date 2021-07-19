@@ -118,6 +118,8 @@ class ForumController extends Controller
 
             }
 
+            $threads = collect($threads)->sortBy('like_count', 'last_update')->toArray();
+
             if(count($threads) == 0){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No threads found!','data'=> '']), 404);
             }
@@ -200,6 +202,30 @@ class ForumController extends Controller
     }
 
     public function deleteComment(Request $request){
+        $validator = Validator::make($request->all(), [
+            'comment_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check = ForumComment::where('id', $request->comment_id)->first();
+            $subforum = ForumPost::select('subforum_id')->where('id',$check['post_id'])->first();
+            $checkmod = ForumMod::where('user_id', Auth::id())->where('subforum_id', $subforum['subforum_id'])->first();
+
+            if(!$check){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Comment Not Found!','data'=> '']), 404);
+            }
+            else if($check['user_id'] != Auth::id() && !$checkmod){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+            }
+            else{
+                $delete_comment = ForumComment::where('id', $request->comment_id)->delete();
+
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Comment deleted successfully!','data'=> $check]), 200);
+            }
+        }
 
     }
 
