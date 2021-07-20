@@ -412,7 +412,7 @@ class ForumController extends Controller
             foreach($checkmod as $key => $value){
                 $username = User::select('username')->where('id', $value->user_id)->first();
 
-                $value->username = $username;
+                $value->username = $username['username'];
             }
 
             if($checkmod && count($checkmod != 0)){
