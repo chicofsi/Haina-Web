@@ -551,7 +551,9 @@ class PropertyDataController extends Controller
             $property_image = PropertyImageData::where('id_property', $property['id'])->get();
 
             foreach($property_image as $key => $value){
-                Storage::disk('public')->delete($value->path);
+                $path = str_replace("http://hainaservice.com/storage", "", $value->path);
+
+                Storage::disk('public')->delete($path);
             }
 
             PropertyImageData::where('id_property', $property['id'])->delete();
