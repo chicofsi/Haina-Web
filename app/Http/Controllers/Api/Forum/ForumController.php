@@ -398,6 +398,26 @@ class ForumController extends Controller
         }
     }
 
+    public function showModList(Request $request){
+        $validator = Validator::make($request->all(), [
+            'subforum_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $checkmod = ForumMod::where('subforum_id', $request->subforum_id)->get();
+
+            if($checkmod){
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Mod List Success!','data'=> $checkmod]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Error getting mod list!','data'=> '']), 404);
+            }
+        }
+    }
+
     public function assignMod(Request $request){
         $validator = Validator::make($request->all(), [
             'subforum_id' => 'required',

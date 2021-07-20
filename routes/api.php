@@ -203,6 +203,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/delete_post', [ForumController::class, 'deletePost']);
 
 		Route::post('/assign_mod', [ForumController::class, 'assignMod']);
+		Route::post('/mod_list', [ForumController::class, 'showModList']);
 		
 	});
 	
