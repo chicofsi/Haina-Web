@@ -224,9 +224,21 @@ class ForumController extends Controller
                     $delete_comment = ForumComment::where('post_id', $request->post_id)->delete();
                 }
                 if($checkimage){
+                    foreach($checkimage as $key => $value){
+                        $path = str_replace("http://hainaservice.com/storage", "", $value->path);
+
+                        Storage::disk('public')->delete($path);
+                    }
+
                     $delete_image = ForumImage::where('post_id', $request->post_id)->delete();
                 }
                 if($checkvideo){
+                    foreach($checkvideo as $key => $value){
+                        $path = str_replace("http://hainaservice.com/storage", "", $value->path);
+
+                        Storage::disk('public')->delete($path);
+                    }
+
                     $delete_video = ForumVideo::where('post_id', $request->post_id)->delete();
                 }
                 if($checkupvote){
