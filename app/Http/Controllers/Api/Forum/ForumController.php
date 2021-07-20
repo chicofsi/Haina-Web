@@ -409,7 +409,13 @@ class ForumController extends Controller
         else{
             $checkmod = ForumMod::where('subforum_id', $request->subforum_id)->get();
 
-            if($checkmod){
+            foreach($checkmod as $key => $value){
+                $username = User::select('username')->where('id', $value->user_id)->first();
+
+                $value->username = $username;
+            }
+
+            if($checkmod && count($checkmod != 0)){
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Mod List Success!','data'=> $checkmod]), 200);
             }
             else{
