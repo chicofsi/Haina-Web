@@ -415,7 +415,7 @@ class ForumController extends Controller
                 $value->username = $username['username'];
             }
 
-            if($checkmod && count($checkmod != 0)){
+            if($checkmod && count($checkmod) != 0){
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Mod List Success!','data'=> $checkmod]), 200);
             }
             else{
