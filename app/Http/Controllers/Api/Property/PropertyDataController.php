@@ -258,6 +258,17 @@ class PropertyDataController extends Controller
                     $property->city->province = $province['name'];
 
                 //dd($property_facility);
+                if($property['selling_price'] > 0 && $property['rental_price'] == 0){
+                    $property->post_type = "sell";
+                }
+                else if($property['selling_price'] == 0 && $property['rental_price'] > 0){
+                    $property->post_type = "rent";
+                }
+                else{
+                    $property->post_type = "both";
+                }
+                
+
                 $property->facilities = $property_facility;
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Property loaded successfully!','data'=> $property]), 200);
@@ -498,30 +509,16 @@ class PropertyDataController extends Controller
     }
 
     public function showPropertyTransactionList(Request $request){
-        $validator = Validator::make($request->all(), [
-            'type' => 'in:rent,buy,both'
-        ]);
 
-        if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 400);
+        $transaction = PropertyTransaction::where('id_buyer_tenant', Auth::id())->with('property', 'owner')->get();
+
+        if(!$transaction || count($transaction) == 0){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Not Found!','data'=> '']), 404);
         }
         else{
-            $transaction = PropertyTransaction::where('id_buyer_tenant', Auth::id())->with('property', 'owner')->get();
-
-            if($request->type = "rent"){
-                $transaction = $transaction->where('transaction_type', "sell");
-            }
-            if($request->type = "buy"){
-                $transaction = $transaction->where('transaction_type', "buy");
-            }
-
-            if(!$transaction || count($transaction) == 0){
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Not Found!','data'=> '']), 404);
-            }
-            else{
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Displayed!','data'=> $transaction]), 200);
-            }
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Displayed!','data'=> $transaction]), 200);
         }
+
     }
 
     public function updatePropertyDetail(Request $request){
@@ -568,29 +565,13 @@ class PropertyDataController extends Controller
     }
 
     public function showMyPropertyTransactionList(){
-        $validator = Validator::make($request->all(), [
-            'type' => 'in:rent,buy,both'
-        ]);
+        $transaction = PropertyTransaction::where('id_owner', Auth::id())->with('property', 'buyer')->get();
 
-        if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 400);
+        if(!$transaction  || count($transaction) == 0){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Not Found!','data'=> '']), 404);
         }
         else{
-            $transaction = PropertyTransaction::where('id_owner', Auth::id())->with('property', 'buyer')->get();
-
-            if($request->type = "rent"){
-                $transaction = $transaction->where('transaction_type', "sell");
-            }
-            if($request->type = "buy"){
-                $transaction = $transaction->where('transaction_type', "buy");
-            }
-
-            if(!$transaction  || count($transaction) == 0){
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Not Found!','data'=> '']), 404);
-            }
-            else{
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Displayed!','data'=> $transaction]), 200);
-            }
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Displayed!','data'=> $transaction]), 200);
         }
     }
 
