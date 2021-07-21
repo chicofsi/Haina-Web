@@ -458,6 +458,45 @@ class PropertyDataController extends Controller
         }
     }
 
+    public function changeBookmark(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_property' => 'required',
+            'bookmark' => 'in:add,remove'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $property = PropertyData::where('id', $request->id_property)->with('images', 'owner', 'city')->first();
+
+            if(!$property){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Property not found!','data'=> '']), 404);
+            }
+            else{
+                if($request->bookmark == "add"){
+                    $bookmark = $property['bookmark'] + 1;
+
+                    $update = PropertyData::where('id', $request->id_property)->update([
+                        'bookmark' => $bookmark
+                    ]);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmark Updated!','data'=> $transaction]), 200);
+                }
+                else{
+                    $bookmark = $property['bookmark'] - 1;
+
+                    $update = PropertyData::where('id', $request->id_property)->update([
+                        'bookmark' => $bookmark
+                    ]);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmark Updated!','data'=> $transaction]), 200);
+                }
+
+            }
+        }
+    }
+
     public function showPropertyTransactionList(){
         $transaction = PropertyTransaction::where('id_buyer_tenant', Auth::id())->with('property', 'owner')->get();
 
