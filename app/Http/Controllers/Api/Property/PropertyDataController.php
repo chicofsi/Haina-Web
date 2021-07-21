@@ -568,13 +568,29 @@ class PropertyDataController extends Controller
     }
 
     public function showMyPropertyTransactionList(){
-        $transaction = PropertyTransaction::where('id_owner', Auth::id())->with('property', 'buyer')->get();
+        $validator = Validator::make($request->all(), [
+            'type' => 'in:rent,buy,both'
+        ]);
 
-        if(!$transaction  || count($transaction) == 0){
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Not Found!','data'=> '']), 404);
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Displayed!','data'=> $transaction]), 200);
+            $transaction = PropertyTransaction::where('id_owner', Auth::id())->with('property', 'buyer')->get();
+
+            if($request->type = "rent"){
+                $transaction = $transaction->where('transaction_type', "sell");
+            }
+            if($request->type = "buy"){
+                $transaction = $transaction->where('transaction_type', "buy");
+            }
+
+            if(!$transaction  || count($transaction) == 0){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Not Found!','data'=> '']), 404);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Displayed!','data'=> $transaction]), 200);
+            }
         }
     }
 
