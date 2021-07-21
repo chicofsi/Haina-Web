@@ -53,6 +53,16 @@ class PropertyDataController extends Controller
 
                     $provinceid = $value->city->id_province;
 
+                    if($value->selling_price > 0 && $value->rental_price == 0){
+                        $value->post_type = "sell";
+                    }
+                    else if($value->selling_price == 0 && $value->rental_price > 0){
+                        $value->post_type = "rent";
+                    }
+                    else{
+                        $value->post_type = "both";
+                    }
+
                     $province = Province::where('id', $provinceid)->first();
 
                     $value->city->province = $province['name'];
@@ -258,6 +268,7 @@ class PropertyDataController extends Controller
                     $property->city->province = $province['name'];
 
                 //dd($property_facility);
+                /*
                 if($property['selling_price'] > 0 && $property['rental_price'] == 0){
                     $property->post_type = "sell";
                 }
@@ -267,6 +278,7 @@ class PropertyDataController extends Controller
                 else{
                     $property->post_type = "both";
                 }
+                */
                 
 
                 $property->facilities = $property_facility;
