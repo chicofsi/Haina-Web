@@ -481,7 +481,7 @@ class PropertyDataController extends Controller
                         'bookmark' => $bookmark
                     ]);
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmark Updated!','data'=> $transaction]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmark Updated!','data'=> $update]), 200);
                 }
                 else{
                     $bookmark = $property['bookmark'] - 1;
@@ -490,23 +490,38 @@ class PropertyDataController extends Controller
                         'bookmark' => $bookmark
                     ]);
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmark Updated!','data'=> $transaction]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmark Updated!','data'=> $update]), 200);
                 }
 
             }
         }
     }
 
-    public function showPropertyTransactionList(){
-        $transaction = PropertyTransaction::where('id_buyer_tenant', Auth::id())->with('property', 'owner')->get();
+    public function showPropertyTransactionList(Request $request){
+        $validator = Validator::make($request->all(), [
+            'type' => 'in:rent,buy,both'
+        ]);
 
-        if(!$transaction || count($transaction) == 0){
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Not Found!','data'=> '']), 404);
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Displayed!','data'=> $transaction]), 200);
-        }
+            $transaction = PropertyTransaction::where('id_buyer_tenant', Auth::id())->with('property', 'owner')->get();
 
+            if($request->type = "rent"){
+                $transaction = $transaction->where('transaction_type', "sell");
+            }
+            if($request->type = "buy"){
+                $transaction = $transaction->where('transaction_type', "buy");
+            }
+
+            if(!$transaction || count($transaction) == 0){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Not Found!','data'=> '']), 404);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Displayed!','data'=> $transaction]), 200);
+            }
+        }
     }
 
     public function updatePropertyDetail(Request $request){
