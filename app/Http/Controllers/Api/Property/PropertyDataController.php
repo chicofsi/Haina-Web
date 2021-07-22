@@ -69,7 +69,7 @@ class PropertyDataController extends Controller
 
                     $checktransaction = PropertyTransaction::where('id_property', $value->id)->where('transaction_status', 'pending')->first();
 
-                    if(!$shecktransaction){
+                    if(!$checktransaction){
                         $value->id_transaction = null;
                     }
                     else{
