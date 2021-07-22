@@ -470,7 +470,7 @@ class PropertyDataController extends Controller
                     ]);
 
                     foreach ($token as $key => $value) {
-                        NotificationController::sendPush($value, "Your transaction is finished", "Transaction for ".$property['name']." is being finished", "Property", "");
+                        NotificationController::sendPush($value, "Your transaction is finished", "Transaction for ".$property['title']." is being finished", "Property", "");
                     }
                 }
                 else if($request->status == "cancel"){
@@ -479,7 +479,7 @@ class PropertyDataController extends Controller
                     ]);
 
                     foreach ($token as $key => $value) {
-                        NotificationController::sendPush($value, "Your transaction is cancelled", "Transaction for ".$property['name']." is being cancelled", "Property", "");
+                        NotificationController::sendPush($value, "Your transaction is cancelled", "Transaction for ".$property['title']." is being cancelled", "Property", "");
                     }
                 }
 
