@@ -78,7 +78,8 @@ class ForumController extends Controller
 
     public function showAllPost(Request $request){
         $validator = Validator::make($request->all(), [
-            'subforum_id' => 'required'
+            'subforum_id' => 'required',
+            'sort_by' => 'in:time,likes'
         ]);
 
         if ($validator->fails()) {
@@ -117,8 +118,13 @@ class ForumController extends Controller
                 array_push($threads, $list);
 
             }
-
-            $threads = collect($threads)->sortBy('like_count')->groupBy('created_at', 'desc')->toArray();
+            if($request->sort_by == "time"){
+                $threads = collect($threads)->sortBy('last_update')->toArray();
+            }
+            else{
+                $threads = collect($threads)->sortBy('like_count')->toArray();
+            }
+            
 
             if(count($threads) == 0){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No threads found!','data'=> '']), 404);
