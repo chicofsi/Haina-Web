@@ -463,7 +463,7 @@ class PropertyDataController extends Controller
                 }
 
                 $property = PropertyData::where('id', $transaction['id_property'])->first();
-
+                dd($token);
                 if($request->status == "done"){
                     $property = PropertyData::where('id', $transaction['id_property'])->update([
                         'status' => $request->status
