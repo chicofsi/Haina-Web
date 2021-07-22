@@ -319,14 +319,14 @@ class ForumController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $result = null;
+            $result = new \stdClass();
 
             $subforum = Subforum::where('name', 'like', '%'.$request->keyword.'%')->get();
 
             $thread = ForumPost::where('title', 'like', '%'.$request->keyword.'%')->get();
 
             if(count($subforum) == 0 && count($thread) == 0){
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'Comment Not Found!','data'=> '']), 404);
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Keyword Not Found!','data'=> '']), 404);
             }
 
             $result->subforum = $subforum;
