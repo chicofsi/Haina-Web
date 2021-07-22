@@ -119,10 +119,10 @@ class ForumController extends Controller
 
             }
             if($request->sort_by == "time"){
-                $threads = collect($threads)->sortBy('last_update')->toArray();
+                $threads = collect($threads)->sortBy('last_update', 'desc')->toArray();
             }
             else{
-                $threads = collect($threads)->sortBy('like_count')->toArray();
+                $threads = collect($threads)->sortBy('like_count', 'desc')->toArray();
             }
             
 
