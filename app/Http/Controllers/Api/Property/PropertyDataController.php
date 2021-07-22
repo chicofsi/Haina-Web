@@ -67,6 +67,15 @@ class PropertyDataController extends Controller
 
                     $value->city->province = $province['name'];
 
+                    $checktransaction = PropertyTransaction::where('id_property', $value->id)->where('transaction_status', 'pending')->first();
+
+                    if(!$shecktransaction){
+                        $value->id_transaction = null;
+                    }
+                    else{
+                        $value->id_transaction = $checktransaction['id'];
+                    }
+
                 //dd($property_facility);
                 $value->facilities = $property_facility;
             }
