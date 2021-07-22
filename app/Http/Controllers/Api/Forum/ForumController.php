@@ -119,10 +119,10 @@ class ForumController extends Controller
 
             }
             if($request->sort_by == "time"){
-                $threads = collect($threads)->sortBy('last_update', 'desc')->toArray();
+                $threads = collect($threads)->sortByDesc('last_update')->toArray();
             }
             else{
-                $threads = collect($threads)->sortBy('like_count', 'desc')->toArray();
+                $threads = collect($threads)->sortByDesc('like_count')->toArray();
             }
             
 
@@ -308,6 +308,32 @@ class ForumController extends Controller
             }
         }
 
+    }
+
+    public function search(Request $request){
+        $validator = Validator::make($request->all(), [
+            'keyword' => 'required|min:2'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $result = null;
+
+            $subforum = Subforum::where('name', 'like', '%'.$request->keyword.'%')->get();
+
+            $thread = ForumPost::where('title', 'like', '%'.$request->keyword.'%')->get();
+
+            if(count($subforum) == 0 && count($thread) == 0){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Comment Not Found!','data'=> '']), 404);
+            }
+
+            $result->subforum = $subforum;
+            $result->post = $thread;
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Search Result Completed!','data'=> $result]), 200);
+        }
     }
 
     public function storeImage($id, $files){
