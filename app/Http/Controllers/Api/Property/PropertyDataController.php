@@ -468,19 +468,22 @@ class PropertyDataController extends Controller
                     $property = PropertyData::where('id', $transaction['id_property'])->update([
                         'status' => $request->status
                     ]);
-
-                    foreach ($token as $key => $value) {
+                    /*
+                    foreach($token as $key => $value) {
                         NotificationController::sendPush($value, "Your transaction is finished", "Transaction for ".$property['title']." is being finished", "Property", "");
                     }
+                    */
                 }
                 else if($request->status == "cancel"){
                     $property = PropertyData::where('id', $transaction['id_property'])->update([
                         'status' => 'available'
                     ]);
-
-                    foreach ($token as $key => $value) {
+                    /*
+                    foreach($token as $key => $value) {
                         NotificationController::sendPush($value, "Your transaction is cancelled", "Transaction for ".$property['title']." is being cancelled", "Property", "");
                     }
+                    */
+
                 }
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Updated!','data'=> $transaction]), 200);
