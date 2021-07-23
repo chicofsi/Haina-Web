@@ -191,7 +191,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	});
 
 	Route::group(['prefix' => 'forum'], function(){
-		Route::get('/subforum', [ForumController::class, 'showAllSubforum']);
+		Route::get('/category', [ForumController::class, 'showCategory']);
+		Route::post('/subforum', [ForumController::class, 'showAllSubforum']);
 
 		Route::post('/post_list', [ForumController::class, 'showAllPost']);
 		Route::post('/post_detail', [ForumController::class, 'showPost']);
