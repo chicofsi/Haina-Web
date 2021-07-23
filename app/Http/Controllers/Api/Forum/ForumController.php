@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 use App\Models\User;
+use App\Models\ForumCategory;
 use App\Models\Subforum;
 use App\Models\ForumPost;
 use App\Models\ForumComment;
@@ -27,6 +28,17 @@ use App\Http\Resources\ValueMessage;
 
 class ForumController extends Controller
 {
+
+    public function showCategory (){
+        $category = ForumCategory::all();
+
+        if(!$category || count($category) == 0){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'No category found!','data'=> '']), 404);
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Category listed successfully!','data'=> $category]), 200);
+        }
+    }
 
     public function createSubforum (Request $request){
 
@@ -65,14 +77,24 @@ class ForumController extends Controller
 
     }
 
-    public function showAllSubforum(){
-        $check = Subforum::all();
+    public function showAllSubforum(Request $request){
 
-        if(count($check) != 0){
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Subforum found!','data'=> $check]), 200);
+        $validator = Validator::make($request->all(), [
+            'category_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'No subforum found!','data'=> '']), 404);
+            $check = Subforum::where('category_id', $request->category_id)->get();
+
+            if(count($check) != 0){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Subforum found!','data'=> $check]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No subforum found!','data'=> '']), 404);
+            }
         }
     }
 
