@@ -100,7 +100,6 @@ class ForumController extends Controller
 
     public function showAllPost(Request $request){
         $validator = Validator::make($request->all(), [
-            'subforum_id' => 'required',
             'sort_by' => 'in:time,likes'
         ]);
 
@@ -108,7 +107,13 @@ class ForumController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $list_post = ForumPost::where('subforum_id', $request->subforum_id)->get();
+            if($request->subforum_id == null){
+                $list_post = ForumPost::all();
+            }
+            else{
+                $list_post = ForumPost::where('subforum_id', $request->subforum_id)->get();
+            }
+            
 
             $threads = [];
 
