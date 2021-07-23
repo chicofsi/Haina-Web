@@ -12,7 +12,7 @@ class ForumPost extends Model
     protected $table = 'forum_post';
 
     protected $fillable = [
-    	 'user_id', 'subforum_id', 'title', 'content'
+    	 'user_id', 'subforum_id', 'title', 'content', 'view_count', 'share_count'
     ];
 
     public function subforum(){

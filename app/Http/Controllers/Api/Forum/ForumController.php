@@ -151,6 +151,12 @@ class ForumController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Post not found!','data'=> '']), 404);
             }
             else{
+                $add_view = $post_detail['view_count'] + 1;
+
+                $update_view = $post_detail->update([
+                    'view_count' => $add_view
+                ]);
+
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Post displayed successfully!','data'=> $post_detail]), 200);
             }
         }
