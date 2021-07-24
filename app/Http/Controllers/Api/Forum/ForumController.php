@@ -44,7 +44,9 @@ class ForumController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'description' => 'required' 
+            'description' => 'required',
+            'category_id' => 'required',
+            'image' => 'required|image|mimes:png,jpg|max:1024'
         ]);
 
         if ($validator->fails()) {
@@ -58,9 +60,12 @@ class ForumController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Subforum already exists!','data'=> '']), 401);
             }
             else{
+
                 $subforum = [
                     'name' => $request->name,
-                    'description' => $request->description
+                    'description' => $request->description,
+                    'category_id' => $request->category_id,
+                    'subforum_image' => ''
                 ];
 
                 $new_subforum = Subforum::create($subforum);
@@ -69,6 +74,18 @@ class ForumController extends Controller
                     'user_id' => Auth::id(),
                     'role' => 'mod',
                     'subforum_id' => $new_subforum->id
+                ]);
+
+                $files = $request->file('image');
+                
+                $fileName = str_replace(' ','-', $new_subforum->id.'-'.$subforum['name'].'-'.'picture');
+                $guessExtension = $files->guessExtension();
+                
+                $store = Storage::disk('public')->putFileAs('forum/subforum/', $files ,$fileName.'.'.$guessExtension);
+
+
+                $update_image = Subforum::where('id', $new_subforum->id)->update([
+                    'subforum_image' => 'http://hainaservice.com/storage/'.$store
                 ]);
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Subforum successfully created!','data'=> $new_subforum]), 200);
