@@ -300,7 +300,6 @@ class ForumController extends Controller
                 if($checkupvote){
                     $delete_upvote = ForumUpvote::where('post_id', $request->post_id)->delete();
                 }
-                
                 $delete_post = ForumPost::where('id', $request->post_id)->delete();
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Post deleted successfully','data'=> $checkpost]), 200);
