@@ -81,11 +81,11 @@ class ForumController extends Controller
                 $fileName = str_replace(' ','-', $new_subforum->id.'-'.$subforum['name'].'-'.'picture');
                 $guessExtension = $files->guessExtension();
                 
-                $store = Storage::disk('public')->putFileAs('forum/subforum/', $files ,$fileName.'.'.$guessExtension);
+                $store = Storage::disk('public')->putFileAs('forum/subforum', $files ,$fileName.'.'.$guessExtension);
 
 
                 $update_image = Subforum::where('id', $new_subforum->id)->update([
-                    'subforum_image' => 'http://hainaservice.com/storage'.$store
+                    'subforum_image' => 'http://hainaservice.com/storage/'.$store
                 ]);
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Subforum successfully created!','data'=> $new_subforum]), 200);
