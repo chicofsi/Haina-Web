@@ -85,7 +85,7 @@ class ForumController extends Controller
 
 
                 $update_image = Subforum::where('id', $new_subforum->id)->update([
-                    'subforum_image' => 'http://hainaservice.com/storage/'.$store
+                    'subforum_image' => 'http://hainaservice.com/storage'.$store
                 ]);
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Subforum successfully created!','data'=> $new_subforum]), 200);
