@@ -201,6 +201,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/new_comment', [ForumController::class, 'createComment']);
 		Route::post('/new_post', [ForumController::class, 'createPost']);
 		Route::post('/upvote', [ForumController::class, 'giveUpvote']);
+		Route::post('/cancel_upvote', [ForumController::class, 'cancelUpvote']);
 		Route::post('/delete_comment', [ForumController::class, 'deleteComment']);
 		Route::post('/delete_post', [ForumController::class, 'deletePost']);
 

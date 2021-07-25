@@ -479,6 +479,35 @@ class ForumController extends Controller
         }
     }
 
+    public function cancelUpvote(Request $request){
+        $validator = Validator::make($request->all(), [
+            'post_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check = ForumPost::where('id', $request->post_id)->first();
+            
+            if(!$check){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
+            }
+            else{
+                $check_upvote = ForumUpvote::where('post_id', $request->post_id)->where('user_id', Auth::id())->first();
+
+                if(!$check_upvote){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'You did not upvote this post!','data'=> '']), 401);
+                }
+                else{
+                    $delete_upvote = ForumUpvote::where('post_id', $request->post_id)->where('user_id', Auth::id())->delete();
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Upvote removed!','data'=> $check_upvote]), 200);
+                }
+            }
+        }
+    }
+
     public function showModList(Request $request){
         $validator = Validator::make($request->all(), [
             'subforum_id' => 'required'
