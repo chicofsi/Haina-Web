@@ -149,6 +149,15 @@ class ForumController extends Controller
                     $lastpost = $check_comment['created_at'];
                 }
 
+                $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
+
+                if(!$check_upvote){
+                    $upvote = false;
+                }
+                else{
+                    $upvote = true;
+                }
+
                 $list = (object) [
                     'id' => $value->id,
                     'title' => $value->title,
@@ -156,6 +165,7 @@ class ForumController extends Controller
                     'like_count' => $likes,
                     'comment_count' => count(ForumComment::where('post_id', $value->id)->get()),
                     'created' => $value->created_at,
+                    'upvoted' => $upvote,
                     'last_update' => $lastpost
                 ];
 
