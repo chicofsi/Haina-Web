@@ -165,8 +165,10 @@ class ForumController extends Controller
                     'like_count' => $likes,
                     'comment_count' => count(ForumComment::where('post_id', $value->id)->get()),
                     'view_count' => $value->view_count,
+                    'share_count' => $value->share_count,
                     'created' => $value->created_at,
                     'upvoted' => $upvote,
+                    'content' => $value->content,
                     'images' => $value->images,
                     'videos' => $value->videos,
                     'last_update' => $lastpost
