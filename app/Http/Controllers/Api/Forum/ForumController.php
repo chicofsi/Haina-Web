@@ -125,10 +125,10 @@ class ForumController extends Controller
         }
         else{
             if($request->subforum_id == null){
-                $list_post = ForumPost::all();
+                $list_post = ForumPost::with('comments', 'images', 'videos')->all();
             }
             else{
-                $list_post = ForumPost::where('subforum_id', $request->subforum_id)->get();
+                $list_post = ForumPost::where('subforum_id', $request->subforum_id)->with('comments', 'images', 'videos')->get();
             }
             
 
