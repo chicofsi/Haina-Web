@@ -196,7 +196,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
 		Route::post('/post_list', [ForumController::class, 'showAllPost']);
 		Route::post('/post_detail', [ForumController::class, 'showPost']);
-		Route::post('/post_detail', [ForumController::class, 'showComment']);
+		Route::post('/comment', [ForumController::class, 'showComment']);
 
 		Route::post('/new_subforum', [ForumController::class, 'createSubforum']);
 		Route::post('/new_comment', [ForumController::class, 'createComment']);
