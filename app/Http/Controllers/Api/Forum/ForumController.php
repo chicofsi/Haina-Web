@@ -107,7 +107,7 @@ class ForumController extends Controller
             $check = Subforum::where('category_id', $request->category_id)->get();
 
             if(count($check) != 0){
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'Subforum found!','data'=> $check]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Subforum found!','data'=> $check]), 200);
             }
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No subforum found!','data'=> '']), 404);
