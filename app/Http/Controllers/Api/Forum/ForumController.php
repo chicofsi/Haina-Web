@@ -166,6 +166,8 @@ class ForumController extends Controller
                     'comment_count' => count(ForumComment::where('post_id', $value->id)->get()),
                     'created' => $value->created_at,
                     'upvoted' => $upvote,
+                    'images' => $value->images,
+                    'videos' => $value->videos,
                     'last_update' => $lastpost
                 ];
 
