@@ -199,7 +199,7 @@ class ForumController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $post_detail = ForumPost::where('id', $request->post_id)->with('comments')->first();
+            $post_detail = ForumPost::where('id', $request->post_id)->with('comments', 'images', 'videos')->first();
 
             if(!$post_detail){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Post not found!','data'=> '']), 404);
