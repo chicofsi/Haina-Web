@@ -195,6 +195,26 @@ class ForumController extends Controller
         }
     }
 
+    public function showComment (Request $request){
+        $validator = Validator::make($request->all(), [
+            'post_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $post_comment = ForumComment::where('post_id', $request->post_id)->get();
+
+            if(!$post_comment){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No comments!','data'=> '']), 404);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Comment displayed successfully!','data'=> $post_comment]), 200);
+            }
+        }
+    }
+
     public function showPost (Request $request){
         $validator = Validator::make($request->all(), [
             'post_id' => 'required'
@@ -204,7 +224,7 @@ class ForumController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $post_detail = ForumPost::where('id', $request->post_id)->with('comments', 'images', 'videos')->first();
+            $post_detail = ForumPost::where('id', $request->post_id)->with('images', 'videos')->first();
 
             if(!$post_detail){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Post not found!','data'=> '']), 404);
