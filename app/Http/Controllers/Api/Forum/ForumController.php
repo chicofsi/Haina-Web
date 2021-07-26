@@ -520,6 +520,32 @@ class ForumController extends Controller
         }
     }
 
+    public function sharePost(Request $request){
+        $validator = Validator::make($request->all(), [
+            'post_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check = ForumPost::where('id', $request->post_id)->first();
+            
+            if(!$check){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
+            }
+            else{
+                $share = $check['share_count'] + 1;
+
+                $update_share = ForumPost::where('id', $request->post_id)->update([
+                    'share_count' => $share
+                ]);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Share post success!','data'=> $update_share]), 200);
+            }
+        }
+    }
+
     public function showModList(Request $request){
         $validator = Validator::make($request->all(), [
             'subforum_id' => 'required'

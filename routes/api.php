@@ -209,7 +209,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/mod_list', [ForumController::class, 'showModList']);
 
 		Route::post('/search', [ForumController::class, 'search']);
-		
+		Route::post('/share', [ForumController::class, 'sharePost']);
 	});
 	
 });
