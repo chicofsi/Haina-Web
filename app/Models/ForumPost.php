@@ -27,4 +27,12 @@ class ForumPost extends Model
         return $this->hasMany('App\Models\ForumComment','post_id','id');
     }
 
+    public function images(){
+        return $this->hasMany('App\Models\ForumImage','post_id','id');
+    }
+
+    public function videos(){
+        return $this->hasMany('App\Models\ForumVideo','post_id','id');
+    }
+
 }
