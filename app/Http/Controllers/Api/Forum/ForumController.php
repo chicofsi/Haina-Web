@@ -163,7 +163,7 @@ class ForumController extends Controller
                     'title' => $value->title,
                     'author' => $author['username'],
                     'author_photo' => $author['photo'],
-                    'member_since' => date("F Y" ,strtodate($author['created_at'])),
+                    'member_since' => date("F Y", strtotime($author['created_at'])),
                     'like_count' => $likes,
                     'comment_count' => count(ForumComment::where('post_id', $value->id)->get()),
                     'view_count' => $value->view_count,
