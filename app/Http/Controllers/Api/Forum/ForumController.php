@@ -211,6 +211,7 @@ class ForumController extends Controller
             foreach($post_comment as $key => $value){
                 $userdata = User::where('id',$value->user_id)->first();
 
+                $value->username = $userdata['username'];
                 $value->user_photo = $userdata['photo'];
                 $value->member_since = date("F Y", strtotime($userdata['created_at']));
             }
