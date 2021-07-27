@@ -162,7 +162,7 @@ class ForumController extends Controller
                     'id' => $value->id,
                     'title' => $value->title,
                     'author' => $author['username'],
-                    'author_photo' => $author['photo'],
+                    'author_photo' => "https://hainaservice.com/storage/".$author['photo'],
                     'member_since' => date("F Y", strtotime($author['created_at'])),
                     'like_count' => $likes,
                     'comment_count' => count(ForumComment::where('post_id', $value->id)->get()),
@@ -212,7 +212,7 @@ class ForumController extends Controller
                 $userdata = User::where('id',$value->user_id)->first();
 
                 $value->username = $userdata['username'];
-                $value->user_photo = $userdata['photo'];
+                $value->user_photo = "https://hainaservice.com/storage/".$userdata['photo'];
                 $value->member_since = date("F Y", strtotime($userdata['created_at']));
             }
 
