@@ -638,4 +638,34 @@ class ForumController extends Controller
         }
     }
 
+    public function removeMod (Request $request){
+        $validator = Validator::make($request->all(), [
+            'subforum_id' => 'required',
+            'user_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $checkmod = ForumMod::where('user_id', Auth::id())->where('subforum_id', $request->subforum_id)->where('role', 'mod')->first();
+
+            if(!$checkmod){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+            }
+            else{
+                $check_candidate = ForumMod::where('user_id', $request->user_id)->where('subforum_id', $request->subforum_id)->where('role', 'submod')->first();
+
+                if($check_candidate){
+                    $delete_mod = ForumMod::where('user_id', $request->user_id)->where('subforum_id', $request->subforum_id)->where('role', 'submod')->delete();
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Delete Mod Success!','data'=> $check_candidate]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'User is not a mod!','data'=> '']), 404);
+                }
+            }
+        }
+    }
+
 }
