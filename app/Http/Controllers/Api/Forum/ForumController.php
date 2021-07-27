@@ -208,6 +208,13 @@ class ForumController extends Controller
         else{
             $post_comment = ForumComment::where('post_id', $request->post_id)->get();
 
+            foreach($post_comment as $key => $value){
+                $userdata = User::where('id',$value->user_id)->first();
+
+                $value->user_photo = $userdata['photo'];
+                $value->member_since = date("F Y", strtotime($userdata['created_at']));
+            }
+
             if(!$post_comment){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No comments!','data'=> '']), 404);
             }
