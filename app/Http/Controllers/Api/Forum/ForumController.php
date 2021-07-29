@@ -65,7 +65,8 @@ class ForumController extends Controller
                     'name' => $request->name,
                     'description' => $request->description,
                     'category_id' => $request->category_id,
-                    'subforum_image' => ''
+                    'subforum_image' => '',
+                    'creator_id' => Auth::id()
                 ];
 
                 $new_subforum = Subforum::create($subforum);
