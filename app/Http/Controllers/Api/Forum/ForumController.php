@@ -605,6 +605,43 @@ class ForumController extends Controller
         }
     }
 
+    public function banUser(Request $request){
+        $validator = Validator::make($request->all(), [
+            'subforum_id' => 'required',
+            'user_id' => 'required',
+            'reason' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $checkmod = ForumMod::where('user_id', Auth::id())->where('subforum_id', $request->subforum_id)->first();
+
+            if(!$checkmod){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+            }
+            else{
+                $check_user = User::where('id', $request->user_id)->first();
+
+                if($check_user){
+
+                    $banned = ForumBan::create([
+                        'user_id' => $request->user_id,
+                        'subforum_id' => $request->subforum_id,
+                        'mod_id' => $check_mod['id'],
+                        'reason' => $request->reason
+                    ]);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'User Ban Success!','data'=> $banned]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'User not found!','data'=> '']), 404);
+                }
+            }
+        }
+    }
+
     public function assignMod(Request $request){
         $validator = Validator::make($request->all(), [
             'subforum_id' => 'required',

@@ -209,6 +209,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/assign_mod', [ForumController::class, 'assignMod']);
 		Route::post('/remove_mod', [ForumController::class, 'removeMod']);		
 		Route::post('/mod_list', [ForumController::class, 'showModList']);
+		Route::post('/ban_user', [ForumController::class, 'banUser']);
 
 		Route::post('/search', [ForumController::class, 'search']);
 		Route::post('/share', [ForumController::class, 'sharePost']);
