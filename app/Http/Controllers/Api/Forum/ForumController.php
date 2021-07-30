@@ -694,10 +694,8 @@ class ForumController extends Controller
 
         }
 
-        foreach($threads as $key => $row){
-            $like[$key] = $row['like_count'];
-            $comment[$key] = $row['comment_count'];
-        }
+        $like = array_column($threads, 'like_count');
+        $comment = array_column($threads, 'comment_count');
 
         $threads = array_multisort($like, SORT_DESC, $comment, SORT_DESC, $threads);
 
