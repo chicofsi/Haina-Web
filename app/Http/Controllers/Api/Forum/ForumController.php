@@ -694,7 +694,12 @@ class ForumController extends Controller
 
         }
 
-        $threads = collect($threads)->orderBy('like_count', 'desc')->orderBy('comment_count', 'desc')->toArray();
+        foreach($threads as $key => $row){
+            $like[$key] = $row['like_count'];
+            $comment[$key] = $row['comment_count'];
+        }
+
+        $threads = array_multisort($like, SORT_DESC, $comment, SORT_DESC, $threads);
 
         $hot_threads = array_slice($threads, 0, 5);
 
