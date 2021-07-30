@@ -96,7 +96,7 @@ class ForumController extends Controller
 
     }
 
-    public function showMySubforum(Request $request){
+    public function showMySubforum(){
             $check = Subforum::where('creator_id', Auth::id())->with('posts')->get();
 
             if(count($check) != 0){
@@ -595,6 +595,10 @@ class ForumController extends Controller
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Share post success!','data'=> $update_share]), 200);
             }
         }
+    }
+
+    public function followUser(Request $request){
+
     }
 
     public function showModList(Request $request){
