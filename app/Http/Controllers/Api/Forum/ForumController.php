@@ -698,8 +698,8 @@ class ForumController extends Controller
         $comment = array_column($threads, 'comment_count');
 
         array_multisort($like, SORT_DESC, $comment, SORT_DESC, $threads);
-        dd($threads);
-        //$hot_threads = array_slice($threads, 0, 5);
+        //dd($threads);
+        $hot_threads = array_slice($threads, 0, 5);
 
         if(count($hot_threads) > 0){
 
