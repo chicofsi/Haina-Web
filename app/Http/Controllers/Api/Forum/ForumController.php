@@ -662,7 +662,7 @@ class ForumController extends Controller
 
     public function showHotThreads(Request $request){
 
-        $list_post = ForumPost::with('comments', 'images', 'videos')->all();
+        $list_post = ForumPost::with('comments', 'images', 'videos')->get();
         $hot_threads = [];
         $threads = [];
 
