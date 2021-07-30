@@ -15,6 +15,7 @@ use App\Models\ForumCategory;
 use App\Models\Subforum;
 use App\Models\ForumPost;
 use App\Models\ForumComment;
+use App\Models\ForumFollowers;
 use App\Models\ForumImage;
 use App\Models\ForumVideo;
 use App\Models\ForumMod;
@@ -93,6 +94,22 @@ class ForumController extends Controller
             }
         }
 
+    }
+
+    public function showMySubforum(Request $request){
+            $check = Subforum::where('creator_id', Auth::id())->with('posts')->get();
+
+            if(count($check) != 0){
+                foreach($check as $key => $value){
+                    $value->total_post = count(ForumPost::where('subforum_id', $value->id)->get());
+                    
+                }
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Subforum found!','data'=> $check]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No subforum found!','data'=> '']), 404);
+            }
     }
 
     public function showAllSubforum(Request $request){
@@ -635,6 +652,70 @@ class ForumController extends Controller
                     ]);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'User Ban Success!','data'=> $banned]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'User not found!','data'=> '']), 404);
+                }
+            }
+        }
+    }
+
+    public function showProfile(Request $request){
+        $validator = Validator::make($request->all(), [
+            'subforum_id' => 'required',
+            'user_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check_user = User::where('id', $request->user_id)->first();
+
+            if($check_user){
+                $post_count = count(ForumPost::where('user_id', $request->user_id)->get());
+                $following = count(ForumFollowers::where('follower_id', $request->user_id)->get());
+                $followers = count(ForumFollowers::where('user_id', $request->user_id)->get());
+
+                $profile = (object)[
+                    'user_id' => $check_user['id'],
+                    'username' => $check_user['username'],
+                    'photo' => $check_user['photo'],
+                    'post_count' => $post_count,
+                    'following' => $following,
+                    'followers' => $followers,
+                ];
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'User Ban Success!','data'=> $profile]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'User not found!','data'=> '']), 404);
+            }
+        }
+    }
+
+    public function removeBan(Request $request){
+        $validator = Validator::make($request->all(), [
+            'subforum_id' => 'required',
+            'user_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $checkmod = ForumMod::where('user_id', Auth::id())->where('subforum_id', $request->subforum_id)->first();
+
+            if(!$checkmod){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+            }
+            else{
+                $check_user = ForumBan::where('user_id', $request->user_id)->where('subforum_id', $request->subforum_id)->first();
+
+                if($check_user){
+                    $remove_ban = ForumBan::where('user_id', $request->user_id)->where('subforum_id', $request->subforum_id)->delete();
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Remove Ban Success!','data'=> $check_user]), 200);
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'User not found!','data'=> '']), 404);
