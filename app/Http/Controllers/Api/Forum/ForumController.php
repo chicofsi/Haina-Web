@@ -680,13 +680,13 @@ class ForumController extends Controller
                 $profile = (object)[
                     'user_id' => $check_user['id'],
                     'username' => $check_user['username'],
-                    'photo' => $check_user['photo'],
+                    'photo' => "https://hainaservice.com/storage/".$check_user['photo'],
                     'post_count' => $post_count,
                     'following' => $following,
                     'followers' => $followers,
                 ];
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'User Ban Success!','data'=> $profile]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'User Profile Found!','data'=> $profile]), 200);
             }
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'User not found!','data'=> '']), 404);
