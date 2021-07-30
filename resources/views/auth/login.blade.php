@@ -10,6 +10,7 @@
 
     <title>Login</title>
 
+<<<<<<< Updated upstream
     <link href="{{ url('vendor/adminex/adminex/adminex/html') }}/css/style.css" rel="stylesheet">
     <link href="{{ url('vendor/adminex/adminex/adminex/html') }}/css/style-responsive.css" rel="stylesheet">
 
@@ -18,6 +19,11 @@
     <script src="js/html5shiv.js"></script>
     <script src="js/respond.min.js"></script>
     <![endif]-->
+=======
+    <link href="{{ url('/vendor/adminex/html') }}/css/style.css" rel="stylesheet">
+    <link href="{{ url('/vendor/adminex/html') }}/css/style-responsive.css" rel="stylesheet">
+
+>>>>>>> Stashed changes
 </head>
 
 <body>
@@ -51,9 +57,15 @@
 <!-- Placed js at the end of the document so the pages load faster -->
 
 <!-- Placed js at the end of the document so the pages load faster -->
+<<<<<<< Updated upstream
 <script src="{{ url('vendor/adminex/adminex/adminex/html') }}/js/jquery-1.10.2.min.js"></script>
 <script src="{{ url('vendor/adminex/adminex/adminex/html') }}/js/bootstrap.min.js"></script>
 <script src="{{ url('vendor/adminex/adminex/adminex/html') }}/js/modernizr.min.js"></script>
+=======
+<script src="{{ url('/vendor/adminex/html') }}/js/jquery-1.10.2.min.js"></script>
+<script src="{{ url('/vendor/adminex/html') }}/js/bootstrap.min.js"></script>
+<script src="{{ url('/vendor/adminex/html') }}/js/modernizr.min.js"></script>
+>>>>>>> Stashed changes
 
 </body>
 </html>

@@ -52,13 +52,13 @@ Route::post('check', [UserController::class, 'check']);
 Route::post('login/google', [UserController::class, 'loginWithGoogle']);
 Route::post('register', [UserController::class, 'register']);
 
-Route::middleware(['auth:sanctum'])->group(function(){
+Route::middleware(['auth:sanctum'])->group(function() {
     Route::post('detail', [UserController::class, 'detail']);
     Route::post('logout', [UserController::class, 'logout']);
     Route::post('photo', [UserController::class, 'updatePhoto']);
     Route::post('profile', [UserController::class, 'updateProfile']);
     Route::post('password', [UserController::class, 'changePassword']);
-    
+
 	Route::group(['prefix' => 'jobs'], function() {
 		Route::post('application/post'  , [JobsApplicationController::class, 'postJobsApplication']);
 		Route::post('application/my'  , [JobsApplicationController::class, 'getMyJobApplication']);
@@ -77,7 +77,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 			Route::post('/'  , [JobsVacancyController::class, 'getMyJobVacancy']);
 			Route::post('/applicant'  , [JobsVacancyController::class, 'getMyJobApplicant']);
 			Route::post('/applicant/status'  , [JobsVacancyController::class, 'changeApplicantStatus']);
-			
+
 
 		});
 
@@ -89,7 +89,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/photo/register'  , [PhotoController::class, 'registerCompanyPhoto']);
 		Route::post('/photo/delete'  , [PhotoController::class, 'deleteCompanyPhoto']);
 	});
-	
+
 	Route::group(['prefix' => 'docs'], function() {
 
 		Route::post('/'  , [UserDocsController::class, 'getUserDocs']);
@@ -106,10 +106,10 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	Route::post('notification'  , [NotificationController::class, 'getUserNotification']);
 
 	Route::post('/payment/method'  , [PulsaController::class, 'getPaymentMethod']);
-	
+
 	Route::group(['prefix' => 'pulsa'],function ()
 	{
-		
+
 		Route::post('/inquiry'  , [PulsaController::class, 'getInquiry']);
 		Route::post('/transaction'  , [PulsaController::class, 'addTransaction']);
 		Route::post('/list'  , [PulsaController::class, 'transactionList']);
@@ -158,8 +158,55 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/cities', [HotelDarmaController::class, 'getCity']);
 		Route::post('/countries', [HotelDarmaController::class, 'getCountry']);
 		Route::post('/passports', [HotelDarmaController::class, 'getPassport']);
+<<<<<<< Updated upstream
+=======
+
+		Route::post('/testimage', [HotelDarmaController::class, 'testImage']);
 	});
-	
+
+	Route::group(['prefix' => 'property'], function(){
+		Route::get('/facility', [PropertyDataController::class, 'listFacility']);
+		Route::post('/my_property', [PropertyDataController::class, 'showMyProperty']);
+		Route::post('/show_property', [PropertyDataController::class, 'showAvailableProperty']);
+		Route::post('/new_property', [PropertyDataController::class, 'addProperty']);
+		Route::post('/view_property', [PropertyDataController::class, 'getPropertyDetail']);
+		Route::post('/update_property', [PropertyDataController::class, 'updatePropertyDetail']);
+		Route::post('/bookmark', [PropertyDataController::class, 'changeBookmark']);
+		Route::post('/upload_image', [PropertyDataController::class, 'storeImage']);
+		Route::post('/new_transaction', [PropertyDataController::class, 'createTransaction']);
+		Route::post('/update_transaction', [PropertyDataController::class, 'updateTransaction']);
+		Route::post('/my_transaction_list', [PropertyDataController::class, 'showPropertyTransactionList']);
+		Route::post('/my_property_transaction_list', [PropertyDataController::class, 'showMyPropertyTransactionList']);
+		Route::post('/delete', [PropertyDataController::class, 'deleteProperty']);
+	});
+
+	Route::group(['prefix' => 'forum'], function(){
+		Route::get('/category', [ForumController::class, 'showCategory']);
+		Route::post('/subforum', [ForumController::class, 'showAllSubforum']);
+
+		Route::post('/post_list', [ForumController::class, 'showAllPost']);
+		Route::post('/post_detail', [ForumController::class, 'showPost']);
+		Route::post('/comment', [ForumController::class, 'showComment']);
+    // by adisurizal
+    Route::post('/reply_comment', [ForumController::class, 'createReplyComment']);
+    Route::post('/show_reply_comment', [ForumController::class, 'showReplyComment']);
+
+		Route::post('/new_subforum', [ForumController::class, 'createSubforum']);
+		Route::post('/new_comment', [ForumController::class, 'createComment']);
+		Route::post('/new_post', [ForumController::class, 'createPost']);
+		Route::post('/upvote', [ForumController::class, 'giveUpvote']);
+		Route::post('/cancel_upvote', [ForumController::class, 'cancelUpvote']);
+		Route::post('/delete_comment', [ForumController::class, 'deleteComment']);
+		Route::post('/delete_post', [ForumController::class, 'deletePost']);
+
+		Route::post('/assign_mod', [ForumController::class, 'assignMod']);
+		Route::post('/mod_list', [ForumController::class, 'showModList']);
+
+		Route::post('/search', [ForumController::class, 'search']);
+		Route::post('/share', [ForumController::class, 'sharePost']);
+>>>>>>> Stashed changes
+	});
+
 });
 
 Route::post('/providers'  , [PulsaController::class, 'getProviders']);
@@ -227,4 +274,3 @@ Route::group(['prefix' => 'hotel'], function() {
 		Route::resource('/image', HotelRoomImageController::class);
 	});
 });
-
