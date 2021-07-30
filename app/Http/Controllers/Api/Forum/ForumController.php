@@ -112,6 +112,25 @@ class ForumController extends Controller
             }
     }
 
+    public function showMyPost(){
+        $check = Subforum::where('creator_id', '<>', Auth::id())->get();
+        $mypost = [];
+
+        if(count($check) != 0){
+            foreach($check as $key => $value){
+                $post = ForumPost::where('subforum_id', $value->id)->with('images', 'videos')->get();
+
+                array_push($mypost, $post);
+                
+            }
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get My Post Success!','data'=> $mypost]), 200);
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'No post found!','data'=> '']), 404);
+        }
+}
+
     public function showAllSubforum(Request $request){
 
         $validator = Validator::make($request->all(), [

@@ -214,6 +214,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
 		Route::get('/hot_post', [ForumController::class, 'showHotThreads']);
 		Route::get('/my_subforum', [ForumController::class, 'showMySubforum']);
+		Route::get('/my_post', [ForumController::class, 'showMyPost']);
 
 		Route::post('/user_profile', [ForumController::class, 'showProfile']);
 		Route::post('/search', [ForumController::class, 'search']);
