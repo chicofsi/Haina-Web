@@ -120,11 +120,18 @@ class ForumController extends Controller
             foreach($check as $key => $value){
                 $post = ForumPost::where('subforum_id', $value->id)->with('images', 'videos')->get();
 
-                array_push($mypost, $post);
+                if(count($post) > 0){
+                    array_push($mypost, $post);
+                }
                 
             }
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get My Post Success!','data'=> $mypost]), 200);
+            if(count($mypost) == 0){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No post found!','data'=> '']), 404);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get My Post Success!','data'=> $mypost]), 200);
+            }
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'No post found!','data'=> '']), 404);
