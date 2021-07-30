@@ -699,7 +699,7 @@ class ForumController extends Controller
 
         $threads = array_multisort($like, SORT_DESC, $comment, SORT_DESC, $threads);
         dd($threads);
-        $hot_threads = array_slice($threads, 0, 5);
+        //$hot_threads = array_slice($threads, 0, 5);
 
         if(count($hot_threads) > 0){
 
