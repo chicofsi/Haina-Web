@@ -662,8 +662,8 @@ class ForumController extends Controller
 
     public function showProfile(Request $request){
         $validator = Validator::make($request->all(), [
-            'subforum_id' => 'required',
-            'user_id' => 'required',
+            //'subforum_id' => 'required',
+            'user_id' => 'required'
         ]);
 
         if ($validator->fails()) {
