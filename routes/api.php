@@ -212,6 +212,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/ban_user', [ForumController::class, 'banUser']);
 		Route::post('/ban_remove', [ForumController::class, 'removeBan']);
 
+		Route::get('/hot_post', [ForumController::class, 'showHotThreads']);
+
 		Route::post('/user_profile', [ForumController::class, 'showProfile']);
 		Route::post('/search', [ForumController::class, 'search']);
 		Route::post('/share', [ForumController::class, 'sharePost']);

@@ -660,6 +660,53 @@ class ForumController extends Controller
         }
     }
 
+    public function showHotThreads(Request $request){
+
+        $list_post = ForumPost::with('comments', 'images', 'videos')->all();
+        $hot_threads = [];
+        $threads = [];
+
+        foreach($list_post as $key => $value){
+            $likes = count(ForumUpvote::where('post_id', $value->id)->get());
+
+            $check_comment = ForumComment::where('post_id', $value->id)->orderBy('created_at', 'desc')->first();
+
+            $author = User::where('id', $value->user_id)->first();
+
+            $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
+
+            $list = (object) [
+                'id' => $value->id,
+                'title' => $value->title,
+                'author' => $author['username'],
+                'author_photo' => "https://hainaservice.com/storage/".$author['photo'],
+                'like_count' => $likes,
+                'comment_count' => count(ForumComment::where('post_id', $value->id)->get()),
+                'view_count' => $value->view_count,
+                'share_count' => $value->share_count,
+                'created' => $value->created_at,
+                'content' => $value->content,
+                'images' => $value->images,
+                'videos' => $value->videos,
+            ];
+
+            array_push($threads, $list);
+
+        }
+
+        $threads = collect($threads)->orderBy('like_count', 'desc')->orderBy('comment_count', 'desc')->toArray();
+
+        $hot_threads = array_slice($threads, 0, 5);
+
+        if(count($hot_threads) > 0){
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'User not found!','data'=> $hot_thread]), 200);
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'No posts found!','data'=> '']), 404);
+        }
+    }
+
     public function showProfile(Request $request){
         $validator = Validator::make($request->all(), [
             //'subforum_id' => 'required',
