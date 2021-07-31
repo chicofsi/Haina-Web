@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\ForumCategory;
 use App\Models\Subforum;
+use App\Models\SubforumFollowers;
 use App\Models\ForumPost;
 use App\Models\ForumComment;
 use App\Models\ForumFollowers;
@@ -624,7 +625,98 @@ class ForumController extends Controller
     }
 
     public function followUser(Request $request){
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required'
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check = ForumFollowers::where('user_id', $request->user_id)->where('follower_id', Auth::id())->first();
+
+            if($check){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'You already followed this user!','data'=> '']), 404);
+            }
+            else{
+                $new_follow = ForumFollowers::create([
+                    'user_id' => $request->user_id,
+                    'follower_id' => Auth::id()
+                ]);
+            }
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Follow user success!','data'=> $new_follow]), 200);
+        }
+    }
+
+    public function unfollowUser(Request $request){
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check = ForumFollowers::where('user_id', $request->user_id)->where('follower_id', Auth::id())->first();
+
+            if(!$check){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'You do not follow this user!','data'=> '']), 404);
+            }
+            else{
+                $delete_follow = ForumFollowers::where('user_id', $request->user_id)->where('follower_id', Auth::id())->delete();
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Unfollow user success!','data'=> $check]), 200);
+            }
+
+        }
+    }
+
+    public function followSuborum(Request $request){
+        $validator = Validator::make($request->all(), [
+            'subforum_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check = SubforumFollowers::where('user_id', Auth::id())->where('subforum_id', $request->subforum_id)->first();
+
+            if($check){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'You already followed this subforum!','data'=> '']), 404);
+            }
+            else{
+                $new_follow_subforum = SubforumFollowers::create([
+                    'subforum_id' => $request->subforum_id,
+                    'user_id' => Auth::id()
+                ]);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Follow subforum success!','data'=> $new_follow_subforum]), 200);
+            }
+        }
+    }
+
+    public function unfollowSubforum(Request $request){
+        $validator = Validator::make($request->all(), [
+            'subforum_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check = SubforumFollowers::where('user_id', Auth::id())->where('subforum_id', $request->subforum_id)->first();
+
+            if(!$check){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'You do not follow this subforum!','data'=> '']), 404);
+            }
+            else{
+                $delete_follow = SubforumFollowers::where('user_id', Auth::id())->where('subforum_id', $request->subforum_id)->delete();
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Unfollow subforum success!','data'=> $check]), 200);
+            }
+        }
     }
 
     public function showModList(Request $request){
