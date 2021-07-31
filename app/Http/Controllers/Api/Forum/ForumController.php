@@ -207,6 +207,7 @@ class ForumController extends Controller
                     'id' => $value->id,
                     'title' => $value->title,
                     'author' => $author['username'],
+                    'user_id' => $author['id'],
                     'author_photo' => "https://hainaservice.com/storage/".$author['photo'],
                     'member_since' => date("F Y", strtotime($author['created_at'])),
                     'like_count' => $likes,
@@ -672,7 +673,7 @@ class ForumController extends Controller
         }
     }
 
-    public function followSuborum(Request $request){
+    public function followSubforum(Request $request){
         $validator = Validator::make($request->all(), [
             'subforum_id' => 'required'
         ]);
@@ -801,6 +802,7 @@ class ForumController extends Controller
                 'id' => $value->id,
                 'title' => $value->title,
                 'author' => $author['username'],
+                'user_id' => $author['id'],
                 'author_photo' => "https://hainaservice.com/storage/".$author['photo'],
                 'like_count' => $likes,
                 'comment_count' => count(ForumComment::where('post_id', $value->id)->get()),
