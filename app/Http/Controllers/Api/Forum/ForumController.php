@@ -850,14 +850,24 @@ class ForumController extends Controller
                 $post_count = count(ForumPost::where('user_id', $request->user_id)->get());
                 $following = count(ForumFollowers::where('follower_id', $request->user_id)->get());
                 $followers = count(ForumFollowers::where('user_id', $request->user_id)->get());
+                $check_followed = ForumFollowers::where('user_id', $request->user_id)->where('follower_id', Auth::id())->first();
+
+                if($check_followed){
+                    $followed = true;
+                }
+                else{
+                    $followed = false;
+                }
 
                 $profile = (object)[
                     'user_id' => $check_user['id'],
                     'username' => $check_user['username'],
+                    'member_since' => date("F Y", strtotime($check_user['created_at'])),
                     'photo' => "https://hainaservice.com/storage/".$check_user['photo'],
                     'post_count' => $post_count,
                     'following' => $following,
                     'followers' => $followers,
+                    'followed' => $followed
                 ];
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'User Profile Found!','data'=> $profile]), 200);
