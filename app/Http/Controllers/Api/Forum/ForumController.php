@@ -804,6 +804,7 @@ class ForumController extends Controller
                 'author' => $author['username'],
                 'user_id' => $author['id'],
                 'author_photo' => "https://hainaservice.com/storage/".$author['photo'],
+                'member_since' => date("F Y", strtotime($author['created_at'])),
                 'like_count' => $likes,
                 'comment_count' => count(ForumComment::where('post_id', $value->id)->get()),
                 'view_count' => $value->view_count,
