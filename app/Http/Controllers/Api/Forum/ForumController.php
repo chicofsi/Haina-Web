@@ -757,7 +757,7 @@ class ForumController extends Controller
 
                 array_push($list_follower, $user_list);
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Following list success!','data'=> $list_follower]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Following list success!','data'=> $followers]), 200);
             }
 
         }
@@ -773,9 +773,6 @@ class ForumController extends Controller
 
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
-        }
-        else if($request->user_id == Auth::id()){
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Error: cannot follow yourself!','data'=> '']), 404);
         }
         else{
             $check = SubforumFollowers::where('user_id', Auth::id())->where('subforum_id', $request->subforum_id)->first();
