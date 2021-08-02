@@ -712,9 +712,11 @@ class ForumController extends Controller
     public function myFollowingList(){
         $following = ForumFollowers::where('follower_id', Auth::id())->get();
         //dd($following);
-        $list_follow = [];
+        
 
         if($following){
+            $list_follow = [];
+
             foreach($following as $key => $value){
                 $user = User::where('id',$value->user_id)->first();
 
@@ -738,9 +740,12 @@ class ForumController extends Controller
     public function myFollowersList(){
         $followers = ForumFollowers::where('user_id', Auth::id())->get();
 
-        $list_follower = [];
+        
 
         if($followers){
+
+            $list_follower = [];
+
             foreach($followers as $key => $value){
                 $user = User::where('id',$value->follower_id)->first();
 
@@ -814,9 +819,11 @@ class ForumController extends Controller
     public function myFollowingSubforum(){
         $following = SubforumFollowers::where('user_id', Auth::id())->get();
 
-        $list_follow = [];
-
+        
         if($following){
+
+            $list_follow = [];
+
             foreach($following as $key => $value){
                 $subforum = Subforum::where('id',$value->subforum_id)->first();
 
