@@ -116,9 +116,24 @@ class ForumController extends Controller
             $check = Subforum::where('creator_id', Auth::id())->with('posts')->get();
 
             if(count($check) != 0){
+               
                 foreach($check as $key => $value){
+                    $creator_count = [];
+
                     $value->total_post = count(ForumPost::where('subforum_id', $value->id)->get());
-                    
+
+                    $category_name = ForumCategory::where('id', $value->category_id)->first();
+
+                    $value->category = $category_name['name'];
+                    $value->category_zh = $category_name['name_zh'];
+
+                    $post = ForumPost::where('subforum_id', $value->id)->get();
+                    foreach($post as $keypost => $valuepost){
+                        array_push($creator_count, $valuepost->user_id);
+                    }
+
+                    array_unique($creator_count);
+                    $value->total_poster = count($creator_count);
                 }
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Subforum found!','data'=> $check]), 200);
@@ -154,25 +169,27 @@ class ForumController extends Controller
         }
 }
 
-    public function showAllSubforum(Request $request){
+    public function showAllSubforum(){
 
-        $validator = Validator::make($request->all(), [
-            'category_id' => 'required'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 400);
-        }
-        else{
-            $check = Subforum::where('category_id', $request->category_id)->get();
+            $check = Subforum::all();
 
             if(count($check) != 0){
+                foreach($check as $key => $value){
+                    $check_followed = SubforumFollowers::where('subforum_id', $value->id)->where('user_id', Auth::id())->first();
+
+                    if($check_followed){
+                        $value->followed = true;
+                    }
+                    else{
+                        $value->followed = false;
+                    }
+                }
+
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Subforum found!','data'=> $check]), 200);
             }
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No subforum found!','data'=> '']), 404);
             }
-        }
     }
 
     public function showAllPost(Request $request){
