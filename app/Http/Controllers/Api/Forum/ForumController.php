@@ -252,6 +252,9 @@ class ForumController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No threads found!','data'=> '']), 404);
             }
             else{
+                //$object = new stdClass;
+                //$threads->followed = SubforumFollower
+
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Threads displayed successfully!','data'=> $threads]), 200);
             }
 
@@ -755,7 +758,7 @@ class ForumController extends Controller
 
                 array_push($list_follower, $user_list);
             }
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Following list success!','data'=> $list_follower]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Followers list success!','data'=> $list_follower]), 200);
 
         }
         else if(!$followers || count($followers) == 0){
@@ -831,12 +834,12 @@ class ForumController extends Controller
 
                 array_push($list_follow, $user_list);
             }
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Following list success!','data'=> $list_follow]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Following subforum list success!','data'=> $list_follow]), 200);
             
 
         }
         else if(!$following || count($following) == 0){
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'You have not any subforum yet!','data'=> '']), 404);
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'You have not followed any subforum yet!','data'=> '']), 404);
         }
     }
 
