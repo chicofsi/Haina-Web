@@ -356,7 +356,7 @@ class ForumController extends Controller
                 $forumlog = ForumLog::create([
                     'subforum_id' => $subforum['id'],
                     'forum_action' => 'POST',
-                    'message' => $user['username'].' created '.$new_post->title.' in'.$subforum['name'].'.'
+                    'message' => $user['username'].' created '.$new_post->title.' in '.$subforum['name'].'.'
                 ]);
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'New Post Successfully Posted!','data'=> $new_post]), 200);
@@ -706,6 +706,58 @@ class ForumController extends Controller
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Unfollow user success!','data'=> $check]), 200);
             }
 
+        }
+    }
+
+    public function myFollowingList(){
+        $following = ForumFollowers::where('follower_id', Auth::id())->get();
+
+        $list_follow = [];
+
+        if($following){
+            foreach($following as $key => $value){
+                $user = User::where('id',$value->user_id)->first();
+
+                $user_list = [
+                    'user_id' => $user['id'],
+                    'username' => $user['username'],
+                    'user_photo' => "https://hainaservice.com/storage/".$user['photo']
+                ];
+
+                array_push($list_follow, $user_list);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Following list success!','data'=> $list_follow]), 200);
+            }
+
+        }
+        else if(!$following || count($following) == 0){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'You have not followed anyone yet!','data'=> '']), 404);
+        }
+    }
+
+    public function myFollowersList(){
+        $followers = ForumFollowers::where('user_id', Auth::id())->get();
+
+        $list_follower = [];
+
+        if($followers){
+            foreach($followers as $key => $value){
+                $user = User::where('id',$value->follower_id)->first();
+
+                $user_list = [
+                    'user_id' => $user['id'],
+                    'username' => $user['username'],
+                    'user_photo' => "https://hainaservice.com/storage/".$user['photo']
+                ];
+
+                array_push($list_follower, $user_list);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Following list success!','data'=> $list_follower]), 200);
+            }
+
+        }
+        else if(!$followers || count($followers) == 0){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'No followers!','data'=> '']), 404);
         }
     }
 

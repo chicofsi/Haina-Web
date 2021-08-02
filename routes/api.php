@@ -220,6 +220,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/unfollow', [ForumController::class, 'unfollowUser']);
 		Route::post('/follow_subforum', [ForumController::class, 'followSubforum']);
 		Route::post('/unfollow_subforum', [ForumController::class, 'unfollowSubforum']);
+		Route::get('/following', [ForumController::class, 'myFollowingList']);
+		Route::get('/followers', [ForumController::class, 'myFollowerList']);
 
 		Route::post('/user_profile', [ForumController::class, 'showProfile']);
 		Route::post('/search', [ForumController::class, 'search']);
