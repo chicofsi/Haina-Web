@@ -95,7 +95,7 @@ class ForumController extends Controller
                 $user = User::where('id', $new_subforum->creator_id)->first();
 
                 $forumlog = ForumLog::create([
-                    'subforum' => $new_subforum->id,
+                    'subforum_id' => $new_subforum->id,
                     'forum_action' => 'CREATE',
                     'message' => $user['username'].' created '.$new_subforum->name.' subforum.'
                 ]);
