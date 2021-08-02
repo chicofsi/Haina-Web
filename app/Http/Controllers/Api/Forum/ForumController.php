@@ -101,7 +101,7 @@ class ForumController extends Controller
                 ]);
 
                 $modlog = ForumLog::create([
-                    'subforum' => $new_subforum->id,
+                    'subforum_id' => $new_subforum->id,
                     'forum_action' => 'MOD',
                     'message' => $user['username'].' is the new mod of '.$new_subforum->name.' subforum.'
                 ]);
