@@ -350,6 +350,15 @@ class ForumController extends Controller
                     $this->storeVideo($new_post->id, $video);
                 }
 
+                $user = User::where('id', $new_post->user_id)->first();
+                $subforum = Subforum::where('id', $new_post->subforum_id)->first();
+
+                $forumlog = ForumLog::create([
+                    'subforum_id' => $subforum['id'],
+                    'forum_action' => 'POST',
+                    'message' => $user['username'].' created '.$new_post->title.' in'.$subforum['name'].'.'
+                ]);
+
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'New Post Successfully Posted!','data'=> $new_post]), 200);
 
             }
@@ -432,6 +441,15 @@ class ForumController extends Controller
             ];
 
             $new_comment = ForumComment::create($comment);
+
+            $user = User::where('id', $new_comment->user_id)->first();
+            $post = ForumPost::where('id', $new_comment->post_id)->first();
+
+            $forumlog = ForumLog::create([
+                'subforum_id' => $post['subforum_id'],
+                'forum_action' => 'COMMENT',
+                'message' => $user['username'].' commented in '.$post['title'].'.'
+            ]);
 
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Comment Success!','data'=> $new_comment]), 200);
         }
@@ -795,6 +813,15 @@ class ForumController extends Controller
                         'reason' => $request->reason
                     ]);
 
+                    $user = User::where('id', $banned->user_id)->first();
+                    $mod = User::where('id', $banned->mod_id)->first();
+
+                    $forumlog = ForumLog::create([
+                        'subforum_id' => $banned->subforum_id,
+                        'forum_action' => 'MOD',
+                        'message' => $mod['username'].' banned '.$user['username'].'for '.$banned->reason.'.'
+                    ]);
+
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'User Ban Success!','data'=> $banned]), 200);
                 }
                 else{
@@ -921,6 +948,15 @@ class ForumController extends Controller
                 if($check_user){
                     $remove_ban = ForumBan::where('user_id', $request->user_id)->where('subforum_id', $request->subforum_id)->delete();
 
+                    $user = User::where('id', $check_user['id'])->first();
+                    $mod = User::where('id', Auth::id())->first();
+
+                    $forumlog = ForumLog::create([
+                        'subforum_id' => $request->subforum_id,
+                        'forum_action' => 'MOD',
+                        'message' => $mod['username'].' unbanned '.$user['username'].'.'
+                    ]);
+
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Remove Ban Success!','data'=> $check_user]), 200);
                 }
                 else{
@@ -956,6 +992,15 @@ class ForumController extends Controller
                         ]
                     );
 
+                    $user = User::where('id', $check_candidate['id'])->first();
+                    $mod = User::where('id', Auth::id())->first();
+
+                    $forumlog = ForumLog::create([
+                        'subforum_id' => $request->subforum_id,
+                        'forum_action' => 'MOD',
+                        'message' => $mod['username'].' changed '.$user['username'].' mod role to '.$request->role.'.'
+                    ]);
+
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Update Mod Success!','data'=> $update_mod]), 200);
 
                 }
@@ -964,6 +1009,15 @@ class ForumController extends Controller
                         'user_id' => $request->user_id,
                         'role' => $request->role,
                         'subforum_id' => $request->subforum_id
+                    ]);
+
+                    $user = User::where('id', $check_candidate['id'])->first();
+                    $mod = User::where('id', Auth::id())->first();
+
+                    $forumlog = ForumLog::create([
+                        'subforum_id' => $request->subforum_id,
+                        'forum_action' => 'MOD',
+                        'message' => $mod['username'].' assigned '.$user['username'].' with a mod role as '.$request->role.'.'
                     ]);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Assign New Mod Success!','data'=> $new_mod]), 200);
@@ -993,6 +1047,15 @@ class ForumController extends Controller
 
                 if($check_candidate){
                     $delete_mod = ForumMod::where('user_id', $request->user_id)->where('subforum_id', $request->subforum_id)->where('role', 'submod')->delete();
+
+                    $user = User::where('id', $check_candidate['id'])->first();
+                    $mod = User::where('id', Auth::id())->first();
+
+                    $forumlog = ForumLog::create([
+                        'subforum_id' => $request->subforum_id,
+                        'forum_action' => 'MOD',
+                        'message' => $mod['username'].' removed '.$user['username'].' mod role.'
+                    ]);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Delete Mod Success!','data'=> $check_candidate]), 200);
                 }
