@@ -711,7 +711,7 @@ class ForumController extends Controller
 
     public function myFollowingList(){
         $following = ForumFollowers::where('follower_id', Auth::id())->get();
-
+        dd($following);
         $list_follow = [];
 
         if($following){
