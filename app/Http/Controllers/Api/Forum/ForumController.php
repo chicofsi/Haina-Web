@@ -811,6 +811,34 @@ class ForumController extends Controller
         }
     }
 
+    public function myFollowingSubforum(){
+        $following = SubforumFollowers::where('user_id', Auth::id())->get();
+
+        $list_follow = [];
+
+        if($following){
+            foreach($following as $key => $value){
+                $subforum = Subforum::where('id',$value->subforum_id)->first();
+
+                $user_list = [
+                    'subforum_id' => $subforum['id'],
+                    'name' => $subforum['name'],
+                    'description' => $subforum['description'],
+                    'image' => $subforum['subforum_image'],
+                    'creator_id' => $subforum['creator_id']
+                ];
+
+                array_push($list_follow, $user_list);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Following list success!','data'=> $list_follow]), 200);
+            }
+
+        }
+        else if(!$following || count($following) == 0){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'You have not any subforum yet!','data'=> '']), 404);
+        }
+    }
+
     public function showModList(Request $request){
         $validator = Validator::make($request->all(), [
             'subforum_id' => 'required'
