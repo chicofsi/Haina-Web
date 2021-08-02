@@ -132,8 +132,8 @@ class ForumController extends Controller
                         array_push($creator_count, $valuepost->user_id);
                     }
 
-                    array_unique($creator_count);
-                    $value->total_poster = count($creator_count);
+                    $total_poster = array_unique($creator_count);
+                    $value->total_poster = count($total_poster);
                 }
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Subforum found!','data'=> $check]), 200);
