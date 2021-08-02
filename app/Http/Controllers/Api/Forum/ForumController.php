@@ -18,6 +18,7 @@ use App\Models\ForumPost;
 use App\Models\ForumComment;
 use App\Models\ForumFollowers;
 use App\Models\ForumImage;
+use App\Models\ForumLog;
 use App\Models\ForumVideo;
 use App\Models\ForumMod;
 use App\Models\ForumUpvote;
@@ -89,6 +90,20 @@ class ForumController extends Controller
 
                 $update_image = Subforum::where('id', $new_subforum->id)->update([
                     'subforum_image' => 'http://hainaservice.com/storage/'.$store
+                ]);
+
+                $user = User::where('id', $new_subforum->creator_id)->first();
+
+                $forumlog = ForumLog::create([
+                    'subforum' => $new_subforum->id,
+                    'forum_action' => 'CREATE',
+                    'message' => $user['username'].' created '.$new_subforum->name.' subforum.'
+                ]);
+
+                $modlog = ForumLog::create([
+                    'subforum' => $new_subforum->id,
+                    'forum_action' => 'MOD',
+                    'message' => $user['username'].' is the new mod of '.$new_subforum->name.' subforum.'
                 ]);
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Subforum successfully created!','data'=> $new_subforum]), 200);
