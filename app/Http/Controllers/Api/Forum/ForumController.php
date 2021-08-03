@@ -152,7 +152,7 @@ class ForumController extends Controller
                 $post = ForumPost::where('subforum_id', $value->id)->where('user_id', Auth::id())->with('images', 'videos')->get();
 
                 if(count($post) > 0){
-                    array_push($mypost, $post);
+                    array_push($mypost, (object) $post);
                 }
                 
             }
@@ -161,7 +161,7 @@ class ForumController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No post found!','data'=> '']), 404);
             }
             else{
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get My Post Success!','data'=> (object) $mypost]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get My Post Success!','data'=> $mypost]), 200);
             }
         }
         else{
