@@ -145,14 +145,14 @@ class ForumController extends Controller
 
     public function showMyPost(){
         $check = Subforum::where('creator_id', '<>', Auth::id())->get();
-        //$mypost = [];
+        $mypost = [];
 
         if(count($check) != 0){
             foreach($check as $key => $value){
                 $post = ForumPost::where('subforum_id', $value->id)->where('user_id', Auth::id())->with('images', 'videos')->get();
 
                 if(count($post) > 0){
-                    array_push($mypost, $post);
+                    array_push($mypost, (object) $post);
                 }
                 
             }
@@ -1057,13 +1057,18 @@ class ForumController extends Controller
 
             $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
 
+            /*
             $author_following = ForumFollowers::where('user_id', $author['id'])->where('follower_id', Auth::id())->first();
             if($author_following){
                 $follow_author = true;
             }
+            else if($author['id'] == Auth::id()){
+
+            }
             else{
                 $follow_author = false;
-            }
+            }*/
+
 
             $subforum_data = Subforum::where('id', $value->subforum_id)->first();
             $subforum_following = SubforumFollowers::where('user_id', $request->user_id)->where('subforum_id', $value->subforum_id)->first();
@@ -1091,7 +1096,6 @@ class ForumController extends Controller
                 'images' => $value->images,
                 'videos' => $value->videos,
                 'subforum_follow' => $follow_subforum,
-                'author_follow' => $follow_author,
                 'subforum_data' => $subforum_data,
                 'author_data' => $author
             ];
