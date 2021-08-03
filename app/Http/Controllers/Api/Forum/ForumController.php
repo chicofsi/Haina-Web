@@ -163,7 +163,7 @@ class ForumController extends Controller
                     $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
         
                     $subforum_data = Subforum::where('id', $value->subforum_id)->first();
-                    $subforum_following = SubforumFollowers::where('user_id', $request->user_id)->where('subforum_id', $value->subforum_id)->first();
+                    $subforum_following = SubforumFollowers::where('user_id', $value->user_id)->where('subforum_id', $value->subforum_id)->first();
         
                     if($subforum_following){
                         $follow_subforum = true;
