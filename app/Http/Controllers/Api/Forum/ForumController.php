@@ -134,6 +134,36 @@ class ForumController extends Controller
 
                     $total_poster = array_unique($creator_count);
                     $value->total_poster = count($total_poster);
+
+                    foreach($value->posts as $keypost => $valuepost){
+                        $author = User::where('id', $valuepost->user_id)->first();
+
+                        $likes = count(ForumUpvote::where('post_id', $valuepost->id)->get());
+
+                        $check_comment = ForumComment::where('post_id', $valuepost->id)->orderBy('created_at', 'desc')->first();
+            
+                        $author = User::where('id', $valuepost->user_id)->first();
+            
+                        $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+            
+                        $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
+                        $subforum_following = SubforumFollowers::where('user_id', $valuepost->user_id)->where('subforum_id', $valuepost->subforum_id)->first();
+            
+                        if($subforum_following){
+                            $follow_subforum = true;
+                        }
+                        else{
+                            $follow_subforum = false;
+                        }
+                        $valuepost->author = $author['username'];
+                        $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
+                        $valuepost->member_since = date("F Y", strtotime($author['created_at'])),
+                        $valuepost->likes = $likes;
+                        $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
+                        $valuepost->subforum_follow = $follow_subforum;
+                        $valuepost->subforum_data = $subforum_data;
+                        $valuepost->author_data = $author;
+                    }
                 }
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Subforum found!','data'=> $check]), 200);
@@ -171,7 +201,9 @@ class ForumController extends Controller
                     else{
                         $follow_subforum = false;
                     }
-                   
+                    $value->author = $author['username'];
+                    $value->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
+                    $value->member_since = date("F Y", strtotime($author['created_at'])),
                     $value->likes = $likes;
                     $value->comment_count = count(ForumComment::where('post_id', $value->id)->get());
                     $value->subforum_follow = $follow_subforum;
