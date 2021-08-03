@@ -151,16 +151,13 @@ class ForumController extends Controller
         if(count($check) != 0){
                 $post = ForumPost::whereNotIn('subforum_id', $check)->where('user_id', Auth::id())->with('images', 'videos')->get();
 
-                if(count($post) > 0){
-                    array_push($mypost, (object) $post);
-                }
                 
 
-            if(count($mypost) == 0){
+            if(count($post) == 0){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No post found!','data'=> '']), 404);
             }
             else{
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get My Post Success!','data'=> $mypost]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get My Post Success!','data'=> $post]), 200);
             }
         }
         else{
