@@ -145,12 +145,11 @@ class ForumController extends Controller
 
     public function showMyPost(){
         $check = Subforum::select('id')->where('creator_id', '<>', Auth::id())->get();
-
-        dd($check);
+        //dd($check);
         $mypost = [];
 
         if(count($check) != 0){
-                $post = ForumPost::where('subforum_id', $value->id)->where('user_id', Auth::id())->with('images', 'videos')->get();
+                $post = ForumPost::whereNotIn('subforum_id', $check)->where('user_id', Auth::id())->with('images', 'videos')->get();
 
                 if(count($post) > 0){
                     array_push($mypost, (object) $post);
