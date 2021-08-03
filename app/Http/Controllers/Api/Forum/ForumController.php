@@ -1057,7 +1057,23 @@ class ForumController extends Controller
 
             $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
 
+            $author_following = ForumFollowers::where('user_id', $author['id'])->where('follower_id', Auth::id())->get();
+            if($author_following){
+                $follow_author = true;
+            }
+            else{
+                $follow_author = false;
+            }
+
             $subforum_data = Subforum::where('id', $value->subforum_id)->first();
+            $subforum_following = SubforumFollowers::where('user_id', $request->user_id)->where('subforum_id', $value->subforum_id)->first();
+
+            if($subforum_following){
+                $follow_subforum = true;
+            }
+            else{
+                $follow_subforum = false;
+            }
 
             $list = (object) [
                 'id' => $value->id,
@@ -1074,7 +1090,10 @@ class ForumController extends Controller
                 'content' => $value->content,
                 'images' => $value->images,
                 'videos' => $value->videos,
-                'subforum_data' => $subforum_data
+                'subforum_follow' => $follow_subforum,
+                'author_follow' => $follow_author,
+                'subforum_data' => $subforum_data,
+                'author_data' => $author
             ];
 
             array_push($threads, $list);
