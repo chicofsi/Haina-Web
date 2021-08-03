@@ -144,18 +144,18 @@ class ForumController extends Controller
     }
 
     public function showMyPost(){
-        $check = Subforum::where('creator_id', '<>', Auth::id())->get();
+        $check = Subforum::select('id')->where('creator_id', '<>', Auth::id())->get();
+
+        dd($check);
         $mypost = [];
 
         if(count($check) != 0){
-            foreach($check as $key => $value){
                 $post = ForumPost::where('subforum_id', $value->id)->where('user_id', Auth::id())->with('images', 'videos')->get();
 
                 if(count($post) > 0){
                     array_push($mypost, (object) $post);
                 }
                 
-            }
 
             if(count($mypost) == 0){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No post found!','data'=> '']), 404);
@@ -167,7 +167,7 @@ class ForumController extends Controller
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'No post found!','data'=> '']), 404);
         }
-}
+    }
 
     public function showAllSubforum(){
 
