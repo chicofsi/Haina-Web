@@ -149,7 +149,7 @@ class ForumController extends Controller
 
         if(count($check) != 0){
             foreach($check as $key => $value){
-                $post = ForumPost::where('subforum_id', $value->id)->with('images', 'videos')->get();
+                $post = ForumPost::where('subforum_id', $value->id)->where('user_id', Auth::id())->with('images', 'videos')->get();
 
                 if(count($post) > 0){
                     array_push($mypost, $post);
@@ -757,6 +757,43 @@ class ForumController extends Controller
         }
     }
 
+    public function userFollowingList(Request $request){
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $following = ForumFollowers::where('follower_id', $request->user_id)->get();
+            //dd($following);
+            
+
+            if($following){
+                $list_follow = [];
+
+                foreach($following as $key => $value){
+                    $user = User::where('id',$value->user_id)->first();
+
+                    $user_list = [
+                        'user_id' => $user['id'],
+                        'username' => $user['username'],
+                        'user_photo' => "https://hainaservice.com/storage/".$user['photo']
+                    ];
+
+                    array_push($list_follow, $user_list);
+                }
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Following list success!','data'=> $list_follow]), 200);
+                
+
+            }
+            else if(!$following || count($following) == 0){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'You have not followed anyone yet!','data'=> '']), 404);
+            }
+        }
+    }
+
     public function myFollowersList(){
         $followers = ForumFollowers::where('user_id', Auth::id())->get();
 
@@ -780,6 +817,41 @@ class ForumController extends Controller
         }
         else if(!$followers || count($followers) == 0){
             return response()->json(new ValueMessage(['value'=>0,'message'=>'No followers!','data'=> '']), 404);
+        }
+    }
+
+    public function userFollowersList(Request $request){
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $followers = ForumFollowers::where('user_id', $request->user_id)->get();
+
+            if($followers){
+
+                $list_follower = [];
+
+                foreach($followers as $key => $value){
+                    $user = User::where('id',$value->follower_id)->first();
+
+                    $user_list = [
+                        'user_id' => $user['id'],
+                        'username' => $user['username'],
+                        'user_photo' => "https://hainaservice.com/storage/".$user['photo']
+                    ];
+
+                    array_push($list_follower, $user_list);
+                }
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Followers list success!','data'=> $list_follower]), 200);
+
+            }
+            else if(!$followers || count($followers) == 0){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No followers!','data'=> '']), 404);
+            }
         }
     }
 
@@ -857,6 +929,44 @@ class ForumController extends Controller
         }
         else if(!$following || count($following) == 0){
             return response()->json(new ValueMessage(['value'=>0,'message'=>'You have not followed any subforum yet!','data'=> '']), 404);
+        }
+    }
+
+    public function userFollowingSubforum(Request $request){
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $following = SubforumFollowers::where('user_id', $request->user_id)->get();
+
+            if($following){
+
+                $list_follow = [];
+
+                foreach($following as $key => $value){
+                    $subforum = Subforum::where('id',$value->subforum_id)->first();
+
+                    $user_list = [
+                        'subforum_id' => $subforum['id'],
+                        'name' => $subforum['name'],
+                        'description' => $subforum['description'],
+                        'image' => $subforum['subforum_image'],
+                        'creator_id' => $subforum['creator_id']
+                    ];
+
+                    array_push($list_follow, $user_list);
+                }
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Following subforum list success!','data'=> $list_follow]), 200);
+                
+
+            }
+            else if(!$following || count($following) == 0){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'You have not followed any subforum yet!','data'=> '']), 404);
+            }
         }
     }
 
