@@ -145,7 +145,7 @@ class ForumController extends Controller
 
     public function showMyPost(){
         $check = Subforum::where('creator_id', '<>', Auth::id())->get();
-        $mypost = [];
+        //$mypost = [];
 
         if(count($check) != 0){
             foreach($check as $key => $value){
@@ -1057,6 +1057,8 @@ class ForumController extends Controller
 
             $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
 
+            $subforum_data = Subforum::where('id', $value->subforum_id)->first();
+
             $list = (object) [
                 'id' => $value->id,
                 'title' => $value->title,
@@ -1072,6 +1074,7 @@ class ForumController extends Controller
                 'content' => $value->content,
                 'images' => $value->images,
                 'videos' => $value->videos,
+                'subforum_data' => $subforum_data
             ];
 
             array_push($threads, $list);
@@ -1087,7 +1090,7 @@ class ForumController extends Controller
 
         if(count($hot_threads) > 0){
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'User not found!','data'=> $hot_threads]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'User not found!','data'=> (object) $hot_threads]), 200);
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'No posts found!','data'=> '']), 404);
