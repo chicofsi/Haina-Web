@@ -146,12 +146,38 @@ class ForumController extends Controller
     public function showMyPost(){
         $check = Subforum::select('id')->where('creator_id', '<>', Auth::id())->get();
         //dd($check);
-        $mypost = [];
+        //$mypost = [];
 
         if(count($check) != 0){
                 $post = ForumPost::whereNotIn('subforum_id', $check)->where('user_id', Auth::id())->with('images', 'videos')->get();
 
-                
+                foreach($post as $key => $value){
+                    $author = User::where('id', $value->user_id)->first();
+
+                    $likes = count(ForumUpvote::where('post_id', $value->id)->get());
+
+                    $check_comment = ForumComment::where('post_id', $value->id)->orderBy('created_at', 'desc')->first();
+        
+                    $author = User::where('id', $value->user_id)->first();
+        
+                    $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
+        
+                    $subforum_data = Subforum::where('id', $value->subforum_id)->first();
+                    $subforum_following = SubforumFollowers::where('user_id', $request->user_id)->where('subforum_id', $value->subforum_id)->first();
+        
+                    if($subforum_following){
+                        $follow_subforum = true;
+                    }
+                    else{
+                        $follow_subforum = false;
+                    }
+                   
+                    $value->likes = $likes;
+                    $value->comment_count = count(ForumComment::where('post_id', $value->id)->get());
+                    $value->subforum_follow = $follow_subforum;
+                    $value->subforum_data = $subforum_data;
+                    $value->author_data = $author;
+                }
 
             if(count($post) == 0){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No post found!','data'=> '']), 404);
