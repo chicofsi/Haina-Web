@@ -1057,7 +1057,7 @@ class ForumController extends Controller
 
             $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
 
-            $author_following = ForumFollowers::where('user_id', $author['id'])->where('follower_id', Auth::id())->get();
+            $author_following = ForumFollowers::where('user_id', $author['id'])->where('follower_id', Auth::id())->first();
             if($author_following){
                 $follow_author = true;
             }
