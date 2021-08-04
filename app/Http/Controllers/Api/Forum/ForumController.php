@@ -401,8 +401,12 @@ class ForumController extends Controller
         else{
 
             $check = ForumPost::where('subforum_id', $request->subforum_id)->where('user_id', Auth::id())->where('title', $request->title)->first();
+            $check_ban = ForumBan::where('subforum_id', $request->subforum_id)->where('user_id', Auth::id())->first();
 
-            if($check){
+            if($check_ban){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'You are banned in this subforum!','data'=> '']), 401);
+            }
+            else if($check){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'You have created the same topic in the subforum!','data'=> '']), 401);
             }
             else{
@@ -508,24 +512,32 @@ class ForumController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $comment = [
-                'user_id' => Auth::id(),
-                'post_id' => $request->post_id,
-                'content' => $request->content
-            ];
+            $check_ban = ForumBan::where('subforum_id', $request->subforum_id)->where('user_id', Auth::id())->first();
 
-            $new_comment = ForumComment::create($comment);
-
-            $user = User::where('id', $new_comment->user_id)->first();
-            $post = ForumPost::where('id', $new_comment->post_id)->first();
-
-            $forumlog = ForumLog::create([
-                'subforum_id' => $post['subforum_id'],
-                'forum_action' => 'COMMENT',
-                'message' => $user['username'].' commented in '.$post['title'].'.'
-            ]);
-
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Comment Success!','data'=> $new_comment]), 200);
+            if($check_ban){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'You are banned in this subforum!','data'=> '']), 401);
+            }
+            else{
+                $comment = [
+                    'user_id' => Auth::id(),
+                    'post_id' => $request->post_id,
+                    'content' => $request->content
+                ];
+    
+                $new_comment = ForumComment::create($comment);
+    
+                $user = User::where('id', $new_comment->user_id)->first();
+                $post = ForumPost::where('id', $new_comment->post_id)->first();
+    
+                $forumlog = ForumLog::create([
+                    'subforum_id' => $post['subforum_id'],
+                    'forum_action' => 'COMMENT',
+                    'message' => $user['username'].' commented in '.$post['title'].'.'
+                ]);
+    
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Comment Success!','data'=> $new_comment]), 200);
+            }
+            
         }
     }
 
