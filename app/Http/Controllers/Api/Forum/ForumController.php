@@ -513,7 +513,9 @@ class ForumController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $check_ban = ForumBan::where('subforum_id', $request->subforum_id)->where('user_id', Auth::id())->first();
+            $post = ForumPost::where('id', $request->post_id)->first();
+            $subforum = Subforum::where('id', $post['subforum_id'])->first();
+            $check_ban = ForumBan::where('subforum_id', $subforum['id'])->where('user_id', Auth::id())->first();
 
             if($check_ban){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'You are banned in this subforum!','data'=> '']), 401);
