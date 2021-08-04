@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Models\ForumCategory;
 use App\Models\Subforum;
 use App\Models\SubforumFollowers;
+use App\Models\ForumBan;
 use App\Models\ForumPost;
 use App\Models\ForumComment;
 use App\Models\ForumFollowers;
