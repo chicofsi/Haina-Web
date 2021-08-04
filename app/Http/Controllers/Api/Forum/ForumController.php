@@ -310,7 +310,7 @@ class ForumController extends Controller
                 ];
 
                 if($prelist['user_id'] != Auth::id()){
-                    array_push($prelist, ['upvoted' => $upvote]);
+                    $prelist['upvoted'] = $upvote;
                 }
 
                 $list = (object) $prelist;
