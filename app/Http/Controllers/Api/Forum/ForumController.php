@@ -671,21 +671,30 @@ class ForumController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
             }
             else{
-                $check_duplicate = ForumUpvote::where('post_id', $request->post_id)->where('user_id', Auth::id())->first();
+                $post = ForumPost::where('id', $request->post_id)->first();
+                $subforum = Subforum::where('id', $post['subforum_id'])->first();
+                $check_ban = ForumBan::where('subforum_id', $subforum['id'])->where('user_id', Auth::id())->first();
 
-                if($check['user_id'] == Auth::id()){
-                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot Upvote Own Post!','data'=> '']), 401);
-                }
-                else if($check_duplicate){
-                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot Upvote More Than Once!','data'=> '']), 401);
+                if($check_ban){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'You are banned in this subforum!','data'=> '']), 401);
                 }
                 else{
-                    $new_upvote = ForumUpvote::create([
-                        'user_id' => Auth::id(),
-                        'post_id' => $request->post_id
-                    ]);
+                    $check_duplicate = ForumUpvote::where('post_id', $request->post_id)->where('user_id', Auth::id())->first();
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Upvote Success!','data'=> $new_upvote]), 200);
+                    if($check['user_id'] == Auth::id()){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot Upvote Own Post!','data'=> '']), 401);
+                    }
+                    else if($check_duplicate){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot Upvote More Than Once!','data'=> '']), 401);
+                    }
+                    else{
+                        $new_upvote = ForumUpvote::create([
+                            'user_id' => Auth::id(),
+                            'post_id' => $request->post_id
+                        ]);
+
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Upvote Success!','data'=> $new_upvote]), 200);
+                    }
                 }
 
             }
