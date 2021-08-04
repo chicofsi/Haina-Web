@@ -216,13 +216,14 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::get('/my_subforum', [ForumController::class, 'showMySubforum']);
 		Route::get('/my_post', [ForumController::class, 'showMyPost']);
 
-		Route::post('/follow', [ForumController::class, 'followUser']);
-		Route::post('/unfollow', [ForumController::class, 'unfollowUser']);
+		//Route::post('/follow', [ForumController::class, 'followUser']);
+		//Route::post('/unfollow', [ForumController::class, 'unfollowUser']);
 		Route::post('/follow_subforum', [ForumController::class, 'followSubforum']);
 		Route::post('/unfollow_subforum', [ForumController::class, 'unfollowSubforum']);
-		Route::get('/following', [ForumController::class, 'myFollowingList']);
-		Route::get('/followers', [ForumController::class, 'myFollowersList']);
+		//Route::get('/following', [ForumController::class, 'myFollowingList']);
+		//Route::get('/followers', [ForumController::class, 'myFollowersList']);
 		Route::get('/following_subforum', [ForumController::class, 'myFollowingSubforum']);
+		Route::post('/following_subforum', [ForumController::class, 'userFollowingSubforum']);
 
 		Route::post('/user_profile', [ForumController::class, 'showProfile']);
 		Route::post('/search', [ForumController::class, 'search']);

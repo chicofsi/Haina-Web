@@ -732,183 +732,6 @@ class ForumController extends Controller
         }
     }
 
-    public function followUser(Request $request){
-        $validator = Validator::make($request->all(), [
-            'user_id' => 'required'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 400);
-        }
-        else if($request->user_id == Auth::id()){
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Error: cannot follow yourself!','data'=> '']), 404);
-        }
-        else{
-            $check = ForumFollowers::where('user_id', $request->user_id)->where('follower_id', Auth::id())->first();
-
-            if($check){
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'You already followed this user!','data'=> '']), 404);
-            }
-            else{
-                $new_follow = ForumFollowers::create([
-                    'user_id' => $request->user_id,
-                    'follower_id' => Auth::id()
-                ]);
-            }
-
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Follow user success!','data'=> $new_follow]), 200);
-        }
-    }
-
-    public function unfollowUser(Request $request){
-        $validator = Validator::make($request->all(), [
-            'user_id' => 'required'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 400);
-        }
-        else{
-            $check = ForumFollowers::where('user_id', $request->user_id)->where('follower_id', Auth::id())->first();
-
-            if(!$check){
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'You do not follow this user!','data'=> '']), 404);
-            }
-            else{
-                $delete_follow = ForumFollowers::where('user_id', $request->user_id)->where('follower_id', Auth::id())->delete();
-
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Unfollow user success!','data'=> $check]), 200);
-            }
-
-        }
-    }
-
-    public function myFollowingList(){
-        $following = ForumFollowers::where('follower_id', Auth::id())->get();
-        //dd($following);
-        
-
-        if($following){
-            $list_follow = [];
-
-            foreach($following as $key => $value){
-                $user = User::where('id',$value->user_id)->first();
-
-                $user_list = [
-                    'user_id' => $user['id'],
-                    'username' => $user['username'],
-                    'user_photo' => "https://hainaservice.com/storage/".$user['photo']
-                ];
-
-                array_push($list_follow, $user_list);
-            }
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Following list success!','data'=> $list_follow]), 200);
-            
-
-        }
-        else if(!$following || count($following) == 0){
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'You have not followed anyone yet!','data'=> '']), 404);
-        }
-    }
-
-    public function userFollowingList(Request $request){
-        $validator = Validator::make($request->all(), [
-            'user_id' => 'required'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 400);
-        }
-        else{
-            $following = ForumFollowers::where('follower_id', $request->user_id)->get();
-            //dd($following);
-            
-
-            if($following){
-                $list_follow = [];
-
-                foreach($following as $key => $value){
-                    $user = User::where('id',$value->user_id)->first();
-
-                    $user_list = [
-                        'user_id' => $user['id'],
-                        'username' => $user['username'],
-                        'user_photo' => "https://hainaservice.com/storage/".$user['photo']
-                    ];
-
-                    array_push($list_follow, $user_list);
-                }
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Following list success!','data'=> $list_follow]), 200);
-                
-
-            }
-            else if(!$following || count($following) == 0){
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'You have not followed anyone yet!','data'=> '']), 404);
-            }
-        }
-    }
-
-    public function myFollowersList(){
-        $followers = ForumFollowers::where('user_id', Auth::id())->get();
-
-        if($followers){
-
-            $list_follower = [];
-
-            foreach($followers as $key => $value){
-                $user = User::where('id',$value->follower_id)->first();
-
-                $user_list = [
-                    'user_id' => $user['id'],
-                    'username' => $user['username'],
-                    'user_photo' => "https://hainaservice.com/storage/".$user['photo']
-                ];
-
-                array_push($list_follower, $user_list);
-            }
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Followers list success!','data'=> $list_follower]), 200);
-
-        }
-        else if(!$followers || count($followers) == 0){
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'No followers!','data'=> '']), 404);
-        }
-    }
-
-    public function userFollowersList(Request $request){
-        $validator = Validator::make($request->all(), [
-            'user_id' => 'required'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 400);
-        }
-        else{
-            $followers = ForumFollowers::where('user_id', $request->user_id)->get();
-
-            if($followers){
-
-                $list_follower = [];
-
-                foreach($followers as $key => $value){
-                    $user = User::where('id',$value->follower_id)->first();
-
-                    $user_list = [
-                        'user_id' => $user['id'],
-                        'username' => $user['username'],
-                        'user_photo' => "https://hainaservice.com/storage/".$user['photo']
-                    ];
-
-                    array_push($list_follower, $user_list);
-                }
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Followers list success!','data'=> $list_follower]), 200);
-
-            }
-            else if(!$followers || count($followers) == 0){
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'No followers!','data'=> '']), 404);
-            }
-        }
-    }
-
     public function followSubforum(Request $request){
         $validator = Validator::make($request->all(), [
             'subforum_id' => 'required'
@@ -1004,12 +827,21 @@ class ForumController extends Controller
                 foreach($following as $key => $value){
                     $subforum = Subforum::where('id',$value->subforum_id)->first();
 
+                    $check_followed = SubforumFollowers::where('subforum_id', $value->id)->where('user_id', Auth::id)->first();
+                    if($check_followed){
+                        $followed = true;
+                    }
+                    else{
+                        $followed = false;
+                    }
+
                     $user_list = [
                         'subforum_id' => $subforum['id'],
                         'name' => $subforum['name'],
                         'description' => $subforum['description'],
                         'image' => $subforum['subforum_image'],
-                        'creator_id' => $subforum['creator_id']
+                        'creator_id' => $subforum['creator_id'],
+                        'followed_by_me' => $followed
                     ];
 
                     array_push($list_follow, $user_list);
@@ -1188,26 +1020,28 @@ class ForumController extends Controller
 
             if($check_user){
                 $post_count = count(ForumPost::where('user_id', $request->user_id)->get());
-                $following = count(ForumFollowers::where('follower_id', $request->user_id)->get());
-                $followers = count(ForumFollowers::where('user_id', $request->user_id)->get());
-                $check_followed = ForumFollowers::where('user_id', $request->user_id)->where('follower_id', Auth::id())->first();
+                //$following = count(ForumFollowers::where('follower_id', $request->user_id)->get());
+                //$followers = count(ForumFollowers::where('user_id', $request->user_id)->get());
+                //$check_followed = ForumFollowers::where('user_id', $request->user_id)->where('follower_id', Auth::id())->first();
 
+                /*
                 if($check_followed){
                     $followed = true;
                 }
                 else{
                     $followed = false;
                 }
+                */
 
                 $profile = (object)[
                     'user_id' => $check_user['id'],
                     'username' => $check_user['username'],
                     'member_since' => date("F Y", strtotime($check_user['created_at'])),
                     'photo' => "https://hainaservice.com/storage/".$check_user['photo'],
-                    'post_count' => $post_count,
-                    'following' => $following,
-                    'followers' => $followers,
-                    'followed' => $followed
+                    'post_count' => $post_count
+                    //'following' => $following,
+                    //'followers' => $followers,
+                    //'followed' => $followed
                 ];
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'User Profile Found!','data'=> $profile]), 200);
