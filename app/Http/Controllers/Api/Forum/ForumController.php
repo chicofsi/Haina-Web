@@ -1056,7 +1056,7 @@ class ForumController extends Controller
             ];
 
             if($prelist['user_id'] != Auth::id()){
-                array_push($prelist, ['upvoted' => $upvote]);
+                $prelist['upvoted'] = $upvote;
             }
 
             $list = (object) $prelist;
@@ -1074,7 +1074,7 @@ class ForumController extends Controller
 
         if(count($hot_threads) > 0){
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'User not found!','data'=> $hot_threads]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Hot threads succesfully displayed!','data'=> $hot_threads]), 200);
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'No posts found!','data'=> '']), 404);
