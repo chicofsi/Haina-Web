@@ -309,7 +309,7 @@ class ForumController extends Controller
                     'last_update' => $lastpost
                 ];
 
-                if($prelist->user_id != Auth::id()){
+                if($prelist['user_id'] != Auth::id()){
                     array_push($prelist, ['upvoted' => $upvote]);
                 }
 
@@ -1055,7 +1055,7 @@ class ForumController extends Controller
                 'author_data' => $author
             ];
 
-            if($prelist->user_id != Auth::id()){
+            if($prelist['user_id'] != Auth::id()){
                 array_push($prelist, ['upvoted' => $upvote]);
             }
 
