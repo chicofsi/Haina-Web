@@ -494,6 +494,19 @@ class ForumController extends Controller
                 if($checkupvote){
                     $delete_upvote = ForumUpvote::where('post_id', $request->post_id)->delete();
                 }
+
+                if($checkmod){
+                    //hapus by mod
+                    $post_owner = ForumPost::where('id', $request->post_id)->first();
+                    $token = [];
+                    $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $post_owner['user_id'])->get();
+
+                    foreach($usertoken as $key => $value){
+                        array_push($token, $value); 
+                    }
+
+                    NotificationController::sendPush($token, "Your post is removed", "Your post ".$post_owner['title']."is removed by a moderator.", "Forum", "delete");
+                }
                 $delete_post = ForumPost::where('id', $request->post_id)->delete();
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Post deleted successfully','data'=> $checkpost]), 200);
@@ -564,6 +577,20 @@ class ForumController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
             }
             else{
+                if($checkmod){
+                    //hapus by mod
+                    $comment_owner = ForumComment::where('id', $request->comment_id)->first();
+                    $post_name = ForumPost::where('id', $comment_owner['post_id'])->first();
+                    $token = [];
+                    $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $comment_owner['user_id'])->get();
+
+                    foreach($usertoken as $key => $value){
+                        array_push($token, $value); 
+                    }
+
+                    NotificationController::sendPush($token, "Your comment is removed", "Your comment at".$post_name['title']."is removed by a moderator.", "Forum", "delete");
+                }
+
                 $delete_comment = ForumComment::where('id', $request->comment_id)->delete();
 
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Comment deleted successfully!','data'=> $check]), 200);
