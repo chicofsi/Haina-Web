@@ -290,7 +290,7 @@ class ForumController extends Controller
                     $upvote = true;
                 }
 
-                $list = (object) [
+                $prelist = [
                     'id' => $value->id,
                     'title' => $value->title,
                     'author' => $author['username'],
@@ -308,6 +308,12 @@ class ForumController extends Controller
                     'videos' => $value->videos,
                     'last_update' => $lastpost
                 ];
+
+                if($prelist->user_id != Auth::id()){
+                    array_push($prelist, ['upvoted' => $upvote]);
+                }
+
+                $list = (object) $prelist;
 
                 array_push($threads, $list);
 
@@ -999,6 +1005,13 @@ class ForumController extends Controller
 
             $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
 
+            if($check_upvote){
+                $upvote = false;
+            }
+            else{
+                $upvote = true;
+            }
+
             /*
             $author_following = ForumFollowers::where('user_id', $author['id'])->where('follower_id', Auth::id())->first();
             if($author_following){
@@ -1022,7 +1035,7 @@ class ForumController extends Controller
                 $follow_subforum = false;
             }
 
-            $list = (object) [
+            $prelist = [
                 'id' => $value->id,
                 'title' => $value->title,
                 'author' => $author['username'],
@@ -1041,6 +1054,12 @@ class ForumController extends Controller
                 'subforum_data' => $subforum_data,
                 'author_data' => $author
             ];
+
+            if($prelist->user_id != Auth::id()){
+                array_push($prelist, ['upvoted' => $upvote]);
+            }
+
+            $list = (object) $prelist;
 
             array_push($threads, $list);
 
