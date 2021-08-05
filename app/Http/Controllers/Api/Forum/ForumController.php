@@ -23,6 +23,7 @@ use App\Models\ForumLog;
 use App\Models\ForumVideo;
 use App\Models\ForumMod;
 use App\Models\ForumUpvote;
+use App\Models\PersonalAccessToken;
 
 use App\Http\Controllers\Api\Notification\NotificationController;
 
