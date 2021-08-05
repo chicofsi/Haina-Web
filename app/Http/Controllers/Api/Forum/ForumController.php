@@ -230,6 +230,7 @@ class ForumController extends Controller
 
             if(count($check) != 0){
                 foreach($check as $key => $value){
+                    $creator_count = [];
                     $check_followed = SubforumFollowers::where('subforum_id', $value->id)->where('user_id', Auth::id())->with('posts')->first();
 
                     $value->total_post = count(ForumPost::where('subforum_id', $value->id)->get());
