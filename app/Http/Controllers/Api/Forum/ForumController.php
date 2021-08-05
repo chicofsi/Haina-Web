@@ -1078,8 +1078,8 @@ class ForumController extends Controller
 
             $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
-            $subforum_data['category'] = $category_name['category'];
-            $subforum_data['category_zh'] = $category_name['category_zh'];
+            $subforum_data['category'] = $category_name['name'];
+            $subforum_data['category_zh'] = $category_name['name_zh'];
 
             if($subforum_following){
                 $follow_subforum = true;
