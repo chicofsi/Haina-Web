@@ -226,12 +226,12 @@ class ForumController extends Controller
 
     public function showAllSubforum(){
 
-            $check = Subforum::all();
+            $check = Subforum::all()->with('posts');
 
             if(count($check) != 0){
                 foreach($check as $key => $value){
                     $creator_count = [];
-                    $check_followed = SubforumFollowers::where('subforum_id', $value->id)->where('user_id', Auth::id())->with('posts')->first();
+                    $check_followed = SubforumFollowers::where('subforum_id', $value->id)->where('user_id', Auth::id())->first();
 
                     $value->total_post = count(ForumPost::where('subforum_id', $value->id)->get());
 
