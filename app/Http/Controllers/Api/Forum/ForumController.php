@@ -226,7 +226,7 @@ class ForumController extends Controller
 
     public function showAllSubforum(){
 
-            $check = Subforum::with('posts');
+            $check = Subforum::with('posts')->get();
 
             if(count($check) != 0){
                 foreach($check as $key => $value){
