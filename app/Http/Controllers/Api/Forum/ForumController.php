@@ -592,6 +592,8 @@ class ForumController extends Controller
                         array_push($token, $value); 
                     }
 
+                    $mod = User::where('id', $checkmod['user_id'])->first();
+
                     $forumlog = ForumLog::create([
                         //moddel
                         'subforum_id' => $subforum['id'],
@@ -681,6 +683,8 @@ class ForumController extends Controller
                     foreach($usertoken as $key => $value){
                         array_push($token, $value); 
                     }
+
+                    $mod = User::where('id', $checkmod['user_id'])->first();
 
                     $forumlog = ForumLog::create([
                         //moddel
