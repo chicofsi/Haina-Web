@@ -1070,7 +1070,10 @@ class ForumController extends Controller
             else{
                 $follow_author = false;
             }*/
+            $category_name = ForumCategory::where('id', $value->category_id)->first();
 
+            $value->category = $category_name['name'];
+            $value->category_zh = $category_name['name_zh'];
 
             $subforum_data = Subforum::where('id', $value->subforum_id)->first();
             $subforum_following = SubforumFollowers::where('user_id', $request->user_id)->where('subforum_id', $value->subforum_id)->first();
