@@ -343,6 +343,22 @@ class ForumController extends Controller
                     $lastpost = $check_comment['created_at'];
                 }
 
+                $subforum_data = Subforum::where('id', $value->subforum_id)->first();
+                $subforum_following = SubforumFollowers::where('user_id', $request->user_id)->where('subforum_id', $value->subforum_id)->first();
+    
+                $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
+    
+                $subforum_data['category'] = $category_name['name'];
+                $subforum_data['category_zh'] = $category_name['name_zh'];
+
+
+                if($subforum_following){
+                    $follow_subforum = true;
+                }
+                else{
+                    $follow_subforum = false;
+                }
+
                 $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
 
                 if(!$check_upvote){
@@ -364,10 +380,12 @@ class ForumController extends Controller
                     'view_count' => $value->view_count,
                     'share_count' => $value->share_count,
                     'created' => $value->created_at,
-                    'upvoted' => $upvote,
                     'content' => $value->content,
                     'images' => $value->images,
                     'videos' => $value->videos,
+                    'subforum_follow' => $follow_subforum,
+                    'subforum_data' => $subforum_data,
+                    'author_data' => $author,
                     'last_update' => $lastpost
                 ];
 
