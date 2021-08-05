@@ -688,7 +688,7 @@ class ForumController extends Controller
 
                     $forumlog = ForumLog::create([
                         //moddel
-                        'subforum_id' => $subforum['id'],
+                        'subforum_id' => $spost_name['subforum_id'],
                         'forum_action' => 'MOD',
                         'message' => $mod['username'].' deleted '.$comment_owner['content'].'from '.$post_name['title'].' in '.$subforum->name.'.'
                     ]);
