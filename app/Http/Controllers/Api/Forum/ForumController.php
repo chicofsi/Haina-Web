@@ -181,57 +181,48 @@ class ForumController extends Controller
     }
 
     public function showMyPost(){
-        $check = Subforum::select('id')->where('creator_id', '<>', Auth::id())->get();
-        //dd($check);
-        //$mypost = [];
+            $post = ForumPost::where('user_id', Auth::id())->with('images', 'videos')->get();
 
-        if(count($check) != 0){
-                $post = ForumPost::whereNotIn('subforum_id', $check)->where('user_id', Auth::id())->with('images', 'videos')->get();
+            foreach($post as $key => $value){
+                $author = User::where('id', $value->user_id)->first();
 
-                foreach($post as $key => $value){
-                    $author = User::where('id', $value->user_id)->first();
+                $likes = count(ForumUpvote::where('post_id', $value->id)->get());
 
-                    $likes = count(ForumUpvote::where('post_id', $value->id)->get());
+                $check_comment = ForumComment::where('post_id', $value->id)->orderBy('created_at', 'desc')->first();
+    
+                $author = User::where('id', $value->user_id)->first();
+    
+                $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
+    
+                $subforum_data = Subforum::where('id', $value->subforum_id)->first();
+                $subforum_following = SubforumFollowers::where('user_id', $value->user_id)->where('subforum_id', $value->subforum_id)->first();
 
-                    $check_comment = ForumComment::where('post_id', $value->id)->orderBy('created_at', 'desc')->first();
-        
-                    $author = User::where('id', $value->user_id)->first();
-        
-                    $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
-        
-                    $subforum_data = Subforum::where('id', $value->subforum_id)->first();
-                    $subforum_following = SubforumFollowers::where('user_id', $value->user_id)->where('subforum_id', $value->subforum_id)->first();
+                $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
-                    $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
-
-                    $subforum_data['category'] = $category_name['name'];
-                    $subforum_data['category_zh'] = $category_name['name_zh'];
-        
-                    if($subforum_following){
-                        $follow_subforum = true;
-                    }
-                    else{
-                        $follow_subforum = false;
-                    }
-                    $value->author = $author['username'];
-                    $value->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
-                    $value->member_since = date("F Y", strtotime($author['created_at']));
-                    $value->likes = $likes;
-                    $value->comment_count = count(ForumComment::where('post_id', $value->id)->get());
-                    $value->subforum_follow = $follow_subforum;
-                    $value->subforum_data = $subforum_data;
-                    $value->author_data = $author;
+                $subforum_data['category'] = $category_name['name'];
+                $subforum_data['category_zh'] = $category_name['name_zh'];
+    
+                if($subforum_following){
+                    $follow_subforum = true;
                 }
+                else{
+                    $follow_subforum = false;
+                }
+                $value->author = $author['username'];
+                $value->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
+                $value->member_since = date("F Y", strtotime($author['created_at']));
+                $value->likes = $likes;
+                $value->comment_count = count(ForumComment::where('post_id', $value->id)->get());
+                $value->subforum_follow = $follow_subforum;
+                $value->subforum_data = $subforum_data;
+                $value->author_data = $author;
+            }
 
-            if(count($post) == 0){
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'No post found!','data'=> '']), 404);
-            }
-            else{
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get My Post Success!','data'=> $post]), 200);
-            }
+        if(count($post) == 0){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'No post found!','data'=> '']), 404);
         }
         else{
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'No post found!','data'=> '']), 404);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get My Post Success!','data'=> $post]), 200);
         }
     }
 
@@ -690,7 +681,7 @@ class ForumController extends Controller
                         //moddel
                         'subforum_id' => $post_name['subforum_id'],
                         'forum_action' => 'MOD',
-                        'message' => $mod['username'].' deleted '.$comment_owner['content'].'from '.$post_name['title'].' in '.$subforum->name.'.'
+                        'message' => $mod['username'].' deleted '.$comment_owner['content'].' from '.$post_name['title'].' in '.$subforum->name.'.'
                     ]);
 
                     NotificationController::sendPush($token, "Your comment is removed", "Your comment at".$post_name['title']."is removed by a moderator.", "Forum", "delete");
