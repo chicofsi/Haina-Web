@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 use App\Models\User;
 use App\Models\ForumCategory;
@@ -1153,11 +1155,14 @@ class ForumController extends Controller
         array_multisort($created, SORT_DESC, $title, SORT_DESC, $threads);
         //dd($threads);
 
-        $threads = $threads->paginate(10);
+        $current_page = LengthAwarePaginator::resolveCurrentPage();
+        $current_page_threads = array_slice($threads, ($current_page - 1) * 10, 10);
+
+        $threads_to_show = new LengthAwarePaginator($current_page_threads, count(collect($threads)), 10);
 
         if(count($threads) > 0){
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'All threads succesfully displayed!','data'=> $threads]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'All threads succesfully displayed!','data'=> $threads_to_show]), 200);
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'No posts found!','data'=> '']), 404);
