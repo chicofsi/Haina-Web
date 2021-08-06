@@ -1485,12 +1485,12 @@ class ForumController extends Controller
                 array_push($submodlist, $subforums_submod);
 
             }
-
+        }
         $role->mod_list = $modlist;
         $role->submod_list = $submodlist;
         
         return(response()->json(new ValueMessage(['value'=>1,'message'=>'Get Mod Role Success!','data'=> $role]), 200));
-        }
+        
 
     }
 
