@@ -1521,7 +1521,7 @@ class ForumController extends Controller
 
         if($checkban){
             foreach($checkban as $key => $value){
-                $subforum = Subforum::where('id', $checkban->subforum_id)->first();
+                $subforum = Subforum::where('id', $value->subforum_id)->first();
 
                 $creator_count = [];
                 $check_followed = SubforumFollowers::where('subforum_id', $subforum['id'])->where('user_id', Auth::id())->first();
