@@ -976,24 +976,66 @@ class ForumController extends Controller
                 foreach($following as $key => $value){
                     $subforum = Subforum::where('id',$value->subforum_id)->first();
 
-                    $check_followed = SubforumFollowers::where('subforum_id', $value->id)->where('user_id', Auth::id)->first();
+                    $creator_count = [];
+
+                    $category_name = ForumCategory::where('id', $subforum['category_id'])->first();
+
+                    $subforum['category'] = $category_name['name'];
+                    $subforum['category_zh'] = $category_name['name_zh'];
+                    $subforum['role'] = "mod";
+
+                    $post = ForumPost::where('subforum_id', $subforum['id'])->get();
+                    foreach($post as $keypost => $valuepost){
+                        array_push($creator_count, $valuepost->user_id);
+                    }
+
+                    $check_followed = SubforumFollowers::where('subforum_id', $subforum['id'])->where('user_id', Auth::id())->first();
                     if($check_followed){
-                        $followed = true;
+                        $subforum['followed'] = true;
                     }
                     else{
-                        $followed = false;
+                        $subforum['followed'] = false;
                     }
 
-                    $user_list = [
-                        'subforum_id' => $subforum['id'],
-                        'name' => $subforum['name'],
-                        'description' => $subforum['description'],
-                        'image' => $subforum['subforum_image'],
-                        'creator_id' => $subforum['creator_id'],
-                        'followed_by_me' => $followed
-                    ];
+                    $total_poster = array_unique($creator_count);
+                    $subforum['total_poster'] = count($total_poster);
 
-                    array_push($list_follow, $user_list);
+                    foreach($subforum['posts'] as $keypost => $valuepost){
+                        $author = User::where('id', $valuepost->user_id)->first();
+
+                        $likes = count(ForumUpvote::where('post_id', $valuepost->id)->get());
+
+                        $check_comment = ForumComment::where('post_id', $valuepost->id)->orderBy('created_at', 'desc')->first();
+            
+                        $author = User::where('id', $valuepost->user_id)->first();
+            
+                        $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+            
+                        $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
+                        $subforum_following = SubforumFollowers::where('user_id', $valuepost->user_id)->where('subforum_id', $valuepost->subforum_id)->first();
+            
+                        $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
+
+                        $subforum_data['category'] = $category_name['name'];
+                        $subforum_data['category_zh'] = $category_name['name_zh'];
+
+                        if($subforum_following){
+                            $follow_subforum = true;
+                        }
+                        else{
+                            $follow_subforum = false;
+                        }
+                        $valuepost->author = $author['username'];
+                        $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
+                        $valuepost->member_since = date("F Y", strtotime($author['created_at']));
+                        $valuepost->likes = $likes;
+                        $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
+                        $valuepost->subforum_follow = $follow_subforum;
+                        $valuepost->subforum_data = $subforum_data;
+                        $valuepost->author_data = $author;
+                    }
+
+                    array_push($list_follow, $subforum);
                 }
 
                 if(count($list_follow) == 0){
@@ -1380,12 +1422,12 @@ class ForumController extends Controller
                     array_push($creator_count, $valuepost->user_id);
                 }
 
-                $check_followed = SubforumFollowers::where('subforum_id', $subforum['id'])->where('user_id', Auth::id())->first();
+                $check_followed = SubforumFollowers::where('subforum_id', $subforums['id'])->where('user_id', Auth::id())->first();
                 if($check_followed){
-                    $subforum['followed'] = true;
+                    $subforums['followed'] = true;
                 }
                 else{
-                    $subforum['followed'] = false;
+                    $subforums['followed'] = false;
                 }
 
                 $total_poster = array_unique($creator_count);
