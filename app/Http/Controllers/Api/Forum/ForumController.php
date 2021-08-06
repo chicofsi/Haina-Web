@@ -1080,6 +1080,88 @@ class ForumController extends Controller
         }
     }
 
+    public function showAllThreads(Request $request){
+
+        $list_post = ForumPost::with('comments', 'images', 'videos')->get();
+        $hot_threads = [];
+        $threads = [];
+
+        foreach($list_post as $key => $value){
+            $likes = count(ForumUpvote::where('post_id', $value->id)->get());
+
+            $check_comment = ForumComment::where('post_id', $value->id)->orderBy('created_at', 'desc')->first();
+
+            $author = User::where('id', $value->user_id)->first();
+
+            $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
+
+            if($check_upvote){
+                $upvote = false;
+            }
+            else{
+                $upvote = true;
+            }
+            
+            $subforum_data = Subforum::where('id', $value->subforum_id)->first();
+            $subforum_following = SubforumFollowers::where('user_id', $request->user_id)->where('subforum_id', $value->subforum_id)->first();
+
+            $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
+
+            $subforum_data['category'] = $category_name['name'];
+            $subforum_data['category_zh'] = $category_name['name_zh'];
+
+            if($subforum_following){
+                $follow_subforum = true;
+            }
+            else{
+                $follow_subforum = false;
+            }
+
+            $prelist = [
+                'id' => $value->id,
+                'title' => $value->title,
+                'author' => $author['username'],
+                'user_id' => $author['id'],
+                'author_photo' => "https://hainaservice.com/storage/".$author['photo'],
+                'member_since' => date("F Y", strtotime($author['created_at'])),
+                'like_count' => $likes,
+                'comment_count' => count(ForumComment::where('post_id', $value->id)->get()),
+                'view_count' => $value->view_count,
+                'share_count' => $value->share_count,
+                'created' => $value->created_at,
+                'content' => $value->content,
+                'images' => $value->images,
+                'videos' => $value->videos,
+                'subforum_follow' => $follow_subforum,
+                'subforum_data' => $subforum_data,
+                'author_data' => $author
+            ];
+
+            if($prelist['user_id'] != Auth::id()){
+                $prelist['upvoted'] = $upvote;
+            }
+
+            $list = (object) $prelist;
+
+            array_push($threads, $list);
+
+        }
+
+        $created = array_column($threads, 'created');
+        $title = array_column($threads, 'title');
+
+        array_multisort($created, SORT_DESC, $title, SORT_DESC, $threads);
+        //dd($threads);
+
+        if(count($threads) > 0){
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'All threads succesfully displayed!','data'=> $hot_threads]), 200);
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'No posts found!','data'=> '']), 404);
+        }
+    }
+
     public function showHotThreads(Request $request){
 
         $list_post = ForumPost::with('comments', 'images', 'videos')->get();
