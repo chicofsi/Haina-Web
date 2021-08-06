@@ -1541,6 +1541,8 @@ class ForumController extends Controller
                 $total_poster = array_unique($creator_count);
                 $subforum['total_poster'] = count($total_poster);
 
+                $subforum['ban_reason'] = $value->reason;
+
                 if($check_followed){
                     $subforum['followed'] = true;
                 }
@@ -1548,7 +1550,7 @@ class ForumController extends Controller
                     $subforum['followed'] = false;
                 }
 
-                foreach($value->posts as $keypost => $valuepost){
+                foreach($subforum['posts'] as $keypost => $valuepost){
                     $author = User::where('id', $valuepost->user_id)->first();
 
                     $likes = count(ForumUpvote::where('post_id', $valuepost->id)->get());
