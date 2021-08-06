@@ -229,6 +229,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/user_profile', [ForumController::class, 'showProfile']);
 		Route::post('/search', [ForumController::class, 'search']);
 		Route::post('/share', [ForumController::class, 'sharePost']);
+		Route::get('/my_role', [ForumController::class, 'myRoles']);
 	});
 	
 });
