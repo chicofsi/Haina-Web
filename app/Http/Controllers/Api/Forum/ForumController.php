@@ -404,7 +404,7 @@ class ForumController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No threads found!','data'=> '']), 404);
             }
             else{
-                //$object = new stdClass;
+                //$object = new \stdClass();
                 //$threads->followed = SubforumFollower
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Threads displayed successfully!','data'=> $threads]), 200);
@@ -1356,7 +1356,7 @@ class ForumController extends Controller
 
         $checksubmod = ForumMod::where('user_id', Auth::id())->where('role', 'submod')->get();
 
-        $role = new stdClass;
+        $role = new \stdClass();
         $modlist = [];
         $submodlist = [];
 
