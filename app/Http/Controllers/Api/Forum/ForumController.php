@@ -1352,9 +1352,9 @@ class ForumController extends Controller
     }
 
     public function myRoles(){
-        $checkmod = ForumMod::where('user_id', Auth::id())->where(role, 'mod')->get();
+        $checkmod = ForumMod::where('user_id', Auth::id())->where('role', 'mod')->get();
 
-        $checksubmod = ForumMod::where('user_id', Auth::id())->where(role, 'submod')->get();
+        $checksubmod = ForumMod::where('user_id', Auth::id())->where('role', 'submod')->get();
 
         $role = new stdClass;
         $modlist = [];
