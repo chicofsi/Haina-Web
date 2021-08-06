@@ -1364,71 +1364,134 @@ class ForumController extends Controller
             //rolegw
             $subforums = Subforum::where('id', $value->subforum_id)->with('posts')->first();
 
-            $creator_count = [];
+            if($subforums){
+                $creator_count = [];
 
-            $value->total_post = count(ForumPost::where('subforum_id', $subforums['id'])->get());
+                $value->total_post = count(ForumPost::where('subforum_id', $subforums['id'])->get());
 
-            $category_name = ForumCategory::where('id', $subforums['category_id'])->first();
+                $category_name = ForumCategory::where('id', $subforums['category_id'])->first();
 
-            $subforums['category'] = $category_name['name'];
-            $subforums['category_zh'] = $category_name['name_zh'];
+                $subforums['category'] = $category_name['name'];
+                $subforums['category_zh'] = $category_name['name_zh'];
+                $subforums['role'] = "mod";
 
-            $post = ForumPost::where('subforum_id', $subforums['id'])->get();
-            foreach($post as $keypost => $valuepost){
-                array_push($creator_count, $valuepost->user_id);
-            }
-
-            $total_poster = array_unique($creator_count);
-            $subforums['total_poster'] = count($total_poster);
-
-            foreach($subforums['posts'] as $keypost => $valuepost){
-                $author = User::where('id', $valuepost->user_id)->first();
-
-                $likes = count(ForumUpvote::where('post_id', $valuepost->id)->get());
-
-                $check_comment = ForumComment::where('post_id', $valuepost->id)->orderBy('created_at', 'desc')->first();
-    
-                $author = User::where('id', $valuepost->user_id)->first();
-    
-                $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
-    
-                $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
-                $subforum_following = SubforumFollowers::where('user_id', $valuepost->user_id)->where('subforum_id', $valuepost->subforum_id)->first();
-    
-                $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
-
-                $subforum_data['category'] = $category_name['name'];
-                $subforum_data['category_zh'] = $category_name['name_zh'];
-
-                if($subforum_following){
-                    $follow_subforum = true;
+                $post = ForumPost::where('subforum_id', $subforums['id'])->get();
+                foreach($post as $keypost => $valuepost){
+                    array_push($creator_count, $valuepost->user_id);
                 }
-                else{
-                    $follow_subforum = false;
-                }
-                $valuepost->author = $author['username'];
-                $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
-                $valuepost->member_since = date("F Y", strtotime($author['created_at']));
-                $valuepost->likes = $likes;
-                $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
-                $valuepost->subforum_follow = $follow_subforum;
-                $valuepost->subforum_data = $subforum_data;
-                $valuepost->author_data = $author;
-            }
 
-            array_push($modlist, $subforums);
+                $total_poster = array_unique($creator_count);
+                $subforums['total_poster'] = count($total_poster);
+
+                foreach($subforums['posts'] as $keypost => $valuepost){
+                    $author = User::where('id', $valuepost->user_id)->first();
+
+                    $likes = count(ForumUpvote::where('post_id', $valuepost->id)->get());
+
+                    $check_comment = ForumComment::where('post_id', $valuepost->id)->orderBy('created_at', 'desc')->first();
+        
+                    $author = User::where('id', $valuepost->user_id)->first();
+        
+                    $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+        
+                    $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
+                    $subforum_following = SubforumFollowers::where('user_id', $valuepost->user_id)->where('subforum_id', $valuepost->subforum_id)->first();
+        
+                    $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
+
+                    $subforum_data['category'] = $category_name['name'];
+                    $subforum_data['category_zh'] = $category_name['name_zh'];
+
+                    if($subforum_following){
+                        $follow_subforum = true;
+                    }
+                    else{
+                        $follow_subforum = false;
+                    }
+                    $valuepost->author = $author['username'];
+                    $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
+                    $valuepost->member_since = date("F Y", strtotime($author['created_at']));
+                    $valuepost->likes = $likes;
+                    $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
+                    $valuepost->subforum_follow = $follow_subforum;
+                    $valuepost->subforum_data = $subforum_data;
+                    $valuepost->author_data = $author;
+                }
+
+                array_push($modlist, $subforums);
+            }
+            
         }
     
 
         foreach($checksubmod as $key => $value){
             $subforums_submod = Subforum::where('id', $value->subforum_id)->with('posts')->get();
 
-        }
+            if($subforums_submod){
 
-        $role->tes = "tes";
+                $creator_count = [];
+
+                $value->total_post = count(ForumPost::where('subforum_id', $subforums_submod['id'])->get());
+
+                $category_name = ForumCategory::where('id', $subforums_submod['category_id'])->first();
+
+                $subforums_submod['category'] = $category_name['name'];
+                $subforums_submod['category_zh'] = $category_name['name_zh'];
+                $subforums_submod['role'] = "mod";
+
+                $post = ForumPost::where('subforum_id', $subforums_submod['id'])->get();
+                foreach($post as $keypost => $valuepost){
+                    array_push($creator_count, $valuepost->user_id);
+                }
+
+                $total_poster = array_unique($creator_count);
+                $subforums_submod['total_poster'] = count($total_poster);
+
+                foreach($subforums_submod['posts'] as $keypost => $valuepost){
+                    $author = User::where('id', $valuepost->user_id)->first();
+
+                    $likes = count(ForumUpvote::where('post_id', $valuepost->id)->get());
+
+                    $check_comment = ForumComment::where('post_id', $valuepost->id)->orderBy('created_at', 'desc')->first();
+        
+                    $author = User::where('id', $valuepost->user_id)->first();
+        
+                    $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+        
+                    $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
+                    $subforum_following = SubforumFollowers::where('user_id', $valuepost->user_id)->where('subforum_id', $valuepost->subforum_id)->first();
+        
+                    $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
+
+                    $subforum_data['category'] = $category_name['name'];
+                    $subforum_data['category_zh'] = $category_name['name_zh'];
+
+                    if($subforum_following){
+                        $follow_subforum = true;
+                    }
+                    else{
+                        $follow_subforum = false;
+                    }
+                    $valuepost->author = $author['username'];
+                    $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
+                    $valuepost->member_since = date("F Y", strtotime($author['created_at']));
+                    $valuepost->likes = $likes;
+                    $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
+                    $valuepost->subforum_follow = $follow_subforum;
+                    $valuepost->subforum_data = $subforum_data;
+                    $valuepost->author_data = $author;
+                }
+
+                array_push($submodlist, $subforums_submod);
+
+            }
+
         $role->mod_list = $modlist;
+        $role->submod_list = $submodlist;
         
         return(response()->json(new ValueMessage(['value'=>1,'message'=>'Get Mod Role Success!','data'=> $role]), 200));
+        }
+
     }
 
     public function assignMod(Request $request){
