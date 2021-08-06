@@ -1380,6 +1380,14 @@ class ForumController extends Controller
                     array_push($creator_count, $valuepost->user_id);
                 }
 
+                $check_followed = SubforumFollowers::where('subforum_id', $subforum['id'])->where('user_id', Auth::id())->first();
+                if($check_followed){
+                    $subforum['followed'] = true;
+                }
+                else{
+                    $subforum['followed'] = false;
+                }
+
                 $total_poster = array_unique($creator_count);
                 $subforums['total_poster'] = count($total_poster);
 
@@ -1444,6 +1452,14 @@ class ForumController extends Controller
                     array_push($creator_count, $valuepost->user_id);
                 }
 
+                $check_followed = SubforumFollowers::where('subforum_id', $subforum['id'])->where('user_id', Auth::id())->first();
+                if($check_followed){
+                    $subforum['followed'] = true;
+                }
+                else{
+                    $subforum['followed'] = false;
+                }
+
                 $total_poster = array_unique($creator_count);
                 $subforums_submod['total_poster'] = count($total_poster);
 
@@ -1488,10 +1504,93 @@ class ForumController extends Controller
         }
         $role->mod_list = $modlist;
         $role->submod_list = $submodlist;
-        
-        return(response()->json(new ValueMessage(['value'=>1,'message'=>'Get Mod Role Success!','data'=> $role]), 200));
-        
 
+        if(count($modlist) == 0 &&  count($submodlist) == 0){
+            return(response()->json(new ValueMessage(['value'=>0,'message'=>'No Mod Role!','data'=> '']), 404));
+        }
+        else{
+            return(response()->json(new ValueMessage(['value'=>1,'message'=>'Get Mod Role Success!','data'=> $role]), 200));
+        }
+
+    }
+
+    public function myBans(){
+        $checkban = ForumBan::where('user_id', Auth::id())->get();
+
+        $banlist = [];
+
+        if($checkban){
+            foreach($checkban as $key => $value){
+                $subforum = Subforum::where('id', $checkban->subforum_id)->first();
+
+                $creator_count = [];
+                $check_followed = SubforumFollowers::where('subforum_id', $subforum['id'])->where('user_id', Auth::id())->first();
+
+                $value->total_post = count(ForumPost::where('subforum_id', $subforum['id'])->get());
+
+                $category_name = ForumCategory::where('id', $subforum['category_id'])->first();
+
+                $subforum['category'] = $category_name['name'];
+                $subforum['category_zh'] = $category_name['name_zh'];
+
+                $post = ForumPost::where('subforum_id', $subforum['id'])->get();
+                foreach($post as $keypost => $valuepost){
+                    array_push($creator_count, $valuepost->user_id);
+                }
+
+                $total_poster = array_unique($creator_count);
+                $subforum['total_poster'] = count($total_poster);
+
+                if($check_followed){
+                    $subforum['followed'] = true;
+                }
+                else{
+                    $subforum['followed'] = false;
+                }
+
+                foreach($value->posts as $keypost => $valuepost){
+                    $author = User::where('id', $valuepost->user_id)->first();
+
+                    $likes = count(ForumUpvote::where('post_id', $valuepost->id)->get());
+
+                    $check_comment = ForumComment::where('post_id', $valuepost->id)->orderBy('created_at', 'desc')->first();
+        
+                    $author = User::where('id', $valuepost->user_id)->first();
+        
+                    $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+        
+                    $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
+                    $subforum_following = SubforumFollowers::where('user_id', $valuepost->user_id)->where('subforum_id', $valuepost->subforum_id)->first();
+
+                    $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
+
+                    $subforum_data['category'] = $category_name['name'];
+                    $subforum_data['category_zh'] = $category_name['name_zh'];
+        
+                    if($subforum_following){
+                        $follow_subforum = true;
+                    }
+                    else{
+                        $follow_subforum = false;
+                    }
+                    $valuepost->author = $author['username'];
+                    $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
+                    $valuepost->member_since = date("F Y", strtotime($author['created_at']));
+                    $valuepost->likes = $likes;
+                    $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
+                    $valuepost->subforum_follow = $follow_subforum;
+                    $valuepost->subforum_data = $subforum_data;
+                    $valuepost->author_data = $author;
+                }
+
+                array_push($banlist, $subforum);
+            }
+
+            return(response()->json(new ValueMessage(['value'=>1,'message'=>'Get Ban List Success!','data'=> $banlist]), 200));
+        }
+        else{
+            return(response()->json(new ValueMessage(['value'=>0,'message'=>'No Bans!','data'=> '']), 404));
+        }
     }
 
     public function assignMod(Request $request){
