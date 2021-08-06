@@ -1153,6 +1153,8 @@ class ForumController extends Controller
         array_multisort($created, SORT_DESC, $title, SORT_DESC, $threads);
         //dd($threads);
 
+        $threads = $threads->paginate(10);
+
         if(count($threads) > 0){
 
             return response()->json(new ValueMessage(['value'=>1,'message'=>'All threads succesfully displayed!','data'=> $threads]), 200);
