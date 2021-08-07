@@ -504,11 +504,14 @@ class ForumController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'You have created the same topic in the subforum!','data'=> '']), 401);
             }
             else{
+                $title = str_replace('"', "", $request->title);
+                $content = str_replace('"', "", $request->content);
+
                 $post = [
                     'user_id' => Auth::id(),
                     'subforum_id' => $request->subforum_id,
-                    'title' => $request->title,
-                    'content' => $request->content
+                    'title' => $title,
+                    'content' => $content
                 ];
 
                 $new_post = ForumPost::create($post);
@@ -1291,7 +1294,7 @@ class ForumController extends Controller
 
         $threads = array_slice($threads, $starting_point, $per_page, true);
 
-        //$threads = new Paginator($threads, $total, $per_page, $current_page, []);
+        $threads = new Paginator($threads, $total, $per_page, $current_page, []);
 
         /*
         //length aware
