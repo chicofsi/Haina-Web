@@ -1299,7 +1299,7 @@ class ForumController extends Controller
             
 
             $subforum_data = Subforum::where('id', $value->subforum_id)->first();
-            $subforum_following = SubforumFollowers::where('user_id', $value->user_id)->where('subforum_id', $value->subforum_id)->first();
+            $subforum_following = SubforumFollowers::where('user_id', Auth::id())->where('subforum_id', $value->subforum_id)->first();
             
             $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
