@@ -164,6 +164,8 @@ class ForumController extends Controller
                         else{
                             $follow_subforum = false;
                         }
+
+                        
                         $valuepost->author = $author['username'];
                         $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                         $valuepost->member_since = date("F Y", strtotime($author['created_at']));
@@ -284,6 +286,17 @@ class ForumController extends Controller
                         else{
                             $follow_subforum = false;
                         }
+
+                        if(!$check_upvote){
+                            $upvote = false;
+                        }
+                        else{
+                            $upvote = true;
+                        }
+                        if($valuepost->user_id != Auth::id()){
+                            $valuepost->upvoted = $upvote;
+                        }
+
                         $valuepost->author = $author['username'];
                         $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                         $valuepost->member_since = date("F Y", strtotime($author['created_at']));
@@ -382,7 +395,7 @@ class ForumController extends Controller
                     'author_data' => $author,
                     'last_update' => $lastpost
                 ];
-
+                
                 if($prelist['user_id'] != Auth::id()){
                     $prelist['upvoted'] = $upvote;
                 }
@@ -987,6 +1000,17 @@ class ForumController extends Controller
                     else{
                         $follow_subforum = false;
                     }
+
+                    if(!$check_upvote){
+                        $upvote = false;
+                    }
+                    else{
+                        $upvote = true;
+                    }
+                    if($valuepost->user_id != Auth::id()){
+                        $valuepost->upvoted = $upvote;
+                    }
+
                     $valuepost->author = $author['username'];
                     $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                     $valuepost->member_since = date("F Y", strtotime($author['created_at']));
@@ -1076,6 +1100,17 @@ class ForumController extends Controller
                         else{
                             $follow_subforum = false;
                         }
+
+                        if(!$check_upvote){
+                            $upvote = false;
+                        }
+                        else{
+                            $upvote = true;
+                        }
+                        if($valuepost->user_id != Auth::id()){
+                            $valuepost->upvoted = $upvote;
+                        }
+
                         $valuepost->author = $author['username'];
                         $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                         $valuepost->member_since = date("F Y", strtotime($author['created_at']));
@@ -1509,6 +1544,16 @@ class ForumController extends Controller
                     else{
                         $follow_subforum = false;
                     }
+                    if(!$check_upvote){
+                        $upvote = false;
+                    }
+                    else{
+                        $upvote = true;
+                    }
+                    if($valuepost->user_id != Auth::id()){
+                        $valuepost->upvoted = $upvote;
+                    }
+
                     $valuepost->author = $author['username'];
                     $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                     $valuepost->member_since = date("F Y", strtotime($author['created_at']));
@@ -1552,6 +1597,7 @@ class ForumController extends Controller
                 else{
                     $subforum['followed'] = false;
                 }
+                
 
                 $total_poster = array_unique($creator_count);
                 $subforums_submod['total_poster'] = count($total_poster);
@@ -1580,6 +1626,15 @@ class ForumController extends Controller
                     }
                     else{
                         $follow_subforum = false;
+                    }
+                    if(!$check_upvote){
+                        $upvote = false;
+                    }
+                    else{
+                        $upvote = true;
+                    }
+                    if($valuepost->user_id != Auth::id()){
+                        $valuepost->upvoted = $upvote;
                     }
                     $valuepost->author = $author['username'];
                     $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
@@ -1667,6 +1722,15 @@ class ForumController extends Controller
                     }
                     else{
                         $follow_subforum = false;
+                    }
+                    if(!$check_upvote){
+                        $upvote = false;
+                    }
+                    else{
+                        $upvote = true;
+                    }
+                    if($valuepost->user_id != Auth::id()){
+                        $valuepost->upvoted = $upvote;
                     }
                     $valuepost->author = $author['username'];
                     $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
