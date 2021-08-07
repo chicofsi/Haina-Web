@@ -1225,7 +1225,7 @@ class ForumController extends Controller
 
             $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
 
-            if($check_upvote){
+            if(!$check_upvote){
                 $upvote = false;
             }
             else{
