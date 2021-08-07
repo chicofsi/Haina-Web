@@ -1283,14 +1283,26 @@ class ForumController extends Controller
         array_multisort($created, SORT_DESC, $title, SORT_DESC, $threads);
         //dd($threads);
 
+        $total = count($threads);
+        $per_page = 10;
+        $current_page = $request->page ?? 1;
+
+        $starting_point = ($current_page * $per_page) - $per_page;
+
+        $threads = array_slice($threads, $starting_point, $per_page, true);
+
+        $threads = new Paginator($threads, $total, $per_page, $current_page);
+
+        /*
+        //length aware
         $current_page = LengthAwarePaginator::resolveCurrentPage();
         $current_page_threads = array_slice($threads, ($current_page - 1) * 10, 10);
 
         $threads_to_show = new LengthAwarePaginator($current_page_threads, count(collect($threads)), 10);
-
+        */
         if(count($threads) > 0){
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'All threads succesfully displayed!','data'=> $threads_to_show]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'All threads succesfully displayed!','data'=> $threads]), 200);
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'No posts found!','data'=> '']), 404);
