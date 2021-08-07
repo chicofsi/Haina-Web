@@ -1300,13 +1300,13 @@ class ForumController extends Controller
 
             $subforum_data = Subforum::where('id', $value->subforum_id)->first();
             $subforum_following = SubforumFollowers::where('user_id', $value->user_id)->where('subforum_id', $value->subforum_id)->first();
-            return($subforum_following);
+            
             $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
             $subforum_data['category'] = $category_name['name'];
             $subforum_data['category_zh'] = $category_name['name_zh'];
 
-            if($subforum_following){
+            if($subforum_following != null){
                 $follow_subforum = true;
             }
             else{
