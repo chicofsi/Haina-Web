@@ -1343,10 +1343,10 @@ class ForumController extends Controller
 
         }
 
-        $like = array_column($threads, 'like_count');
-        $comment = array_column($threads, 'comment_count');
+        //$like = array_column($threads, 'like_count');
+        //$comment = array_column($threads, 'comment_count');
 
-        array_multisort($like, SORT_DESC, $comment, SORT_DESC, $threads);
+        //array_multisort($like, SORT_DESC, $comment, SORT_DESC, $threads);
         //dd($threads);
         $hot_threads = array_slice($threads, 0, 5);
 
