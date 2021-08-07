@@ -1299,7 +1299,7 @@ class ForumController extends Controller
             
 
             $subforum_data = Subforum::where('id', $value->subforum_id)->first();
-            $subforum_following = SubforumFollowers::where('user_id', $request->user_id)->where('subforum_id', $value->subforum_id)->first();
+            $subforum_following = SubforumFollowers::where('user_id', $value->user_id)->where('subforum_id', $value->subforum_id)->first();
             
             $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
@@ -1339,20 +1339,20 @@ class ForumController extends Controller
 
             $list = (object) $prelist;
 
-            array_push($threads, $subforum_following);
+            array_push($threads, $list);
 
         }
 
-        //$like = array_column($threads, 'like_count');
-        //$comment = array_column($threads, 'comment_count');
+        $like = array_column($threads, 'like_count');
+        $comment = array_column($threads, 'comment_count');
 
-        //array_multisort($like, SORT_DESC, $comment, SORT_DESC, $threads);
+        array_multisort($like, SORT_DESC, $comment, SORT_DESC, $threads);
         //dd($threads);
         $hot_threads = array_slice($threads, 0, 5);
 
         if(count($hot_threads) > 0){
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Hot threads succesfully displayed!','data'=> $threads]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Hot threads succesfully displayed!','data'=> $hot_threads]), 200);
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'No posts found!','data'=> '']), 404);
