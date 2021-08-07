@@ -151,7 +151,7 @@ class ForumController extends Controller
                         $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
             
                         $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
-                        $subforum_following = SubforumFollowers::where('user_id', $valuepost->user_id)->where('subforum_id', $valuepost->subforum_id)->first();
+                        $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
             
                         $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
@@ -197,7 +197,7 @@ class ForumController extends Controller
                 $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
     
                 $subforum_data = Subforum::where('id', $value->subforum_id)->first();
-                $subforum_following = SubforumFollowers::where('user_id', $value->user_id)->where('subforum_id', $value->subforum_id)->first();
+                $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', Auth::id())->first();
 
                 $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
@@ -271,7 +271,7 @@ class ForumController extends Controller
                         $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
             
                         $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
-                        $subforum_following = SubforumFollowers::where('user_id', $valuepost->user_id)->where('subforum_id', $valuepost->subforum_id)->first();
+                        $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
 
                         $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
@@ -338,7 +338,7 @@ class ForumController extends Controller
                 }
 
                 $subforum_data = Subforum::where('id', $value->subforum_id)->first();
-                $subforum_following = SubforumFollowers::where('user_id', $request->user_id)->where('subforum_id', $value->subforum_id)->first();
+                $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', Auth::id())->first();
     
                 $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
     
@@ -974,7 +974,7 @@ class ForumController extends Controller
                     $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
         
                     $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
-                    $subforum_following = SubforumFollowers::where('user_id', $valuepost->user_id)->where('subforum_id', $valuepost->subforum_id)->first();
+                    $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
         
                     $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
@@ -1063,7 +1063,7 @@ class ForumController extends Controller
                         $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
             
                         $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
-                        $subforum_following = SubforumFollowers::where('user_id', $valuepost->user_id)->where('subforum_id', $valuepost->subforum_id)->first();
+                        $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
             
                         $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
@@ -1198,7 +1198,7 @@ class ForumController extends Controller
             }
             
             $subforum_data = Subforum::where('id', $value->subforum_id)->first();
-            $subforum_following = SubforumFollowers::where('user_id', $request->user_id)->where('subforum_id', $value->subforum_id)->first();
+            $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', Auth::id())->first();
 
             $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
@@ -1496,7 +1496,7 @@ class ForumController extends Controller
                     $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
         
                     $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
-                    $subforum_following = SubforumFollowers::where('user_id', $valuepost->user_id)->where('subforum_id', $valuepost->subforum_id)->first();
+                    $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
         
                     $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
@@ -1568,7 +1568,7 @@ class ForumController extends Controller
                     $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
         
                     $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
-                    $subforum_following = SubforumFollowers::where('user_id', $valuepost->user_id)->where('subforum_id', $valuepost->subforum_id)->first();
+                    $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
         
                     $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
@@ -1655,7 +1655,7 @@ class ForumController extends Controller
                     $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
         
                     $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
-                    $subforum_following = SubforumFollowers::where('user_id', $valuepost->user_id)->where('subforum_id', $valuepost->subforum_id)->first();
+                    $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
 
                     $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
