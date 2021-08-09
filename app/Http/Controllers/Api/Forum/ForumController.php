@@ -1328,7 +1328,7 @@ class ForumController extends Controller
         array_multisort($created, SORT_DESC, $title, SORT_DESC, $threads);
         //dd($threads);
 
-        $total = count(collect($threads));
+        $total = count($threads);
         $per_page = 10;
         $current_page = $request->page ?? 1;
 
@@ -1350,7 +1350,7 @@ class ForumController extends Controller
         */
         if(count($threads) > 0){
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'All threads succesfully displayed!','data'=> $threads]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'All threads succesfully displayed!','data'=> $total]), 200);
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'No posts found!','data'=> '']), 404);
