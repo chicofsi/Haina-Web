@@ -212,8 +212,8 @@ class ForumController extends Controller
                 $subforum_data['category'] = $category_name['name'];
                 $subforum_data['category_zh'] = $category_name['name_zh'];
 
-                $subforum_followers_count = count(SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->get());
-                $subforum_post_count = count(ForumPost::where('subforum_id', $valuepost->subforum_id)->get());
+                $subforum_followers_count = count(SubforumFollowers::where('subforum_id', $value->subforum_id)->get());
+                $subforum_post_count = count(ForumPost::where('subforum_id', $value->subforum_id)->get());
 
                 $subforum_data['subforum_followers'] = $subforum_followers_count;
                 $subforum_data['post_count'] = $subforum_post_count;
