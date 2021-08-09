@@ -1336,7 +1336,7 @@ class ForumController extends Controller
 
         $threads = array_slice($threads, $starting_point, $per_page, true);
 
-        $threads = new Paginator($threads, $total, $per_page, $current_page, [
+        $threads = new LengthAwarePaginator($threads, $total, $per_page, $current_page, [
             'path' => 'http://testgit.hainaservice.com/api/forum/all_post',
             'query' => '',
         ]);
