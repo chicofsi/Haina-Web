@@ -1385,7 +1385,10 @@ class ForumController extends Controller
 
         $starting_point = ($current_page * $per_page) - $per_page;
 
-        $result = $threads->offset(($current_page - 1) * $per_page)->limit($per_page)->get();
+        //$result = $threads->offset(($current_page - 1) * $per_page)->limit($per_page)->get();
+
+        $threads = array_slice($threads, $starting_point, $per_page);
+
         
         /*
         //custom length
@@ -1407,7 +1410,7 @@ class ForumController extends Controller
         */
         if(count($threads) > 0){
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'All threads succesfully displayed!','data'=> $result]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'All threads succesfully displayed!','data'=> $threads]), 200);
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'No posts found!','data'=> '']), 404);
