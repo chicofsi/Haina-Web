@@ -192,7 +192,7 @@ class ForumController extends Controller
                         $valuepost->author = $author['username'];
                         $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                         $valuepost->member_since = date("F Y", strtotime($author['created_at']));
-                        $valuepost->likes = $likes;
+                        $valuepost->like_count = $likes;
                         $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
                         $valuepost->subforum_follow = $follow_subforum;
                         $valuepost->subforum_data = $subforum_data;
@@ -245,7 +245,7 @@ class ForumController extends Controller
                 $value->author = $author['username'];
                 $value->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                 $value->member_since = date("F Y", strtotime($author['created_at']));
-                $value->likes = $likes;
+                $value->like_count = $likes;
                 $value->comment_count = count(ForumComment::where('post_id', $value->id)->get());
                 $value->subforum_follow = $follow_subforum;
                 $value->subforum_data = $subforum_data;
@@ -347,7 +347,7 @@ class ForumController extends Controller
                         $valuepost->author = $author['username'];
                         $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                         $valuepost->member_since = date("F Y", strtotime($author['created_at']));
-                        $valuepost->likes = $likes;
+                        $valuepost->like_count = $likes;
                         $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
                         $valuepost->subforum_follow = $follow_subforum;
                         $valuepost->subforum_data = $subforum_data;
@@ -1087,7 +1087,7 @@ class ForumController extends Controller
                     $valuepost->author = $author['username'];
                     $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                     $valuepost->member_since = date("F Y", strtotime($author['created_at']));
-                    $valuepost->likes = $likes;
+                    $valuepost->like_count = $likes;
                     $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
                     $valuepost->subforum_follow = $follow_subforum;
                     $valuepost->subforum_data = $subforum_data;
@@ -1204,7 +1204,7 @@ class ForumController extends Controller
                         $valuepost->author = $author['username'];
                         $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                         $valuepost->member_since = date("F Y", strtotime($author['created_at']));
-                        $valuepost->likes = $likes;
+                        $valuepost->like_count = $likes;
                         $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
                         $valuepost->subforum_follow = $follow_subforum;
                         $valuepost->subforum_data = $subforum_data;
@@ -1706,7 +1706,7 @@ class ForumController extends Controller
                     $valuepost->author = $author['username'];
                     $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                     $valuepost->member_since = date("F Y", strtotime($author['created_at']));
-                    $valuepost->likes = $likes;
+                    $valuepost->like_count = $likes;
                     $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
                     $valuepost->subforum_follow = $follow_subforum;
                     $valuepost->subforum_data = $subforum_data;
@@ -1794,7 +1794,7 @@ class ForumController extends Controller
                     $valuepost->author = $author['username'];
                     $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                     $valuepost->member_since = date("F Y", strtotime($author['created_at']));
-                    $valuepost->likes = $likes;
+                    $valuepost->like_count = $likes;
                     $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
                     $valuepost->subforum_follow = $follow_subforum;
                     $valuepost->subforum_data = $subforum_data;
@@ -1896,7 +1896,7 @@ class ForumController extends Controller
                     $valuepost->author = $author['username'];
                     $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                     $valuepost->member_since = date("F Y", strtotime($author['created_at']));
-                    $valuepost->likes = $likes;
+                    $valuepost->like_count = $likes;
                     $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
                     $valuepost->subforum_follow = $follow_subforum;
                     $valuepost->subforum_data = $subforum_data;
