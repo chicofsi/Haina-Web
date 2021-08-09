@@ -1385,12 +1385,18 @@ class ForumController extends Controller
 
         $starting_point = ($current_page * $per_page) - $per_page;
 
-        $threads = array_slice($threads, $starting_point, $per_page, true);
+        $result = $threads->offset(($current_page - 1) * $per_page)->limit($per_page)->get();
+        
+        /*
+        //custom length
+        //$threads = array_slice($threads, $starting_point, $per_page, true);
 
         $all_threads = new LengthAwarePaginator($threads, $total, $per_page, $current_page, [
             'path' => 'http://testgit.hainaservice.com/api/forum/all_post',
             'query' => ''
         ]);
+        */
+        
 
         /*
         //length aware
@@ -1401,7 +1407,7 @@ class ForumController extends Controller
         */
         if(count($threads) > 0){
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'All threads succesfully displayed!','data'=> $all_threads]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'All threads succesfully displayed!','data'=> $result]), 200);
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'No posts found!','data'=> '']), 404);
