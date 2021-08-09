@@ -173,7 +173,7 @@ class ForumController extends Controller
 
                         $images = ForumImage::where('post_id', $valuepost->id)->get();
                         $videos = ForumVideo::where('post_id', $valuepost->id)->get();
-                        $upvoted = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->get();
+                        $upvoted = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
 
                         if($images){
                             $valuepost->images = $images;
