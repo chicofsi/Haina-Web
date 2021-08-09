@@ -241,6 +241,7 @@ class ForumController extends Controller
                 else{
                     $follow_subforum = false;
                 }
+                
                 $value->author = $author['username'];
                 $value->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                 $value->member_since = date("F Y", strtotime($author['created_at']));
@@ -320,6 +321,17 @@ class ForumController extends Controller
                         }
                         else{
                             $follow_subforum = false;
+                        }
+
+                        $images = ForumImage::where('post_id', $valuepost->id)->get();
+                        $videos = ForumVideo::where('post_id', $valuepost->id)->get();
+                        $upvoted = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+
+                        if($images){
+                            $valuepost->images = $images;
+                        }
+                        if($videos){
+                            $valuepost->videos = $videos;
                         }
 
                         if(!$check_upvote){
@@ -1051,6 +1063,17 @@ class ForumController extends Controller
                         $follow_subforum = false;
                     }
 
+                    $images = ForumImage::where('post_id', $valuepost->id)->get();
+                    $videos = ForumVideo::where('post_id', $valuepost->id)->get();
+                    $upvoted = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+
+                    if($images){
+                        $valuepost->images = $images;
+                    }
+                    if($videos){
+                        $valuepost->videos = $videos;
+                    }
+
                     if(!$check_upvote){
                         $upvote = false;
                     }
@@ -1155,6 +1178,17 @@ class ForumController extends Controller
                         }
                         else{
                             $follow_subforum = false;
+                        }
+
+                        $images = ForumImage::where('post_id', $valuepost->id)->get();
+                        $videos = ForumVideo::where('post_id', $valuepost->id)->get();
+                        $upvoted = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+
+                        if($images){
+                            $valuepost->images = $images;
+                        }
+                        if($videos){
+                            $valuepost->videos = $videos;
                         }
 
                         if(!$check_upvote){
@@ -1626,6 +1660,18 @@ class ForumController extends Controller
 
                     $subforum_data['subforum_followers'] = $subforum_followers_count;
                     $subforum_data['post_count'] = $subforum_post_count;
+
+                    $images = ForumImage::where('post_id', $valuepost->id)->get();
+                    $videos = ForumVideo::where('post_id', $valuepost->id)->get();
+                    $upvoted = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+
+                    if($images){
+                        $valuepost->images = $images;
+                    }
+                    if($videos){
+                        $valuepost->videos = $videos;
+                    }
+
 
                     if($subforum_following){
                         $follow_subforum = true;
