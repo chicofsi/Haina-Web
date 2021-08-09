@@ -1393,7 +1393,7 @@ class ForumController extends Controller
         $result->threads = $threads;
         $result->total = $total;
         $result->current_page = $current_page;
-        $result->total_page = ceil($total/$current_page);
+        $result->total_page = ceil($total/$per_page);
         
         /*
         //custom length
