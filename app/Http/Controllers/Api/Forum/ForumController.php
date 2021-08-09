@@ -1401,7 +1401,7 @@ class ForumController extends Controller
         */
         if(count($threads) > 0){
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'All threads succesfully displayed!','data'=> $threads]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'All threads succesfully displayed!','data'=> $all_threads]), 200);
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'No posts found!','data'=> '']), 404);
