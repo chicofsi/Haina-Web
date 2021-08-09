@@ -1328,7 +1328,7 @@ class ForumController extends Controller
         array_multisort($created, SORT_DESC, $title, SORT_DESC, $threads);
         //dd($threads);
 
-        $total = count($threads);
+        $total = count(collect($threads));
         $per_page = 10;
         $current_page = $request->page ?? 1;
 
@@ -1338,7 +1338,7 @@ class ForumController extends Controller
 
         $threads = new LengthAwarePaginator($threads, $total, $per_page, $current_page, [
             'path' => 'http://testgit.hainaservice.com/api/forum/all_post',
-            'query' => '',
+            'query' => ''
         ]);
 
         /*
