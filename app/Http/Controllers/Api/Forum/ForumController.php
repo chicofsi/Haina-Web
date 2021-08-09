@@ -171,6 +171,23 @@ class ForumController extends Controller
                             $follow_subforum = false;
                         }
 
+                        $images = ForumImage::where('post_id', $valuepost->id)->get();
+                        $videos = ForumVideo::where('post_id', $valuepost->id)->get();
+                        $upvoted = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->get();
+
+                        if($images){
+                            $valuepost->images = $images;
+                        }
+                        if($videos){
+                            $valuepost->videos = $videos;
+                        }
+
+                        if($upvoted){
+                            $valuepost->upvoted = true;
+                        }
+                        else{
+                            $valuepost->upvoted = false;
+                        }
                         
                         $valuepost->author = $author['username'];
                         $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
@@ -1350,7 +1367,7 @@ class ForumController extends Controller
         */
         if(count($threads) > 0){
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'All threads succesfully displayed!','data'=> $total]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'All threads succesfully displayed!','data'=> $threads]), 200);
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'No posts found!','data'=> '']), 404);
