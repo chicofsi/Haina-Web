@@ -69,8 +69,8 @@ class ForumController extends Controller
             else{
 
                 $subforum = [
-                    'name' => $request->name,
-                    'description' => $request->description,
+                    'name' => str_replace('"', "", $request->name);
+                    'description' => str_replace('"', "", $request->description),
                     'category_id' => $request->category_id,
                     'subforum_image' => '',
                     'creator_id' => Auth::id()
