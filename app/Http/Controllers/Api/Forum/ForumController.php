@@ -1240,9 +1240,10 @@ class ForumController extends Controller
             $checkmod = ForumMod::where('subforum_id', $request->subforum_id)->get();
 
             foreach($checkmod as $key => $value){
-                $username = User::select('username')->where('id', $value->user_id)->first();
+                $username = User::where('id', $value->user_id)->first();
 
                 $value->username = $username['username'];
+                $value->photo = $username['photo'];
             }
 
             if($checkmod && count($checkmod) != 0){
