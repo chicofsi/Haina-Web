@@ -1952,7 +1952,7 @@ class ForumController extends Controller
                         'message' => $mod['username'].' changed '.$user['username'].' mod role to '.$request->role.'.'
                     ]);
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Update Mod Success!','data'=> $update_mod]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Update Mod Success!','data'=> $forumlog]), 200);
 
                 }
                 else{
