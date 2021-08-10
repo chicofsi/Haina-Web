@@ -1244,6 +1244,7 @@ class ForumController extends Controller
 
                 $value->username = $username['username'];
                 $value->photo = "https://hainaservice.com/storage/".$username['photo'];
+                $value->member_since = date("F Y", strtotime($username['created_at']));
             }
 
             if($checkmod && count($checkmod) != 0){
@@ -1279,7 +1280,7 @@ class ForumController extends Controller
                     $banned = ForumBan::create([
                         'user_id' => $request->user_id,
                         'subforum_id' => $request->subforum_id,
-                        'mod_id' => $check_mod['id'],
+                        'mod_id' => $checkmod['id'],
                         'reason' => $request->reason
                     ]);
 
