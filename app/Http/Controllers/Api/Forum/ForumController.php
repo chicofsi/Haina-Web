@@ -1930,6 +1930,9 @@ class ForumController extends Controller
             if(!$checkmod){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
             }
+            else if($checkmod['role'] == $request->role && $request->user_id == Auth::id()){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'You are already in this role!','data'=> '']), 403);
+            }
             else{
                 $check_candidate = ForumMod::where('user_id', $request->user_id)->where('subforum_id', $request->subforum_id)->first();
 
