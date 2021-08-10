@@ -1943,7 +1943,7 @@ class ForumController extends Controller
                         ]
                     );
 
-                    $user = User::where('id', $check_candidate['id'])->first();
+                    $user = User::where('id', $check_candidate['user_id'])->first();
                     $mod = User::where('id', Auth::id())->first();
 
                     $forumlog = ForumLog::create([
