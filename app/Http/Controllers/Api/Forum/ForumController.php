@@ -604,71 +604,75 @@ class ForumController extends Controller
         }
         else{
             $checkpost = ForumPost::where('id', $request->post_id)->first();
-            $checkcomment = ForumComment::where('post_id', $request->post_id)->get();
-            $checkimage = ForumImage::where('post_id', $request->post_id)->get();
-            $checkvideo = ForumVideo::where('post_id', $request->post_id)->get();
-            $checkupvote = ForumUpvote::where('post_id', $request->post_id)->get();
-
-            $subforum = ForumPost::select('subforum_id')->where('id',$checkpost['id'])->first();
-            $checkmod = ForumMod::where('user_id', Auth::id())->where('subforum_id', $subforum['subforum_id'])->first();
-
+           
             if(!$checkpost){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
             }
-            else if($checkpost['user_id'] != Auth::id() && !$checkmod){
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
-            }
             else{
-                if($checkcomment){
-                    $delete_comment = ForumComment::where('post_id', $request->post_id)->delete();
-                }
-                if($checkimage){
-                    foreach($checkimage as $key => $value){
-                        $path = str_replace("http://hainaservice.com/storage", "", $value->path);
+                $subforum = ForumPost::select('subforum_id')->where('id',$checkpost['id'])->first();
+                $checkmod = ForumMod::where('user_id', Auth::id())->where('subforum_id', $subforum['subforum_id'])->first();
 
-                        Storage::disk('public')->delete($path);
+                if($checkpost['user_id'] != Auth::id() && !$checkmod){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+                }
+                else{
+                    $checkcomment = ForumComment::where('post_id', $request->post_id)->get();
+                    $checkimage = ForumImage::where('post_id', $request->post_id)->get();
+                    $checkvideo = ForumVideo::where('post_id', $request->post_id)->get();
+                    $checkupvote = ForumUpvote::where('post_id', $request->post_id)->get();   
+
+                    if($checkcomment){
+                        $delete_comment = ForumComment::where('post_id', $request->post_id)->delete();
+                    }
+                    if($checkimage){
+                        foreach($checkimage as $key => $value){
+                            $path = str_replace("http://hainaservice.com/storage", "", $value->path);
+
+                            Storage::disk('public')->delete($path);
+                        }
+
+                        $delete_image = ForumImage::where('post_id', $request->post_id)->delete();
+                    }
+                    if($checkvideo){
+                        foreach($checkvideo as $key => $value){
+                            $path = str_replace("http://hainaservice.com/storage", "", $value->path);
+
+                            Storage::disk('public')->delete($path);
+                        }
+
+                        $delete_video = ForumVideo::where('post_id', $request->post_id)->delete();
+                    }
+                    if($checkupvote){
+                        $delete_upvote = ForumUpvote::where('post_id', $request->post_id)->delete();
                     }
 
-                    $delete_image = ForumImage::where('post_id', $request->post_id)->delete();
-                }
-                if($checkvideo){
-                    foreach($checkvideo as $key => $value){
-                        $path = str_replace("http://hainaservice.com/storage", "", $value->path);
+                    if($checkmod){
+                        //hapus by mod
+                        $post_owner = ForumPost::where('id', $request->post_id)->first();
+                        $token = [];
+                        $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $post_owner['user_id'])->get();
 
-                        Storage::disk('public')->delete($path);
+                        foreach($usertoken as $key => $value){
+                            array_push($token, $value); 
+                        }
+
+                        $mod = User::where('id', $checkmod['user_id'])->first();
+
+                        $forumlog = ForumLog::create([
+                            //moddel
+                            'subforum_id' => $post_owner['subforum_id'],
+                            'forum_action' => 'MOD',
+                            'message' => $mod['username'].' deleted '.$post_owner['title'].'from '.$subforum->name.'.'
+                        ]);
+
+                        NotificationController::sendPush($token, "Your post is removed", "Your post ".$post_owner['title']."is removed by a moderator.", "Forum", "delete");
                     }
+                    $delete_post = ForumPost::where('id', $request->post_id)->delete();
 
-                    $delete_video = ForumVideo::where('post_id', $request->post_id)->delete();
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Post deleted successfully','data'=> $checkpost]), 200);
+                    
                 }
-                if($checkupvote){
-                    $delete_upvote = ForumUpvote::where('post_id', $request->post_id)->delete();
-                }
 
-                if($checkmod){
-                    //hapus by mod
-                    $post_owner = ForumPost::where('id', $request->post_id)->first();
-                    $token = [];
-                    $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $post_owner['user_id'])->get();
-
-                    foreach($usertoken as $key => $value){
-                        array_push($token, $value); 
-                    }
-
-                    $mod = User::where('id', $checkmod['user_id'])->first();
-
-                    $forumlog = ForumLog::create([
-                        //moddel
-                        'subforum_id' => $post_owner['subforum_id'],
-                        'forum_action' => 'MOD',
-                        'message' => $mod['username'].' deleted '.$post_owner['title'].'from '.$subforum->name.'.'
-                    ]);
-
-                    NotificationController::sendPush($token, "Your post is removed", "Your post ".$post_owner['title']."is removed by a moderator.", "Forum", "delete");
-                }
-                $delete_post = ForumPost::where('id', $request->post_id)->delete();
-
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Post deleted successfully','data'=> $checkpost]), 200);
-            
             }
         }
         
