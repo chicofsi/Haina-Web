@@ -1277,23 +1277,31 @@ class ForumController extends Controller
 
                 if($check_user){
 
-                    $banned = ForumBan::create([
-                        'user_id' => $request->user_id,
-                        'subforum_id' => $request->subforum_id,
-                        'mod_id' => $checkmod['id'],
-                        'reason' => $request->reason
-                    ]);
+                    $check_ban = ForumBan::where('user_id', $request->user_id)->where('subforum_id', $request->subforum_id)->first();
+                    if($check_ban){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'User already banned in this subforum!','data'=> '']), 401);
+                    }
+                    else{
+                        $banned = ForumBan::create([
+                            'user_id' => $request->user_id,
+                            'subforum_id' => $request->subforum_id,
+                            'mod_id' => $checkmod['id'],
+                            'reason' => $request->reason
+                        ]);
+    
+                        $user = User::where('id', $banned->user_id)->first();
+                        $mod = User::where('id', Auth::id())->first();
+    
+                        $forumlog = ForumLog::create([
+                            'subforum_id' => $banned->subforum_id,
+                            'forum_action' => 'MOD',
+                            'message' => $mod['username'].' banned '.$user['username'].'for '.$banned->reason.'.'
+                        ]);
+    
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'User Ban Success!','data'=> $banned]), 200);
+                    }
 
-                    $user = User::where('id', $banned->user_id)->first();
-                    $mod = User::where('id', $banned->mod_id)->first();
-
-                    $forumlog = ForumLog::create([
-                        'subforum_id' => $banned->subforum_id,
-                        'forum_action' => 'MOD',
-                        'message' => $mod['username'].' banned '.$user['username'].'for '.$banned->reason.'.'
-                    ]);
-
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'User Ban Success!','data'=> $banned]), 200);
+                    
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'User not found!','data'=> '']), 404);
