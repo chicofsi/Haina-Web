@@ -1999,7 +1999,7 @@ class ForumController extends Controller
                 if($check_candidate){
                     $delete_mod = ForumMod::where('user_id', $request->user_id)->where('subforum_id', $request->subforum_id)->where('role', 'submod')->delete();
 
-                    $user = User::where('id', $check_candidate['id'])->first();
+                    $user = User::where('id', $check_candidate['user_id'])->first();
                     $mod = User::where('id', Auth::id())->first();
 
                     $forumlog = ForumLog::create([
@@ -2008,7 +2008,7 @@ class ForumController extends Controller
                         'message' => $mod['username'].' removed '.$user['username'].' mod role.'
                     ]);
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Delete Mod Success!','data'=> $check_candidate]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Delete Mod Success!','data'=> $forumlog]), 200);
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'User is not a mod!','data'=> '']), 404);
