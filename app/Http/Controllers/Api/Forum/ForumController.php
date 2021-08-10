@@ -1602,7 +1602,7 @@ class ForumController extends Controller
                 if($check_user){
                     $remove_ban = ForumBan::where('user_id', $request->user_id)->where('subforum_id', $request->subforum_id)->delete();
 
-                    $user = User::where('id', $check_user['id'])->first();
+                    $user = User::where('id', $check_user['user_id'])->first();
                     $mod = User::where('id', Auth::id())->first();
 
                     $forumlog = ForumLog::create([
