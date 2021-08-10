@@ -1962,7 +1962,7 @@ class ForumController extends Controller
                         'subforum_id' => $request->subforum_id
                     ]);
 
-                    $user = User::where('id', $check_candidate['id'])->first();
+                    $user = User::where('id', $request->user_id)->first();
                     $mod = User::where('id', Auth::id())->first();
 
                     $forumlog = ForumLog::create([
