@@ -1918,7 +1918,7 @@ class ForumController extends Controller
         $validator = Validator::make($request->all(), [
             'subforum_id' => 'required',
             'user_id' => 'required',
-            'role' => 'in:mod|submod'
+            'role' => 'in:mod,submod'
         ]);
 
         if ($validator->fails()) {
