@@ -1243,7 +1243,7 @@ class ForumController extends Controller
                 $username = User::where('id', $value->user_id)->first();
 
                 $value->username = $username['username'];
-                $value->photo = $username['photo'];
+                $value->photo = "https://hainaservice.com/storage/".$username['photo'];
             }
 
             if($checkmod && count($checkmod) != 0){
