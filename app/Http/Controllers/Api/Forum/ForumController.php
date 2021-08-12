@@ -493,6 +493,17 @@ class ForumController extends Controller
             foreach($post_comment as $key => $value){
                 $userdata = User::where('id',$value->user_id)->first();
 
+                $post = ForumPost::where('id', $request->post_id)->first();
+
+                $checkmod = ForumMod::where('user_id', $value->user_id)->where('subforum_id', $post['subforum_id'])->first();
+
+                if($checkmod){
+                    $value->mod = $checkmod['role'];
+                }
+                else{
+                    $value->mod = "none";
+                }
+
                 $value->username = $userdata['username'];
                 $value->user_photo = "https://hainaservice.com/storage/".$userdata['photo'];
                 $value->member_since = date("F Y", strtotime($userdata['created_at']));
