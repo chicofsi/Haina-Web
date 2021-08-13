@@ -1346,12 +1346,11 @@ class ForumController extends Controller
                     $log = ForumLog::where('subforum_id', $request->subforum_id)->where('forum_action', 'MOD')->get();
 
                     //logmod
-                    //$created = array_column($threads, 'created');
-                    //$title = array_column($threads, 'title');
+                    $time = array_column($log, 'created_at');
 
-                    //array_multisort($created, SORT_DESC, $title, SORT_DESC, $threads);
+                    $sorted_log = array_multisort($created, SORT_DESC, $log);
 
-                    return response()->json(new ValueMessage(['value'=>1, 'message'=>'Show Subforum Log Success!', 'data'=>$log]));
+                    return response()->json(new ValueMessage(['value'=>1, 'message'=>'Show Subforum Log Success!', 'data'=>$sorted_log]));
                 }
             }
             else{
