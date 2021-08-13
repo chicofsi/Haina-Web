@@ -1334,22 +1334,29 @@ class ForumController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $checkmod = ForumMod::where('user_id', Auth::id())->where('subforum_id', $request->subforum_id)->first();
+            $checksubforum = Subforum::where('id', $request->subforum_id)->first();
 
-            if(!$checkmod){
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+            if($checksubforum){
+                $checkmod = ForumMod::where('user_id', Auth::id())->where('subforum_id', $request->subforum_id)->first();
+
+                if(!$checkmod){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+                }
+                else{
+                    $log = ForumLog::where('subforum_id', $request->subforum_id)->where('forum_action', 'MOD')->get();
+
+                    //logmod
+                    //$created = array_column($threads, 'created');
+                    //$title = array_column($threads, 'title');
+
+                    //array_multisort($created, SORT_DESC, $title, SORT_DESC, $threads);
+
+                    return response()->json(new ValueMessage(['value'=>1, 'message'=>'Show Subforum Log Success!', 'data'=>$log]));
+                }
             }
             else{
-                $log = ForumLog::where('subforum_id', $request->subforum_id)->where('forum_action', 'MOD')->get();
-
-                //logmod
-                //$created = array_column($threads, 'created');
-                //$title = array_column($threads, 'title');
-
-                //array_multisort($created, SORT_DESC, $title, SORT_DESC, $threads);
-
-                return response()->json(new ValueMessage(['value'=>1, 'message'=>'Show Subforum Log Success!', 'data'=>$log]));
-            }
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Subforum not found!','data'=> '']), 404);
+            }  
 
         }
     }
