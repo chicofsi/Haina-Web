@@ -1348,9 +1348,9 @@ class ForumController extends Controller
                     //logmod
                     $time = array_column((array)$log, 'created_at');
 
-                    $sorted_log = array_multisort($time, SORT_DESC, $log);
+                    $sorted_log = array_multisort($time, SORT_DESC, (array)$log);
 
-                    return response()->json(new ValueMessage(['value'=>1, 'message'=>'Show Subforum Log Success!', 'data'=>$sorted_log]));
+                    return response()->json(new ValueMessage(['value'=>1, 'message'=>'Show Subforum Log Success!', 'data'=>(object)$sorted_log]));
                 }
             }
             else{
