@@ -820,9 +820,74 @@ class ForumController extends Controller
                 else{
                     $valuesub->followed = false;
                 }
+
+                foreach($valuesub->posts as $keypost => $valuepost){
+                    $author = User::where('id', $valuepost->user_id)->first();
+                    
+                    $likes = count(ForumUpvote::where('post_id', $valuepost->id)->get());
+                    
+                    $check_comment = ForumComment::where('post_id', $valuepost->id)->orderBy('created_at', 'desc')->first();
+                    
+                    $author = User::where('id', $valuepost->user_id)->first();
+                    
+                    $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+                    
+                    $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
+                    $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
+                    
+                    $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
+                    
+                    $subforum_data['category'] = $category_name['name'];
+                    $subforum_data['category_zh'] = $category_name['name_zh'];
+                    
+                    $subforum_followers_count = count(SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->get());
+                    $subforum_post_count = count(ForumPost::where('subforum_id', $valuepost->subforum_id)->get());
+                    
+                    $subforum_data['subforum_followers'] = $subforum_followers_count;
+                    $subforum_data['post_count'] = $subforum_post_count;
+                    
+                    if($subforum_following){
+                    $follow_subforum = true;
+                    }
+                    else{
+                    $follow_subforum = false;
+                    }
+                    
+                    $images = ForumImage::where('post_id', $valuepost->id)->get();
+                    $videos = ForumVideo::where('post_id', $valuepost->id)->get();
+                    $upvoted = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+                    
+                    if($images){
+                    $valuepost->images = $images;
+                    }
+                    if($videos){
+                    $valuepost->videos = $videos;
+                    }
+                    
+                    if(!$check_upvote){
+                    $upvote = false;
+                    }
+                    else{
+                    $upvote = true;
+                    }
+                    if($valuepost->user_id != Auth::id()){
+                    $valuepost->upvoted = $upvote;
+                    }
+                    
+                    $valuepost->author = $author['username'];
+                    $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
+                    $valuepost->member_since = date("F Y", strtotime($author['created_at']));
+                    $valuepost->like_count = $likes;
+                    $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
+                    $valuepost->subforum_follow = $follow_subforum;
+                    $valuepost->subforum_data = $subforum_data;
+                    $valuepost->author_data = $author;
+                }                    
             }
 
             $thread = ForumPost::where('title', 'like', '%'.$request->keyword.'%')->get();
+
+            
 
             if(count($subforum) == 0 && count($thread) == 0){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Keyword Not Found!','data'=> '']), 404);
