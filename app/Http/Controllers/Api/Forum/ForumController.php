@@ -1346,7 +1346,7 @@ class ForumController extends Controller
                     $log = ForumLog::where('subforum_id', $request->subforum_id)->where('forum_action', 'MOD')->get();
 
                     //logmod
-                    $time = array_column($log, 'created_at');
+                    $time = array_column((array)$log, 'created_at');
 
                     $sorted_log = array_multisort($time, SORT_DESC, $log);
 
