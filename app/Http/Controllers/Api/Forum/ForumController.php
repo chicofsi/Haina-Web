@@ -1345,7 +1345,9 @@ class ForumController extends Controller
                 else{
                     $log = ForumLog::where('subforum_id', $request->subforum_id)->where('forum_action', 'MOD')->get();
 
-                    $sorted_log = rsort((array)$log);
+                    $sortedlog = (array)$log;
+
+                    $sorted_log = rsort($sortedlog);
 
                     return response()->json(new ValueMessage(['value'=>1, 'message'=>'Show Subforum Log Success!', 'data'=>(object)$sorted_log]));
                 }
