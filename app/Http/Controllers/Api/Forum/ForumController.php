@@ -1343,13 +1343,9 @@ class ForumController extends Controller
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
                 }
                 else{
-                    $log = ForumLog::where('subforum_id', $request->subforum_id)->where('forum_action', 'MOD')->get();
+                    $log = ForumLog::where('subforum_id', $request->subforum_id)->where('forum_action', 'MOD')->orderBy('created_at', 'DESC')->get();
 
-                    $sortedlog = (array)$log;
-
-                    $sorted_log = rsort($sortedlog);
-
-                    return response()->json(new ValueMessage(['value'=>1, 'message'=>'Show Subforum Log Success!', 'data'=>$sorted_log]));
+                    return response()->json(new ValueMessage(['value'=>1, 'message'=>'Show Subforum Log Success!', 'data'=>$log]));
                 }
             }
             else{
