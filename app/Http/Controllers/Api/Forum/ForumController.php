@@ -1349,7 +1349,7 @@ class ForumController extends Controller
 
                     $sorted_log = rsort($sortedlog);
 
-                    return response()->json(new ValueMessage(['value'=>1, 'message'=>'Show Subforum Log Success!', 'data'=>(object)$sorted_log]));
+                    return response()->json(new ValueMessage(['value'=>1, 'message'=>'Show Subforum Log Success!', 'data'=>$sorted_log]));
                 }
             }
             else{
