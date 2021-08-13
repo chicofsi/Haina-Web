@@ -887,7 +887,68 @@ class ForumController extends Controller
 
             $thread = ForumPost::where('title', 'like', '%'.$request->keyword.'%')->get();
 
-            
+            foreach($thread as $keythread => $valuethread){
+                $author = User::where('id', $valuethread->user_id)->first();
+
+                $likes = count(ForumUpvote::where('post_id', $valuethread->id)->get());
+
+                $check_comment = ForumComment::where('post_id', $valuethread->id)->orderBy('created_at', 'desc')->first();
+    
+                $author = User::where('id', $valuethread->user_id)->first();
+    
+                $check_upvote = ForumUpvote::where('post_id', $valuethread->id)->where('user_id', Auth::id())->first();
+    
+                $subforum_data = Subforum::where('id', $valuethread->subforum_id)->first();
+                $subforum_following = SubforumFollowers::where('subforum_id', $valuethread->subforum_id)->where('user_id', Auth::id())->first();
+
+                $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
+
+                $subforum_data['category'] = $category_name['name'];
+                $subforum_data['category_zh'] = $category_name['name_zh'];
+
+                $subforum_followers_count = count(SubforumFollowers::where('subforum_id', $valuethread->subforum_id)->get());
+                $subforum_post_count = count(ForumPost::where('subforum_id', $valuethread->subforum_id)->get());
+
+                $subforum_data['subforum_followers'] = $subforum_followers_count;
+                $subforum_data['post_count'] = $subforum_post_count;
+    
+                if($subforum_following){
+                    $follow_subforum = true;
+                }
+                else{
+                    $follow_subforum = false;
+                }
+
+                $images = ForumImage::where('post_id', $valuethread->id)->get();
+                $videos = ForumVideo::where('post_id', $valuethread->id)->get();
+                $upvoted = ForumUpvote::where('post_id', $valuethread->id)->where('user_id', Auth::id())->first();
+
+                if($images){
+                    $valuethread->images = $images;
+                }
+                if($videos){
+                    $valuethread->videos = $videos;
+                }
+
+                if(!$check_upvote){
+                    $upvote = false;
+                }
+                else{
+                    $upvote = true;
+                }
+                if($valuethread->user_id != Auth::id()){
+                    $valuethread->upvoted = $upvote;
+                }
+
+                $valuethread->author = $author['username'];
+                $valuethread->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
+                $valuethread->member_since = date("F Y", strtotime($author['created_at']));
+                $valuethread->like_count = $likes;
+                $valuethread->comment_count = count(ForumComment::where('post_id', $valuethread->id)->get());
+                $valuethread->subforum_follow = $follow_subforum;
+                $valuethread->subforum_data = $subforum_data;
+                $valuethread->author_data = $author;
+            }
 
             if(count($subforum) == 0 && count($thread) == 0){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Keyword Not Found!','data'=> '']), 404);
