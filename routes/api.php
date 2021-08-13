@@ -211,6 +211,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/mod_list', [ForumController::class, 'showModList']);
 		Route::post('/ban_user', [ForumController::class, 'banUser']);
 		Route::post('/ban_remove', [ForumController::class, 'removeBan']);
+		Route::post('/mod_log', [ForumController::class, 'checkModLog']);
 
 		Route::post('/all_post', [ForumController::class, 'showAllThreads']);
 		Route::get('/hot_post', [ForumController::class, 'showHotThreads']);

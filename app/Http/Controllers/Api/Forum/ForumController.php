@@ -1325,6 +1325,35 @@ class ForumController extends Controller
         }
     }
 
+    public function checkModLog(Request $request){
+        $validator = Validator::make($request->all(), [
+            'subforum_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $checkmod = ForumMod::where('user_id', Auth::id())->where('subforum_id', $request->subforum_id)->first();
+
+            if(!$checkmod){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+            }
+            else{
+                $log = ForumLog::where('subforum_id', $request->subforum_id)->where('forum_action', 'MOD')->get();
+
+                //logmod
+                //$created = array_column($threads, 'created');
+                //$title = array_column($threads, 'title');
+
+                //array_multisort($created, SORT_DESC, $title, SORT_DESC, $threads);
+
+                return response()->json(new ValueMessage(['value'=>1, 'message'=>'Show Subforum Log Success!', 'data'=>$log]));
+            }
+
+        }
+    }
+
     public function showAllThreads(Request $request){
 
         $list_post = ForumPost::with('comments', 'images', 'videos')->get();
