@@ -792,7 +792,35 @@ class ForumController extends Controller
         else{
             $result = new \stdClass();
 
-            $subforum = Subforum::where('name', 'like', '%'.$request->keyword.'%')->get();
+            $subforum = Subforum::where('name', 'like', '%'.$request->keyword.'%')->with('posts')->get();
+
+            foreach($subforum as $keysub => $valuesub){
+                $creator_count = [];
+                $check_followed = SubforumFollowers::where('subforum_id', $valuesub->id)->where('user_id', Auth::id())->first();
+
+                $valuesub->total_post = count(ForumPost::where('subforum_id', $valuesub->id)->get());
+
+                $category_name = ForumCategory::where('id', $valuesub->category_id)->first();
+
+                $valuesub->category = $category_name['name'];
+                $valuesub->category_zh = $category_name['name_zh'];
+
+                $post = ForumPost::where('subforum_id', $valuesub->id)->get();
+
+                foreach($post as $keypost => $valuepost){
+                    array_push($creator_count, $valuepost->user_id);
+                }
+
+                $total_poster = array_unique($creator_count);
+                $valuesub->total_poster = count($total_poster);
+
+                if($check_followed){
+                    $valuesub->followed = true;
+                }
+                else{
+                    $valuesub->followed = false;
+                }
+            }
 
             $thread = ForumPost::where('title', 'like', '%'.$request->keyword.'%')->get();
 
