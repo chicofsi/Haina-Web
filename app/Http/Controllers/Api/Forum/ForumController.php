@@ -1345,10 +1345,7 @@ class ForumController extends Controller
                 else{
                     $log = ForumLog::where('subforum_id', $request->subforum_id)->where('forum_action', 'MOD')->get();
 
-                    //logmod
-                    $time = array_column((array)$log, 'created_at');
-
-                    $sorted_log = array_multisort($time, SORT_DESC, (array)$log);
+                    $sorted_log = rsort((array)$log);
 
                     return response()->json(new ValueMessage(['value'=>1, 'message'=>'Show Subforum Log Success!', 'data'=>(object)$sorted_log]));
                 }
