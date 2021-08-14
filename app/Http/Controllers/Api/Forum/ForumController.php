@@ -673,7 +673,7 @@ class ForumController extends Controller
                             //moddel
                             'subforum_id' => $post_owner['subforum_id'],
                             'forum_action' => 'MOD',
-                            'message' => $mod['username'].' deleted '.$post_owner['title'].'from '.$subforum['name'].'.'
+                            'message' => $mod['username'].' deleted '.$post_owner['title'].' from '.$subforum['name'].'.'
                         ]);
 
                         NotificationController::sendPush($token, "Your post is removed", "Your post ".$post_owner['title']."is removed by a moderator.", "Forum", "delete");
@@ -721,7 +721,7 @@ class ForumController extends Controller
                 $forumlog = ForumLog::create([
                     'subforum_id' => $post['subforum_id'],
                     'forum_action' => 'COMMENT',
-                    'message' => $user['username'].' commented in '.$post['title'].'.'
+                    'message' => $user['username'].' commented in '.$post['title'].' thread.'
                 ]);
     
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Comment Success!','data'=> $new_comment]), 200);
@@ -1457,14 +1457,14 @@ class ForumController extends Controller
                             'mod_id' => $checkmod['id'],
                             'reason' => $request->reason
                         ]);
-    
+                        $subforum = Subforum::where('id', $request->subforum_id)->first();
                         $user = User::where('id', $banned->user_id)->first();
                         $mod = User::where('id', Auth::id())->first();
     
                         $forumlog = ForumLog::create([
                             'subforum_id' => $banned->subforum_id,
                             'forum_action' => 'MOD',
-                            'message' => $mod['username'].' banned '.$user['username'].'for '.$banned->reason.'.'
+                            'message' => $mod['username'].' banned '.$user['username'].' in '.$subforum['name'].' for '.$banned->reason.'.'
                         ]);
     
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'User Ban Success!','data'=> $banned]), 200);
@@ -1800,6 +1800,7 @@ class ForumController extends Controller
 
                 if($check_user){
                     $remove_ban = ForumBan::where('user_id', $request->user_id)->where('subforum_id', $request->subforum_id)->delete();
+                    $subforum = Subforum::where('id', $request->subforum_id)->first();
 
                     $user = User::where('id', $check_user['user_id'])->first();
                     $mod = User::where('id', Auth::id())->first();
@@ -1807,7 +1808,7 @@ class ForumController extends Controller
                     $forumlog = ForumLog::create([
                         'subforum_id' => $request->subforum_id,
                         'forum_action' => 'MOD',
-                        'message' => $mod['username'].' unbanned '.$user['username'].'.'
+                        'message' => $mod['username'].' unbanned '.$user['username'].' from '.$subforum['name'].'.'
                     ]);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Remove Ban Success!','data'=> $check_user]), 200);
@@ -2153,11 +2154,12 @@ class ForumController extends Controller
 
                     $user = User::where('id', $check_candidate['user_id'])->first();
                     $mod = User::where('id', Auth::id())->first();
+                    $subforum = Subforum::where('id', $request->subforum_id)->first();
 
                     $forumlog = ForumLog::create([
                         'subforum_id' => $request->subforum_id,
                         'forum_action' => 'MOD',
-                        'message' => $mod['username'].' changed '.$user['username'].' mod role to '.$request->role.'.'
+                        'message' => $mod['username'].' changed '.$user['username'].' mod role to '.$request->role.' in .'.$subforum['name'].'.'
                     ]);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Update Mod Success!','data'=> $forumlog]), 200);
@@ -2172,11 +2174,12 @@ class ForumController extends Controller
 
                     $user = User::where('id', $request->user_id)->first();
                     $mod = User::where('id', Auth::id())->first();
+                    $subforum = Subforum::where('id', $request->subforum_id)->first();
 
                     $forumlog = ForumLog::create([
                         'subforum_id' => $request->subforum_id,
                         'forum_action' => 'MOD',
-                        'message' => $mod['username'].' assigned '.$user['username'].' with a mod role as '.$request->role.'.'
+                        'message' => $mod['username'].' assigned '.$user['username'].' with a mod role as '.$request->role.' in '.$subforum['name'].'.'
                     ]);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Assign New Mod Success!','data'=> $new_mod]), 200);
@@ -2209,11 +2212,12 @@ class ForumController extends Controller
 
                     $user = User::where('id', $check_candidate['user_id'])->first();
                     $mod = User::where('id', Auth::id())->first();
+                    $subforum = Subforum::where('id', $request->subforum_id)->first();
 
                     $forumlog = ForumLog::create([
                         'subforum_id' => $request->subforum_id,
                         'forum_action' => 'MOD',
-                        'message' => $mod['username'].' removed '.$user['username'].' mod role.'
+                        'message' => $mod['username'].' removed '.$user['username'].' mod role in '.$subforum['name'].'.'
                     ]);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Delete Mod Success!','data'=> $forumlog]), 200);
