@@ -673,7 +673,7 @@ class ForumController extends Controller
                             //moddel
                             'subforum_id' => $post_owner['subforum_id'],
                             'forum_action' => 'MOD',
-                            'message' => $mod['username'].' deleted '.$post_owner['title'].'from '.$subforum->name.'.'
+                            'message' => $mod['username'].' deleted '.$post_owner['title'].'from '.$subforum['name'].'.'
                         ]);
 
                         NotificationController::sendPush($token, "Your post is removed", "Your post ".$post_owner['title']."is removed by a moderator.", "Forum", "delete");
@@ -767,7 +767,7 @@ class ForumController extends Controller
                         //moddel
                         'subforum_id' => $post_name['subforum_id'],
                         'forum_action' => 'MOD',
-                        'message' => $mod['username'].' deleted '.$comment_owner['content'].' from '.$post_name['title'].' in '.$subforum->name.'.'
+                        'message' => $mod['username'].' deleted '.$comment_owner['content'].' from '.$post_name['title'].' in '.$subforum['name'].'.'
                     ]);
 
                     NotificationController::sendPush($token, "Your comment is removed", "Your comment at".$post_name['title']."is removed by a moderator.", "Forum", "delete");
