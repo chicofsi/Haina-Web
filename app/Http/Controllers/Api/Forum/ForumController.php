@@ -657,7 +657,7 @@ class ForumController extends Controller
                         $delete_upvote = ForumUpvote::where('post_id', $request->post_id)->delete();
                     }
 
-                    if($checkmod){
+                    if($checkmod && $checkmod['user_id'] != $checkpost['user_id']){
                         //hapus by mod
                         $post_owner = ForumPost::where('id', $request->post_id)->first();
                         $token = [];
