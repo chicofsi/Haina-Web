@@ -595,7 +595,7 @@ class ForumController extends Controller
                 $forumlog = ForumLog::create([
                     'subforum_id' => $subforum['id'],
                     'forum_action' => 'POST',
-                    'message' => $user['username'].' created '.$new_post->title.' in '.$subforum['name'].'.'
+                    'message' => $user['username'].' created "'.$new_post->title.'" in '.$subforum['name'].'.'
                 ]);
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'New Post Successfully Posted!','data'=> $new_post]), 200);
@@ -674,7 +674,7 @@ class ForumController extends Controller
                             //moddel
                             'subforum_id' => $post_owner['subforum_id'],
                             'forum_action' => 'MOD',
-                            'message' => $mod['username'].' deleted '.$post_owner['title'].' from '.$subforum['name'].'.'
+                            'message' => $mod['username'].' deleted "'.$post_owner['title'].'" from '.$subforum['name'].'.'
                         ]);
 
                         NotificationController::sendPush($token, "Your post is removed", "Your post ".$post_owner['title']."is removed by a moderator.", "Forum", "delete");
@@ -751,7 +751,7 @@ class ForumController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
             }
             else{
-                if($checkmod){
+                if($checkmod && $checkmod['user_id'] != $check['user_id']){
                     //hapus by mod
                     $comment_owner = ForumComment::where('id', $request->comment_id)->first();
                     $post_name = ForumPost::where('id', $comment_owner['post_id'])->first();
@@ -768,7 +768,7 @@ class ForumController extends Controller
                         //moddel
                         'subforum_id' => $post_name['subforum_id'],
                         'forum_action' => 'MOD',
-                        'message' => $mod['username'].' deleted '.$comment_owner['content'].' from '.$post_name['title'].' in '.$subforum['name'].'.'
+                        'message' => $mod['username'].' deleted "'.$comment_owner['content'].'" from '.$post_name['title'].' in '.$subforum['name'].'.'
                     ]);
 
                     NotificationController::sendPush($token, "Your comment is removed", "Your comment at".$post_name['title']."is removed by a moderator.", "Forum", "delete");
