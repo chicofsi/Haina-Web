@@ -101,13 +101,13 @@ class ForumController extends Controller
                 $forumlog = ForumLog::create([
                     'subforum_id' => $new_subforum->id,
                     'forum_action' => 'CREATE',
-                    'message' => $user['username'].' created '.$new_subforum->name.' subforum.'
+                    'message' => $user['username'].' created "'.$new_subforum->name.'" subforum.'
                 ]);
 
                 $modlog = ForumLog::create([
                     'subforum_id' => $new_subforum->id,
                     'forum_action' => 'MOD',
-                    'message' => $user['username'].' is the new mod of '.$new_subforum->name.' subforum.'
+                    'message' => $user['username'].' is the new mod of "'.$new_subforum->name.'" subforum.'
                 ]);
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Subforum successfully created!','data'=> $new_subforum]), 200);
