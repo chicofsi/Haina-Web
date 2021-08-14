@@ -660,6 +660,7 @@ class ForumController extends Controller
                     if($checkmod && $checkmod['user_id'] != $checkpost['user_id']){
                         //hapus by mod
                         $post_owner = ForumPost::where('id', $request->post_id)->first();
+                        $subforum = Subforum::where('id', $post_owner['subforum_id'])->first();
                         $token = [];
                         $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $post_owner['user_id'])->get();
 
