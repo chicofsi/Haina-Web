@@ -2252,6 +2252,16 @@ class ForumController extends Controller
                         'message' => $mod['username'].' changed '.$user['username'].' mod role to '.$request->role.' in .'.$subforum['name'].'.'
                     ]);
 
+                    $check = SubforumFollowers::where('user_id', $request->user_id)->where('subforum_id', $request->subforum_id)->first();
+
+                    if(!$check){
+                        $new_follow_subforum = SubforumFollowers::create([
+                            'subforum_id' => $request->subforum_id,
+                            'user_id' => $request->user_id
+                        ]);
+
+                    }
+
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Update Mod Success!','data'=> $forumlog]), 200);
 
                 }
@@ -2271,6 +2281,16 @@ class ForumController extends Controller
                         'forum_action' => 'MOD',
                         'message' => $mod['username'].' assigned '.$user['username'].' with a mod role as '.$request->role.' in '.$subforum['name'].'.'
                     ]);
+
+                    $check = SubforumFollowers::where('user_id', $request->user_id)->where('subforum_id', $request->subforum_id)->first();
+
+                    if(!$check){
+                        $new_follow_subforum = SubforumFollowers::create([
+                            'subforum_id' => $request->subforum_id,
+                            'user_id' => $request->user_id
+                        ]);
+
+                    }
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Assign New Mod Success!','data'=> $new_mod]), 200);
                 }
