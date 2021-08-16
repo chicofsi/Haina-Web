@@ -229,6 +229,9 @@ class ForumController extends Controller
                 $subforum_data = Subforum::where('id', $value->subforum_id)->first();
                 $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', Auth::id())->first();
 
+                $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
+                $subforum_data['creator_username'] = $subforum_creator['username'];
+
                 $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
                 $subforum_data['category'] = $category_name['name'];
@@ -311,6 +314,9 @@ class ForumController extends Controller
             
                         $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
                         $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
+
+                        $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
+                        $subforum_data['creator_username'] = $subforum_creator['username'];
 
                         $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
@@ -407,6 +413,10 @@ class ForumController extends Controller
                 $subforum_data = Subforum::where('id', $value->subforum_id)->first();
                 $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', Auth::id())->first();
     
+
+                $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
+                $subforum_data['creator_username'] = $subforum_creator['username'];
+
                 $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
     
                 $subforum_data['category'] = $category_name['name'];
@@ -876,6 +886,9 @@ class ForumController extends Controller
                     $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
                     $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
                     
+                    $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
+                    $subforum_data['creator_username'] = $subforum_creator['username'];
+                    
                     $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
                     
                     $subforum_data['category'] = $category_name['name'];
@@ -941,6 +954,9 @@ class ForumController extends Controller
     
                 $subforum_data = Subforum::where('id', $valuethread->subforum_id)->first();
                 $subforum_following = SubforumFollowers::where('subforum_id', $valuethread->subforum_id)->where('user_id', Auth::id())->first();
+
+                $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
+                $subforum_data['creator_username'] = $subforum_creator['username'];
 
                 $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
@@ -1260,6 +1276,9 @@ class ForumController extends Controller
                     $subforum_followers_count = count(SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->get());
                     $subforum_post_count = count(ForumPost::where('subforum_id', $valuepost->subforum_id)->where('deleted_at', null)->get());
 
+                    $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
+                    $subforum_data['creator_username'] = $subforum_creator['username'];
+
                     $subforum_data['subforum_followers'] = $subforum_followers_count;
                     $subforum_data['post_count'] = $subforum_post_count;
 
@@ -1372,6 +1391,9 @@ class ForumController extends Controller
                         $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
                         $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
             
+                        $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
+                        $subforum_data['creator_username'] = $subforum_creator['username'];
+
                         $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
                         $subforum_data['category'] = $category_name['name'];
@@ -1577,6 +1599,9 @@ class ForumController extends Controller
 
             $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
+            $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
+            $subforum_data['creator_username'] = $subforum_creator['username'];
+
             $subforum_data['category'] = $category_name['name'];
             $subforum_data['category_zh'] = $category_name['name_zh'];
 
@@ -1718,6 +1743,9 @@ class ForumController extends Controller
 
             $subforum_data['subforum_followers'] = $subforum_followers_count;
             $subforum_data['post_count'] = $subforum_post_count;
+
+            $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
+            $subforum_data['creator_username'] = $subforum_creator['username'];
 
             $subforum_data['category'] = $category_name['name'];
             $subforum_data['category_zh'] = $category_name['name_zh'];
@@ -1917,6 +1945,9 @@ class ForumController extends Controller
                     $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
                     $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
         
+                    $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
+                    $subforum_data['creator_username'] = $subforum_creator['username'];
+
                     $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
                     $subforum_data['category'] = $category_name['name'];
@@ -2022,6 +2053,9 @@ class ForumController extends Controller
         
                     $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
+                    $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
+                    $subforum_data['creator_username'] = $subforum_creator['username'];
+
                     $subforum_data['category'] = $category_name['name'];
                     $subforum_data['category_zh'] = $category_name['name_zh'];
 
@@ -2123,6 +2157,9 @@ class ForumController extends Controller
                     $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
 
                     $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
+
+                    $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
+                    $subforum_data['creator_username'] = $subforum_creator['username'];
 
                     $subforum_data['category'] = $category_name['name'];
                     $subforum_data['category_zh'] = $category_name['name_zh'];
