@@ -373,10 +373,10 @@ class ForumController extends Controller
         }
         else{
             if($request->subforum_id == null){
-                $list_post = ForumPost::with('comments', 'images', 'videos')->all();
+                $list_post = ForumPost::where('deleted_at', null)->with('comments', 'images', 'videos')->all();
             }
             else{
-                $list_post = ForumPost::where('subforum_id', $request->subforum_id)->with('comments', 'images', 'videos')->get();
+                $list_post = ForumPost::where('deleted_at', null)->where('subforum_id', $request->subforum_id)->with('comments', 'images', 'videos')->get();
             }
             
 
@@ -488,7 +488,7 @@ class ForumController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $post_comment = ForumComment::where('post_id', $request->post_id)->get();
+            $post_comment = ForumComment::where('post_id', $request->post_id)->where('deleted_at', null)->get();
 
             foreach($post_comment as $key => $value){
                 $userdata = User::where('id',$value->user_id)->first();
@@ -886,7 +886,7 @@ class ForumController extends Controller
                 }                    
             }
 
-            $thread = ForumPost::where('title', 'like', '%'.$request->keyword.'%')->get();
+            $thread = ForumPost::where('title', 'like', '%'.$request->keyword.'%')->where('deleted_at', null)->get();
 
             foreach($thread as $keythread => $valuethread){
                 $author = User::where('id', $valuethread->user_id)->first();
@@ -1028,7 +1028,7 @@ class ForumController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $check = ForumPost::where('id', $request->post_id)->first();
+            $check = ForumPost::where('id', $request->post_id)->where('deleted_at', null)->first();
             
 
             if(!$check){
@@ -1074,7 +1074,7 @@ class ForumController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $check = ForumPost::where('id', $request->post_id)->first();
+            $check = ForumPost::where('id', $request->post_id)->where('deleted_at', null)->first();
             
             if(!$check){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
@@ -1103,7 +1103,7 @@ class ForumController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $check = ForumPost::where('id', $request->post_id)->first();
+            $check = ForumPost::where('id', $request->post_id)->where('deleted_at', null)->first();
             
             if(!$check){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
@@ -1185,7 +1185,7 @@ class ForumController extends Controller
                 $subforum['category_zh'] = $category_name['name_zh'];
                 $subforum['role'] = "mod";
 
-                $post = ForumPost::where('subforum_id', $subforum['id'])->get();
+                $post = ForumPost::where('subforum_id', $subforum['id'])->where('deleted_at', null)->get();
                 foreach($post as $keypost => $valuepost){
                     array_push($creator_count, $valuepost->user_id);
                 }
@@ -1302,7 +1302,7 @@ class ForumController extends Controller
                     $subforum['category_zh'] = $category_name['name_zh'];
                     $subforum['role'] = "mod";
 
-                    $post = ForumPost::where('subforum_id', $subforum['id'])->get();
+                    $post = ForumPost::where('subforum_id', $subforum['id'])->where('deleted_at', null)->get();
                     foreach($post as $keypost => $valuepost){
                         array_push($creator_count, $valuepost->user_id);
                     }
@@ -1512,14 +1512,14 @@ class ForumController extends Controller
 
     public function showAllThreads(Request $request){
 
-        $list_post = ForumPost::with('comments', 'images', 'videos')->get();
+        $list_post = ForumPost::where('deleted_at', null)->with('comments', 'images', 'videos')->get();
         $hot_threads = [];
         $threads = [];
 
         foreach($list_post as $key => $value){
             $likes = count(ForumUpvote::where('post_id', $value->id)->get());
 
-            $check_comment = ForumComment::where('post_id', $value->id)->orderBy('created_at', 'desc')->first();
+            $check_comment = ForumComment::where('post_id', $value->id)->where('deleted_at', null)->orderBy('created_at', 'desc')->first();
 
             $author = User::where('id', $value->user_id)->first();
 
@@ -1634,14 +1634,14 @@ class ForumController extends Controller
 
     public function showHotThreads(Request $request){
 
-        $list_post = ForumPost::with('comments', 'images', 'videos')->get();
+        $list_post = ForumPost::where('deleted_at', null)->with('comments', 'images', 'videos')->get();
         $hot_threads = [];
         $threads = [];
 
         foreach($list_post as $key => $value){
             $likes = count(ForumUpvote::where('post_id', $value->id)->get());
 
-            $check_comment = ForumComment::where('post_id', $value->id)->orderBy('created_at', 'desc')->first();
+            $check_comment = ForumComment::where('post_id', $value->id)->where('deleted_at', null)->orderBy('created_at', 'desc')->first();
 
             $author = User::where('id', $value->user_id)->first();
 
@@ -1837,7 +1837,7 @@ class ForumController extends Controller
             if($subforums){
                 $creator_count = [];
 
-                $value->total_post = count(ForumPost::where('subforum_id', $subforums['id'])->get());
+                $value->total_post = count(ForumPost::where('subforum_id', $subforums['id']->where('deleted_at', null))->get());
 
                 $category_name = ForumCategory::where('id', $subforums['category_id'])->first();
 
@@ -1845,7 +1845,7 @@ class ForumController extends Controller
                 $subforums['category_zh'] = $category_name['name_zh'];
                 $subforums['role'] = "mod";
 
-                $post = ForumPost::where('subforum_id', $subforums['id'])->get();
+                $post = ForumPost::where('subforum_id', $subforums['id'])->where('deleted_at', null)->get();
                 foreach($post as $keypost => $valuepost){
                     array_push($creator_count, $valuepost->user_id);
                 }
@@ -1866,7 +1866,7 @@ class ForumController extends Controller
 
                     $likes = count(ForumUpvote::where('post_id', $valuepost->id)->get());
 
-                    $check_comment = ForumComment::where('post_id', $valuepost->id)->orderBy('created_at', 'desc')->first();
+                    $check_comment = ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->orderBy('created_at', 'desc')->first();
         
                     $author = User::where('id', $valuepost->user_id)->first();
         
@@ -1937,7 +1937,7 @@ class ForumController extends Controller
 
                 $creator_count = [];
 
-                $value->total_post = count(ForumPost::where('subforum_id', $subforums_submod['id'])->get());
+                $value->total_post = count(ForumPost::where('subforum_id', $subforums_submod['id'])->where('deleted_at', null)->get());
 
                 $category_name = ForumCategory::where('id', $subforums_submod['category_id'])->first();
 
@@ -1945,7 +1945,7 @@ class ForumController extends Controller
                 $subforums_submod['category_zh'] = $category_name['name_zh'];
                 $subforums_submod['role'] = "mod";
 
-                $post = ForumPost::where('subforum_id', $subforums_submod['id'])->get();
+                $post = ForumPost::where('subforum_id', $subforums_submod['id'])->where('deleted_at', null)->get();
                 foreach($post as $keypost => $valuepost){
                     array_push($creator_count, $valuepost->user_id);
                 }
@@ -1967,7 +1967,7 @@ class ForumController extends Controller
 
                     $likes = count(ForumUpvote::where('post_id', $valuepost->id)->get());
 
-                    $check_comment = ForumComment::where('post_id', $valuepost->id)->orderBy('created_at', 'desc')->first();
+                    $check_comment = ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->orderBy('created_at', 'desc')->first();
         
                     $author = User::where('id', $valuepost->user_id)->first();
         
@@ -2040,7 +2040,7 @@ class ForumController extends Controller
                 $creator_count = [];
                 $check_followed = SubforumFollowers::where('subforum_id', $subforum['id'])->where('user_id', Auth::id())->first();
 
-                $value->total_post = count(ForumPost::where('subforum_id', $subforum['id'])->get());
+                $value->total_post = count(ForumPost::where('subforum_id', $subforum['id'])->where('deleted_at', null)->get());
 
                 $category_name = ForumCategory::where('id', $subforum['category_id'])->first();
 
