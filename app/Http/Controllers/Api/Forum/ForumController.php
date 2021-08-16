@@ -783,9 +783,13 @@ class ForumController extends Controller
     
                     //$delete_comment = ForumComment::where('id', $request->comment_id)->delete();
 
+                    $delete_time = date('Y-m-d H:i:s');
+
                     $delete_comment = ForumComment::where('id', $request->comment_id)->update([
                         'deleted_at' => date('Y-m-d H:i:s')
                     ]);
+
+                    $check->deleted_at = $delete_time;
     
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Comment deleted successfully!','data'=> $check]), 200);
                 }
