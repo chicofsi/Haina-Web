@@ -208,7 +208,7 @@ class ForumController extends Controller
     }
 
     public function showMyPost(){
-            $post = ForumPost::where('user_id', Auth::id())->with('images', 'videos')->get();
+            $post = ForumPost::where('user_id', Auth::id())->where('deleted_at', null)->with('images', 'videos')->get();
 
             foreach($post as $key => $value){
                 $author = User::where('id', $value->user_id)->first();
