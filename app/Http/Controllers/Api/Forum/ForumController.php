@@ -146,7 +146,7 @@ class ForumController extends Controller
 
                         $likes = count(ForumUpvote::where('post_id', $valuepost->id)->get());
 
-                        $check_comment = ForumComment::where('post_id', $valuepost->id)->orderBy('created_at', 'desc')->first();
+                        $check_comment = ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->orderBy('created_at', 'desc')->first();
             
                         $author = User::where('id', $valuepost->user_id)->first();
             
@@ -155,6 +155,9 @@ class ForumController extends Controller
                         $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
                         $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
             
+                        $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
+                        $subforum_data['creator_username'] = $subforum_creator['username'];
+
                         $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
                         $subforum_data['category'] = $category_name['name'];
@@ -195,7 +198,7 @@ class ForumController extends Controller
                         $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                         $valuepost->member_since = date("F Y", strtotime($author['created_at']));
                         $valuepost->like_count = $likes;
-                        $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
+                        $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->get());
                         $valuepost->subforum_follow = $follow_subforum;
                         $valuepost->subforum_data = $subforum_data;
                         $valuepost->author_data = $author;
@@ -217,7 +220,7 @@ class ForumController extends Controller
 
                 $likes = count(ForumUpvote::where('post_id', $value->id)->get());
 
-                $check_comment = ForumComment::where('post_id', $value->id)->orderBy('created_at', 'desc')->first();
+                $check_comment = ForumComment::where('post_id', $value->id)->where('deleted_at', null)->orderBy('created_at', 'desc')->first();
     
                 $author = User::where('id', $value->user_id)->first();
     
@@ -248,7 +251,7 @@ class ForumController extends Controller
                 $value->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                 $value->member_since = date("F Y", strtotime($author['created_at']));
                 $value->like_count = $likes;
-                $value->comment_count = count(ForumComment::where('post_id', $value->id)->get());
+                $value->comment_count = count(ForumComment::where('post_id', $value->id)->where('deleted_at', null)->get());
                 $value->subforum_follow = $follow_subforum;
                 $value->subforum_data = $subforum_data;
                 $value->author_data = $author;
@@ -352,7 +355,7 @@ class ForumController extends Controller
                         $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                         $valuepost->member_since = date("F Y", strtotime($author['created_at']));
                         $valuepost->like_count = $likes;
-                        $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
+                        $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->get());
                         $valuepost->subforum_follow = $follow_subforum;
                         $valuepost->subforum_data = $subforum_data;
                         $valuepost->author_data = $author;
@@ -390,7 +393,7 @@ class ForumController extends Controller
                 $likes = count(ForumUpvote::where('post_id', $value->id)->get());
 
                 $lastpost = null;
-                $check_comment = ForumComment::where('post_id', $value->id)->orderBy('created_at', 'desc')->first();
+                $check_comment = ForumComment::where('post_id', $value->id)->where('deleted_at', null)->orderBy('created_at', 'desc')->first();
 
                 $author = User::where('id', $value->user_id)->first();
 
@@ -440,7 +443,7 @@ class ForumController extends Controller
                     'author_photo' => "https://hainaservice.com/storage/".$author['photo'],
                     'member_since' => date("F Y", strtotime($author['created_at'])),
                     'like_count' => $likes,
-                    'comment_count' => count(ForumComment::where('post_id', $value->id)->get()),
+                    'comment_count' => count(ForumComment::where('post_id', $value->id)->where('deleted_at', null)->get()),
                     'view_count' => $value->view_count,
                     'share_count' => $value->share_count,
                     'created' => $value->created_at,
@@ -864,7 +867,7 @@ class ForumController extends Controller
                     
                     $likes = count(ForumUpvote::where('post_id', $valuepost->id)->get());
                     
-                    $check_comment = ForumComment::where('post_id', $valuepost->id)->orderBy('created_at', 'desc')->first();
+                    $check_comment = ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->orderBy('created_at', 'desc')->first();
                     
                     $author = User::where('id', $valuepost->user_id)->first();
                     
@@ -916,7 +919,7 @@ class ForumController extends Controller
                     $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                     $valuepost->member_since = date("F Y", strtotime($author['created_at']));
                     $valuepost->like_count = $likes;
-                    $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
+                    $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->get());
                     $valuepost->subforum_follow = $follow_subforum;
                     $valuepost->subforum_data = $subforum_data;
                     $valuepost->author_data = $author;
@@ -930,7 +933,7 @@ class ForumController extends Controller
 
                 $likes = count(ForumUpvote::where('post_id', $valuethread->id)->get());
 
-                $check_comment = ForumComment::where('post_id', $valuethread->id)->orderBy('created_at', 'desc')->first();
+                $check_comment = ForumComment::where('post_id', $valuethread->id)->where('deleted_at', null)->orderBy('created_at', 'desc')->first();
     
                 $author = User::where('id', $valuethread->user_id)->first();
     
@@ -982,7 +985,7 @@ class ForumController extends Controller
                 $valuethread->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                 $valuethread->member_since = date("F Y", strtotime($author['created_at']));
                 $valuethread->like_count = $likes;
-                $valuethread->comment_count = count(ForumComment::where('post_id', $valuethread->id)->get());
+                $valuethread->comment_count = count(ForumComment::where('post_id', $valuethread->id)->where('deleted_at', null)->get());
                 $valuethread->subforum_follow = $follow_subforum;
                 $valuethread->subforum_data = $subforum_data;
                 $valuethread->author_data = $author;
@@ -1243,7 +1246,7 @@ class ForumController extends Controller
 
                     $likes = count(ForumUpvote::where('post_id', $valuepost->id)->get());
 
-                    $check_comment = ForumComment::where('post_id', $valuepost->id)->orderBy('created_at', 'desc')->first();
+                    $check_comment = ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->orderBy('created_at', 'desc')->first();
         
                     $author = User::where('id', $valuepost->user_id)->first();
         
@@ -1295,7 +1298,7 @@ class ForumController extends Controller
                     $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                     $valuepost->member_since = date("F Y", strtotime($author['created_at']));
                     $valuepost->like_count = $likes;
-                    $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
+                    $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->get());
                     $valuepost->subforum_follow = $follow_subforum;
                     $valuepost->subforum_data = $subforum_data;
                     $valuepost->author_data = $author;
@@ -1360,7 +1363,7 @@ class ForumController extends Controller
 
                         $likes = count(ForumUpvote::where('post_id', $valuepost->id)->get());
 
-                        $check_comment = ForumComment::where('post_id', $valuepost->id)->orderBy('created_at', 'desc')->first();
+                        $check_comment = ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->orderBy('created_at', 'desc')->first();
             
                         $author = User::where('id', $valuepost->user_id)->first();
             
@@ -1412,7 +1415,7 @@ class ForumController extends Controller
                         $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                         $valuepost->member_since = date("F Y", strtotime($author['created_at']));
                         $valuepost->like_count = $likes;
-                        $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
+                        $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->get());
                         $valuepost->subforum_follow = $follow_subforum;
                         $valuepost->subforum_data = $subforum_data;
                         $valuepost->author_data = $author;
@@ -1598,7 +1601,7 @@ class ForumController extends Controller
                 'author_photo' => "https://hainaservice.com/storage/".$author['photo'],
                 'member_since' => date("F Y", strtotime($author['created_at'])),
                 'like_count' => $likes,
-                'comment_count' => count(ForumComment::where('post_id', $value->id)->get()),
+                'comment_count' => count(ForumComment::where('post_id', $value->id)->where('deleted_at', null)->get()),
                 'view_count' => $value->view_count,
                 'share_count' => $value->share_count,
                 'created' => $value->created_at,
@@ -1734,7 +1737,7 @@ class ForumController extends Controller
                 'author_photo' => "https://hainaservice.com/storage/".$author['photo'],
                 'member_since' => date("F Y", strtotime($author['created_at'])),
                 'like_count' => $likes,
-                'comment_count' => count(ForumComment::where('post_id', $value->id)->get()),
+                'comment_count' => count(ForumComment::where('post_id', $value->id)->where('deleted_at', null)->get()),
                 'view_count' => $value->view_count,
                 'share_count' => $value->share_count,
                 'created' => $value->created_at,
@@ -1957,7 +1960,7 @@ class ForumController extends Controller
                     $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                     $valuepost->member_since = date("F Y", strtotime($author['created_at']));
                     $valuepost->like_count = $likes;
-                    $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
+                    $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->get());
                     $valuepost->subforum_follow = $follow_subforum;
                     $valuepost->subforum_data = $subforum_data;
                     $valuepost->author_data = $author;
@@ -2047,7 +2050,7 @@ class ForumController extends Controller
                     $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                     $valuepost->member_since = date("F Y", strtotime($author['created_at']));
                     $valuepost->like_count = $likes;
-                    $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
+                    $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->get());
                     $valuepost->subforum_follow = $follow_subforum;
                     $valuepost->subforum_data = $subforum_data;
                     $valuepost->author_data = $author;
@@ -2110,7 +2113,7 @@ class ForumController extends Controller
 
                     $likes = count(ForumUpvote::where('post_id', $valuepost->id)->get());
 
-                    $check_comment = ForumComment::where('post_id', $valuepost->id)->orderBy('created_at', 'desc')->first();
+                    $check_comment = ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->orderBy('created_at', 'desc')->first();
         
                     $author = User::where('id', $valuepost->user_id)->first();
         
@@ -2149,7 +2152,7 @@ class ForumController extends Controller
                     $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
                     $valuepost->member_since = date("F Y", strtotime($author['created_at']));
                     $valuepost->like_count = $likes;
-                    $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->get());
+                    $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->get());
                     $valuepost->subforum_follow = $follow_subforum;
                     $valuepost->subforum_data = $subforum_data;
                     $valuepost->author_data = $author;
