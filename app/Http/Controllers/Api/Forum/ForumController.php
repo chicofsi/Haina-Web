@@ -1580,9 +1580,7 @@ class ForumController extends Controller
 
     public function showAllThreads(Request $request){
 
-        $list_post = ForumPost::where('deleted_at', null)->with(['comments' => function($q){
-            $q->where('forum_comment.deleted_at', '=', null);
-        }], 'images', 'videos')->get();
+        $list_post = ForumPost::where('deleted_at', null)->with('comments', 'images', 'videos')->get();
         $hot_threads = [];
         $threads = [];
 
