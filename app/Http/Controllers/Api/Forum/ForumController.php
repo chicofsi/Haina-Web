@@ -264,7 +264,9 @@ class ForumController extends Controller
 
     public function showAllSubforum(){
 
-            $check = Subforum::with('posts')->get();
+            $check = Subforum::with(['posts' => function($q){
+                $q->where('forum_post.deleted_at', '=', null);
+            }])->get();
 
             if(count($check) != 0){
                 foreach($check as $key => $value){
@@ -795,7 +797,9 @@ class ForumController extends Controller
         else{
             $result = new \stdClass();
 
-            $subforum = Subforum::where('name', 'like', '%'.$request->keyword.'%')->with('posts')->get();
+            $subforum = Subforum::where('name', 'like', '%'.$request->keyword.'%')->with(['posts' => function($q){
+                $q->where('forum_post.deleted_at', '=', null);
+            }])->get();
 
             foreach($subforum as $keysub => $valuesub){
                 $creator_count = [];
@@ -1834,7 +1838,9 @@ class ForumController extends Controller
 
         foreach($checkmod as $key => $value){
             //rolegw
-            $subforums = Subforum::where('id', $value->subforum_id)->with('posts')->first();
+            $subforums = Subforum::where('id', $value->subforum_id)->with(['posts' => function($q){
+                $q->where('forum_post.deleted_at', '=', null);
+            }])->first();
 
             if($subforums){
                 $creator_count = [];
@@ -1933,7 +1939,9 @@ class ForumController extends Controller
     
 
         foreach($checksubmod as $key => $value){
-            $subforums_submod = Subforum::where('id', $value->subforum_id)->with('posts')->get();
+            $subforums_submod = Subforum::where('id', $value->subforum_id)->with(['posts' => function($q){
+                $q->where('forum_post.deleted_at', '=', null);
+            }])->get();
 
             if($subforums_submod){
 
