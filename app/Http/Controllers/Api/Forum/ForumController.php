@@ -117,7 +117,9 @@ class ForumController extends Controller
     }
 
     public function showMySubforum(){
-            $check = Subforum::where('creator_id', Auth::id())->with('posts')->get();
+            $check = Subforum::where('creator_id', Auth::id())->with(['posts' => function($q){
+                $q->where('forum_post.deleted_at', '=', null);
+            }])->get();
 
             if(count($check) != 0){
                
