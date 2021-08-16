@@ -857,7 +857,7 @@ class ForumController extends Controller
 
                 $category_name = ForumCategory::where('id', $valuesub->category_id)->first();
                 $subforum_creator = User::where('id', $valuesub->creator_id)->first();
-                $subforum_data['creator_username'] = $subforum_creator['username'];
+                $valuesub->creator_username = $subforum_creator['username'];
 
                 $valuesub->category = $category_name['name'];
                 $valuesub->category_zh = $category_name['name_zh'];
