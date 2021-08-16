@@ -529,7 +529,7 @@ class ForumController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $post_detail = ForumPost::where('id', $request->post_id)->with('images', 'videos')->first();
+            $post_detail = ForumPost::where('id', $request->post_id)->where('deleted_at', null)->with('images', 'videos')->first();
 
             if(!$post_detail){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Post not found!','data'=> '']), 404);
