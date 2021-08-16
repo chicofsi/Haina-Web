@@ -832,7 +832,7 @@ class ForumController extends Controller
 
                     $check->deleted_at = $delete_time;
     
-                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Comment deleted successfully!','data'=> $check]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Comment deleted successfully!','data'=> $check]), 200);
                 }
             } 
         }
