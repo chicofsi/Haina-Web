@@ -104,6 +104,11 @@ class ForumController extends Controller
                     'message' => $user['username'].' created "'.$new_subforum->name.'" subforum.'
                 ]);
 
+                $autofollow = $new_follow_subforum = SubforumFollowers::create([
+                    'subforum_id' => $new_subforum->id,
+                    'user_id' => Auth::id()
+                ]);
+
                 $modlog = ForumLog::create([
                     'subforum_id' => $new_subforum->id,
                     'forum_action' => 'MOD',
