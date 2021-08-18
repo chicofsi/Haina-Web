@@ -2019,8 +2019,8 @@ class ForumController extends Controller
         }
     
 
-        foreach($checksubmod as $key => $value){
-            $subforums_submod = Subforum::where('id', $value->subforum_id)->with(['posts' => function($q){
+        foreach($checksubmod as $keys => $values){
+            $subforums_submod = Subforum::where('id', $values->subforum_id)->with(['posts' => function($q){
                 $q->where('forum_post.deleted_at', '=', null);
             }])->get();
 
@@ -2028,7 +2028,7 @@ class ForumController extends Controller
 
                 $creator_count = [];
 
-                $value->post_count = count(ForumPost::where('subforum_id', $subforums_submod['id'])->where('deleted_at', null)->get());
+                $values->post_count = count(ForumPost::where('subforum_id', $subforums_submod['id'])->where('deleted_at', null)->get());
 
                 $category_name = ForumCategory::where('id', $subforums_submod['category_id'])->first();
 
@@ -2044,7 +2044,7 @@ class ForumController extends Controller
                     array_push($creator_count, $valuepost->user_id);
                 }
 
-                $check_followed = SubforumFollowers::where('subforum_id', $subforum['id'])->where('user_id', Auth::id())->first();
+                $check_followed = SubforumFollowers::where('subforum_id', $subforums_submod['id'])->where('user_id', Auth::id())->first();
                 if($check_followed){
                     $subforum['followed'] = true;
                 }
