@@ -2023,11 +2023,11 @@ class ForumController extends Controller
                 $q->where('forum_post.deleted_at', '=', null);
             }])->get();
 
-            if($subforums_submod){
+            if(count($subforums_submod) > 0){
 
                 $creator_count = [];
 
-                //$subforums_submod['post_count'] = count(ForumPost::where('subforum_id', $subforums_submod['id'])->where('deleted_at', null)->get());
+                $subforums_submod['post_count'] = count(ForumPost::where('subforum_id', $subforums_submod['id'])->where('deleted_at', null)->get());
 
                 $category_name = ForumCategory::where('id', $subforums_submod['category_id'])->first();
 
