@@ -2017,13 +2017,13 @@ class ForumController extends Controller
             }
             
         }
-    
+        dd($checksubmod);
         foreach($checksubmod as $keys => $values){
             $subforums_submod = Subforum::where('id', $values->subforum_id)->with(['posts' => function($q){
                 $q->where('forum_post.deleted_at', '=', null);
             }])->get();
 
-            dd($subforums_submod['id']);
+            
 
             if($subforums_submod){
 
