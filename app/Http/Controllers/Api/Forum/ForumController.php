@@ -1928,6 +1928,9 @@ class ForumController extends Controller
                 $subforums['category_zh'] = $category_name['name_zh'];
                 $subforums['role'] = "mod";
 
+                $subforum_creator = User::where('id', $subforums['creator_id'])->first();
+                $subforums['creator_username'] = $subforum_creator['username'];
+
                 $post = ForumPost::where('subforum_id', $subforums['id'])->where('deleted_at', null)->get();
                 foreach($post as $keypost => $valuepost){
                     array_push($creator_count, $valuepost->user_id);
@@ -2031,7 +2034,10 @@ class ForumController extends Controller
 
                 $subforums_submod['category'] = $category_name['name'];
                 $subforums_submod['category_zh'] = $category_name['name_zh'];
-                $subforums_submod['role'] = "mod";
+                $subforums_submod['role'] = "submod";
+
+                $subforum_creator = User::where('id', $subforums_submod['creator_id'])->first();
+                $subforums_submod['creator_username'] = $subforum_creator['username'];
 
                 $post = ForumPost::where('subforum_id', $subforums_submod['id'])->where('deleted_at', null)->get();
                 foreach($post as $keypost => $valuepost){
