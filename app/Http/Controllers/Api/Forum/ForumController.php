@@ -2027,7 +2027,7 @@ class ForumController extends Controller
 
                 $creator_count = [];
 
-                $subforums_submod['post_count'] = count(ForumPost::where('subforum_id', $subforums_submod['id'])->where('deleted_at', null)->get());
+                //$subforums_submod['post_count'] = count(ForumPost::where('subforum_id', $subforums_submod['id'])->where('deleted_at', null)->get());
 
                 $category_name = ForumCategory::where('id', $subforums_submod['category_id'])->first();
 
