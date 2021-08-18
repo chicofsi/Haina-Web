@@ -2024,6 +2024,8 @@ class ForumController extends Controller
                 $q->where('forum_post.deleted_at', '=', null);
             }])->get();
 
+            dd($subforums_submod);
+
             if($subforums_submod){
 
                 $creator_count = [];
