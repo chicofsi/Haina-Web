@@ -131,7 +131,7 @@ class ForumController extends Controller
                 foreach($check as $key => $value){
                     $creator_count = [];
 
-                    $value->total_post = count(ForumPost::where('subforum_id', $value->id)->where('deleted_at', null)->get());
+                    $value->post_count = count(ForumPost::where('subforum_id', $value->id)->where('deleted_at', null)->get());
 
                     $category_name = ForumCategory::where('id', $value->category_id)->first();
 
@@ -284,7 +284,7 @@ class ForumController extends Controller
                     $creator_count = [];
                     $check_followed = SubforumFollowers::where('subforum_id', $value->id)->where('user_id', Auth::id())->first();
 
-                    $value->total_post = count(ForumPost::where('subforum_id', $value->id)->where('deleted_at', null)->get());
+                    $value->post_count = count(ForumPost::where('subforum_id', $value->id)->where('deleted_at', null)->get());
 
                     $category_name = ForumCategory::where('id', $value->category_id)->first();
 
@@ -858,7 +858,7 @@ class ForumController extends Controller
                 $creator_count = [];
                 $check_followed = SubforumFollowers::where('subforum_id', $valuesub->id)->where('user_id', Auth::id())->first();
 
-                $valuesub->total_post = count(ForumPost::where('subforum_id', $valuesub->id)->where('deleted_at', null)->get());
+                $valuesub->post_count = count(ForumPost::where('subforum_id', $valuesub->id)->where('deleted_at', null)->get());
 
                 $category_name = ForumCategory::where('id', $valuesub->category_id)->first();
                 $subforum_creator = User::where('id', $valuesub->creator_id)->first();
@@ -1920,7 +1920,7 @@ class ForumController extends Controller
             if($subforums){
                 $creator_count = [];
 
-                $value->total_post = count(ForumPost::where('subforum_id', $subforums['id']->where('deleted_at', null))->get());
+                $value->post_count = count(ForumPost::where('subforum_id', $subforums['id']->where('deleted_at', null))->get());
 
                 $category_name = ForumCategory::where('id', $subforums['category_id'])->first();
 
@@ -2025,7 +2025,7 @@ class ForumController extends Controller
 
                 $creator_count = [];
 
-                $value->total_post = count(ForumPost::where('subforum_id', $subforums_submod['id'])->where('deleted_at', null)->get());
+                $value->post_count = count(ForumPost::where('subforum_id', $subforums_submod['id'])->where('deleted_at', null)->get());
 
                 $category_name = ForumCategory::where('id', $subforums_submod['category_id'])->first();
 
@@ -2131,7 +2131,7 @@ class ForumController extends Controller
                 $creator_count = [];
                 $check_followed = SubforumFollowers::where('subforum_id', $subforum['id'])->where('user_id', Auth::id())->first();
 
-                $value->total_post = count(ForumPost::where('subforum_id', $subforum['id'])->where('deleted_at', null)->get());
+                $value->post_count = count(ForumPost::where('subforum_id', $subforum['id'])->where('deleted_at', null)->get());
 
                 $category_name = ForumCategory::where('id', $subforum['category_id'])->first();
 
