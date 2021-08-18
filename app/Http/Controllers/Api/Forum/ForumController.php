@@ -1907,6 +1907,8 @@ class ForumController extends Controller
 
         $checksubmod = ForumMod::where('user_id', Auth::id())->where('role', 'submod')->get();
 
+        dd($checksubmod);
+
         $role = new \stdClass();
         $modlist = [];
         $submodlist = [];
@@ -2019,12 +2021,13 @@ class ForumController extends Controller
         }
     
 
+
         foreach($checksubmod as $keys => $values){
             $subforums_submod = Subforum::where('id', $values->subforum_id)->with(['posts' => function($q){
                 $q->where('forum_post.deleted_at', '=', null);
             }])->get();
 
-            if(count($subforums_submod) > 0){
+            if($subforums_submod){
 
                 $creator_count = [];
 
