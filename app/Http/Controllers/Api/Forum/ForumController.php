@@ -2018,11 +2018,104 @@ class ForumController extends Controller
             
         }
     
+        foreach($checksubmod as $keys => $values){
+            $subforums_submod = Subforum::where('id', $values->subforum_id)->with(['posts' => function($q){
+                $q->where('forum_post.deleted_at', '=', null);
+            }])->get();
 
+            if($subforums_submod){
+
+                $creator_count = [];
+
+                $subforums_submod['post_count'] = count(ForumPost::where('subforum_id', $subforums_submod['id'])->where('deleted_at', null)->get());
+
+                $category_name = ForumCategory::where('id', $subforums_submod['category_id'])->first();
+
+                $subforums_submod['category'] = $category_name['name'];
+                $subforums_submod['category_zh'] = $category_name['name_zh'];
+                $subforums_submod['role'] = "submod";
+
+                $subforum_creator = User::where('id', $subforums_submod['creator_id'])->first();
+                $subforums_submod['creator_username'] = $subforum_creator['username'];
+
+                $post = ForumPost::where('subforum_id', $subforums_submod['id'])->where('deleted_at', null)->get();
+                foreach($post as $keypost => $valuepost){
+                    array_push($creator_count, $valuepost->user_id);
+                }
+
+                $check_followed = SubforumFollowers::where('subforum_id', $subforums_submod['id'])->where('user_id', Auth::id())->first();
+                if($check_followed){
+                    $subforum['followed'] = true;
+                }
+                else{
+                    $subforum['followed'] = false;
+                }
+                
+
+                $total_poster = array_unique($creator_count);
+                $subforums_submod['total_poster'] = count($total_poster);
+
+                foreach($subforums_submod['posts'] as $keypost => $valuepost){
+                    $author = User::where('id', $valuepost->user_id)->first();
+
+                    $likes = count(ForumUpvote::where('post_id', $valuepost->id)->get());
+
+                    $check_comment = ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->orderBy('created_at', 'desc')->first();
+        
+                    $author = User::where('id', $valuepost->user_id)->first();
+        
+                    $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+        
+                    $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
+                    $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
+        
+                    $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
+
+                    $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
+                    $subforum_data['creator_username'] = $subforum_creator['username'];
+
+                    $subforum_data['category'] = $category_name['name'];
+                    $subforum_data['category_zh'] = $category_name['name_zh'];
+
+                    $subforum_followers_count = count(SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->get());
+                    $subforum_post_count = count(ForumPost::where('subforum_id', $valuepost->subforum_id)->where('deleted_at', null)->get());
+
+                    $subforum_data['subforum_followers'] = $subforum_followers_count;
+                    $subforum_data['post_count'] = $subforum_post_count;
+
+                    if($subforum_following){
+                        $follow_subforum = true;
+                    }
+                    else{
+                        $follow_subforum = false;
+                    }
+                    if(!$check_upvote){
+                        $upvote = false;
+                    }
+                    else{
+                        $upvote = true;
+                    }
+                    if($valuepost->user_id != Auth::id()){
+                        $valuepost->upvoted = $upvote;
+                    }
+                    $valuepost->author = $author['username'];
+                    $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
+                    $valuepost->member_since = date("F Y", strtotime($author['created_at']));
+                    $valuepost->like_count = $likes;
+                    $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->get());
+                    $valuepost->subforum_follow = $follow_subforum;
+                    $valuepost->subforum_data = $subforum_data;
+                    $valuepost->author_data = $author;
+                }
+
+                array_push($submodlist, $subforums_submod);
+
+            }
+        }
 
         
         $role->mod_list = $modlist;
-        //$role->submod_list = $submodlist;
+        $role->submod_list = $submodlist;
 
         if(count($modlist) == 0 &&  count($submodlist) == 0){
             return(response()->json(new ValueMessage(['value'=>0,'message'=>'No Mod Role!','data'=> '']), 404));
