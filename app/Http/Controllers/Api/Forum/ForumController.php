@@ -2138,6 +2138,9 @@ class ForumController extends Controller
                 $subforum['category'] = $category_name['name'];
                 $subforum['category_zh'] = $category_name['name_zh'];
 
+                $subforum_creator = User::where('id', $subforum['creator_id'])->first();
+                $subforum['creator_username'] = $subforum_creator['username'];
+
                 $post = ForumPost::where('subforum_id', $subforum['id'])->where('deleted_at', null)->get();
                 foreach($post as $keypost => $valuepost){
                     array_push($creator_count, $valuepost->user_id);
