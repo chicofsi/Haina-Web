@@ -1920,7 +1920,7 @@ class ForumController extends Controller
             if($subforums){
                 $creator_count = [];
 
-                $value->post_count = count(ForumPost::where('subforum_id', $subforums['id'])->where('deleted_at', null)->get());
+                $subforums['post_count'] = count(ForumPost::where('subforum_id', $subforums['id'])->where('deleted_at', null)->get());
 
                 $category_name = ForumCategory::where('id', $subforums['category_id'])->first();
 
@@ -2024,13 +2024,11 @@ class ForumController extends Controller
                 $q->where('forum_post.deleted_at', '=', null);
             }])->get();
 
-            dd($subforums_submod);
-
             if($subforums_submod){
 
                 $creator_count = [];
 
-                $values->post_count = count(ForumPost::where('subforum_id', $subforums_submod['id'])->where('deleted_at', null)->get());
+                $subforums_submod['post_count'] = count(ForumPost::where('subforum_id', $subforums_submod['id'])->where('deleted_at', null)->get());
 
                 $category_name = ForumCategory::where('id', $subforums_submod['category_id'])->first();
 
