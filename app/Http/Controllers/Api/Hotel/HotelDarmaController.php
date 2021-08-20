@@ -683,6 +683,12 @@ class HotelDarmaController extends Controller
                 $checkin = $bookingsession->check_in_date;
                 $checkout = $bookingsession->check_out_date;
 
+                if($request->city_id != null){
+                    $update_city = HotelDarmaBookingSession::where('id', $bookingsession->id)->update([
+                        'city_id' => $request->city_id
+                    ]);
+                }
+
                 $hotelid = $request->hotel_id;
 
                 $room_req_data = HotelDarmaBookingRoomReq::select('room_type', 'is_request_child_bed', 'child_num', 'child_age')->where('id_booking_session',$bookingsession->id)->first();
