@@ -679,7 +679,7 @@ class HotelDarmaController extends Controller
                 $token=$this->checkLoginUser();
                 $passport = $bookingsession->pax_passport;
                 $country = $bookingsession->country_id;
-                $city = $request->city_id ?? $bookingsession->city_id;
+                //$city = $request->city_id ?? $bookingsession->city_id;
                 $checkin = $bookingsession->check_in_date;
                 $checkout = $bookingsession->check_out_date;
 
@@ -687,6 +687,11 @@ class HotelDarmaController extends Controller
                     $update_city = HotelDarmaBookingSession::where('id', $bookingsession->id)->update([
                         'city_id' => $request->city_id
                     ]);
+
+                    $city = $request->city_id;
+                }
+                else{
+                    $city = $bookingsession->city_id;
                 }
 
                 $hotelid = $request->hotel_id;
