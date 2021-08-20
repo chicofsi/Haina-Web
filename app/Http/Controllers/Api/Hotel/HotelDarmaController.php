@@ -561,6 +561,106 @@ class HotelDarmaController extends Controller
         }
     }
 
+    //Search Directly by Hotel Name
+    public function searchByHotelName(Request $request){
+        $validator = Validator::make($request->all(), [
+            'hotel_name' => 'required',
+            'check_in_date' => 'required',
+            'check_out_date' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $this->deleteSession(Auth::id());
+
+            $userid = $this->username;
+            $token = $this->checkLoginUser();
+            $room_request = [
+                'roomType' => "Single",
+                'isRequestChildBed' => false,
+                'childNum' => 0,
+                'childAges' => []
+            ];
+
+            try{
+
+                $body = [
+                    'hotelNameFilter' => $request->hotel_name,
+                    'userID' => $userid,
+                    'accessToken' => $token,
+                    'checkInDate' => $request->check_in_date,
+                    'checkOutDate' => $request->check_out_date,
+                    'roomRequest' => array($room_request)
+                ];
+
+                $response=$this->client->request(
+                    'POST',
+                    'Hotel/HotelList5',
+                    [
+                        'form_params' => $body,
+                        'on_stats' => function (TransferStats $stats) use (&$url) {
+                            $url = $stats->getEffectiveUri();
+                        }
+                    ]  
+                );
+
+                $bodyresponse=json_decode($response->getBody()->getContents());
+        
+                    DarmawisataRequest::insert(
+                        [
+                            'request'=>json_encode($body),
+                            'response'=>json_encode($bodyresponse),
+                            'status'=>$bodyresponse->status,
+                            'url'=>$url,
+                            'response_code'=>$response->getStatusCode()
+                        ]
+                    );
+
+                    if($bodyresponse->status=="FAILED"){
+                        if($bodyresponse->respMessage=="member authentication failed"){
+                            return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+                        }else if($bodyresponse->respMessage=="wrong format request or null mandatory data"){
+                            return response()->json(new ValueMessage(['value'=>0,'message'=>'Data is incomplete!','data'=> '']), 403);
+                        }else if($bodyresponse->respMessage=="hotel not available"){
+                            return response()->json(new ValueMessage(['value'=>0,'message'=>'Hotel Unavailable!','data'=> '']), 401);
+                        }else if($bodyresponse->respMessage=="no room found"){
+                            return response()->json(new ValueMessage(['value'=>0,'message'=>'No Room Found!','data'=> '']), 401);
+                        }
+                    }
+                    else{
+                        $body = [
+                            'user_id' => Auth::id(),
+                            'pax_passport' => "ID",
+                            'country_id' => "ID",
+                            'check_in_date' => $request->check_in_date,
+                            'check_out_date' => $request->check_out_date
+                        ];
+        
+                        $booksession = HotelDarmaBookingSession::create($body);
+
+                        $roomreq_session = [
+                            'id_booking_session' => $booksession->id,
+                            'room_type' => 0,
+                            'is_request_child_bed' => 0,
+                            'child_num' => 0,
+                        ];
+
+                        $roomrequestdata = HotelDarmaBookingRoomReq::create($roomreq_session);
+
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
+
+                    }
+            }catch(RequestException $e) {
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+            }
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
+
+
+        }
+    }
+
     //Search #2 - Search Available Rooms in Hotel
     public function searchRoom(Request $request){
         $bookingsession=$this->checkSession(Auth::id());
