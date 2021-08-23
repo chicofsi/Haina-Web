@@ -149,7 +149,8 @@ class PulsaController extends Controller
 
                 if($checkfive){
                     $startdate = new DateTime("now");
-                    $minutediff = $startdate->diff(new DateTime($checkfive['created_at']));
+                    $checkdate = new DateTime($checkfive['created_at']);
+                    $minutediff = $startdate->diff($checkdate);
 
                     $minutes = $minutediff->days * 24 * 60;
                     $minutes += $minutediff->h * 60;
