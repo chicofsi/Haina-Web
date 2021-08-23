@@ -201,7 +201,7 @@ class MidtransController extends Controller
             }else if($transaction_status=='pending'){
                 $settlement_time=null;
                 $status='UNPAID';
-                NotificationController::sendPush($token, "Waiting for payment", "There is a pending payment for booking at ".$hotel_name.". Please finish payment in 24 hours", "unfinish");
+                NotificationController::sendPush($token, "Waiting for payment", "There is a pending payment for booking at ".$hotel_name.". Please finish payment in 24 hours", "Hotel", "unfinish");
             }else if($transaction_status=='expire'){
                 $settlement_time=null;
                 $status='CANCELLED';
