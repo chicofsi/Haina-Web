@@ -145,60 +145,76 @@ class PulsaController extends Controller
                 "signature"     => $signature,
             ];
             try {
-                $response=$this->client->request(
-                    'POST',
-                    'inquirytransaction',
-                    [
-                        'form_params' => $body,
-                        'on_stats' => function (TransferStats $stats) use (&$url) {
-                            $url = $stats->getEffectiveUri();
+                $checkfive = Transaction::where('order_id', $request->order_id)->where('product_code', $request->product_code)->orderBy('created_at', 'desc')->first();
+
+                if($checkfive){
+                    $startdate = date("Y-m-d h:i:s");
+                    $minutediff = $startdate->diff(new DateTime($checkfive['created_at']));
+
+                    $minutes = $minutediff->days * 24 * 60;
+                    $minutes += $minutediff->h * 60;
+                    $minutes += $minutediff->i;
+
+                    if($minutes <= 5){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Please wait 5 minutes for the same transaction!','data'=> '']), 401);
+                    }
+                    else{
+                        $response=$this->client->request(
+                            'POST',
+                            'inquirytransaction',
+                            [
+                                'form_params' => $body,
+                                'on_stats' => function (TransferStats $stats) use (&$url) {
+                                    $url = $stats->getEffectiveUri();
+                                }
+                            ]  
+                        );
+
+                        $bodyresponse=$response->getBody()->getContents();
+                        EspayRequest::insert(
+                            [
+                                'order_id'=>$request->order_id,
+                                'uuid'=>$uuid,
+                                'request'=>json_encode($body),
+                                'response'=>$bodyresponse,
+                                'error_code'=>json_decode($bodyresponse)->error_code,
+                                'url'=>$url,
+                                'response_code'=>$response->getStatusCode(),
+                            ]
+                        );
+                        //return $response;
+
+                        $bill = json_decode($bodyresponse);
+                        $bill->product_code = $request->product_code;
+
+                        if(isset($bill->data->bill_period)){
+                            $bill->data->bill_date = $bill->data->bill_period;
+                            unset($bill->data->bill_period);
                         }
-                    ]  
-                );
+                        $product=Product::where('product_code',$request->product_code)->first();
+                        
+                        $billamount = $bill->amount/100;
 
-                $bodyresponse=$response->getBody()->getContents();
-                EspayRequest::insert(
-                    [
-                        'order_id'=>$request->order_id,
-                        'uuid'=>$uuid,
-                        'request'=>json_encode($body),
-                        'response'=>$bodyresponse,
-                        'error_code'=>json_decode($bodyresponse)->error_code,
-                        'url'=>$url,
-                        'response_code'=>$response->getStatusCode(),
-                    ]
-                );
-                //return $response;
+                        $order_id=$this->generateOrderId();
+                        $inquiry=TransactionInquiry::insert([
+                            "id_product" => $product->id,
+                            "order_id" => $order_id, 
+                            "id_user" => $request->user()->id,
+                            "amount" => $billamount,
+                            "inquiry_data" => json_encode($bill->data)
+                        ]);
+                        $inquiry=TransactionInquiry::where('order_id',$order_id)->first();
+                        $bill->inquiry = $inquiry->id;
+                        if(isset($bill) && $bill->error_code == 0000){
+                            $billdata = new InquiryBillsResource($bill);
 
-                $bill = json_decode($bodyresponse);
-                $bill->product_code = $request->product_code;
-
-                if(isset($bill->data->bill_period)){
-                    $bill->data->bill_date = $bill->data->bill_period;
-                    unset($bill->data->bill_period);
-                }
-                $product=Product::where('product_code',$request->product_code)->first();
-                
-                $billamount = $bill->amount/100;
-
-                $order_id=$this->generateOrderId();
-                $inquiry=TransactionInquiry::insert([
-                    "id_product" => $product->id,
-                    "order_id" => $order_id, 
-                    "id_user" => $request->user()->id,
-                    "amount" => $billamount,
-                    "inquiry_data" => json_encode($bill->data)
-                ]);
-                $inquiry=TransactionInquiry::where('order_id',$order_id)->first();
-                $bill->inquiry = $inquiry->id;
-                if(isset($bill) && $bill->error_code == 0000){
-                    $billdata = new InquiryBillsResource($bill);
-
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
-                }
-                else{
-                    return response()->json(new ValueMessage(['value'=>0,'message'=>$bill->error_desc,'data'=> $bill->error_code]), 500);
-                }
+                            return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
+                        }
+                        else{
+                            return response()->json(new ValueMessage(['value'=>0,'message'=>$bill->error_desc,'data'=> $bill->error_code]), 500);
+                        }
+                    }
+            }
             }catch(RequestException $e) {
                 echo Psr7\Message::toString($e->getRequest());
                 if ($e->hasResponse()) {
@@ -249,52 +265,32 @@ class PulsaController extends Controller
             "signature"     => $signature,
         ];
         try {
+  
+            $response=$this->client->request(
+                'POST',
+                'inquirytransaction',
+                [
+                    'form_params' => $body
+                ]  
+            );
+            //return $response;
 
-            $checkfive = Transaction::where('order_id', $request->order_id)->where('product_code', $request->product_code)->orderBy('created_at', 'desc')->first();
+            $bill = json_decode($response->getBody()->getContents());
+            $bill->product_code = $request->product_code;
 
-            if($checkfive){
-                $startdate = date("Y-m-d h:i:s");
-                $minutediff = $startdate->diff(new DateTime($checkfive['created_at']));
-
-                $minutes = $minutediff->days * 24 * 60;
-                $minutes += $minutediff->h * 60;
-                $minutes += $minutediff->i;
-
-                if($minutes <= 5){
-                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Please wait 5 minutes for the same transaction!','data'=> '']), 401);
-                }
-                else{
-                    
-                    $response=$this->client->request(
-                        'POST',
-                        'inquirytransaction',
-                        [
-                            'form_params' => $body
-                        ]  
-                    );
-                    //return $response;
-
-                    $bill = json_decode($response->getBody()->getContents());
-                    $bill->product_code = $request->product_code;
-
-                    if(isset($bill->data->bill_period)){
-                        $bill->data->bill_date = $bill->data->bill_period;
-                        unset($bill->data->bill_period);
-                    }
-
-                    if(isset($bill) && $bill->error_code == 0000){
-                        $billdata = new BillResource($bill);
-
-                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
-                    }
-                    else{
-                        return response()->json(new ValueMessage(['value'=>0,'message'=>$bill->error_desc,'data'=> $bill->error_code]), 500);
-                    }
-                }
-
+            if(isset($bill->data->bill_period)){
+                $bill->data->bill_date = $bill->data->bill_period;
+                unset($bill->data->bill_period);
             }
 
-            
+            if(isset($bill) && $bill->error_code == 0000){
+                $billdata = new BillResource($bill);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>$bill->error_desc,'data'=> $bill->error_code]), 500);
+            }   
         }catch(RequestException $e) {
             echo Psr7\Message::toString($e->getRequest());
             if ($e->hasResponse()) {
