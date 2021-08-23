@@ -123,7 +123,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	{
 		Route::post('/inquiry'  , [PulsaController::class, 'getInquiryBills']);
 		Route::post('/transaction'  , [PulsaController::class, 'addBillsTransaction']);
-		Route::post('/amountbill'  , [PulsaController::class, 'getAmountBills']);
+		//Route::post('/amountbill'  , [PulsaController::class, 'getAmountBills']);
 		Route::post('/directbill'  , [PulsaController::class, 'getDirectBills']);
 	});
 
