@@ -148,8 +148,8 @@ class PulsaController extends Controller
                 $checkfive = Transaction::where('customer_number', $request->order_id)->where('id_product', $product['id'])->orderBy('created_at', 'desc')->first();
 
                 if($checkfive){
-                    $startdate = date("Y-m-d h:i:s");
-                    $minutediff = $startdate->diff(strtotime($checkfive['created_at']));
+                    //$startdate = date("Y-m-d h:i:s");
+                    $minutediff = date("Y-m-d h:i:s")->diff(strtotime($checkfive['created_at']));
 
                     $minutes = $minutediff->days * 24 * 60;
                     $minutes += $minutediff->h * 60;
