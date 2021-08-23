@@ -38,6 +38,7 @@ use App\Http\Controllers\Api\Ticket\TicketController;
 use App\Http\Controllers\Api\Property\PropertyDataController;
 use App\Http\Controllers\Api\PostCategoryController;
 use App\Http\Controllers\Api\CityController;
+use App\Http\Controllers\Api\Forum\ForumController;
 
 /*
 |--------------------------------------------------------------------------
