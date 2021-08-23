@@ -145,7 +145,7 @@ class PulsaController extends Controller
                 "signature"     => $signature,
             ];
             try {
-                $checkfive = Transaction::where('order_id', $request->order_id)->where('product_code', $request->product_code)->orderBy('created_at', 'desc')->first();
+                $checkfive = Transaction::where('customer_number', $request->order_id)->where('id_product', $product['id'])->orderBy('created_at', 'desc')->first();
 
                 if($checkfive){
                     $startdate = date("Y-m-d h:i:s");
