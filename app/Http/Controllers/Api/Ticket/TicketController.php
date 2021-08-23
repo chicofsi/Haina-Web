@@ -33,6 +33,7 @@ use App\Models\FlightAddons;
 use App\Models\FlightAddonsMeal;
 use App\Models\FlightBookingDetails;
 use App\Models\Passengers;
+use App\Models\PaymentMethod;
 
 
 class TicketController extends Controller
@@ -1174,7 +1175,7 @@ class TicketController extends Controller
         $bookingsession=$this->checkSession(Auth::id());
         $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->get();
         $detailssession=FlightDetailsSession::with('flighttripsession')->where('id_flight_booking_session',$bookingsession->id)->get();
-
+        // dd($response);
         $flightbooking=FlightBooking::create([
             "order_id"=> $this->generateOrderId(),
             "id_user" => Auth::id(),
@@ -1275,7 +1276,7 @@ class TicketController extends Controller
 
             
         }
-        $payment=PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
+        $payment=PaymentMethod::where('id',$id_payment_method)->with('category')->first();
         $this->chargeMidtrans($flightbooking,$payment);
     }
 

@@ -17,7 +17,7 @@ class News extends Model
     protected $table = 'news';
 
     protected $fillable = [
-        'title', 'url', 'photo_url', 'source', 'id_category', 'created_by',
+        'title', 'url', 'photo_url', 'source', 'id_category', 'created_by', 'language'
     ];
 
 
