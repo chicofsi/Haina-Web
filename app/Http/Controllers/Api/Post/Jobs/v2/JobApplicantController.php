@@ -59,16 +59,23 @@ class JobApplicantController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
             }
             else{
-                $applicant = [
-                    'id_user' => Auth::id(),
-                    'id_vacancy' => $request->id_vacancy,
-                    'status' => 'applied',
-                    'applicant_notes' => $request->applicant_notes,
-                ];
+                $check_owner = Company::where('id', $check_vacancy['id_company'])->first();
 
-                $new_applicant = JobVacancyApplicant::create($applicant);
-
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Apply Job Success!','data'=>$new_applicant]), 200);
+                if($check_owner['id_user'] == Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized: Cannot apply to own company','data'=> '']), 401);
+                }
+                else{
+                    $applicant = [
+                        'id_user' => Auth::id(),
+                        'id_vacancy' => $request->id_vacancy,
+                        'status' => 'applied',
+                        'applicant_notes' => $request->applicant_notes,
+                    ];
+    
+                    $new_applicant = JobVacancyApplicant::create($applicant);
+    
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Apply Job Success!','data'=>$new_applicant]), 200);
+                }
             }
         }
     }
