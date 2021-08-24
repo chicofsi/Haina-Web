@@ -64,9 +64,13 @@ class JobApplicantController extends Controller
             }
             else{
                 $check_owner = Company::where('id', $check_vacancy['id_company'])->first();
+                $check_apply = JobVacancyApplicant::where('id_user', Auth::id())->where('id_vacancy', $check_vacancy['id'])->first();
 
                 if($check_owner['id_user'] == Auth::id()){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized: Cannot apply to own company','data'=> '']), 401);
+                }
+                else if($checkapply){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized: Already applied to this job','data'=> '']), 401);
                 }
                 else{
                     $applicant = [
