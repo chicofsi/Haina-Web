@@ -86,11 +86,11 @@ class JobVacancyController extends Controller
 
             $check_company = Company::where('id', $request->id_company)->first();
 
-            if($check_company['id_user'] != Auth::id()){
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
-            }
-            else if(!($check_company)){
+            if(!$check_company){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Company not found!','data'=> '']), 404);
+            }
+            else if($check_company['id_user'] != Auth::id()){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
             }
             else{
                 $new_vacancy = JobVacancy::create($vacancy);
