@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Post\Jobs\v2;
+namespace App\Http\Controllers\Api\Jobs\v2;
 
 use App\Http\Controllers\Controller;
 
@@ -136,6 +136,26 @@ class JobVacancyController extends Controller
         }
     }
 
+    public function showVacancy(){
+        $company = Company::where('id_user', Auth::id())->first();
+
+        if($company){
+            $vacancy = JobVacancy::where('id_company', $company['id'])->get();
+
+            if($vacancy){
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Show Vacancy Success!','data'=> $vacancy]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy posted!','data'=> '']), 404);
+            }
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'You do not have any company!','data'=> '']), 404);
+        }
+
+        
+    }
+
     public function chargeMidtrans($transaction,$payment)
 	{
 		$username="SB-Mid-server-uUu-OOYw1hyxA9QH8wAbtDRl";
@@ -186,8 +206,6 @@ class JobVacancyController extends Controller
 		return $result;
 	}
 
-    public function showVacancy(){
-        
-    }
+    
 
 }
