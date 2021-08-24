@@ -63,6 +63,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
     Route::post('profile', [UserController::class, 'updateProfile']);
     Route::post('password', [UserController::class, 'changePassword']);
     
+	//old job
 	Route::group(['prefix' => 'jobs'], function() {
 		Route::post('application/post'  , [JobsApplicationController::class, 'postJobsApplication']);
 		Route::post('application/my'  , [JobsApplicationController::class, 'getMyJobApplication']);
@@ -74,6 +75,13 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('check'  , [JobsApplicationController::class, 'checkApplied']);
 
 	});
+	//
+
+	//new job//
+	Route::group(['prefix' => 'job'], function() {
+		Route::post('vacancy/post'  , [JobVacancyController::class, 'createVacancy']);
+	});
+	////
 
 	Route::group(['prefix' => 'company'], function() {
 
