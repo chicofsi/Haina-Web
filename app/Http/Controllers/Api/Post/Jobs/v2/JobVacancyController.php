@@ -55,7 +55,7 @@ class JobVacancyController extends Controller
             'id_specialist' =>'required',
             'id_city' => 'required',
             'address' => 'required',
-            'min_salary' => 'lt:max_salary',
+            'max_salary' => 'gte:min_salary',
             'salary_display' => 'required',
             'id_edu' => 'required',
             'description' => 'required',
@@ -88,6 +88,9 @@ class JobVacancyController extends Controller
 
             if($check_company['id_user'] != Auth::id()){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+            }
+            else if(!($check_company)){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Company not found!','data'=> '']), 404);
             }
             else{
                 $new_vacancy = JobVacancy::create($vacancy);
