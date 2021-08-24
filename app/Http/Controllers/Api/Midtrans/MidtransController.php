@@ -289,8 +289,9 @@ class MidtransController extends Controller
             return $flightbookingpayment;
         }
         else if($request->custom_field1=="JobAd"){
+            $order_id = explode('-', $order_id);
 
-            $transaction = JobVacancy::where('id', $order_id)->first();
+            $transaction = JobVacancy::where('id', $order_id[2])->first();
             $company = Company::where('id', $transaction['id_company'])->first();
 
             //$status = "";
@@ -307,14 +308,14 @@ class MidtransController extends Controller
                 if($transaction['package'] == 'basic'){
                     $newtime = date_add($settlement_time, date_interval_create_from_date_string('30 days'));
 
-                    $update_expiry = JobVacancy::where('id', $order_id)->update([
+                    $update_expiry = JobVacancy::where('id', $order_id[2])->update([
                         'deleted_at' => $newtime
                     ]);
                 }
                 else if($transaction['package'] == 'best'){
                     $newtime = date_add($settlement_time, date_interval_create_from_date_string('60 days'));
 
-                    $update_expiry = JobVacancy::where('id', $order_id)->update([
+                    $update_expiry = JobVacancy::where('id', $order_id[2])->update([
                         'deleted_at' => $newtime
                     ]);
                 }
@@ -337,6 +338,9 @@ class MidtransController extends Controller
 
 
             $vacancy_payment=JobVacancyPayment::update(
+                [
+                    'id_vacancy' => $order_id[2]
+                ],
                 [
                     'midtrans_id' => $transaction_id,
                     'payment_method_id' => $payment->id,
