@@ -301,6 +301,21 @@ class MidtransController extends Controller
 
             if($transaction_status=='settlement'){
                 $settlement_time=date("Y-m-d H:m:s",strtotime($request->settlement_time));
+                if($transaction['package'] == 'basic'){
+                    $newtime = date_add($settlement_time, date_interval_create_from_date_string('30 days'));
+
+                    $update_expiry = JobVacancy::where('id', $order_id)->update([
+                        'deleted_at' => $newtime
+                    ]);
+                }
+                else if($transaction['package'] == 'best'){
+                    $newtime = date_add($settlement_time, date_interval_create_from_date_string('60 days'));
+
+                    $update_expiry = JobVacancy::where('id', $order_id)->update([
+                        'deleted_at' => $newtime
+                    ]);
+                }
+
             }
             else if($transaction_status=='pending'){
                 $settlement_time=null;
