@@ -54,7 +54,7 @@ class JobApplicantController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }else{
             $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
-            $today = date("Y-m-d H:i:s");
+            $today = strtotime(date("Y-m-d H:i:s"));
 
             if(!$check_vacancy){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
@@ -69,7 +69,7 @@ class JobApplicantController extends Controller
                 if($check_owner['id_user'] == Auth::id()){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized: Cannot apply to own company','data'=> '']), 401);
                 }
-                else if($checkapply){
+                else if($check_apply){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized: Already applied to this job','data'=> '']), 401);
                 }
                 else{
