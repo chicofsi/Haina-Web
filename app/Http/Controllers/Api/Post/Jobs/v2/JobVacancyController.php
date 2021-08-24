@@ -238,7 +238,7 @@ class JobVacancyController extends Controller
 		    ],
             "custom_field1"        => "JobAd",
 		    "transaction_details" => array(
-		        "order_id"            => $transaction->id,
+		        "order_id"            => $transaction->package.'-'.Str::random(3).'-'.$transaction->id,
 		        "gross_amount"		  => $transaction->price
 		    ),
 		];
