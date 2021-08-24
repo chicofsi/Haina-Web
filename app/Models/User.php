@@ -58,4 +58,8 @@ class User extends Authenticatable
     {
         return $this->belongsToMany('App\Models\JobSkill', 'user_skills'); 
     }
+
+    public function languages(){
+        return $this->belongsToMany('App\Models\Languages', 'user_languages', 'id_language', 'id_user');
+    }
 }

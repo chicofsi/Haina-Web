@@ -21,6 +21,6 @@ class JobCategory extends Model
     ];
 
     public function jobvacancy(){
-    	return $this->hasMany('App\Models\JobVacancy','id_category','id');
+    	return $this->hasMany('App\Models\JobVacancy','id_specialist','id');
     }
 }

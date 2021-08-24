@@ -22,7 +22,7 @@ class JobSkill extends Model
 
     public function jobvacancy()
     {
-        return $this->belongsToMany('App\Models\JobVacancy', 'job_vacancy_skills');
+        return $this->belongsToMany('App\Models\JobVacancy', 'job_vacancy_skills', 'id_vacancy', 'id_skill');
     }
     public function user()
     {
