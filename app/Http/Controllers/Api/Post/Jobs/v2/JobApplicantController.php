@@ -54,7 +54,7 @@ class JobApplicantController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }else{
             $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
-            $today = new DateTime("now");
+            $today = date("Y-m-d H:i:s");
 
             if(!$check_vacancy || strtotime($check_vacancy['deleted_at']) < $today){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
