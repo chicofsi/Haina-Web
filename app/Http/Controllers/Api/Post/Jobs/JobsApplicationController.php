@@ -13,8 +13,8 @@ use App\Http\Resources\JobApplicant as JobApplicantResource;
 use App\Http\Controllers\Api\Notification\NotificationController;
 
 use App\Models\PersonalAccessToken;
-use App\Models\JobVacancy;
-use App\Models\JobApplicant;
+use App\Models\JobVacancyOld;
+use App\Models\JobApplicantOld;
 use App\Models\UserDocs;
 use App\Models\Company;
 use App\Models\UserLogs;

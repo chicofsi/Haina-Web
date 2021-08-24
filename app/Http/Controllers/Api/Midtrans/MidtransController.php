@@ -29,6 +29,9 @@ use App\Models\PersonalAccessToken;
 use App\Models\HotelDarmaPayment;
 use App\Models\HotelDarmaBooking;
 use App\Models\HotelDarma;
+use App\Models\JobVacancy;
+use App\Models\JobVacancyPayment;
+use App\Models\Company;
 
 use App\Models\User;
 use DateTime;
@@ -201,7 +204,7 @@ class MidtransController extends Controller
             }else if($transaction_status=='pending'){
                 $settlement_time=null;
                 $status='UNPAID';
-                NotificationController::sendPush($token, "Waiting for payment", "There is a pending payment for booking at ".$hotel_name.". Please finish payment in 24 hours", "unfinish");
+                NotificationController::sendPush($token, "Waiting for payment", "There is a pending payment for booking at ".$hotel_name.". Please finish payment in 24 hours", "Hotel", "unfinish");
             }else if($transaction_status=='expire'){
                 $settlement_time=null;
                 $status='CANCELLED';
@@ -284,6 +287,67 @@ class MidtransController extends Controller
                     'va_number' => $va_number
                 ]);
             return $flightbookingpayment;
+        }
+        else if($request->custom_field1=="JobAd"){
+            $order_id = explode('-', $order_id);
+
+            $transaction = JobVacancy::where('id', $order_id[2])->first();
+            $company = Company::where('id', $transaction['id_company'])->first();
+
+            //$status = "";
+
+            $token = [];
+            $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $company['id_user'])->get();
+
+            foreach($usertoken as $key => $value){
+                array_push($token, $value); 
+            }
+
+            if($transaction_status=='settlement'){
+                $settlement_time=date("Y-m-d H:m:s",strtotime($request->settlement_time));
+                if($transaction['package'] == 'basic'){
+                    $set_time = new DateTime($settlement_time);
+                    $newtime = date_add($set_time, date_interval_create_from_date_string('30 days'));
+
+                    $update_expiry = JobVacancy::where('id', $order_id[2])->update([
+                        'deleted_at' => $newtime
+                    ]);
+                }
+                else if($transaction['package'] == 'best'){
+                    $set_time = new DateTime($settlement_time);
+                    $newtime = date_add($set_time, date_interval_create_from_date_string('60 days'));
+
+                    $update_expiry = JobVacancy::where('id', $order_id[2])->update([
+                        'deleted_at' => $newtime
+                    ]);
+                }
+
+            }
+            else if($transaction_status=='pending'){
+                $settlement_time=null;
+            }
+            else if($transaction_status=='expire'){
+                $settlement_time=null;
+            }
+            else if($transaction_status=='cancel'){
+                $settlement_time=null;
+            }
+
+            foreach ($request['va_numbers'] as $key => $value) {
+                $va_number=$value['va_number'];
+                $payment=PaymentMethod::where('name',$value['bank'])->first();
+            }
+
+
+            $vacancy_payment=JobVacancyPayment::where('id_vacancy', $order_id[2])->update(
+                [
+                    'midtrans_id' => $transaction_id,
+                    'payment_method_id' => $payment->id,
+                    'settlement_time' => $settlement_time,
+                    'payment_status' => $transaction_status,
+                    'va_number' => $va_number
+                ]);
+            return $vacancy_payment;
         }
 
     }

@@ -40,6 +40,9 @@ use App\Http\Controllers\Api\PostCategoryController;
 use App\Http\Controllers\Api\CityController;
 use App\Http\Controllers\Api\Forum\ForumController;
 
+use App\Http\Controllers\Api\Post\Jobs\v2\JobVacancyController;
+use App\Http\Controllers\Api\Post\Jobs\v2\JobApplicantController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -63,6 +66,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
     Route::post('profile', [UserController::class, 'updateProfile']);
     Route::post('password', [UserController::class, 'changePassword']);
     
+	//old job
 	Route::group(['prefix' => 'jobs'], function() {
 		Route::post('application/post'  , [JobsApplicationController::class, 'postJobsApplication']);
 		Route::post('application/my'  , [JobsApplicationController::class, 'getMyJobApplication']);
@@ -74,6 +78,20 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('check'  , [JobsApplicationController::class, 'checkApplied']);
 
 	});
+	//
+
+	//new job//
+	Route::group(['prefix' => 'job'], function() {
+		Route::get('vacancy'  , [JobVacancyController::class, 'showVacancy']);
+		Route::post('vacancy/post'  , [JobVacancyController::class, 'createVacancy']);
+		Route::post('vacancy/delete'  , [JobVacancyController::class, 'deleteVacancy']);
+
+		Route::post('vacancy/apply'  , [JobApplicantController::class, 'applyJob']);
+		Route::post('vacancy/withdraw'  , [JobApplicantController::class, 'withdrawApplication']);
+
+		Route::post('applicant/update', [JobVacancyController::class, 'changeApplicantStatus']);
+	});
+	////
 
 	Route::group(['prefix' => 'company'], function() {
 
@@ -123,7 +141,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	{
 		Route::post('/inquiry'  , [PulsaController::class, 'getInquiryBills']);
 		Route::post('/transaction'  , [PulsaController::class, 'addBillsTransaction']);
-		Route::post('/amountbill'  , [PulsaController::class, 'getAmountBills']);
+		//Route::post('/amountbill'  , [PulsaController::class, 'getAmountBills']);
 		Route::post('/directbill'  , [PulsaController::class, 'getDirectBills']);
 	});
 
@@ -161,6 +179,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/search_room', [HotelDarmaController::class, 'searchRoom']);
 		Route::post('/search_hotel', [HotelDarmaController::class, 'searchHotel']);
 
+		Route::post('/hotel_name', [HotelDarmaController::class, 'searchByHotelName']);
+
 		Route::post('/booking_list', [HotelDarmaController::class, 'getBookingList']);
 		Route::post('/booking_detail', [HotelDarmaController::class, 'getBookingDetail']);
 
@@ -179,12 +199,59 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/my_property', [PropertyDataController::class, 'showMyProperty']);
 		Route::post('/show_property', [PropertyDataController::class, 'showAvailableProperty']);
 		Route::post('/new_property', [PropertyDataController::class, 'addProperty']);
+		Route::post('/view_property', [PropertyDataController::class, 'getPropertyDetail']);
+		Route::post('/update_property', [PropertyDataController::class, 'updatePropertyDetail']);
+		Route::post('/bookmark', [PropertyDataController::class, 'changeBookmark']);
 		Route::post('/upload_image', [PropertyDataController::class, 'storeImage']);
 		Route::post('/new_transaction', [PropertyDataController::class, 'createTransaction']);
 		Route::post('/update_transaction', [PropertyDataController::class, 'updateTransaction']);
 		Route::post('/my_transaction_list', [PropertyDataController::class, 'showPropertyTransactionList']);
 		Route::post('/my_property_transaction_list', [PropertyDataController::class, 'showMyPropertyTransactionList']);
 		Route::post('/delete', [PropertyDataController::class, 'deleteProperty']);
+	});
+
+	Route::group(['prefix' => 'forum'], function(){
+		Route::get('/category', [ForumController::class, 'showCategory']);
+		Route::post('/subforum', [ForumController::class, 'showAllSubforum']);
+
+		Route::post('/post_list', [ForumController::class, 'showAllPost']);
+		Route::post('/post_detail', [ForumController::class, 'showPost']);
+		Route::post('/comment', [ForumController::class, 'showComment']);
+
+		Route::post('/new_subforum', [ForumController::class, 'createSubforum']);
+		Route::post('/new_comment', [ForumController::class, 'createComment']);
+		Route::post('/new_post', [ForumController::class, 'createPost']);
+		Route::post('/upvote', [ForumController::class, 'giveUpvote']);
+		Route::post('/cancel_upvote', [ForumController::class, 'cancelUpvote']);
+		Route::post('/delete_comment', [ForumController::class, 'deleteComment']);
+		Route::post('/delete_post', [ForumController::class, 'deletePost']);
+
+		Route::post('/assign_mod', [ForumController::class, 'assignMod']);
+		Route::post('/remove_mod', [ForumController::class, 'removeMod']);		
+		Route::post('/mod_list', [ForumController::class, 'showModList']);
+		Route::post('/ban_user', [ForumController::class, 'banUser']);
+		Route::post('/ban_remove', [ForumController::class, 'removeBan']);
+		Route::post('/mod_log', [ForumController::class, 'checkModLog']);
+
+		Route::post('/all_post', [ForumController::class, 'showAllThreads']);
+		Route::get('/hot_post', [ForumController::class, 'showHotThreads']);
+		Route::get('/my_subforum', [ForumController::class, 'showMySubforum']);
+		Route::get('/my_post', [ForumController::class, 'showMyPost']);
+
+		//Route::post('/follow', [ForumController::class, 'followUser']);
+		//Route::post('/unfollow', [ForumController::class, 'unfollowUser']);
+		Route::post('/follow_subforum', [ForumController::class, 'followSubforum']);
+		Route::post('/unfollow_subforum', [ForumController::class, 'unfollowSubforum']);
+		//Route::get('/following', [ForumController::class, 'myFollowingList']);
+		//Route::get('/followers', [ForumController::class, 'myFollowersList']);
+		Route::get('/following_subforum', [ForumController::class, 'myFollowingSubforum']);
+		Route::post('/following_subforum', [ForumController::class, 'userFollowingSubforum']);
+
+		Route::post('/user_profile', [ForumController::class, 'showProfile']);
+		Route::post('/search', [ForumController::class, 'search']);
+		Route::post('/share', [ForumController::class, 'sharePost']);
+		Route::get('/my_role', [ForumController::class, 'myRoles']);
+		Route::get('/my_ban', [ForumController::class, 'myBans']);
 	});
 	
 });

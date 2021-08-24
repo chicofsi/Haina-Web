@@ -18,6 +18,7 @@ use App\Models\PropertyImageData;
 use App\Models\PropertyTransaction;
 use App\Models\PropertyFacility;
 
+use App\Models\PersonalAccessToken;
 use App\Http\Controllers\Api\Notification\NotificationController;
 
 use DateTime;
@@ -52,9 +53,28 @@ class PropertyDataController extends Controller
 
                     $provinceid = $value->city->id_province;
 
+                    if($value->selling_price > 0 && $value->rental_price == 0){
+                        $value->post_type = "sell";
+                    }
+                    else if($value->selling_price == 0 && $value->rental_price > 0){
+                        $value->post_type = "rent";
+                    }
+                    else{
+                        $value->post_type = "both";
+                    }
+
                     $province = Province::where('id', $provinceid)->first();
 
                     $value->city->province = $province['name'];
+
+                    $checktransaction = PropertyTransaction::where('id_property', $value->id)->where('transaction_status', 'pending')->first();
+
+                    if(!$checktransaction){
+                        $value->id_transaction = null;
+                    }
+                    else{
+                        $value->id_transaction = $checktransaction['id'];
+                    }
 
                 //dd($property_facility);
                 $value->facilities = $property_facility;
@@ -74,7 +94,7 @@ class PropertyDataController extends Controller
             'bathroom' => 'required',
             'floor_level' => 'required',
             'year' => 'required',
-            'certificate_type' => 'in:SHM,HGB,SHMSRS,Girik',
+            //'certificate_type' => 'in:SHM,HGB,SHMSRS,Girik',
             'id_city' => 'required',
             'address' => 'required',
             'selling_price' => 'required',
@@ -214,6 +234,70 @@ class PropertyDataController extends Controller
     }
     */
 
+    public function getPropertyDetail(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_property' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $property = PropertyData::where('id', $request->id_property)->with('images', 'owner', 'city')->first();
+
+            if(!$property){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Property not found!','data'=> '']), 404);
+            }
+            else{
+                $view = $property['views'] + 1;
+
+                $upd_view = $property->update([
+                    'views' => $view
+                ]);
+
+                $facility_id = explode(',', $property->facilities);
+                $property_facility = [];
+
+                foreach($facility_id as $key_prop => $value_prop){
+                    $getProp = PropertyFacility::where('id', $value_prop)->first();
+
+                    $facility = (object) [
+                        "id_facility" => $getProp['id'] ?? '0',
+                        "facility_name" => $getProp['name'] ?? ' ',
+                        "facility_name_zh" => $getProp['name_zh'] ?? ' '
+                    ];
+
+                    array_push($property_facility, $facility);
+                }
+
+                    $provinceid = $property->city->id_province;
+
+                    $province = Province::where('id', $provinceid)->first();
+
+                    $property->city->province = $province['name'];
+
+                //dd($property_facility);
+                /*
+                if($property['selling_price'] > 0 && $property['rental_price'] == 0){
+                    $property->post_type = "sell";
+                }
+                else if($property['selling_price'] == 0 && $property['rental_price'] > 0){
+                    $property->post_type = "rent";
+                }
+                else{
+                    $property->post_type = "both";
+                }
+                */
+                
+
+                $property->facilities = $property_facility;
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Property loaded successfully!','data'=> $property]), 200);
+            }
+            
+        }
+    }
+
     public function showAvailableProperty(Request $request){
         $property = PropertyData::where('id_user', 'not like', Auth::user()->id)->where('status', "available")->with('images', 'owner', 'city')->get();
 
@@ -293,10 +377,10 @@ class PropertyDataController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot do transaction with own property!','data'=> '']), 401);
             }
             else if($property['status'] == "available"){
-                if($request->transaction_type == "buy" && $property['selling_price'] == null){
+                if($request->transaction_type == "buy" && $property['selling_price'] == 0){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Property not for sale!','data'=> '']), 404);
                 }
-                else if($request->transaction_type == "rental" && $property['rental_price'] == null){
+                else if($request->transaction_type == "rental" && $property['rental_price'] == 0){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Property not for rent!','data'=> '']), 404);
                 }
                 else{
@@ -308,14 +392,14 @@ class PropertyDataController extends Controller
                             'id_property' => $request->id_property,
                             'transaction_date' => date("Y-m-d H:i:s"),
                             'transaction_type' => $request->transaction_type,
-                            'transaction_status' => "waiting"
+                            'transaction_status' => "pending"
                         ];
 
-                        $property = PropertyData::where('id', $request->id_property)->update([
+                        $new_transaction = PropertyTransaction::create($property_transaction);
+
+                        $property_upd = PropertyData::where('id', $request->id_property)->update([
                             'status' => "in_transaction"
                         ]);
-        
-                        $new_transaction = PropertyTransaction::create($property_transaction);
 
                         //notif
                         $token = [];
@@ -350,7 +434,7 @@ class PropertyDataController extends Controller
     public function updateTransaction(Request $request){
         $validator = Validator::make($request->all(), [
             'id_transaction' => 'required',
-            'status' => 'in:in_transaction,done'
+            'status' => 'in:done,cancel'
         ]);
 
         if ($validator->fails()) {
@@ -379,31 +463,27 @@ class PropertyDataController extends Controller
                 }
 
                 $property = PropertyData::where('id', $transaction['id_property'])->first();
-
-                if($request->status == "in_transaction"){
-
-                    foreach ($token as $key => $value) {
-                        NotificationController::sendPush($value, "Your transaction is being processed", "Transaction for ".$property['name']." is being processed", "Property", "");
-                    }
-
-                }
-                else if($request->status == "done"){
+                
+                if($request->status == "done"){
                     $property = PropertyData::where('id', $transaction['id_property'])->update([
                         'status' => $request->status
                     ]);
-
-                    foreach ($token as $key => $value) {
-                        NotificationController::sendPush($value, "Your transaction is finished", "Transaction for ".$property['name']." is being finished", "Property", "");
+                    /*
+                    foreach($token as $key => $value) {
+                        NotificationController::sendPush($value, "Your transaction is finished", "Transaction for ".$property['title']." is being finished", "Property", "");
                     }
+                    */
                 }
                 else if($request->status == "cancel"){
                     $property = PropertyData::where('id', $transaction['id_property'])->update([
                         'status' => 'available'
                     ]);
-
-                    foreach ($token as $key => $value) {
-                        NotificationController::sendPush($value, "Your transaction is cancelled", "Transaction for ".$property['name']." is being cancelled", "Property", "");
+                    /*
+                    foreach($token as $key => $value) {
+                        NotificationController::sendPush($value, "Your transaction is cancelled", "Transaction for ".$property['title']." is being cancelled", "Property", "");
                     }
+                    */
+
                 }
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Updated!','data'=> $transaction]), 200);
@@ -413,7 +493,47 @@ class PropertyDataController extends Controller
         }
     }
 
-    public function showPropertyTransactionList(){
+    public function changeBookmark(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_property' => 'required',
+            'bookmark' => 'in:add,remove'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $property = PropertyData::where('id', $request->id_property)->with('images', 'owner', 'city')->first();
+
+            if(!$property){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Property not found!','data'=> '']), 404);
+            }
+            else{
+                if($request->bookmark == "add"){
+                    $bookmark = $property['bookmark'] + 1;
+
+                    $update = PropertyData::where('id', $request->id_property)->update([
+                        'bookmark' => $bookmark
+                    ]);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmark Updated!','data'=> $update]), 200);
+                }
+                else{
+                    $bookmark = $property['bookmark'] - 1;
+
+                    $update = PropertyData::where('id', $request->id_property)->update([
+                        'bookmark' => $bookmark
+                    ]);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmark Updated!','data'=> $update]), 200);
+                }
+
+            }
+        }
+    }
+
+    public function showPropertyTransactionList(Request $request){
+
         $transaction = PropertyTransaction::where('id_buyer_tenant', Auth::id())->with('property', 'owner')->get();
 
         if(!$transaction || count($transaction) == 0){
@@ -421,6 +541,49 @@ class PropertyDataController extends Controller
         }
         else{
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction List Successfully Displayed!','data'=> $transaction]), 200);
+        }
+
+    }
+
+    public function updatePropertyDetail(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_property' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $property = PropertyData::where('id', $request->id_property)->first();
+
+            if(!$property){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Property Not Found!','data'=> '']), 404);
+            }
+            else if($property['id_user'] != Auth::id()){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+            }
+            else if($property['status'] != "available"){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot Change Property in Transaction!','data'=> '']), 401);
+            }
+            else{
+                $update = 
+                [
+                    'title' => $request->title ?? $property['title'],
+                    'building_area' => $request->building_area ?? $property['building_area'],
+                    'land_area' => $request->land_area ?? $property['land_area'],
+                    'bedroom' => $request->bedroom ?? $property['bedroom'],
+                    'bathroom' => $request->bathroom ?? $property['bathroom'],
+                    'certificate_type' => $request->certificate_type ?? $property['certificate_type'],
+                    'selling_price' => $request->selling_price ?? $property['selling_price'],
+                    'rental_price' => $request->rental_price ?? $property['rental_price'],
+                    'facilities' => $request->facilities ?? $property['facilities'],
+                    'description' => $request->description ?? $property['description']
+                ];
+
+                $updated_property = $property->update($update);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Property Data Updated!','data'=> $property]), 200);
+            }
         }
 
     }
@@ -463,7 +626,9 @@ class PropertyDataController extends Controller
             $property_image = PropertyImageData::where('id_property', $property['id'])->get();
 
             foreach($property_image as $key => $value){
-                Storage::disk('public')->delete($value->path);
+                $path = str_replace("http://hainaservice.com/storage", "", $value->path);
+
+                Storage::disk('public')->delete($path);
             }
 
             PropertyImageData::where('id_property', $property['id'])->delete();

@@ -5,24 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class JobApplicant extends Model
+class JobVacancyApplicant extends Model
 {
     use HasFactory;
 
-    protected $table = 'job_applicant';
+    protected $table = 'job_vacancy_applicant';
 
     protected $fillable = [
-    	'id_job_vacancy', 'id_user', 'id_user_docs', 'status'
+    	'id_vacancy', 'id_user', 'status', 'applicant_notes'
     ];
 
-    public function jobvacancy(){
+    public function vacancy(){
     	return $this->belongsTo('App\Models\JobVacancy','id_job_vacancy','id');
     } 
     public function user(){
     	return $this->belongsTo('App\Models\User','id_user','id');
-    } 
-    public function userdocs(){
-    	return $this->belongsTo('App\Models\UserDocs','id_user_docs','id');
-    } 
-    
+    }
+
 }

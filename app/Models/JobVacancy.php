@@ -12,24 +12,36 @@ class JobVacancy extends Model
     protected $table = 'job_vacancy';
 
     protected $fillable = [
-    	 'id_address', 'id_category', 'photo_url', 'title', 'status', 'description', 'salary_from', 'salary_to', 'id_company'
+    	 'id_company', 'position', 'type', 'level', 'experience', 'id_specialist', 'id_city', 'address', 
+         'min_salary', 'max_salary', 'salary_display', 'id_edu', 'description', 'package', 'deleted_at'
     ];
 
-
-    public function address(){
-    	return $this->belongsTo('App\Models\CompanyAddress','id_address','id');
-    } 
-    public function category(){
-    	return $this->belongsTo('App\Models\JobCategory','id_category','id');
-    } 
     public function company(){
         return $this->belongsTo('App\Models\Company','id_company','id');
-    } 
-    public function jobapplicant(){
-        return $this->hasMany('App\Models\JobApplicant','id_job_vacancy','id');
-    } 
-    public function skill()
-    {
-        return $this->belongsToMany('App\Models\JobSkill', 'job_vacancy_skills');
     }
+
+    public function skill(){
+        return $this->belongsToMany('App\Models\JobSkill', 'job_vacancy_skills', 'id_vacancy', 'id_skill');
+    }
+
+    public function applicant(){
+        return $this->hasMany('App\Models\JobVacancyApplicant','id_vacancy','id');
+    }
+
+    public function payment(){
+        return $this->hasOne('App\Models\JobVacancyPayment', 'id_vacancy', 'id');
+    }
+
+    public function specialist(){
+        return $this->hasOne('App\Models\JobCategory', 'id', 'id_specialist');
+    }
+
+    public function education(){
+        return $this->hasOne('App\Models\Education', 'id', 'id_edu');
+    }
+
+    public function city(){
+        return $this->hasOne('App\Models\City', 'id', 'id_city');
+    }
+
 }
