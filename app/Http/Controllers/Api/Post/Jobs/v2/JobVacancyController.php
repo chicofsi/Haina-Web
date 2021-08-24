@@ -185,6 +185,8 @@ class JobVacancyController extends Controller
                     $value->shortlisted_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->where('status', 'shortlisted')->get());
                     $value->interview_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->where('status', 'interview')->get());
 
+                    $vacancy = collect($vacancy)->sortByDesc('deleted_at')->toArray();
+
                 }
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Show Vacancy Success!','data'=> $vacancy]), 200);
