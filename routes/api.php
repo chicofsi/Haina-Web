@@ -41,6 +41,7 @@ use App\Http\Controllers\Api\CityController;
 use App\Http\Controllers\Api\Forum\ForumController;
 
 use App\Http\Controllers\Api\Post\Jobs\v2\JobVacancyController;
+use App\Http\Controllers\Api\Post\Jobs\v2\JobApplicantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -84,6 +85,9 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::get('vacancy'  , [JobVacancyController::class, 'showVacancy']);
 		Route::post('vacancy/post'  , [JobVacancyController::class, 'createVacancy']);
 		Route::post('vacancy/delete'  , [JobVacancyController::class, 'deleteVacancy']);
+
+		Route::post('vacancy/apply'  , [JobApplicantController::class, 'applyJob']);
+		Route::post('vacancy/withdrew'  , [JobApplicantController::class, 'withdrawApplication']);
 	});
 	////
 

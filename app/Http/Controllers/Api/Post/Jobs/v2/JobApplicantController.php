@@ -45,7 +45,62 @@ use App\Http\Controllers\Api\Notification\NotificationController;
 class JobApplicantController extends Controller
 {
     public function applyJob(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_vacancy' => 'required',
+            'applicant_notes' => 'required'
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+
+            if(!$check_vacancy){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
+            }
+            else{
+                $applicant = [
+                    'id_user' => Auth::id(),
+                    'id_vacancy' => $request->id_vacancy,
+                    'status' => 'applied',
+                    'applicant_notes' => $request->applicant_notes,
+                ];
+
+                $new_applicant = JobVacancyApplicant::create($applicant);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Apply Job Success!','data'=>$new_applicant]), 200);
+            }
+        }
+    }
+
+    public function withdrawApplication(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_vacancy' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+
+            if(!$check_vacancy){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
+            }
+            else{
+                $check_apply = JobVacancyApplicant::where('id_user', Auth::id())->where('id_vacancy', $check_vacancy['id'])->first();
+
+                if($check_apply){
+                    $withdraw = JobVacancyApplicant::where('id', $check_apply['id'])->update([
+                        'status' => 'withdrawn'
+                    ]);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Withdraw Job Application Success!','data'=>$check_vacancy]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'You did not apply to this job!','data'=> '']), 404);
+                }
+            }
+        }
     }
 
 }
