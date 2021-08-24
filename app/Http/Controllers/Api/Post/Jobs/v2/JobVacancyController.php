@@ -247,6 +247,53 @@ class JobVacancyController extends Controller
         }
     }
 
+    
+    public function changeApplicantStatus(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_applicant' => 'required',
+            'status' => 'in:shortlisted,accepted,not accepted'
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_applicant = JobVacancyApplicant::where('id', $request->id_applicant)->first();
+
+            if($check_applicant){
+                if($check_applicant['status'] == "applied" && ($request->status == "shortlisted" || $request->status == "not accepted")){
+                    $update_status = JobVacancyApplicant::where('id', $request->id_applicant)->update([
+                        'status' => $request->status
+                    ]);
+
+                    $check_applicant = JobVacancyApplicant::where('id', $request->id_applicant)->first();
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant status update success!','data'=>$check_applicant]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Invalid status update!','data'=> '']), 404);
+                }
+
+                if($check_applicant['status'] == "interview" && ($request->status == "accepted" || $request->status == "not accepted")){
+                    $update_status = JobVacancyApplicant::where('id', $request->id_applicant)->update([
+                        'status' => $request->status
+                    ]);
+
+                    $check_applicant = JobVacancyApplicant::where('id', $request->id_applicant)->first();
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant status update success!','data'=>$check_applicant]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Invalid status update!','data'=> '']), 404);
+                }
+
+
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Applicant not found!','data'=> '']), 404);
+            }
+        }
+    }
+
     public function chargeMidtrans($transaction,$payment)
 	{
 		$username="SB-Mid-server-uUu-OOYw1hyxA9QH8wAbtDRl";
