@@ -121,7 +121,7 @@ class JobVacancyController extends Controller
 
                     $newvacancy_data = JobVacancy::where('id',$new_vacancy->id)->first();
                     
-                    $data['payment_type'] = $$new_vacancy->payment_data->payment_type;
+                    $data['payment_type'] = $new_vacancy->payment_data->payment_type;
                     $data['amount']=$new_vacancy->payment_data->gross_amount;
                     $data['payment_status']=$new_vacancy->payment_data->transaction_status;
                     foreach ($new_vacancy->payment_data->va_numbers as $key => $value) {
