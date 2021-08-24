@@ -339,10 +339,7 @@ class MidtransController extends Controller
             }
 
 
-            $vacancy_payment=JobVacancyPayment::updateOrCreate(
-                [
-                    'id_vacancy' => $order_id[2]
-                ],
+            $vacancy_payment=JobVacancyPayment::where('id_vacancy', $order_id[2])->update(
                 [
                     'midtrans_id' => $transaction_id,
                     'payment_method_id' => $payment->id,
