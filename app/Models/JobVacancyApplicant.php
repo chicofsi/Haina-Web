@@ -9,7 +9,7 @@ class JobVacancyApplicant extends Model
 {
     use HasFactory;
 
-    protected $table = 'job_applicant';
+    protected $table = 'job_vacancy_applicant';
 
     protected $fillable = [
     	'id_vacancy', 'id_user', 'status', 'applicant_notes'
