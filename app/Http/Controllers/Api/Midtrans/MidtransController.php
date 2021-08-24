@@ -341,7 +341,7 @@ class MidtransController extends Controller
                     'payment_status' => $transaction_status,
                     'va_number' => $va_number
                 ]);
-            return $flightbookingpayment;
+            return $vacancy_payment;
         }
 
     }
