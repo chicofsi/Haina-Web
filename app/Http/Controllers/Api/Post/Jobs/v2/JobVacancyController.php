@@ -187,6 +187,8 @@ class JobVacancyController extends Controller
 
                 }
 
+                $vacancy = $vacancy->sortByDesc('deleted_at');
+
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Show Vacancy Success!','data'=> $vacancy]), 200);
             }
             else{
