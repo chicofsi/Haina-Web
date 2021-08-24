@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Jobs\v2;
+namespace App\Http\Controllers\Api\Post\Jobs\v2;
 
 use App\Http\Controllers\Controller;
 
