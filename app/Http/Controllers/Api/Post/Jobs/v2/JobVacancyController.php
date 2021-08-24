@@ -140,6 +140,8 @@ class JobVacancyController extends Controller
                         'payment_status' => 'pending'
                     ]);
 
+                    $display = JobVacancy::where('id', $new_vacancy->id)->first();
+
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Paid vacancy created successfull!','data'=> $display]), 200);
                 }
             }
