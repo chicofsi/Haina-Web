@@ -56,8 +56,11 @@ class JobApplicantController extends Controller
             $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
             $today = date("Y-m-d H:i:s");
 
-            if(!$check_vacancy || strtotime($check_vacancy['deleted_at']) < $today){
+            if(!$check_vacancy){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
+            }
+            else if(strtotime($check_vacancy['deleted_at']) < $today){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Expired Vacancy Cannot be applied!','data'=> '']), 404);
             }
             else{
                 $check_owner = Company::where('id', $check_vacancy['id_company'])->first();
