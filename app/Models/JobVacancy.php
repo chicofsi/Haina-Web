@@ -13,7 +13,7 @@ class JobVacancy extends Model
 
     protected $fillable = [
     	 'id_company', 'position', 'type', 'level', 'experience', 'id_specialist', 'id_city', 'address', 
-         'min_salary', 'max_salary', 'id_edu', 'description', 'package', 'deleted_at'
+         'min_salary', 'max_salary', 'salary_display', 'id_edu', 'description', 'package', 'deleted_at'
     ];
 
     public function company(){
