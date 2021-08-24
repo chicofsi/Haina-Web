@@ -88,6 +88,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
 		Route::post('vacancy/apply'  , [JobApplicantController::class, 'applyJob']);
 		Route::post('vacancy/withdraw'  , [JobApplicantController::class, 'withdrawApplication']);
+
+		Route::post('applicant/update', [JobVacancyController::class, 'changeApplicantStatus']);
 	});
 	////
 
