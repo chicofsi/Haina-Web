@@ -136,6 +136,7 @@ class JobVacancyController extends Controller
                         'price' => $newvacancy_data->payment['amount'],
                         'midtrans_id' => '',
                         'payment_method_id' => $request->payment_method_id,
+                        'va_number' => $newvacancy_data->payment['virtual_account'],
                         'settlement_time' => null,
                         'payment_status' => 'pending'
                     ]);
