@@ -21,7 +21,7 @@ class JobVacancy extends Model
     }
 
     public function skill(){
-        return $this->belongsToMany('App\Models\JobSkill', 'job_vacancy_skills', 'id_skill', 'id_vacancy');
+        return $this->belongsToMany('App\Models\JobSkill', 'job_vacancy_skills', 'id_vacancy', 'id_skill');
     }
 
     public function applicant(){
