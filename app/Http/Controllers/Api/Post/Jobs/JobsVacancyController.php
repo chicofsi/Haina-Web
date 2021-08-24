@@ -14,9 +14,9 @@ use App\Http\Resources\Post as PostResource;
 use App\Models\NotificationCategory;
 use App\Models\PersonalAccessToken;
 use App\Models\UserLogs;
-use App\Models\JobApplicant;
+use App\Models\JobApplicantOld;
 use App\Models\Company;
-use App\Models\JobVacancy;
+use App\Models\JobVacancyOld;
 use App\Models\Post;
 use App\Models\UserNotification;
 

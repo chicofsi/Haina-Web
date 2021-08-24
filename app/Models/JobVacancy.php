@@ -12,24 +12,23 @@ class JobVacancy extends Model
     protected $table = 'job_vacancy';
 
     protected $fillable = [
-    	 'id_address', 'id_category', 'photo_url', 'title', 'status', 'description', 'salary_from', 'salary_to', 'id_company'
+    	 'id_company', 'position', 'type', 'level', 'experience', 'id_specialist', 'id_city', 'address', 'min_salary', 'max_salary', 'id_edu', 'description', 'package'
     ];
 
-
-    public function address(){
-    	return $this->belongsTo('App\Models\CompanyAddress','id_address','id');
-    } 
-    public function category(){
-    	return $this->belongsTo('App\Models\JobCategory','id_category','id');
-    } 
     public function company(){
-        return $this->belongsTo('App\Models\Company','id_company','id');
-    } 
-    public function jobapplicant(){
-        return $this->hasMany('App\Models\JobApplicant','id_job_vacancy','id');
-    } 
-    public function skill()
-    {
-        return $this->belongsToMany('App\Models\JobSkill', 'job_vacancy_skills');
+
     }
+
+    public function skill(){
+
+    }
+
+    public function applicant(){
+
+    }
+
+    public function payment(){
+
+    }
+
 }
