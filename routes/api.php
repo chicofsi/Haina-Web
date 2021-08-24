@@ -81,7 +81,9 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
 	//new job//
 	Route::group(['prefix' => 'job'], function() {
+		Route::get('vacancy'  , [JobVacancyController::class, 'showVacancy']);
 		Route::post('vacancy/post'  , [JobVacancyController::class, 'createVacancy']);
+		Route::post('vacancy/delete'  , [JobVacancyController::class, 'deleteVacancy']);
 	});
 	////
 

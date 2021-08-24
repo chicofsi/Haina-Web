@@ -60,7 +60,8 @@ class JobVacancyController extends Controller
             'id_edu' => 'required',
             'description' => 'required',
             'package' => 'in:free,basic,best',
-            'payment_method_id' => 'required_unless:package,free'
+            'payment_method_id' => 'required_unless:package,free',
+            'skill' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -95,6 +96,14 @@ class JobVacancyController extends Controller
             else{
                 $new_vacancy = JobVacancy::create($vacancy);
 
+                $skill_id = explode(',', $request->skill);
+                foreach($skill_id as $key => $value){
+                    $vacancy = JobVacancy::where('id', $new_vacancy->id)->first();
+
+                    $vacancy->skill()->attach($value);
+
+                }
+
                 if($new_vacancy->package == "free"){
                     $date = new DateTime("now");
                     date_add($date, date_interval_create_from_date_string('7 days'));
@@ -105,7 +114,7 @@ class JobVacancyController extends Controller
 
                     $display = JobVacancy::where('id', $new_vacancy->id)->first();
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Free vacancy created successfull!','data'=> $display]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Free vacancy created successfully!','data'=> $display]), 200);
 
                 }
                 else{
@@ -143,7 +152,7 @@ class JobVacancyController extends Controller
 
                     $display = JobVacancy::where('id', $new_vacancy->id)->first();
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Paid vacancy created successfull!','data'=> $display]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Paid vacancy created successfully!','data'=> $display]), 200);
                 }
             }
 
@@ -167,7 +176,52 @@ class JobVacancyController extends Controller
             return response()->json(new ValueMessage(['value'=>0,'message'=>'You do not have any company!','data'=> '']), 404);
         }
 
-        
+    }
+
+    public function deleteVacancy(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_vacancy' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+            
+            if(!$check_vacancy){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
+            }
+            else{
+                if($check_vacancy['deleted_at'] == null){
+                    $payment_cancel = JobVacancyPayment::where('id_vacancy', $check_vacancy['id'])->update([
+                        'payment_status' => 'cancel'
+                    ]);
+
+                    $vacancy_delete = JobVacancy::where('id', $check_vacancy['id'])->update([
+                        'deleted_at' => date('Y-m-d H:i:s')
+                    ]);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Vacancy Delete Success!','data'=>$check_vacancy]), 200);
+                }
+                else{
+                    $currentdate = new DateTime("now");
+                    $checkdate = new DateTime($check_vacancy['deleted_at']);
+
+                    if($currentdate > $checkdate){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Vacancy already deleted/expired!','data'=> '']), 403);
+                    }
+                    else{
+                        $vacancy_delete = JobVacancy::where('id', $check_vacancy['id'])->update([
+                            'deleted_at' => $currentdate
+                        ]);
+
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Vacancy Delete Success!','data'=>$check_vacancy]), 200);
+                    }
+                }
+
+                
+            }
+        }
     }
 
     public function chargeMidtrans($transaction,$payment)

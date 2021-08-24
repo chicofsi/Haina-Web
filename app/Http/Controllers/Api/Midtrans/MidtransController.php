@@ -285,6 +285,49 @@ class MidtransController extends Controller
                 ]);
             return $flightbookingpayment;
         }
+        else if($request->custom_field1=="JobAd"){
+
+            $transaction = JobVacancy::where('id', $order_id)->first();
+            $company = Company::where('id', $transaction['id_company'])->first();
+
+            //$status = "";
+
+            $token = [];
+            $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $company['id_user'])->get();
+
+            foreach($usertoken as $key => $value){
+                array_push($token, $value); 
+            }
+
+            if($transaction_status=='settlement'){
+                $settlement_time=date("Y-m-d H:m:s",strtotime($request->settlement_time));
+            }
+            else if($transaction_status=='pending'){
+                $settlement_time=null;
+            }
+            else if($transaction_status=='expire'){
+                $settlement_time=null;
+            }
+            else if($transaction_status=='cancel'){
+                $settlement_time=null;
+            }
+
+            foreach ($request['va_numbers'] as $key => $value) {
+                $va_number=$value['va_number'];
+                $payment=PaymentMethod::where('name',$value['bank'])->first();
+            }
+
+
+            $vacancy_payment=JobVacancyPayment::update(
+                [
+                    'midtrans_id' => $transaction_id,
+                    'payment_method_id' => $payment->id,
+                    'settlement_time' => $settlement_time,
+                    'payment_status' => $transaction_status,
+                    'va_number' => $va_number
+                ]);
+            return $flightbookingpayment;
+        }
 
     }
 
