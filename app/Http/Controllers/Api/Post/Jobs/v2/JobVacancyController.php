@@ -52,7 +52,7 @@ class JobVacancyController extends Controller
             'id_edu' => 'required',
             'description' => 'required',
             'package' => 'in:free,basic,best',
-            'payment_method_id' => 'required'
+            'payment_method_id' => 'required_unless:package,free'
         ]);
 
         if ($validator->fails()) {
