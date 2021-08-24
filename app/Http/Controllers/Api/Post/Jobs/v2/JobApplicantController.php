@@ -105,7 +105,7 @@ class JobApplicantController extends Controller
                 $check_apply = JobVacancyApplicant::where('id_user', Auth::id())->where('id_vacancy', $check_vacancy['id'])->first();
 
                 if($check_apply){
-                    if($check_apply['status'] == 'not accepted' || $checkapply['status'] == 'withdrawn'){
+                    if($check_apply['status'] == 'not accepted' || $check_apply['status'] == 'withdrawn'){
                         return response()->json(new ValueMessage(['value'=>0,'message'=>'Invalid action!','data'=> '']), 404);
                     }
                     else{

@@ -165,12 +165,28 @@ class JobVacancyController extends Controller
     public function showVacancy(){
         $company = Company::where('id_user', Auth::id())->first();
 
-        $today = new DateTime("now");
+        $today = strtotime(date("Y-m-d H:i:s"));
+        //$today = new DateTime("now");
 
         if($company){
-            $vacancy = JobVacancy::where('id_company', $company['id'])->where('deleted_at', null)->orWhere('deleted_at', '>', $today)->get();
+            //$vacancy = JobVacancy::where('id_company', $company['id'])->where('deleted_at', null)->orWhere('deleted_at', '>', $today)->get();
+            $vacancy = JobVacancy::where('id_company', $company['id'])->where('deleted_at', '!=', null)->get();
 
             if($vacancy){
+                foreach($vacancy as $key => $value){
+                    if(strtotime($value->deleted_at) < $today){
+                        $value->status = "ended";
+                    }
+                    else{
+                        $value->status = "active";
+                    }
+
+                    $value->total_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->get());
+                    $value->shortlisted_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->where('status', 'shortlisted')->get());
+                    $value->interview_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->where('status', 'interview')->get());
+
+                }
+
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Show Vacancy Success!','data'=> $vacancy]), 200);
             }
             else{
