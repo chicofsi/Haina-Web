@@ -129,7 +129,7 @@ class JobVacancyController extends Controller
                     $new_vacancy['payment_data'] = json_decode($this->chargeMidtrans($new_vacancy, $payment));
 
                     $newvacancy_data = JobVacancy::where('id',$new_vacancy->id)->first();
-                    
+                    dd($new_vacancy['payment_data']);
                     $data['payment_type'] = $new_vacancy->payment_data->payment_type;
                     $data['amount']=$new_vacancy->payment_data->gross_amount;
                     $data['payment_status']=$new_vacancy->payment_data->transaction_status;
