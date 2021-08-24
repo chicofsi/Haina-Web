@@ -165,8 +165,10 @@ class JobVacancyController extends Controller
     public function showVacancy(){
         $company = Company::where('id_user', Auth::id())->first();
 
+        $today = date("Y-m-d H:m:s");
+
         if($company){
-            $vacancy = JobVacancy::where('id_company', $company['id'])->get();
+            $vacancy = JobVacancy::where('id_company', $company['id'])->where('deleted_at', 'null')->orWhere('deleted_at', '>', $today)->get();
 
             if($vacancy){
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Show Vacancy Success!','data'=> $vacancy]), 200);
