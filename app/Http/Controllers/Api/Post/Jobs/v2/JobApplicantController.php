@@ -54,8 +54,9 @@ class JobApplicantController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }else{
             $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+            $today = new DateTime("now");
 
-            if(!$check_vacancy){
+            if(!$check_vacancy || strtotime($check_vacancy['deleted_at']) < $today){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
             }
             else{
@@ -97,11 +98,16 @@ class JobApplicantController extends Controller
                 $check_apply = JobVacancyApplicant::where('id_user', Auth::id())->where('id_vacancy', $check_vacancy['id'])->first();
 
                 if($check_apply){
-                    $withdraw = JobVacancyApplicant::where('id', $check_apply['id'])->update([
-                        'status' => 'withdrawn'
-                    ]);
-
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Withdraw Job Application Success!','data'=>$check_vacancy]), 200);
+                    if($checkapply['status'] == 'not accepted' || $checkapply['status'] == 'withdrawn'){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Invalid action!','data'=> '']), 404);
+                    }
+                    else{
+                        $withdraw = JobVacancyApplicant::where('id', $check_apply['id'])->update([
+                            'status' => 'withdrawn'
+                        ]);
+    
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Withdraw Job Application Success!','data'=>$check_vacancy]), 200);
+                    }
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'You did not apply to this job!','data'=> '']), 404);
