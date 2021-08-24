@@ -113,7 +113,7 @@ class JobVacancyController extends Controller
                         $new_vacancy->price = 50000;
                     }
                     else if($new_vacancy->package == "best"){
-                        $new_vacancy->$price = 150000;
+                        $new_vacancy->price = 150000;
                     }
 
                     $payment = PaymentMethod::where('id',$request->payment_method_id)->with('category')->first();
