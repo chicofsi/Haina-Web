@@ -150,7 +150,7 @@ class UserQualificationController extends Controller
                 'salary' => $request->salary
             ];
 
-            $new_workexp = UserWorkExperience::create($new_workexp);
+            $new_workexp = UserWorkExperience::create($workexp);
 
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Work experience added successfully!','data'=> $new_workexp]), 200);
         }
