@@ -64,7 +64,7 @@ class User extends Authenticatable
     }
 
     public function education(){
-        return $this->hasOne('App\Models\UserEducationDetail', 'id_user', 'id'); 
+        return $this->hasOne('App\Models\UserEducation', 'id_user', 'id'); 
     }
 
     public function work_experience(){
