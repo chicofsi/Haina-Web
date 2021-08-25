@@ -42,6 +42,7 @@ use App\Http\Controllers\Api\Forum\ForumController;
 
 use App\Http\Controllers\Api\Post\Jobs\v2\JobVacancyController;
 use App\Http\Controllers\Api\Post\Jobs\v2\JobApplicantController;
+use App\Http\Controllers\Api\Post\Jobs\v2\UserQualificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -93,6 +94,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		//sisi user
 		Route::post('vacancy/apply'  , [JobApplicantController::class, 'applyJob']);
 		Route::post('vacancy/withdraw'  , [JobApplicantController::class, 'withdrawApplication']);
+		
 
 	});
 	////
@@ -127,6 +129,18 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/'  , [UserSkillController::class, 'getUserSkill']);
 		Route::post('/add'  , [UserSkillController::class, 'addUserSkill']);
 		Route::post('/delete'  , [UserSkillController::class, 'deleteUserSkill']);
+	});
+
+	Route::group(['prefix' => 'education'], function() {
+		Route::post('/'  , [UserQualificationController::class, 'showLastEducation']);
+		Route::post('/add'  , [UserQualificationController::class, 'addLastEducation']);
+		Route::post('/delete'  , [UserQualificationController::class, 'deleteLastEducation']);
+	});
+
+	Route::group(['prefix' => 'work_exp'], function() {
+		Route::post('/'  , [UserQualificationController::class, 'showWorkExperience']);
+		Route::post('/add'  , [UserQualificationController::class, 'addWorkExperience']);
+		Route::post('/delete'  , [UserQualificationController::class, 'deleteWorkExperience']);
 	});
 
 	Route::post('notification'  , [NotificationController::class, 'getUserNotification']);

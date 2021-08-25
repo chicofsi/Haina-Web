@@ -94,7 +94,9 @@ class UserQualificationController extends Controller
                         'city' => $request->city
                     ]);
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Last education updated successfully!','data'=> $new_edu]), 200);
+                    $curr_edu = UserEducationDetail::where('id_user', Auth::id())->first();
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Last education updated successfully!','data'=> $curr_edu]), 200);
                 }
             }
         }
@@ -105,6 +107,19 @@ class UserQualificationController extends Controller
 
         if($check_edu){
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Education data listed successfully!','data'=> $check_edu]), 200);
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Education data not found!','data'=> '']), 404);
+        }
+    }
+
+    public function deleteLastEducation(Request $request){
+        $check_edu = UserEducationDetail::where('id_user', Auth::id())->first();
+
+        if($check_edu){
+            $delete_edu = UserEducationDetail::where('id_user', Auth::id())->delete();
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Education data deleted successfully!','data'=> $check_edu]), 200);
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Education data not found!','data'=> '']), 404);
@@ -141,7 +156,7 @@ class UserQualificationController extends Controller
         }
     }
 
-    public function showWorkExperience(Request $request){
+    public function showWorkExperience(){
         $check_workexp = UserWorkExperience::where('id_user', Auth::id())->get();
 
         if($check_workexp){
@@ -156,7 +171,73 @@ class UserQualificationController extends Controller
     }
 
     public function updateWorkExperience(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'company' => $request->company,
+            'city' => $request->city,
+            'date_start' => $request->date_start,
+            'date_end' => $request->date_end,
+            'position' => $request->position,
+            'description' => $request->description,
+            'salary' => $request->salary
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_workexp = UserWorkExperience::where('id', $request->id)->get();
 
+            if($check_workexp){
+                if($check_workexp['id_user'] != Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+                }
+                else{
+                    $update_workexp = UserWorkExperience::where('id', $request->id)->update([
+                        'company' => $request->company,
+                        'city' => $request->city,
+                        'date_start' => $request->date_start,
+                        'date_end' => $request->date_end,
+                        'position' => $request->position,
+                        'description' => $request->description,
+                        'salary' => $request->salary
+                    ]);
+
+                    $curr_workexp = UserWorkExperience::where('id', $request->id)->first();
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Work experience updated successfully!','data'=> $curr_workexp]), 200);
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Work experience data not found!','data'=> '']), 404);
+            }
+        }
+    }
+
+    public function deleteWorkExperience(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_workexp = UserWorkExperience::where('id', $request->id)->get();
+
+            if(!$check_workexp){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Work experience data not found!','data'=> '']), 404);
+            }
+            else{
+                if($check_workexp['id_user'] != Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+                }
+                else{
+                    $delete_workexp = UserWorkExperience::where('id', $request->id)->delete();
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Work experience deleted successfully!','data'=> $curr_workexp]), 200);
+                }
+            }
+
+        }
     }
 
 }
