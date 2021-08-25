@@ -44,6 +44,19 @@ use App\Http\Controllers\Api\Notification\NotificationController;
 
 class JobApplicantController extends Controller
 {
+    public function showAvailableVacancy(){
+        $check_company = Company::where('id_user', Auth::id())->first();
+
+        if($check_company){
+            $get_vacancy = JobVacancy::where('id_company', 'not_like', $check_company['id'])->get();
+        }
+        else{
+            $get_vacancy = JobVacancy::all();
+        }
+
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Show Vacancies Success!','data'=>$get_vacancy]), 200);
+    }
+
     public function applyJob(Request $request){
         $validator = Validator::make($request->all(), [
             'id_vacancy' => 'required',
