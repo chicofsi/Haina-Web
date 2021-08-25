@@ -299,7 +299,7 @@ class JobVacancyController extends Controller
                 else{
                     $applicant = JobVacancyApplicant::where('id_vacancy', $request->id_vacancy)->where('status', 'applied')->with('user.education', 'user.work_experience')->get();
 
-                    if($applicant){
+                    if(count($applicant) > 0){
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant list found!','data'=> $applicant]), 200);
                     }
                     else{
@@ -332,7 +332,7 @@ class JobVacancyController extends Controller
                 else{
                     $applicant = JobVacancyApplicant::where('id_vacancy', $request->id_vacancy)->where('status', 'shortlisted')->get();
 
-                    if($applicant){
+                    if(count($applicant) > 0){
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant shortlist found!','data'=> $applicant]), 200);
                     }
                     else{
