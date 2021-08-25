@@ -90,7 +90,10 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
 		Route::get('vacancy/data'  , [JobVacancyController::class, 'getVacancyData']);
 
-		Route::post('applicant/', [JobVacancyController::class, 'showApplicant']);
+		Route::post('applicant', [JobVacancyController::class, 'showApplicant']);
+		Route::post('applicant/shortlisted', [JobVacancyController::class, 'showShortlist']);
+		//Route::post('applicant/interview', [JobVacancyController::class, 'showInterviewList']);
+
 		Route::post('applicant/update', [JobVacancyController::class, 'changeApplicantStatus']);
 
 		//sisi user
