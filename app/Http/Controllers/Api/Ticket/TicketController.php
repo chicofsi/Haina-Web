@@ -33,6 +33,7 @@ use App\Models\FlightAddons;
 use App\Models\FlightAddonsMeal;
 use App\Models\FlightBookingDetails;
 use App\Models\Passengers;
+use App\Models\PaymentMethod;
 
 
 class TicketController extends Controller
@@ -964,12 +965,21 @@ class TicketController extends Controller
                     foreach ($detailssession as $k => $v) {
                         foreach ($value['trip'] as $key => $value) {
                             $trip=FlightTripSession::where('id_flight_details_session',$v->id)->where('sch_origin',$value['origin'])->where('sch_destination',$value['destination'])->first();
+                            $seat="";
+                            $compartment="";
+                            if(isset($value['seat'])){
+                                $seat=$value['seat'];
+                            }
+
+                            if(isset($value['compartment'])){
+                                $compartment=$value['compartment'];
+                            }
                             $addons=[
                                 "id_flight_passenger_session" => $passangersession->id,
                                 "id_flight_trip_session" => $trip->id,
                                 "baggage_string" => $value['baggage'],
-                                "seat" => $value['seat'],
-                                "compartment" => $value['compartment'],
+                                "seat" => $seat,
+                                "compartment" => $compartment,
                                 "meals" => json_encode($value['meals'])
                             ];
                             $addonssession=FlightAddonsSession::create($addons);
@@ -1174,7 +1184,7 @@ class TicketController extends Controller
         $bookingsession=$this->checkSession(Auth::id());
         $passangersession=FlightPassengerSession::where('id_flight_booking_session',$bookingsession->id)->get();
         $detailssession=FlightDetailsSession::with('flighttripsession')->where('id_flight_booking_session',$bookingsession->id)->get();
-
+        // dd($response);
         $flightbooking=FlightBooking::create([
             "order_id"=> $this->generateOrderId(),
             "id_user" => Auth::id(),
@@ -1275,7 +1285,7 @@ class TicketController extends Controller
 
             
         }
-        $payment=PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
+        $payment=PaymentMethod::where('id',$id_payment_method)->with('category')->first();
         $this->chargeMidtrans($flightbooking,$payment);
     }
 
