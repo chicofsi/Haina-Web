@@ -62,4 +62,12 @@ class User extends Authenticatable
     public function languages(){
         return $this->belongsToMany('App\Models\Languages', 'user_languages', 'id_language', 'id_user');
     }
+
+    public function education(){
+        return $this->hasOne('App\Models\UserEducationDetail', 'id_user', 'id'); 
+    }
+
+    public function work_experience(){
+        return $this->hasOne('App\Models\UserWorkExperience', 'id_user', 'id'); 
+    }
 }
