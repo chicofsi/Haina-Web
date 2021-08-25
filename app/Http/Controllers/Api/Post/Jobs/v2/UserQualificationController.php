@@ -130,7 +130,7 @@ class UserQualificationController extends Controller
         $validator = Validator::make($request->all(), [
             'company' => 'required',
             'city' => 'required',
-            'date_start' => 'lt:date_end',
+            'date_start' => 'required|date|date_format:Y-m-d|before:date_end',
             'position' => 'required',
             'description' => 'required',
             'salary' => 'required'
