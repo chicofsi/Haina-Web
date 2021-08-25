@@ -973,7 +973,7 @@ class TicketController extends Controller
                                 "id_flight_passenger_session" => $passangersession->id,
                                 "id_flight_trip_session" => $trip->id,
                                 "baggage_string" => $value['baggage'],
-                                "seat" => $value['seat'],
+                                "seat" => $seat,
                                 "compartment" => $value['compartment'],
                                 "meals" => json_encode($value['meals'])
                             ];
