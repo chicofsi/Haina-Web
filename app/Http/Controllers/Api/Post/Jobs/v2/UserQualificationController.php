@@ -84,7 +84,7 @@ class UserQualificationController extends Controller
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Newest education must end after current education!','data'=> '']), 403);
                 }
                 else{
-                    $update_edu = UserEducationDetail::where('id_user', Auth::id())->update([
+                    $update_edu = UserEducation::where('id_user', Auth::id())->update([
                         'institution' => $request->institution,
                         'year_start' => $request->year_start,
                         'year_end' => $request->year_end,
