@@ -82,14 +82,18 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
 	//new job//
 	Route::group(['prefix' => 'job'], function() {
+		//sisi company
 		Route::get('vacancy'  , [JobVacancyController::class, 'showVacancy']);
 		Route::post('vacancy/post'  , [JobVacancyController::class, 'createVacancy']);
 		Route::post('vacancy/delete'  , [JobVacancyController::class, 'deleteVacancy']);
 
+		Route::post('applicant/', [JobVacancyController::class, 'showApplicant']);
+		Route::post('applicant/update', [JobVacancyController::class, 'changeApplicantStatus']);
+
+		//sisi user
 		Route::post('vacancy/apply'  , [JobApplicantController::class, 'applyJob']);
 		Route::post('vacancy/withdraw'  , [JobApplicantController::class, 'withdrawApplication']);
 
-		Route::post('applicant/update', [JobVacancyController::class, 'changeApplicantStatus']);
 	});
 	////
 
