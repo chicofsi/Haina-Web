@@ -29,7 +29,7 @@ use App\Models\JobVacancyPayment;
 use App\Models\JobSkill;
 use App\Models\User;
 use App\Models\UserWorkExperience;
-use App\Models\UserEducationDetail;
+use App\Models\UserEducation;
 use App\Models\Languages;
 use App\Models\Education;
 use App\Models\Payment;

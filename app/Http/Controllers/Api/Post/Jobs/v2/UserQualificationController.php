@@ -29,7 +29,7 @@ use App\Models\JobVacancyPayment;
 use App\Models\JobSkill;
 use App\Models\User;
 use App\Models\UserWorkExperience;
-use App\Models\UserEducationDetail;
+use App\Models\UserEducation;
 use App\Models\Languages;
 use App\Models\Education;
 use App\Models\Payment;
@@ -58,7 +58,7 @@ class UserQualificationController extends Controller
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
         }else{
-            $check_edu = UserEducationDetail::where('id_user', Auth::id())->first();
+            $check_edu = UserEducation::where('id_user', Auth::id())->first();
 
             if(!$check_edu){
                 $edu = [
@@ -72,7 +72,7 @@ class UserQualificationController extends Controller
                     'city' => $request->city
                 ];
 
-                $new_edu = UserEducationDetail::create($edu);
+                $new_edu = UserEducation::create($edu);
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Last education added successfully!','data'=> $new_edu]), 200);
             }
@@ -94,7 +94,7 @@ class UserQualificationController extends Controller
                         'city' => $request->city
                     ]);
 
-                    $curr_edu = UserEducationDetail::where('id_user', Auth::id())->first();
+                    $curr_edu = UserEducation::where('id_user', Auth::id())->first();
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Last education updated successfully!','data'=> $curr_edu]), 200);
                 }
@@ -103,7 +103,7 @@ class UserQualificationController extends Controller
     }
 
     public function showLastEducation(){
-        $check_edu = UserEducationDetail::where('id_user', Auth::id())->first();
+        $check_edu = UserEducation::where('id_user', Auth::id())->first();
 
         if($check_edu){
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Education data listed successfully!','data'=> $check_edu]), 200);
@@ -114,10 +114,10 @@ class UserQualificationController extends Controller
     }
 
     public function deleteLastEducation(Request $request){
-        $check_edu = UserEducationDetail::where('id_user', Auth::id())->first();
+        $check_edu = UserEducation::where('id_user', Auth::id())->first();
 
         if($check_edu){
-            $delete_edu = UserEducationDetail::where('id_user', Auth::id())->delete();
+            $delete_edu = UserEducation::where('id_user', Auth::id())->delete();
 
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Education data deleted successfully!','data'=> $check_edu]), 200);
         }
