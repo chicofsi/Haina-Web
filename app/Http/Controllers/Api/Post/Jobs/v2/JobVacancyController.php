@@ -66,9 +66,9 @@ class JobVacancyController extends Controller
         $data->vacancy_type = $type;
         $data->vacancy_education = $education;
         $data->vacancy_skill = $skill;
-        $$data->vacancy_package = $package;
+        $data->vacancy_package = $package;
 
-        return response()->json(new ValueMessage(['value'=>1,'message'=>'Data for vacancy listed successfully!','data'=> $display]), 200);
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Data for vacancy listed successfully!','data'=> $data]), 200);
 
     }
     
