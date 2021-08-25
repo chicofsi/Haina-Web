@@ -26,6 +26,9 @@ use App\Models\JobVacancyApplicant;
 use App\Models\JobVacancy;
 use App\Models\JobVacancyInterview;
 use App\Models\JobVacancyPayment;
+use App\Models\JobVacancyLevel;
+use App\Models\JobVacancyPackage;
+use App\Models\JobVacancyType;
 use App\Models\JobSkill;
 use App\Models\User;
 use App\Models\UserWorkExperience;
@@ -44,13 +47,37 @@ use App\Http\Controllers\Api\Notification\NotificationController;
 
 class JobVacancyController extends Controller
 {
+
+    public function getVacancyData(){
+
+        $data = new \stdClass();
+
+        $level = JobVacancyLevel::all();
+
+        $type = JobVacancyType::all();
+
+        $education = Education::all();
+
+        $skill = JobSkill::all();
+
+        $package = JobVacancyPackage::all();
+
+        $data->vacancy_level = $level;
+        $data->vacancy_type = $type;
+        $data->vacancy_education = $education;
+        $data->vacancy_skill = $skill;
+        $$data->vacancy_package = $package;
+
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Data for vacancy listed successfully!','data'=> $display]), 200);
+
+    }
     
     public function createVacancy(Request $request){
         $validator = Validator::make($request->all(), [
             'id_company' => 'required',
             'position' => 'required',
-            'type' => 'in:Full Time,Half Time,Contract,Internship',
-            'level' => 'in:CEO/Director,General Manager,Manager/Assistant Manager,Supervisor,Staff',
+            'type' => 'required',
+            'level' => 'required',
             'experience' => 'required',
             'id_specialist' =>'required',
             'id_city' => 'required',
@@ -59,8 +86,8 @@ class JobVacancyController extends Controller
             'salary_display' => 'required',
             'id_edu' => 'required',
             'description' => 'required',
-            'package' => 'in:free,basic,best',
-            'payment_method_id' => 'required_unless:package,free',
+            'package' => 'required',
+            'payment_method_id' => 'required_unless:package,1',
             'skill' => 'required'
         ]);
 
@@ -104,7 +131,7 @@ class JobVacancyController extends Controller
 
                 }
 
-                if($new_vacancy->package == "free"){
+                if($new_vacancy->package = 1){
                     $date = new DateTime("now");
                     date_add($date, date_interval_create_from_date_string('7 days'));
 
@@ -118,12 +145,9 @@ class JobVacancyController extends Controller
 
                 }
                 else{
-                    if($new_vacancy->package == "basic"){
-                        $new_vacancy->price = 50000;
-                    }
-                    else if($new_vacancy->package == "best"){
-                        $new_vacancy->price = 150000;
-                    }
+                    $package_price = JobVacancyPackage::where('id', $new_vacancy['package'])->first();
+
+                    $new_vacancy->price = $package_price['price'];
 
                     $payment = PaymentMethod::where('id',$request->payment_method_id)->with('category')->first();
                     $new_vacancy['payment_data'] = json_decode($this->chargeMidtrans($new_vacancy, $payment));
@@ -286,7 +310,7 @@ class JobVacancyController extends Controller
         }
     }
 
-    public function showShortList(Request $request){
+    public function showShortlist(Request $request){
         $validator = Validator::make($request->all(), [
             'id_vacancy' => 'required',
         ]);
