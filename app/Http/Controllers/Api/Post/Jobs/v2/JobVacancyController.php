@@ -31,6 +31,7 @@ use App\Models\JobVacancyPackage;
 use App\Models\JobVacancyType;
 use App\Models\JobSkill;
 use App\Models\User;
+use App\Models\UserDocs;
 use App\Models\UserWorkExperience;
 use App\Models\UserEducation;
 use App\Models\Languages;
@@ -338,6 +339,12 @@ class JobVacancyController extends Controller
                 else{
                     $applicant = JobVacancyApplicant::where('id_vacancy', $request->id_vacancy)->where('status', 'shortlisted')->with('user.education', 'user.work_experience')->get();
 
+                    foreach($applicant as $key => $value){
+                        $edu_name = Education::where('id', $value->user->education->id_edu)->first();
+
+                        $value->user->education->edu_level = $edu_name['name'];
+                    }
+
                     if(count($applicant) > 0){
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant shortlist found!','data'=> $applicant]), 200);
                     }
@@ -345,6 +352,39 @@ class JobVacancyController extends Controller
                         return response()->json(new ValueMessage(['value'=>0,'message'=>'No applicant found!','data'=> '']), 404);
                     }
                 }
+            }
+        }
+    }
+
+    public function showApplicantDetail(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_applicant' => 'required',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_applicant = JobVacancyApplicant::where('id', $request->id_applicant)->first();
+
+            if($check_applicant){
+                $vacancy = JobVacancy::where('id', $check_applicant['id_vacancy'])->first();
+                $check_owner = Company::where('id', $vacancy['id_company'])->first();
+
+                if($check_owner['id_user'] != Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+                }
+                else{
+                    $user_profile = User::where('id', $check_applicant['id_user'])->with('education', 'work_experience')->first();
+
+                    $edu_name = Education::where('id', $user_profile->education->id_edu)->first();
+                    $docs = UserDocs::where('id_user', $user_profile['id'])->get();
+
+                    $user_profile->user_docs = $docs;
+                    $user_profile->education->edu_level = $edu_name;
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No applicant found!','data'=> '']), 404);
             }
         }
     }
