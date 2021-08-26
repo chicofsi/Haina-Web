@@ -523,7 +523,7 @@ class JobVacancyController extends Controller
                         'id_user' => $check_applicant['id_user'],
                         'id_vacancy' => $check_applicant['id_vacancy'],
                         'invitation' => $request->invitation,
-                        'time' => $request->time,
+                        'time' => strtotime($request->time),
                         'method' => $request->method,
                         'duration' => $request->duration,
                         'location' => $request->location ?? '',
