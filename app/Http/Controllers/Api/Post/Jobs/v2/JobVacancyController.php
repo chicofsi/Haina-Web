@@ -381,6 +381,8 @@ class JobVacancyController extends Controller
 
                     $user_profile->user_docs = $docs;
                     $user_profile->education->edu_level = $edu_name;
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Unauthorized!','data'=> $user_profile]), 200);
                 }
             }
             else{
