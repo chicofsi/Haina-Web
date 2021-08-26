@@ -437,6 +437,30 @@ class JobVacancyController extends Controller
         }
     }
 
+    public function statusNotif($id_user, $id_vacancy, $status){
+        $token = [];
+        $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $id_user)->get();
+
+        $vacancy_data = JobVacancy::where('id', $id_vacancy)->first();
+        $company_data = Company::where('id', $vacancy_data['id_company'])->first();
+
+        foreach($usertoken as $key => $value){
+            array_push($token, $value); 
+        }
+
+        if($status == "accepted"){
+            foreach ($token as $key => $value) {
+                NotificationController::sendPush($value, "Application accepted", $company_data['name']." accepted your application for ".$vacancy_data['position'], "Job","");
+            }
+        }
+        else{
+            foreach ($token as $key => $value) {
+                NotificationController::sendPush($value, "Application not accepted", $company_data['name']." decided not to accept your application for ".$vacancy_data['position'], "Job","");
+            }
+        }
+
+    }
+
     
     public function changeApplicantStatus(Request $request){
         $validator = Validator::make($request->all(), [
@@ -457,6 +481,8 @@ class JobVacancyController extends Controller
 
                     $check_applicant = JobVacancyApplicant::where('id', $request->id_applicant)->first();
 
+                    statusNotif($check_applicant['id_user'], $check_applicant['id_vacancy'], $request->status);
+
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant status update success!','data'=>$check_applicant]), 200);
                 }
                 else{
@@ -470,6 +496,8 @@ class JobVacancyController extends Controller
 
                     $check_applicant = JobVacancyApplicant::where('id', $request->id_applicant)->first();
 
+                    statusNotif($check_applicant['id_user'], $check_applicant['id_vacancy'], $request->status);
+
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant status update success!','data'=>$check_applicant]), 200);
                 }
                 else{
@@ -482,6 +510,8 @@ class JobVacancyController extends Controller
                     ]);
 
                     $check_applicant = JobVacancyApplicant::where('id', $request->id_applicant)->first();
+
+                    statusNotif($check_applicant['id_user'], $check_applicant['id_vacancy'], $request->status);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant status update success!','data'=>$check_applicant]), 200);
                 }
@@ -544,11 +574,11 @@ class JobVacancyController extends Controller
                     }
 
                     foreach ($token as $key => $value) {
-                        NotificationController::sendPush($value, "Interview Invitation", $company_data['name']." invited your for interview", "Job","");
+                        NotificationController::sendPush($value, "Interview Invitation", $company_data['name']." invited your for interview for ".$vacancy_data['position'], "Job","");
                     }
 
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Interview invite created!','data'=> '']), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Interview invite created!','data'=> $interview_invite]), 200);
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Invalid status update!','data'=> '']), 404);
