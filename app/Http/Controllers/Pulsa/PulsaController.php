@@ -123,7 +123,7 @@ class PulsaController extends Controller
         $product=Product::where('product_code',$request->product_code)->first();
 
         if($product->inquiry_type=="inquiry"){
-            $datetime=Date('Y-m-d H:m:s');
+            $datetime=Date('Y-m-d H:i:s');
             $time = Date('YmdHms');
 
             $uuid="HAINAAPP".$request->order_id."inq".$time;
@@ -300,8 +300,8 @@ class PulsaController extends Controller
     public function getAmountBills(Request $request)
     {
         
-        $datetime=Date('Y-m-d H:m:s');
-        $time = Date('YmdHms');
+        $datetime=Date('Y-m-d H:i:s');
+        $time = Date('YmdHis');
 
         $uuid="HAINAAPP".$request->order_id."inq".$time;
 
@@ -360,7 +360,7 @@ class PulsaController extends Controller
     public function getDirectBills(Request $request)
     {
         
-        $datetime=Date('Y-m-d H:m:s');
+        $datetime=Date('Y-m-d H:i:s');
         $time = Date('YmdHms');
 
         $uuid="HAINAAPP".$request->order_id."inq".$time;
@@ -527,8 +527,8 @@ class PulsaController extends Controller
         if ($validator->fails()) {          
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
-            $datetime=Date('Y-m-d H:m:s');
-            $time = Date('YmdHms');
+            $datetime=Date('Y-m-d H:i:s');
+            $time = Date('YmdHis');
 
             $uuid="HAINAAPP".$request->customer_number."inq".$time;
 
@@ -694,7 +694,7 @@ class PulsaController extends Controller
                 $transaction=Transaction::create([
                     'id_user' => $iduser,
                     'order_id' => $inquiry->order_id,
-                    'transaction_time' => date("Y-m-d h:m:s"),
+                    'transaction_time' => date("Y-m-d H:i:s"),
                     'total_payment' => $inquiry->amount+($product->sell_price - $product->base_price),
                     'profit' => ($product->sell_price - $product->base_price),
                     'status' => 'pending payment',
@@ -719,7 +719,7 @@ class PulsaController extends Controller
                 $transaction=Transaction::create([
                     'id_user' => $iduser,
                     'order_id' => $order_id,
-                    'transaction_time' => date("Y-m-d h:m:s"),
+                    'transaction_time' => date("Y-m-d H:i:s"),
                     'total_payment' => $amount,
                     'profit' => $product->sell_price,
                     'status' => 'pending payment',
