@@ -360,6 +360,48 @@ class JobVacancyController extends Controller
         }
     }
 
+    public function showInterviewList(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_vacancy' => 'required'
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+            
+            if(!$check_vacancy){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
+            }
+            else{
+                $check_owner = Company::where('id', $check_vacancy['id_company'])->first();
+
+                if($check_owner['id_user'] != Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+                }
+                else{
+                    $applicant = JobVacancyApplicant::where('id_vacancy', $request->id_vacancy)->where('status', 'interview')->with('user.education', 'user.work_experience')->get();
+
+                    foreach($applicant as $key => $value){
+                        $edu_name = Education::where('id', $value->user->education->id_edu)->first();
+
+                        $interview_schedule = JobVacancyInterview::where('id_user', $value->id_user)->where('id_vacancy', $value->id_vacancy)->first();
+
+                        $value->interview_data = $interview_schedule;
+                        $value->user->education->edu_level = $edu_name['name'];
+                    }
+
+                    if(count($applicant) > 0){
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant shortlist found!','data'=> $applicant]), 200);
+                    }
+                    else{
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'No applicant found!','data'=> '']), 404);
+                    }
+                }
+            }
+        }
+    }
+
     public function showApplicantDetail(Request $request){
         $validator = Validator::make($request->all(), [
             'id_applicant' => 'required',

@@ -93,7 +93,9 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('applicant', [JobVacancyController::class, 'showApplicant']);
 		Route::post('applicant/detail', [JobVacancyController::class, 'showApplicantDetail']);
 		Route::post('applicant/shortlisted', [JobVacancyController::class, 'showShortlist']);
-		//Route::post('applicant/interview', [JobVacancyController::class, 'showInterviewList']);
+		Route::post('applicant/interview', [JobVacancyController::class, 'showInterviewList']);
+
+		Route::post('applicant/invite_interview', [JobVacancyController::class, 'interviewInvite']);
 
 		Route::post('applicant/update', [JobVacancyController::class, 'changeApplicantStatus']);
 
