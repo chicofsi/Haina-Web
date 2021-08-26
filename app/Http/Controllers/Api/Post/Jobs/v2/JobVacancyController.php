@@ -61,12 +61,15 @@ class JobVacancyController extends Controller
 
         $skill = JobSkill::all();
 
+        $specialist = JobCategory::all();
+
         $package = JobVacancyPackage::all();
 
         $data->vacancy_level = $level;
         $data->vacancy_type = $type;
         $data->vacancy_education = $education;
         $data->vacancy_skill = $skill;
+        $data->vacancy_category = $specialist;
         $data->vacancy_package = $package;
 
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Data for vacancy listed successfully!','data'=> $data]), 200);
@@ -380,9 +383,9 @@ class JobVacancyController extends Controller
                     $docs = UserDocs::where('id_user', $user_profile['id'])->get();
 
                     $user_profile->user_docs = $docs;
-                    $user_profile->education->edu_level = $edu_name;
+                    $user_profile->education->edu_level = $edu_name['name'];
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Unauthorized!','data'=> $user_profile]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant details found!','data'=> $user_profile]), 200);
                 }
             }
             else{
@@ -454,6 +457,10 @@ class JobVacancyController extends Controller
     public function interviewInvite(Request $request){
         $validator = Validator::make($request->all(), [
             'id_applicant' => 'required',
+            'invitation' => 'required',
+            'time' => 'required',
+            'method' => 'in:phone,live,online',
+            ''
         ]);
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
@@ -461,7 +468,16 @@ class JobVacancyController extends Controller
             $check_applicant = JobVacancyApplicant::where('id', $request->id_applicant)->first();
 
             if($check_applicant){
+                if($check_applicant['status'] != "not accepted" && $check_applicant['status'] != "accepted"){
+                    $update_status = JobVacancyApplicant::where('id', $request->id_applicant)->update([
+                        'status' => "interview"
+                    ]);
 
+                    
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Invalid status update!','data'=> '']), 404);
+                }
             }
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Applicant not found!','data'=> '']), 404);
