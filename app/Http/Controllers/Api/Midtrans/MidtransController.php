@@ -305,7 +305,7 @@ class MidtransController extends Controller
 
             if($transaction_status=='settlement'){
                 $settlement_time=date("Y-m-d H:i:s",strtotime($request->settlement_time));
-                if($transaction['package'] == 'basic'){
+                if($transaction['package'] == 2){
                     $set_time = new DateTime($settlement_time);
                     $newtime = date_add($set_time, date_interval_create_from_date_string('30 days'));
 
@@ -313,7 +313,7 @@ class MidtransController extends Controller
                         'deleted_at' => $newtime
                     ]);
                 }
-                else if($transaction['package'] == 'best'){
+                else if($transaction['package'] == 3){
                     $set_time = new DateTime($settlement_time);
                     $newtime = date_add($set_time, date_interval_create_from_date_string('60 days'));
 
