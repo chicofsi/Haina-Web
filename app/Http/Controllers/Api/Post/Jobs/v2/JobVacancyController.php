@@ -22,6 +22,7 @@ use App\Models\PersonalAccessToken;
 use App\Models\UserLogs;
 use App\Models\Company;
 use App\Models\CompanyPhoto;
+use App\Models\JobCategory;
 use App\Models\JobVacancyApplicant;
 use App\Models\JobVacancy;
 use App\Models\JobVacancyInterview;
@@ -460,7 +461,10 @@ class JobVacancyController extends Controller
             'invitation' => 'required',
             'time' => 'required',
             'method' => 'in:phone,live,online',
-            ''
+            'duration' => 'required_unless:method,live',
+            'location' => 'required_unless:method,phone',
+            'cp_name' => 'required_if:method,live',
+            'cp_phone' => 'required_if:method,live'
         ]);
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
@@ -473,7 +477,23 @@ class JobVacancyController extends Controller
                         'status' => "interview"
                     ]);
 
-                    
+                    $new_invite = [
+                        'id_user' => $check_applicant['id_user'],
+                        'id_vacancy' => $check_applicant['id_vacancy'],
+                        'invitation' => $request->invitation,
+                        'time' => $request->time,
+                        'method' => $request->method,
+                        'duration' => $request->duration,
+                        'location' => $request->location ?? '',
+                        'cp_name' => $request->cp_name ?? '',
+                        'cp_phone' => $request->cp_phone ?? ''
+                    ];
+
+                    $interview_invite = JobVacancyInterview::creste($new_invite);
+
+
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Interview invite created!','data'=> '']), 200);
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Invalid status update!','data'=> '']), 404);
