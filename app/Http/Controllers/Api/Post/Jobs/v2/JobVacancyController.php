@@ -299,6 +299,12 @@ class JobVacancyController extends Controller
                 else{
                     $applicant = JobVacancyApplicant::where('id_vacancy', $request->id_vacancy)->where('status', 'applied')->with('user.education', 'user.work_experience')->get();
 
+                    foreach($applicant as $key => $value){
+                        $edu_name = Education::where('id', $value->user->education->id_edu)->first();
+
+                        $value->user->education->edu_level = $edu_name['name'];
+                    }
+
                     if(count($applicant) > 0){
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant list found!','data'=> $applicant]), 200);
                     }
@@ -330,7 +336,7 @@ class JobVacancyController extends Controller
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
                 }
                 else{
-                    $applicant = JobVacancyApplicant::where('id_vacancy', $request->id_vacancy)->where('status', 'shortlisted')->get();
+                    $applicant = JobVacancyApplicant::where('id_vacancy', $request->id_vacancy)->where('status', 'shortlisted')->with('user.education', 'user.work_experience')->get();
 
                     if(count($applicant) > 0){
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant shortlist found!','data'=> $applicant]), 200);
