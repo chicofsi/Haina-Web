@@ -136,7 +136,7 @@ class JobVacancyController extends Controller
 
                 }
 
-                if($new_vacancy->package = 1){
+                if($new_vacancy->package == 1){
                     $date = new DateTime("now");
                     date_add($date, date_interval_create_from_date_string('7 days'));
 
