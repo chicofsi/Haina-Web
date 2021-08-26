@@ -533,7 +533,7 @@ class JobVacancyController extends Controller
 
                     $interview_invite = JobVacancyInterview::create($new_invite);
 
-                    $vacancy_data = JobVacancy::where('id_vacancy', $check_applicant['id_vacancy'])->first();
+                    $vacancy_data = JobVacancy::where('id', $check_applicant['id_vacancy'])->first();
                     $company_data = Company::where('id', $vacancy_data['id_company'])->first();
 
                     $token = [];
