@@ -489,8 +489,21 @@ class JobVacancyController extends Controller
                         'cp_phone' => $request->cp_phone ?? ''
                     ];
 
-                    $interview_invite = JobVacancyInterview::creste($new_invite);
+                    $interview_invite = JobVacancyInterview::create($new_invite);
 
+                    $vacancy_data = JobVacancy::where('id_vacancy', $check_applicant['id_vacancy'])->first();
+                    $company_data = Company::where('id', $vacancy_data['id_company'])->first();
+
+                    $token = [];
+                    $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $check_applicant['id_user'])->get();
+
+                    foreach($usertoken as $key => $value){
+                        array_push($token, $value->name); 
+                    }
+
+                    foreach ($token as $key => $value) {
+                        NotificationController::sendPush($value, "Interview Invitation", $company_data['name']." invited your for interview", "Job","");
+                    }
 
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Interview invite created!','data'=> '']), 200);
