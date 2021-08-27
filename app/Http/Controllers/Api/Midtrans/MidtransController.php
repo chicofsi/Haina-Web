@@ -255,19 +255,19 @@ class MidtransController extends Controller
             $status="";
             if($transaction_status=='settlement'){
                 $settlement_time=date("Y-m-d H:i:s",strtotime($request->settlement_time));
-                $status='PAID';
+                $status='process';
 
                 NotificationController::sendPush($token, "Payment successful", "Your Rp ".$transaction_amount." payment for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to." is successful", "Flight","finish");
             }else if($transaction_status=='pending'){
                 $settlement_time=null;
-                $status='UNPAID';
+                $status='pending';
                 NotificationController::sendPush($token, "Waiting for payment", "There is a pending payment for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to.". Please finish payment in 24 hours", "Flight", "unfinish");
             }else if($transaction_status=='expire'){
                 $settlement_time=null;
-                $status='CANCELLED';
+                $status='expired';
             }else if($transaction_status=='cancel'){
                 $settlement_time=null;
-                $status='CANCELLED';
+                $status='canceled';
                 NotificationController::sendPush($token, "Booking cancelled", "Your booking for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to." has been cancelled.", "Flight", "unfinish");
             }
 
