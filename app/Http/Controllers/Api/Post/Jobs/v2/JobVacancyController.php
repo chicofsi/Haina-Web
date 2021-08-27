@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\TransferStats;
@@ -44,7 +45,7 @@ use App\Models\PaymentMethod;
 use App\Models\PaymentMethodCategory;
 
 use DateTime;
-use Mail;
+use App\Mail\InviteMail;
 
 use App\Http\Controllers\Api\Notification\NotificationController;
 
@@ -618,13 +619,15 @@ class JobVacancyController extends Controller
                     }
 
                     $user_data = User::where('id', $check_applicant['id_user'])->first();
+                    $sender_data = User::where('id', Auth::id())->first();
 
-                    $data = array('name'=>"Haina Admin");
+                    $objDemo = new \stdClass();
+                    $objDemo->demo_one = 'Ruang MEeting';
+                    $objDemo->demo_two = '12:00 WIB';
+                    $objDemo->sender = $sender_data['fullname'];
+                    $objDemo->receiver = $user_data['fullname'];
 
-                    Mail::send(['text'=>'mail'], $data, function($message) {
-                        $message->to($user_data['email'], $user_data['fullname'])->subject('Undangan Interview');
-                        $message->from('info@hainaservice.com','Haina Admin');
-                    });
+                    Mail::to($user_data['email'])->send(new InviteEmail($objDemo));
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Interview invite created!','data'=> $interview_invite]), 200);
                 }
