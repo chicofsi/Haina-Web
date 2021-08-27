@@ -589,7 +589,7 @@ class JobVacancyController extends Controller
                     
                     $check_invite = JobVacancyInterview::where('id_user', $check_applicant['id_user'])->where('id_vacancy', $check_applicant['id_vacancy'])->first();
 
-                    if($check_invite){
+                    if(!$check_invite){
                         $update_status = JobVacancyApplicant::where('id', $request->id_applicant)->update([
                             'status' => "interview"
                         ]);
