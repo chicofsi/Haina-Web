@@ -571,7 +571,6 @@ class JobVacancyController extends Controller
     public function interviewInvite(Request $request){
         $validator = Validator::make($request->all(), [
             'id_applicant' => 'required',
-            'invitation' => 'required',
             'time' => 'required',
             'method' => 'in:phone,live,online',
             'duration' => 'required_unless:method,live',
@@ -597,7 +596,7 @@ class JobVacancyController extends Controller
                         $new_invite = [
                             'id_user' => $check_applicant['id_user'],
                             'id_vacancy' => $check_applicant['id_vacancy'],
-                            'invitation' => $request->invitation,
+                            'invitation' => $request->invitation ?? '',
                             'time' => $request->time,
                             'method' => $request->method,
                             'duration' => $request->duration ?? 0,
