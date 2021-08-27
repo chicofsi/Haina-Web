@@ -22,14 +22,19 @@ use App\Models\PersonalAccessToken;
 use App\Models\UserLogs;
 use App\Models\Company;
 use App\Models\CompanyPhoto;
+use App\Models\JobCategory;
 use App\Models\JobVacancyApplicant;
 use App\Models\JobVacancy;
 use App\Models\JobVacancyInterview;
 use App\Models\JobVacancyPayment;
+use App\Models\JobVacancyLevel;
+use App\Models\JobVacancyPackage;
+use App\Models\JobVacancyType;
 use App\Models\JobSkill;
 use App\Models\User;
+use App\Models\UserDocs;
 use App\Models\UserWorkExperience;
-use App\Models\UserEducationDetail;
+use App\Models\UserEducation;
 use App\Models\Languages;
 use App\Models\Education;
 use App\Models\Payment;
@@ -39,18 +44,46 @@ use App\Models\PaymentMethod;
 use App\Models\PaymentMethodCategory;
 
 use DateTime;
+use Mail;
 
 use App\Http\Controllers\Api\Notification\NotificationController;
 
 class JobVacancyController extends Controller
 {
+
+    public function getVacancyData(){
+
+        $data = new \stdClass();
+
+        $level = JobVacancyLevel::all();
+
+        $type = JobVacancyType::all();
+
+        $education = Education::all();
+
+        $skill = JobSkill::all();
+
+        $specialist = JobCategory::all();
+
+        $package = JobVacancyPackage::all();
+
+        $data->vacancy_level = $level;
+        $data->vacancy_type = $type;
+        $data->vacancy_education = $education;
+        $data->vacancy_skill = $skill;
+        $data->vacancy_category = $specialist;
+        $data->vacancy_package = $package;
+
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Data for vacancy listed successfully!','data'=> $data]), 200);
+
+    }
     
     public function createVacancy(Request $request){
         $validator = Validator::make($request->all(), [
             'id_company' => 'required',
             'position' => 'required',
-            'type' => 'in:Full Time,Half Time,Contract,Internship',
-            'level' => 'in:CEO/Director,General Manager,Manager/Assistant Manager,Supervisor,Staff',
+            'type' => 'required',
+            'level' => 'required',
             'experience' => 'required',
             'id_specialist' =>'required',
             'id_city' => 'required',
@@ -59,8 +92,8 @@ class JobVacancyController extends Controller
             'salary_display' => 'required',
             'id_edu' => 'required',
             'description' => 'required',
-            'package' => 'in:free,basic,best',
-            'payment_method_id' => 'required_unless:package,free',
+            'package' => 'required',
+            'payment_method_id' => 'required_unless:package,1',
             'skill' => 'required'
         ]);
 
@@ -104,7 +137,7 @@ class JobVacancyController extends Controller
 
                 }
 
-                if($new_vacancy->package == "free"){
+                if($new_vacancy->package == 1){
                     $date = new DateTime("now");
                     date_add($date, date_interval_create_from_date_string('7 days'));
 
@@ -118,12 +151,9 @@ class JobVacancyController extends Controller
 
                 }
                 else{
-                    if($new_vacancy->package == "basic"){
-                        $new_vacancy->price = 50000;
-                    }
-                    else if($new_vacancy->package == "best"){
-                        $new_vacancy->price = 150000;
-                    }
+                    $package_price = JobVacancyPackage::where('id', $new_vacancy['package'])->first();
+
+                    $new_vacancy->price = $package_price['price'];
 
                     $payment = PaymentMethod::where('id',$request->payment_method_id)->with('category')->first();
                     $new_vacancy['payment_data'] = json_decode($this->chargeMidtrans($new_vacancy, $payment));
@@ -215,36 +245,260 @@ class JobVacancyController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
             }
             else{
-                if($check_vacancy['deleted_at'] == null){
-                    $payment_cancel = JobVacancyPayment::where('id_vacancy', $check_vacancy['id'])->update([
-                        'payment_status' => 'cancel'
-                    ]);
+                $check_owner = Company::where('id', $check_vacancy['id_company'])->first();
 
-                    $vacancy_delete = JobVacancy::where('id', $check_vacancy['id'])->update([
-                        'deleted_at' => date('Y-m-d H:i:s')
-                    ]);
-
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Vacancy Delete Success!','data'=>$check_vacancy]), 200);
+                if($check_owner['id_user'] != Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
                 }
-                else{
-                    $currentdate = new DateTime("now");
-                    $checkdate = new DateTime($check_vacancy['deleted_at']);
-
-                    if($currentdate > $checkdate){
-                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Vacancy already deleted/expired!','data'=> '']), 403);
-                    }
-                    else{
-                        $vacancy_delete = JobVacancy::where('id', $check_vacancy['id'])->update([
-                            'deleted_at' => $currentdate
+                else {
+                    if($check_vacancy['deleted_at'] == null){
+                        $payment_cancel = JobVacancyPayment::where('id_vacancy', $check_vacancy['id'])->update([
+                            'payment_status' => 'cancel'
                         ]);
-
+    
+                        $vacancy_delete = JobVacancy::where('id', $check_vacancy['id'])->update([
+                            'deleted_at' => date('Y-m-d H:i:s')
+                        ]);
+    
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Vacancy Delete Success!','data'=>$check_vacancy]), 200);
                     }
+                    else{
+                        $currentdate = new DateTime("now");
+                        $checkdate = new DateTime($check_vacancy['deleted_at']);
+    
+                        if($currentdate > $checkdate){
+                            return response()->json(new ValueMessage(['value'=>0,'message'=>'Vacancy already deleted/expired!','data'=> '']), 403);
+                        }
+                        else{
+                            $vacancy_delete = JobVacancy::where('id', $check_vacancy['id'])->update([
+                                'deleted_at' => $currentdate
+                            ]);
+    
+                            return response()->json(new ValueMessage(['value'=>1,'message'=>'Vacancy Delete Success!','data'=>$check_vacancy]), 200);
+                        }
+                    }
                 }
-
                 
             }
         }
+    }
+
+    public function showApplicant(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_vacancy' => 'required',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+            
+            if(!$check_vacancy){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
+            }
+            else{
+                $check_owner = Company::where('id', $check_vacancy['id_company'])->first();
+
+                if($check_owner['id_user'] != Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+                }
+                else{
+                    $applicant = JobVacancyApplicant::where('id_vacancy', $request->id_vacancy)->where('status', 'applied')->with('user.education', 'user.work_experience')->get();
+
+                    foreach($applicant as $key => $value){
+                        $edu_name = Education::where('id', $value->user->education->id_edu)->first();
+
+                        $value->user->education->edu_level = $edu_name['name'];
+                    }
+
+                    if(count($applicant) > 0){
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant list found!','data'=> $applicant]), 200);
+                    }
+                    else{
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'No applicant found!','data'=> '']), 404);
+                    }
+                }
+            }
+        }
+    }
+
+    public function showShortlist(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_vacancy' => 'required',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+            
+            if(!$check_vacancy){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
+            }
+            else{
+                $check_owner = Company::where('id', $check_vacancy['id_company'])->first();
+
+                if($check_owner['id_user'] != Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+                }
+                else{
+                    $applicant = JobVacancyApplicant::where('id_vacancy', $request->id_vacancy)->where('status', 'shortlisted')->with('user.education', 'user.work_experience')->get();
+
+                    foreach($applicant as $key => $value){
+                        $edu_name = Education::where('id', $value->user->education->id_edu)->first();
+
+                        $value->user->education->edu_level = $edu_name['name'];
+                    }
+
+                    if(count($applicant) > 0){
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant shortlist found!','data'=> $applicant]), 200);
+                    }
+                    else{
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'No applicant found!','data'=> '']), 404);
+                    }
+                }
+            }
+        }
+    }
+
+    public function showInterviewList(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_vacancy' => 'required'
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+            
+            if(!$check_vacancy){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
+            }
+            else{
+                $check_owner = Company::where('id', $check_vacancy['id_company'])->first();
+
+                if($check_owner['id_user'] != Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+                }
+                else{
+                    $applicant = JobVacancyApplicant::where('id_vacancy', $request->id_vacancy)->where('status', 'interview')->with('user.education', 'user.work_experience')->get();
+
+                    foreach($applicant as $key => $value){
+                        $edu_name = Education::where('id', $value->user->education->id_edu)->first();
+
+                        $interview_schedule = JobVacancyInterview::where('id_user', $value->id_user)->where('id_vacancy', $value->id_vacancy)->first();
+
+                        $value->interview_data = $interview_schedule;
+                        $value->user->education->edu_level = $edu_name['name'];
+                    }
+
+                    if(count($applicant) > 0){
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant shortlist found!','data'=> $applicant]), 200);
+                    }
+                    else{
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'No applicant found!','data'=> '']), 404);
+                    }
+                }
+            }
+        }
+    }
+
+    public function showAcceptedList(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_vacancy' => 'required',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+            
+            if(!$check_vacancy){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
+            }
+            else{
+                $check_owner = Company::where('id', $check_vacancy['id_company'])->first();
+
+                if($check_owner['id_user'] != Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+                }
+                else{
+                    $applicant = JobVacancyApplicant::where('id_vacancy', $request->id_vacancy)->where('status', 'accepted')->with('user.education', 'user.work_experience')->get();
+
+                    foreach($applicant as $key => $value){
+                        $edu_name = Education::where('id', $value->user->education->id_edu)->first();
+
+                        $value->user->education->edu_level = $edu_name['name'];
+                    }
+
+                    if(count($applicant) > 0){
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Accepted applicant(s) found!','data'=> $applicant]), 200);
+                    }
+                    else{
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'No accepted applicant found!','data'=> '']), 404);
+                    }
+                }
+            }
+        }
+    }
+
+    public function showApplicantDetail(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_applicant' => 'required',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_applicant = JobVacancyApplicant::where('id', $request->id_applicant)->first();
+
+            if($check_applicant){
+                $vacancy = JobVacancy::where('id', $check_applicant['id_vacancy'])->first();
+                $check_owner = Company::where('id', $vacancy['id_company'])->first();
+
+                if($check_owner['id_user'] != Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+                }
+                else{
+                    $user_profile = User::where('id', $check_applicant['id_user'])->with('education', 'work_experience')->first();
+
+                    $edu_name = Education::where('id', $user_profile->education->id_edu)->first();
+                    $docs = UserDocs::where('id_user', $user_profile['id'])->get();
+
+                    $user_profile->user_docs = $docs;
+                    $user_profile->education->edu_level = $edu_name['name'];
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant details found!','data'=> $user_profile]), 200);
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No applicant found!','data'=> '']), 404);
+            }
+        }
+    }
+
+    public function statusNotif($id_user, $id_vacancy, $status){
+        $token = [];
+        $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $id_user)->get();
+
+        $vacancy_data = JobVacancy::where('id', $id_vacancy)->first();
+        $company_data = Company::where('id', $vacancy_data['id_company'])->first();
+
+        foreach($usertoken as $key => $value){
+            array_push($token, $value); 
+        }
+
+        if($status == "accepted"){
+            foreach ($token as $key => $value) {
+                NotificationController::sendPush($value, "Application accepted", $company_data['name']." accepted your application for ".$vacancy_data['position'], "Job","");
+            }
+        }
+        else{
+            foreach ($token as $key => $value) {
+                NotificationController::sendPush($value, "Application not accepted", $company_data['name']." decided not to accept your application for ".$vacancy_data['position'], "Job","");
+            }
+        }
+
     }
 
     
@@ -267,6 +521,23 @@ class JobVacancyController extends Controller
 
                     $check_applicant = JobVacancyApplicant::where('id', $request->id_applicant)->first();
 
+                    statusNotif($check_applicant['id_user'], $check_applicant['id_vacancy'], $request->status);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant status update success!','data'=>$check_applicant]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Invalid status update!','data'=> '']), 404);
+                }
+
+                if($check_applicant['status'] == "shortlisted" && $request->status == "not accepted"){
+                    $update_status = JobVacancyApplicant::where('id', $request->id_applicant)->update([
+                        'status' => $request->status
+                    ]);
+
+                    $check_applicant = JobVacancyApplicant::where('id', $request->id_applicant)->first();
+
+                    statusNotif($check_applicant['id_user'], $check_applicant['id_vacancy'], $request->status);
+
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant status update success!','data'=>$check_applicant]), 200);
                 }
                 else{
@@ -280,6 +551,8 @@ class JobVacancyController extends Controller
 
                     $check_applicant = JobVacancyApplicant::where('id', $request->id_applicant)->first();
 
+                    statusNotif($check_applicant['id_user'], $check_applicant['id_vacancy'], $request->status);
+
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant status update success!','data'=>$check_applicant]), 200);
                 }
                 else{
@@ -287,6 +560,77 @@ class JobVacancyController extends Controller
                 }
 
 
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Applicant not found!','data'=> '']), 404);
+            }
+        }
+    }
+
+    public function interviewInvite(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_applicant' => 'required',
+            'invitation' => 'required',
+            'time' => 'required',
+            'method' => 'in:phone,live,online',
+            'duration' => 'required_unless:method,live',
+            'location' => 'required_unless:method,phone',
+            'cp_name' => 'required_if:method,live',
+            'cp_phone' => 'required_if:method,live'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_applicant = JobVacancyApplicant::where('id', $request->id_applicant)->first();
+
+            if($check_applicant){
+                if($check_applicant['status'] != "not accepted" && $check_applicant['status'] != "accepted"){
+                    $update_status = JobVacancyApplicant::where('id', $request->id_applicant)->update([
+                        'status' => "interview"
+                    ]);
+
+                    $new_invite = [
+                        'id_user' => $check_applicant['id_user'],
+                        'id_vacancy' => $check_applicant['id_vacancy'],
+                        'invitation' => $request->invitation,
+                        'time' => $request->time,
+                        'method' => $request->method,
+                        'duration' => $request->duration,
+                        'location' => $request->location ?? '',
+                        'cp_name' => $request->cp_name ?? '',
+                        'cp_phone' => $request->cp_phone ?? ''
+                    ];
+
+                    $interview_invite = JobVacancyInterview::create($new_invite);
+
+                    $vacancy_data = JobVacancy::where('id', $check_applicant['id_vacancy'])->first();
+                    $company_data = Company::where('id', $vacancy_data['id_company'])->first();
+
+                    $token = [];
+                    $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $check_applicant['id_user'])->get();
+
+                    foreach($usertoken as $key => $value){
+                        array_push($token, $value->name); 
+                    }
+
+                    foreach ($token as $key => $value) {
+                        NotificationController::sendPush($value, "Interview Invitation", $company_data['name']." invited your for interview for ".$vacancy_data['position'], "Job","");
+                    }
+
+                    $user_data = User::where('id', $check_applicant['id_user'])->first();
+
+                    $data = array('name'=>"Haina Admin");
+
+                    Mail::send(['text'=>'mail'], $data, function($message) {
+                        $message->to($user_data['email'], $user_data['fullname'])->subject('Undangan Interview');
+                        $message->from('info@hainaservice.com','Haina Admin');
+                    });
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Interview invite created!','data'=> $interview_invite]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Invalid status update!','data'=> '']), 404);
+                }
             }
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Applicant not found!','data'=> '']), 404);

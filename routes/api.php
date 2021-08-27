@@ -42,6 +42,7 @@ use App\Http\Controllers\Api\Forum\ForumController;
 
 use App\Http\Controllers\Api\Post\Jobs\v2\JobVacancyController;
 use App\Http\Controllers\Api\Post\Jobs\v2\JobApplicantController;
+use App\Http\Controllers\Api\Post\Jobs\v2\UserQualificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,14 +83,29 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
 	//new job//
 	Route::group(['prefix' => 'job'], function() {
+		//sisi company
 		Route::get('vacancy'  , [JobVacancyController::class, 'showVacancy']);
 		Route::post('vacancy/post'  , [JobVacancyController::class, 'createVacancy']);
 		Route::post('vacancy/delete'  , [JobVacancyController::class, 'deleteVacancy']);
 
-		Route::post('vacancy/apply'  , [JobApplicantController::class, 'applyJob']);
-		Route::post('vacancy/withdraw'  , [JobApplicantController::class, 'withdrawApplication']);
+		Route::get('vacancy/data'  , [JobVacancyController::class, 'getVacancyData']);
+
+		Route::post('applicant', [JobVacancyController::class, 'showApplicant']);
+		Route::post('applicant/detail', [JobVacancyController::class, 'showApplicantDetail']);
+		Route::post('applicant/shortlisted', [JobVacancyController::class, 'showShortlist']);
+		Route::post('applicant/accepted', [JobVacancyController::class, 'showAcceptedList']);
+		Route::post('applicant/interview', [JobVacancyController::class, 'showInterviewList']);
+
+		Route::post('applicant/invite_interview', [JobVacancyController::class, 'interviewInvite']);
 
 		Route::post('applicant/update', [JobVacancyController::class, 'changeApplicantStatus']);
+
+		//sisi user
+		Route::post('vacancy/apply'  , [JobApplicantController::class, 'applyJob']);
+		Route::post('vacancy/withdraw'  , [JobApplicantController::class, 'withdrawApplication']);
+		
+		Route::get('vacancy/show_all', [JobApplicantController::class, 'showAvailableVacancy']);
+
 	});
 	////
 
@@ -123,6 +139,18 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/'  , [UserSkillController::class, 'getUserSkill']);
 		Route::post('/add'  , [UserSkillController::class, 'addUserSkill']);
 		Route::post('/delete'  , [UserSkillController::class, 'deleteUserSkill']);
+	});
+
+	Route::group(['prefix' => 'education'], function() {
+		Route::get('/'  , [UserQualificationController::class, 'showLastEducation']);
+		Route::post('/add'  , [UserQualificationController::class, 'addLastEducation']);
+		Route::post('/delete'  , [UserQualificationController::class, 'deleteLastEducation']);
+	});
+
+	Route::group(['prefix' => 'work_exp'], function() {
+		Route::get('/'  , [UserQualificationController::class, 'showWorkExperience']);
+		Route::post('/add'  , [UserQualificationController::class, 'addWorkExperience']);
+		Route::post('/delete'  , [UserQualificationController::class, 'deleteWorkExperience']);
 	});
 
 	Route::post('notification'  , [NotificationController::class, 'getUserNotification']);

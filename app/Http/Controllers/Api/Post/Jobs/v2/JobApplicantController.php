@@ -26,6 +26,9 @@ use App\Models\JobVacancyApplicant;
 use App\Models\JobVacancy;
 use App\Models\JobVacancyInterview;
 use App\Models\JobVacancyPayment;
+use App\Models\JobVacancyLevel;
+use App\Models\JobVacancyPackage;
+use App\Models\JobVacancyType;
 use App\Models\JobSkill;
 use App\Models\User;
 use App\Models\UserWorkExperience;
@@ -44,6 +47,19 @@ use App\Http\Controllers\Api\Notification\NotificationController;
 
 class JobApplicantController extends Controller
 {
+    public function showAvailableVacancy(){
+        $check_company = Company::where('id_user', Auth::id())->first();
+
+        if($check_company){
+            $get_vacancy = JobVacancy::where('id_company', 'not_like', $check_company['id'])->get();
+        }
+        else{
+            $get_vacancy = JobVacancy::all();
+        }
+
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Show Vacancies Success!','data'=>$get_vacancy]), 200);
+    }
+
     public function applyJob(Request $request){
         $validator = Validator::make($request->all(), [
             'id_vacancy' => 'required',

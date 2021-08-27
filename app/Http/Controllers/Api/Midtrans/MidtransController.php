@@ -80,7 +80,7 @@ class MidtransController extends Controller
             }
 
             if($transaction_status=='settlement'){
-                $settlement_time=date("Y-m-d H:m:s",strtotime($request->settlement_time));
+                $settlement_time=date("Y-m-d H:i:s",strtotime($request->settlement_time));
                 $status='process';
                 foreach ($token as $key => $value) {
                     NotificationController::sendPush($value, "Payment successful", "Your Rp ".$transaction_amount." payment for ".$transaction_product." is successful", "Transaction","finish");
@@ -143,7 +143,7 @@ class MidtransController extends Controller
 
             $status="";
             if($transaction_status=='settlement'){
-                $settlement_time=date("Y-m-d H:m:s",strtotime($request->settlement_time));
+                $settlement_time=date("Y-m-d H:i:s",strtotime($request->settlement_time));
                 $status='PAID';
                 NotificationController::sendPush($token, "Payment successful", "Your Rp ".$hotel_amount."payment for booking at".$hotel_name." is successful", "Hotel", "finish");
             }else if($transaction_status=='pending'){
@@ -196,7 +196,7 @@ class MidtransController extends Controller
 
             $status="";
             if($transaction_status=='settlement'){
-                $settlement_time=date("Y-m-d H:m:s",strtotime($request->settlement_time));
+                $settlement_time=date("Y-m-d H:i:s",strtotime($request->settlement_time));
                 $status='PAID';
                 NotificationController::sendPush($token, "Payment successful", "Your Rp ".$hotel_amount."payment for booking at".$hotel_name." is successful", "Hotel", "finish");
                 $book = new HotelDarmaController();
@@ -252,7 +252,7 @@ class MidtransController extends Controller
 
             $status="";
             if($transaction_status=='settlement'){
-                $settlement_time=date("Y-m-d H:m:s",strtotime($request->settlement_time));
+                $settlement_time=date("Y-m-d H:i:s",strtotime($request->settlement_time));
                 $status='PAID';
                 NotificationController::sendPush($token, "Payment successful", "Your Rp ".$transaction_amount." payment for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to." is successful", "Flight");
             }else if($transaction_status=='pending'){
@@ -305,8 +305,8 @@ class MidtransController extends Controller
             }
 
             if($transaction_status=='settlement'){
-                $settlement_time=date("Y-m-d H:m:s",strtotime($request->settlement_time));
-                if($transaction['package'] == 'basic'){
+                $settlement_time=date("Y-m-d H:i:s",strtotime($request->settlement_time));
+                if($transaction['package'] == 2){
                     $set_time = new DateTime($settlement_time);
                     $newtime = date_add($set_time, date_interval_create_from_date_string('30 days'));
 
@@ -314,7 +314,7 @@ class MidtransController extends Controller
                         'deleted_at' => $newtime
                     ]);
                 }
-                else if($transaction['package'] == 'best'){
+                else if($transaction['package'] == 3){
                     $set_time = new DateTime($settlement_time);
                     $newtime = date_add($set_time, date_interval_create_from_date_string('60 days'));
 
@@ -356,7 +356,7 @@ class MidtransController extends Controller
     public function espayPayment($order_id)
     {
         $transaction=Transaction::where('order_id',$order_id)->with('product')->first();
-        $datetime=Date('Y-m-d H:m:s');
+        $datetime=Date('Y-m-d H:i:s');
         $time = Date('YmdHms');
 
         $uuid="HAINAAPP".$order_id."inq".$time;
