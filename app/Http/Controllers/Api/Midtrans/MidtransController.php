@@ -32,6 +32,7 @@ use App\Models\HotelDarma;
 use App\Models\JobVacancy;
 use App\Models\JobVacancyPayment;
 use App\Models\Company;
+use App\Models\FlightBooking;
 
 use App\Models\User;
 use DateTime;
