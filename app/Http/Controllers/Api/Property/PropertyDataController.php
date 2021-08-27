@@ -110,6 +110,8 @@ class PropertyDataController extends Controller
         }
         else{
             try{
+                $date = new DateTime("now");
+                $expiry = date_add($date, date_interval_create_from_date_string('30 days'));
 
                 $property = [
                     'id_user' => Auth::id(),
@@ -130,9 +132,10 @@ class PropertyDataController extends Controller
                     'selling_price' => $request->selling_price,
                     'rental_price' => $request->rental_price,
                     'facilities' => $request->facilities,
-                    'post_date' => date("Y-m-d H:i:s"),
+                    'post_date' => $date,
                     'description' => $request->description,
-                    'status' => 'available'
+                    'status' => 'available',
+                    'expiry_date' => $expiry
                 ];
 
                 if($property['land_area'] != null && $property['building_area'] > $property['land_area'] && $property['property_type'] == "house"){
