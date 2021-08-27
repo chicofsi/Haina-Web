@@ -491,12 +491,12 @@ class JobVacancyController extends Controller
 
         if($status == "accepted"){
             foreach ($token as $key => $value) {
-                NotificationController::sendPush($value, "Application accepted", $company_data['name']." accepted your application for ".$vacancy_data['position'], "Job","");
+                NotificationController::sendPush($id_user, $value, "Application accepted", $company_data['name']." accepted your application for ".$vacancy_data['position'], "Job","");
             }
         }
         else{
             foreach ($token as $key => $value) {
-                NotificationController::sendPush($value, "Application not accepted", $company_data['name']." decided not to accept your application for ".$vacancy_data['position'], "Job","");
+                NotificationController::sendPush($id_user, $value, "Application not accepted", $company_data['name']." decided not to accept your application for ".$vacancy_data['position'], "Job","");
             }
         }
 
@@ -615,7 +615,7 @@ class JobVacancyController extends Controller
                     }
 
                     foreach ($token as $key => $value) {
-                        NotificationController::sendPush($value, "Interview Invitation", $company_data['name']." invited your for interview for ".$vacancy_data['position'], "Job","");
+                        NotificationController::sendPush($check_applicant['id_user'], $value, "Interview Invitation", $company_data['name']." invited your for interview for ".$vacancy_data['position'], "Job","");
                     }
 
                     $user_data = User::where('id', $check_applicant['id_user'])->first();
