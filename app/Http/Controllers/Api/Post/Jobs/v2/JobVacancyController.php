@@ -44,6 +44,7 @@ use App\Models\PaymentMethod;
 use App\Models\PaymentMethodCategory;
 
 use DateTime;
+use Mail;
 
 use App\Http\Controllers\Api\Notification\NotificationController;
 
@@ -616,6 +617,12 @@ class JobVacancyController extends Controller
                         NotificationController::sendPush($value, "Interview Invitation", $company_data['name']." invited your for interview for ".$vacancy_data['position'], "Job","");
                     }
 
+                    $user_data = User::where('id', $check_applicant['id_user'])->first();
+
+                    Mail::send(['text'=>'mail'], $data, function($message) {
+                        $message->to($user_data['email'], $user_data['fullname'])->subject('Undangan Interview');
+                        $message->from('info@hainaservice.com','Haina Admin');
+                    });
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Interview invite created!','data'=> $interview_invite]), 200);
                 }
