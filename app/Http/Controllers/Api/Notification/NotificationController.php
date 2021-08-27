@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\UserNotification;
 use App\Models\User;
 use App\Models\NotificationCategory;
+use App\Models\NotificationOut;
 
 class NotificationController extends Controller
 {
@@ -69,7 +70,7 @@ class NotificationController extends Controller
 
     
 
-	public static function sendPush ($token, $title, $body, $type,$tabs)
+	public static function sendPush ($id_user, $token, $title, $body, $type,$tabs)
     {
         $serverKey = 'AAAA8gxroJU:APA91bEVVjGrc-JmrOVW20ntmKdCjfq603SF976B6b5mIiZqRm97ahljd-5d58lhza9jBz860aKChLrPou8eGzpe0ttLkgJujd4_iWbaaYb3rwzh_zBtw2uCssTDwXqJwKQItyaZrebn';
         $headers = [
@@ -99,6 +100,15 @@ class NotificationController extends Controller
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+
+        NotificationOut::create([
+            'id_user' => $id_user,
+            'firebase_token' => $token,
+            "title" => $title,
+            "body" => $body,
+            "type" => $type,
+            "tabs" => $tabs
+        ]);
 
         return curl_exec($ch);
     }
