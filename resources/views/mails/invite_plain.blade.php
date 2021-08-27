@@ -1,13 +1,13 @@
-Hello {{ $demo->receiver }},
-We received your application for our company and we are pleased to invite you for an interview at:
+Dear {{ $demo->receiver }},
+We received your application for {{ $demo->position }} in our company and we are pleased to invite you 
+for an interview at:
  
-Location: {{ $demo->demo_one }}
-Time: {{ $demo->demo_two }}
+Location: {{ $demo->location }}
+Time: {{ $demo->time }}
  
-Values passed by With method:
- 
-testVarOne: {{ $testVarOne }}
-testVarOne: {{ $testVarOne }}
+We look forward to to meet with you in this interview. Please do not hesitate to ask if you have any questions regarding the interview process.
  
 Thank You,
+
+
 {{ $demo->sender }}

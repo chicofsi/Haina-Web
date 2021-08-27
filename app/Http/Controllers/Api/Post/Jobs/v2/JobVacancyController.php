@@ -621,13 +621,14 @@ class JobVacancyController extends Controller
                     $user_data = User::where('id', $check_applicant['id_user'])->first();
                     //$sender_data = User::where('id', Auth::id())->first();
 
-                    $objDemo = new \stdClass();
-                    $objDemo->demo_one = 'Ruang Meeting';
-                    $objDemo->demo_two = '12:00 WIB';
-                    $objDemo->sender = $company_data['name'];
-                    $objDemo->receiver = $user_data['fullname'];
+                    $objData = new \stdClass();
+                    $objData->position = $vacancy_data['position'];
+                    $objData->location = $request->location;
+                    $objData->time = $request->time;
+                    $objData->sender = $company_data['name'];
+                    $objData->receiver = $user_data['fullname'];
 
-                    Mail::to($user_data['email'])->send(new InviteMail($objDemo));
+                    Mail::to($user_data['email'])->send(new InviteMail($objData));
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Interview invite created!','data'=> $interview_invite]), 200);
                 }
