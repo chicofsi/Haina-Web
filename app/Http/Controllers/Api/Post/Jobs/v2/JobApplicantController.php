@@ -56,8 +56,18 @@ class JobApplicantController extends Controller
         else{
             $get_vacancy = JobVacancy::all();
         }
+        
+        foreach($get_vacancy as $key => $value){
 
-        return response()->json(new ValueMessage(['value'=>1,'message'=>'Show Vacancies Success!','data'=>$get_vacancy]), 200);
+            if($value->package == 3){
+                $value->pinned = "Y";
+            }
+
+        }
+
+        $ordered_vacancy = collect($get_vacancy)->sortByDesc('created_at')->sortByDesc('pinned')->toArray();
+
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Show Vacancies Success!','data'=>$ordered_vacancy]), 200);
     }
 
     public function applyJob(Request $request){

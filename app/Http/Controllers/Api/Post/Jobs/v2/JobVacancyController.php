@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\TransferStats;
@@ -44,7 +45,7 @@ use App\Models\PaymentMethod;
 use App\Models\PaymentMethodCategory;
 
 use DateTime;
-use Mail;
+use App\Mail\InviteMail;
 
 use App\Http\Controllers\Api\Notification\NotificationController;
 
@@ -490,12 +491,12 @@ class JobVacancyController extends Controller
 
         if($status == "accepted"){
             foreach ($token as $key => $value) {
-                NotificationController::sendPush($value, "Application accepted", $company_data['name']." accepted your application for ".$vacancy_data['position'], "Job","");
+                NotificationController::sendPush($id_user, $value, "Application accepted", $company_data['name']." accepted your application for ".$vacancy_data['position'], "Job","");
             }
         }
         else{
             foreach ($token as $key => $value) {
-                NotificationController::sendPush($value, "Application not accepted", $company_data['name']." decided not to accept your application for ".$vacancy_data['position'], "Job","");
+                NotificationController::sendPush($id_user, $value, "Application not accepted", $company_data['name']." decided not to accept your application for ".$vacancy_data['position'], "Job","");
             }
         }
 
@@ -570,7 +571,6 @@ class JobVacancyController extends Controller
     public function interviewInvite(Request $request){
         $validator = Validator::make($request->all(), [
             'id_applicant' => 'required',
-            'invitation' => 'required',
             'time' => 'required',
             'method' => 'in:phone,live,online',
             'duration' => 'required_unless:method,live',
@@ -585,48 +585,63 @@ class JobVacancyController extends Controller
 
             if($check_applicant){
                 if($check_applicant['status'] != "not accepted" && $check_applicant['status'] != "accepted"){
-                    $update_status = JobVacancyApplicant::where('id', $request->id_applicant)->update([
-                        'status' => "interview"
-                    ]);
+                    
+                    $check_invite = JobVacancyInterview::where('id_user', $check_applicant['id_user'])->where('id_vacancy', $check_applicant['id_vacancy'])->first();
 
-                    $new_invite = [
-                        'id_user' => $check_applicant['id_user'],
-                        'id_vacancy' => $check_applicant['id_vacancy'],
-                        'invitation' => $request->invitation,
-                        'time' => $request->time,
-                        'method' => $request->method,
-                        'duration' => $request->duration,
-                        'location' => $request->location ?? '',
-                        'cp_name' => $request->cp_name ?? '',
-                        'cp_phone' => $request->cp_phone ?? ''
-                    ];
-
-                    $interview_invite = JobVacancyInterview::create($new_invite);
-
-                    $vacancy_data = JobVacancy::where('id', $check_applicant['id_vacancy'])->first();
-                    $company_data = Company::where('id', $vacancy_data['id_company'])->first();
-
-                    $token = [];
-                    $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $check_applicant['id_user'])->get();
-
-                    foreach($usertoken as $key => $value){
-                        array_push($token, $value->name); 
+                    if(!$check_invite){
+                        $update_status = JobVacancyApplicant::where('id', $request->id_applicant)->update([
+                            'status' => "interview"
+                        ]);
+    
+                        $new_invite = [
+                            'id_user' => $check_applicant['id_user'],
+                            'id_vacancy' => $check_applicant['id_vacancy'],
+                            'invitation' => $request->invitation ?? '',
+                            'time' => $request->time,
+                            'method' => $request->method,
+                            'duration' => $request->duration ?? 0,
+                            'location' => $request->location ?? '',
+                            'cp_name' => $request->cp_name ?? '',
+                            'cp_phone' => $request->cp_phone ?? ''
+                        ];
+    
+                        $interview_invite = JobVacancyInterview::create($new_invite);
+    
+                        $vacancy_data = JobVacancy::where('id', $check_applicant['id_vacancy'])->first();
+                        $company_data = Company::where('id', $vacancy_data['id_company'])->first();
+    
+                        $token = [];
+                        $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $check_applicant['id_user'])->get();
+    
+                        foreach($usertoken as $key => $value){
+                            array_push($token, $value->name); 
+                        }
+    
+                        foreach ($token as $key => $value) {
+                            NotificationController::sendPush($check_applicant['id_user'], $value, "Interview Invitation", $company_data['name']." invited your for interview for ".$vacancy_data['position'], "Job","");
+                        }
+    
+                        $user_data = User::where('id', $check_applicant['id_user'])->first();
+                        //$sender_data = User::where('id', Auth::id())->first();
+    
+                        $objData = new \stdClass();
+                        $objData->position = $vacancy_data['position'];
+                        $objData->method = $new_invite['method'];
+                        $objData->location = $new_invite['location'];
+                        $objData->duration = $new_invite['duration'];
+                        $objData->time = $new_invite['time'];
+                        $objData->sender = $company_data['name'];
+                        $objData->receiver = $user_data['fullname'];
+                        $objData->cp_name = $new_invite['cp_name'];
+                        $objData->cp_phone = $new_invite['cp_phone'];
+    
+                        Mail::to($user_data['email'])->send(new InviteMail($objData));
+    
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Interview invite created!','data'=> $interview_invite]), 200);
                     }
-
-                    foreach ($token as $key => $value) {
-                        NotificationController::sendPush($value, "Interview Invitation", $company_data['name']." invited your for interview for ".$vacancy_data['position'], "Job","");
+                    else{
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Applicant already invited!','data'=> '']), 401);
                     }
-
-                    $user_data = User::where('id', $check_applicant['id_user'])->first();
-
-                    $data = array('name'=>"Haina Admin");
-
-                    Mail::send(['text'=>'mail'], $data, function($message) {
-                        $message->to($user_data['email'], $user_data['fullname'])->subject('Undangan Interview');
-                        $message->from('info@hainaservice.com','Haina Admin');
-                    });
-
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Interview invite created!','data'=> $interview_invite]), 200);
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Invalid status update!','data'=> '']), 404);
