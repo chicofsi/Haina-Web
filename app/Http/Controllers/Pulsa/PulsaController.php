@@ -281,19 +281,52 @@ class PulsaController extends Controller
             }
         }
         else{
-            $data=(object)[
-                "product_code"=>$product->product_code,
-                "data"=>[
-                    "customer_id"      => $request->order_id,
-                    "product_code"  => $request->product_code,
-                    "bill_date"     => date("m-d"),
-                ],
-                "rs_datetime"=>date("Y-m-d H:i:s"),
-                "inquiry"=>0,
-            ];
-            $billdata = new InquiryBillsResource($data);
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
+            $checkfive = Transaction::where('customer_number', $request->order_id)->where('id_product', $product['id'])->orderBy('created_at', 'desc')->first();
+
+            if($checkfive){
+                $startdate = new DateTime("now");
+                $checkdate = new DateTime($checkfive['created_at']);
+                $minutediff = $startdate->diff($checkdate);
+
+                $minutes = $minutediff->days * 24 * 60;
+                $minutes += $minutediff->h * 60;
+                $minutes += $minutediff->i;
+
+                if($minutes <= 5){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Please wait 5 minutes for the same transaction!','data'=> '']), 401);
+                }
+                else{
+                    $data=(object)[
+                        "product_code"=>$product->product_code,
+                        "data"=>[
+                            "customer_id"      => $request->order_id,
+                            "product_code"  => $request->product_code,
+                            "bill_date"     => date("m-d"),
+                        ],
+                        "rs_datetime"=>date("Y-m-d H:i:s"),
+                        "inquiry"=>0,
+                    ];
+                    $billdata = new InquiryBillsResource($data);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
+                }
+            }else{
+                
+                $data=(object)[
+                    "product_code"=>$product->product_code,
+                    "data"=>[
+                        "customer_id"      => $request->order_id,
+                        "product_code"  => $request->product_code,
+                        "bill_date"     => date("m-d"),
+                    ],
+                    "rs_datetime"=>date("Y-m-d H:i:s"),
+                    "inquiry"=>0,
+                ];
+                $billdata = new InquiryBillsResource($data);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bill Details Found!','data'=> $billdata]), 200);
+            }
         }
     }
 
@@ -359,7 +392,6 @@ class PulsaController extends Controller
 
     public function getDirectBills(Request $request)
     {
-        
         $datetime=Date('Y-m-d H:i:s');
         $time = Date('YmdHms');
 
