@@ -619,6 +619,8 @@ class JobVacancyController extends Controller
 
                     $user_data = User::where('id', $check_applicant['id_user'])->first();
 
+                    $data = array('name'=>"Haina Admin");
+
                     Mail::send(['text'=>'mail'], $data, function($message) {
                         $message->to($user_data['email'], $user_data['fullname'])->subject('Undangan Interview');
                         $message->from('info@hainaservice.com','Haina Admin');
