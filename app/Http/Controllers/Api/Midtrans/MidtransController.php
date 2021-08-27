@@ -256,6 +256,7 @@ class MidtransController extends Controller
             if($transaction_status=='settlement'){
                 $settlement_time=date("Y-m-d H:i:s",strtotime($request->settlement_time));
                 $status='PAID';
+
                 NotificationController::sendPush($token, "Payment successful", "Your Rp ".$transaction_amount." payment for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to." is successful", "Flight","finish");
             }else if($transaction_status=='pending'){
                 $settlement_time=null;
@@ -280,7 +281,7 @@ class MidtransController extends Controller
 
             $flightbookingpayment=FlightBookingPayment::updateOrCreate(
                 [
-                    'booking_id' => $flightbooking->id
+                    'id_flight_book' => $flightbooking->id
                 ],
                 [
                     'midtrans_id' => $transaction_id,
