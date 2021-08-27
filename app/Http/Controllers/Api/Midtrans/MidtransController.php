@@ -140,7 +140,7 @@ class MidtransController extends Controller
             $hotel_amount = number_format($transaction['total_price'], 2, ",", ".");
 
             foreach($usertoken as $key => $value){
-                array_push($token, $value); 
+                array_push($token, $value->name); 
             }
 
             $status="";
@@ -202,7 +202,7 @@ class MidtransController extends Controller
             $hotel_amount = number_format($transaction['total_price'], 2, ",", ".");
 
             foreach($usertoken as $key => $value){
-                array_push($token, $value); 
+                array_push($token, $value->name); 
             }
 
             $status="";
@@ -265,7 +265,7 @@ class MidtransController extends Controller
             $transaction_amount = number_format($transaction['amount'], 2, ",", ".");
 
             foreach($usertoken as $key => $value){
-                array_push($token, $value); 
+                array_push($token, $value->name); 
             }
 
             $status="";
