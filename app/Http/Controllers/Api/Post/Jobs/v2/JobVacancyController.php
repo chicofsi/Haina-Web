@@ -627,7 +627,7 @@ class JobVacancyController extends Controller
                     $objDemo->sender = $company_data['name'];
                     $objDemo->receiver = $user_data['fullname'];
 
-                    Mail::to($user_data['email'])->send(new InviteEmail($objDemo));
+                    Mail::to($user_data['email'])->send(new InviteMail($objDemo));
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Interview invite created!','data'=> $interview_invite]), 200);
                 }
