@@ -619,12 +619,12 @@ class JobVacancyController extends Controller
                     }
 
                     $user_data = User::where('id', $check_applicant['id_user'])->first();
-                    $sender_data = User::where('id', Auth::id())->first();
+                    //$sender_data = User::where('id', Auth::id())->first();
 
                     $objDemo = new \stdClass();
-                    $objDemo->demo_one = 'Ruang MEeting';
+                    $objDemo->demo_one = 'Ruang Meeting';
                     $objDemo->demo_two = '12:00 WIB';
-                    $objDemo->sender = $sender_data['fullname'];
+                    $objDemo->sender = $company_data['name'];
                     $objDemo->receiver = $user_data['fullname'];
 
                     Mail::to($user_data['email'])->send(new InviteEmail($objDemo));
