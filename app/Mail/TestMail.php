@@ -35,11 +35,11 @@ class TestMail extends Mailable
     public function build()
     {
         return $this->from('info@hainaservice.com')
-                    ->text('mails.tester');
                     
-                    /*
                     ->view('mails.tester');
+                    /*
                     
+                    ->text('mails.invite_plain');
                     ->with(
                       [
                             'testVarOne' => '1',
