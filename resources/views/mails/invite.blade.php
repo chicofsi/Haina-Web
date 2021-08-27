@@ -14,8 +14,8 @@ Dear {{ $demo->receiver }},
 @elseif ($demo->method == "phone")
     <div>
         <p><b>Method:</b>&nbsp;Phone Interview</p>
-        <p><b>Time:</b>&nbsp;{{ date('l, j F Y - H:i', strtotime($demo->time)) }}</p>
-        <p><b>Duration:</b>&nbsp;{{ $demo->duration }}</p>
+        <p><b>Time:</b>&nbsp;{{ date('l, j F Y - H:i', strtotime($demo->time)) }} WIB</p>
+        <p><b>Duration:</b>&nbsp;{{ $demo->duration }} minutes</p>
     </div>
 @else
     <div>
