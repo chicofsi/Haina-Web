@@ -1,11 +1,11 @@
-Dear, {{ $demo->receiver }},
-<p>We received your application for {{ $demo->position }} in our company and we are pleased to invite you 
-    for an interview at:
+Dear {{ $demo->receiver }},
+<p>We received your application for <b>{{ $demo->position }}</b> in our company and we are pleased to invite you 
+    for an interview.
 </p>
  
 @if ($demo->method == "live")
     <div>
-        <p><b>Method:</b>&nbsp;{{ $demo->method }}</p>
+        <p><b>Method:</b>&nbsp;On-site Interview</p>
         <p><b>Location:</b>&nbsp;{{ $demo->location }}</p>
         <p><b>Time:</b>&nbsp;{{ $demo->time }}</p>
         <p><b>Contact Person:</b>&nbsp;{{ $demo->cp_name }} ({{ $demo->cp_phone }})</p>
@@ -13,13 +13,13 @@ Dear, {{ $demo->receiver }},
     </div>
 @elseif ($demo->method == "phone")
     <div>
-        <p><b>Method:</b>&nbsp;{{ $demo->method }}</p>
-        <p><b>Time:</b>&nbsp;{{ $demo->time }}</p>
+        <p><b>Method:</b>&nbsp;Phone Interview</p>
+        <p><b>Time:</b>&nbsp;{{ date('l, j F Y - H:i', strtotime($demo->time)) }}</p>
         <p><b>Duration:</b>&nbsp;{{ $demo->duration }}</p>
     </div>
 @else
     <div>
-        <p><b>Method:</b>&nbsp;{{ $demo->method }}</p>
+        <p><b>Method:</b>&nbsp;Online Interview</p>
         <p><b>Time:</b>&nbsp;{{ $demo->time }}</p>
         <p><b>Link:</b>&nbsp;{{ $demo->location }}</p>
         <p><b>Duration:</b>&nbsp;{{ $demo->duration }} minutes</p>
