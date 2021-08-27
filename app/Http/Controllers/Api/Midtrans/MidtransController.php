@@ -256,18 +256,18 @@ class MidtransController extends Controller
             if($transaction_status=='settlement'){
                 $settlement_time=date("Y-m-d H:i:s",strtotime($request->settlement_time));
                 $status='PAID';
-                NotificationController::sendPush($token, "Payment successful", "Your Rp ".$transaction_amount." payment for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to." is successful", "Flight");
+                NotificationController::sendPush($token, "Payment successful", "Your Rp ".$transaction_amount." payment for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to." is successful", "Flight","finish");
             }else if($transaction_status=='pending'){
                 $settlement_time=null;
                 $status='UNPAID';
-                NotificationController::sendPush($token, "Waiting for payment", "There is a pending payment for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to.". Please finish payment in 24 hours", "Flight");
+                NotificationController::sendPush($token, "Waiting for payment", "There is a pending payment for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to.". Please finish payment in 24 hours", "Flight", "unfinish");
             }else if($transaction_status=='expire'){
                 $settlement_time=null;
                 $status='CANCELLED';
             }else if($transaction_status=='cancel'){
                 $settlement_time=null;
                 $status='CANCELLED';
-                NotificationController::sendPush($token, "Booking cancelled", "Your booking for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to." has been cancelled.", "Hotel");
+                NotificationController::sendPush($token, "Booking cancelled", "Your booking for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to." has been cancelled.", "Flight", "unfinish");
             }
 
             $flightbooking=FlightBooking::where('order_id',$order_id)->update(['status'=>$status]);
