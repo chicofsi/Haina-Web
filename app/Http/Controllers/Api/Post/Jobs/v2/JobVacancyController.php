@@ -600,7 +600,7 @@ class JobVacancyController extends Controller
                             'invitation' => $request->invitation,
                             'time' => $request->time,
                             'method' => $request->method,
-                            'duration' => $request->duration,
+                            'duration' => $request->duration ?? 0,
                             'location' => $request->location ?? '',
                             'cp_name' => $request->cp_name ?? '',
                             'cp_phone' => $request->cp_phone ?? ''
@@ -629,6 +629,7 @@ class JobVacancyController extends Controller
                         $objData->position = $vacancy_data['position'];
                         $objData->method = $new_invite['method'];
                         $objData->location = $new_invite['location'];
+                        $objData->duration = $new_invite['duration'];
                         $objData->time = $new_invite['time'];
                         $objData->sender = $company_data['name'];
                         $objData->receiver = $user_data['fullname'];
