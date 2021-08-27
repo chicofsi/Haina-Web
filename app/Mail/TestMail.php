@@ -6,7 +6,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
  
-class InviteMail extends Mailable
+class TestMail extends Mailable
 {
     use Queueable, SerializesModels;
      
@@ -35,9 +35,11 @@ class InviteMail extends Mailable
     public function build()
     {
         return $this->from('info@hainaservice.com')
-                    ->view('mails.invite')
-                    ->text('mails.invite_plain');
+                    ->text('mails.tester');
+                    
                     /*
+                    ->view('mails.tester');
+                    
                     ->with(
                       [
                             'testVarOne' => '1',
