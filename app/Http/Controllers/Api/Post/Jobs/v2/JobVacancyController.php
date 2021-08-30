@@ -156,6 +156,7 @@ class JobVacancyController extends Controller
                     $package_price = JobVacancyPackage::where('id', $new_vacancy['package'])->first();
 
                     $new_vacancy->price = $package_price['price'];
+                    $new_vacancy->order_id = $new_vacancy['package'].'-'.Str::random(3).'-'.$new_vacancy['id'];
 
                     $payment = PaymentMethod::where('id',$request->payment_method_id)->with('category')->first();
                     $new_vacancy['payment_data'] = json_decode($this->chargeMidtrans($new_vacancy, $payment));
@@ -178,6 +179,7 @@ class JobVacancyController extends Controller
                     $pending_payment = JobVacancyPayment::create([
                         'id_vacancy' => $new_vacancy->id,
                         'price' => $newvacancy_data->payment['amount'],
+                        'order_id' => $new_vacancy->order_id,
                         'midtrans_id' => '',
                         'payment_method_id' => $request->payment_method_id,
                         'va_number' => $newvacancy_data->payment['virtual_account'],
@@ -706,7 +708,7 @@ class JobVacancyController extends Controller
 		    ],
             "custom_field1"        => "JobAd",
 		    "transaction_details" => array(
-		        "order_id"            => $transaction->package.'-'.Str::random(3).'-'.$transaction->id,
+		        "order_id"            => $transaction->order_id,
 		        "gross_amount"		  => $transaction->price
 		    ),
 		];

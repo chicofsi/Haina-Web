@@ -947,7 +947,7 @@ class PulsaController extends Controller
                 $payment_method = PaymentMethodCategory::select('name')->where('id', $payment_method['id_payment_method_category'])->first();
 
                 $ad_list = [
-                    'order_id' => '',
+                    'order_id' => $get_payment['order_id'],
                     'transaction_time' => $get_payment['created_at'],
                     'product' => $value->position." Ad ".$package_name,
                     'total_amount' => $get_payment['price'],

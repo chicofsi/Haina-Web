@@ -12,7 +12,7 @@ class JobVacancyPayment extends Model
     protected $table = 'job_vacancy_payment';
 
     protected $fillable = [
-        'id_vacancy', 'price', 'payment_method_id', 'midtrans_id', 'va_number', 'settlement_time', 
+        'id_vacancy', 'price', 'payment_method_id', 'order_id', 'midtrans_id', 'va_number', 'settlement_time', 
         'payment_status'
     ];
 
