@@ -960,7 +960,7 @@ class PulsaController extends Controller
                     'id_payment_method' => $get_payment['payment_method_id'],
                     'payment_method' => $payment_method['name']
                 ];
-
+                dd($ad_list);
                 array_push($list_pending, $ad_list);
             }
         }
