@@ -40,6 +40,7 @@ use App\Models\Languages;
 use App\Models\Education;
 use App\Models\Payment;
 use App\Models\Post;
+use App\Models\City;
 use App\Models\UserNotification;
 use App\Models\PaymentMethod;
 use App\Models\PaymentMethodCategory;
@@ -214,6 +215,18 @@ class JobVacancyController extends Controller
 
                     $package_name = JobVacancyPackage::where('id', $value->package)->first();
                     $value->package_name = $package_name['name'];
+
+                    $city_name = City::where('id', $value->id_city)->first();
+                    $value->city_name = $city_name['name'];
+
+                    $level_name = JobVacancyLevel::where('id', $value->level)->first();
+                    $value->level_name = $level_name['name'];
+
+                    $type_name = JobVacancyType::where('id', $value->type)->first();
+                    $value->type_name = $type_name['name'];
+
+                    $specialist_name = JobCategory::where('id', $value->id_specialist)->first();
+                    $value->specialist_name = $specialist_name['name'];
 
                     $value->total_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->get());
                     $value->shortlisted_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->where('status', 'shortlisted')->get());

@@ -780,9 +780,9 @@ class PulsaController extends Controller
         if ($validator->fails()) {          
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
-            
+
             $payment=PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
-            $checkfive = Transaction::where('customer_number', $request->customer_number)->where('id_product', $request->product_code)->orderBy('created_at', 'desc')->first();
+            $checkfive = Transaction::where('customer_number', $request->customer_number)->orderBy('created_at', 'desc')->first();
 
             if($checkfive){
                 $startdate = new DateTime("now");
