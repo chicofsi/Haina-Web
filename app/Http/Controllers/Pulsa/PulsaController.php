@@ -943,7 +943,7 @@ class PulsaController extends Controller
         foreach($get_vacancy as $key => $value){
             $get_payment = JobVacancyPayment::where('id_vacancy', $value->id)->first();
 
-            if($get_payment['payment_status'] == 'pending'){
+            if($get_payment && $get_payment['payment_status'] == 'pending'){
 
                 $package_name = JobVacancyPackage::where('id', $value->package)->first();
                 $payment_name = $get_payment['payment_method_id'];
