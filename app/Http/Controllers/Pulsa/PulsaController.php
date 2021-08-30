@@ -33,6 +33,10 @@ use App\Models\PaymentMethodCategory;
 use App\Models\CategoryService;
 use App\Models\EspayRequest;
 
+use App\Models\Company;
+use App\Models\JobVacancy;
+use App\Models\JobVacancyPayment;
+
 use DateTime;
 
 
@@ -918,7 +922,7 @@ class PulsaController extends Controller
         
         //dd($bill_list);
 
-        $hotel_pending=HotelBooking::where('user_id',$request->user()->id)->with('hotel', 'payment')->where('status','UNPAID')->get();
+        $hotel_pending=HotelDarmaBooking::where('user_id',$request->user()->id)->with('hotel', 'payment')->where('status','UNPAID')->get();
 
         foreach($hotel_pending as $key => $value){
             $hotel_list = new PendingTransactionResource($value);
@@ -928,6 +932,36 @@ class PulsaController extends Controller
         //$date = array_column($list_pending, 'transaction_date');
         //$amount = array_column($list_pending, 'total_amount');
         //array_multisort($date, SORT_ASC, $amount, SORT_DESC, $list_pending);
+
+        $check_owner = Company::where('id', $check_vacancy['id_company'])->first();
+        $get_vacancy = JobVacancy::where('id_company', $check_owner['id'])->where('package', '!=', 1)->get();
+
+        foreach($get_vacancy as $key => $value){
+            $get_payment = JobVacancyPayment::where('id_vacancy', $value->id)->first();
+
+            if($get_payment['payment_status'] == 'pending'){
+
+                $package_name = JobVacancyPackage::where('id', $value->package)->first();
+                $payment_name = TransactionPayment::select('id_payment_method')->where('id',$get_payment['payment_method_id'])->first();
+                $payment_cat = PaymentMethod::select('id_payment_method_category')->where('id', $payment_id['id_payment_method'])->first();
+                $payment_method = PaymentMethodCategory::select('name')->where('id', $payment_method['id_payment_method_category'])->first();
+
+                $ad_list = [
+                    'order_id' => '',
+                    'transaction_time' => $get_payment['created_at'],
+                    'product' => $value->position." Ad ".$package_name,
+                    'total_amount' => $get_payment['price'],
+                    'status' => $get_payment['payment_status'],
+                    'icon' => '',
+                    'id_payment_method' => $get_payment['payment_method_id'],
+                    'payment_method' => $payment_method['name']
+                ];
+
+                array_push($list_pending, $ad_list);
+            }
+        }
+
+
 
         usort($list_pending, function($a, $b) {
             return strcmp($a->transaction_time, $b->transaction_time);
