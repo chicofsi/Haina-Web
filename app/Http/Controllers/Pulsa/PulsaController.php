@@ -33,6 +33,9 @@ use App\Models\PaymentMethodCategory;
 use App\Models\CategoryService;
 use App\Models\EspayRequest;
 
+use App\Models\HotelDarma;
+use App\Models\HotelDarmaBooking;
+use App\Models\HotelDarmaPayment;
 use App\Models\Company;
 use App\Models\JobVacancy;
 use App\Models\JobVacancyPayment;

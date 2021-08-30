@@ -16,16 +16,20 @@ use App\Models\PaymentMethod;
 use App\Models\PaymentMethodCategory;
 use App\Models\TransactionPayment;
 
+use App\Models\HotelDarma;
+use App\Models\HotelDarmaBooking;
+use App\Models\HotelDarmaPayment;
+
 class PendingTransactionResource extends JsonResource {
 
     public function toArray($request){
         //$data=$this;
         if(isset($this->hotel)){
-            $transaction=HotelBooking::where('id',$this->id)->with('hotel','payment')->first();
+            $transaction=HotelDarmaBooking::where('id',$this->id)->with('hotel','payment')->first();
 
-            $hotel_name = Hotel::select('hotel_name')->where('id', $transaction->hotel->id)->first();
+            $hotel_name = HotelDarma::select('hotel_name')->where('id', $transaction->hotel->id)->first();
 
-            $payment_id = HotelBookingPayment::select('payment_method_id')->where('id',$transaction->payment->id)->first();
+            $payment_id = HotelDarmaPayment::select('payment_method_id')->where('id',$transaction->payment->id)->first();
             $payment_method = PaymentMethod::select('id_payment_method_category')->where('id', $payment_id['payment_method_id'])->first();
             $payment_name = PaymentMethodCategory::select('name')->where('id', $payment_method['id_payment_method_category'])->first();
             
