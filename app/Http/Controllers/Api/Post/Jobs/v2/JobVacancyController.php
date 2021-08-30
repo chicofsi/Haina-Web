@@ -197,8 +197,6 @@ class JobVacancyController extends Controller
     }
 
     public function showVacancy(){
-        $tes = JobVacancyPayment::all();
-        dd($tes);
 
         $company = Company::where('id_user', Auth::id())->first();
 
