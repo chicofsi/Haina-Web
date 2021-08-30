@@ -780,24 +780,62 @@ class PulsaController extends Controller
         if ($validator->fails()) {          
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
+            
             $payment=PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
-            $transaction = $this->createTransaction($request->user()->id, $request->product_code, $request->customer_number, $payment, $request->id_inquiry);
-            if($transaction){
-                $transaction_data=Transaction::where('id',$transaction->id)->with('product')->first();
-                $data['payment_type']=$transaction->payment_data->payment_type;
-                $data['amount']=$transaction->payment_data->gross_amount;
-                $data['payment_status']=$transaction->payment_data->transaction_status;
-                foreach ($transaction->payment_data->va_numbers as $key => $value) {
-                    $data['virtual_account']=$value->va_number;
-                    $data['bank']=$value->bank;
+            $checkfive = Transaction::where('customer_number', $request->customer_number)->where('id_product', $request->product_code)->orderBy('created_at', 'desc')->first();
+
+            if($checkfive){
+                $startdate = new DateTime("now");
+                $checkdate = new DateTime($checkfive['created_at']);
+                $minutediff = $startdate->diff($checkdate);
+
+                $minutes = $minutediff->days * 24 * 60;
+                $minutes += $minutediff->h * 60;
+                $minutes += $minutediff->i;
+
+                if($minutes <= 5){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Please wait 5 minutes for the same transaction!','data'=> '']), 401);
                 }
-                $transaction_data['payment']=$data;
+                else{
+                    $transaction = $this->createTransaction($request->user()->id, $request->product_code, $request->customer_number, $payment, $request->id_inquiry);
+                    if($transaction){
+                        $transaction_data=Transaction::where('id',$transaction->id)->with('product')->first();
+                        $data['payment_type']=$transaction->payment_data->payment_type;
+                        $data['amount']=$transaction->payment_data->gross_amount;
+                        $data['payment_status']=$transaction->payment_data->transaction_status;
+                        foreach ($transaction->payment_data->va_numbers as $key => $value) {
+                            $data['virtual_account']=$value->va_number;
+                            $data['bank']=$value->bank;
+                        }
+                        $transaction_data['payment']=$data;
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction Success!','data'=> $transaction_data]), 200);
-            }else {
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Failed!','data'=> ""]), 400);
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction Success!','data'=> $transaction_data]), 200);
+                    }else {
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Failed!','data'=> ""]), 400);
 
+                    }
+                }
             }
+            else{
+                $transaction = $this->createTransaction($request->user()->id, $request->product_code, $request->customer_number, $payment, $request->id_inquiry);
+                if($transaction){
+                    $transaction_data=Transaction::where('id',$transaction->id)->with('product')->first();
+                    $data['payment_type']=$transaction->payment_data->payment_type;
+                    $data['amount']=$transaction->payment_data->gross_amount;
+                    $data['payment_status']=$transaction->payment_data->transaction_status;
+                    foreach ($transaction->payment_data->va_numbers as $key => $value) {
+                        $data['virtual_account']=$value->va_number;
+                        $data['bank']=$value->bank;
+                    }
+                    $transaction_data['payment']=$data;
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction Success!','data'=> $transaction_data]), 200);
+                }else {
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Failed!','data'=> ""]), 400);
+
+                }
+            }
+            
         }
     }
 
