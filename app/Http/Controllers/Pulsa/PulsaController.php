@@ -941,7 +941,7 @@ class PulsaController extends Controller
         $get_vacancy = JobVacancy::where('id_company', $check_owner['id'])->where('package', '!=', 1)->get();
 
         foreach($get_vacancy as $key => $value){
-            $get_payment = JobVacancyPayment::where('id_vacancy', $value->id)->first();
+            $get_payment = JobVacancyPayment::where('id_vacancy', $value->id)->with('vacancy')->first();
 
             if($get_payment && $get_payment['payment_status'] == 'pending'){
 
@@ -965,7 +965,7 @@ class PulsaController extends Controller
             }
         }
 
-        dd($list_pending);
+        //dd($list_pending);
 
         usort($list_pending, function($a, $b) {
             return strcmp($a->transaction_time, $b->transaction_time);
