@@ -967,9 +967,9 @@ class PulsaController extends Controller
 
         //dd($list_pending);
 
-        usort($list_pending, function($a, $b) {
-            return strcmp($a->transaction_time, $b->transaction_time);
-        });
+        // usort($list_pending, function($a, $b) {
+        //     return strcmp($a->transaction_time, $b->transaction_time);
+        // });
 
         if(isset($list_pending)){
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Transaction List Success!','data'=> $list_pending]), 200);
