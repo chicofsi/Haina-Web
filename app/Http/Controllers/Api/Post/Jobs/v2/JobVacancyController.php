@@ -212,6 +212,9 @@ class JobVacancyController extends Controller
                         $value->status = "active";
                     }
 
+                    $package_name = JobVacancyPackage::where('id', $value->package)->first();
+                    $value->package = $package_name['name'];
+
                     $value->total_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->get());
                     $value->shortlisted_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->where('status', 'shortlisted')->get());
                     $value->interview_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->where('status', 'interview')->get());
