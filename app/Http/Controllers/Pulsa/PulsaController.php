@@ -952,7 +952,7 @@ class PulsaController extends Controller
 
                 $ad_list = [
                     'order_id' => $get_payment['order_id'],
-                    'transaction_time' => strtotime($get_payment['created_at']->toDateTimeString()),
+                    'transaction_time' => date('Y-m-d\TH:i:s\Z' , strtotime($get_payment['created_at']->toDateTimeString())),
                     'product' => $value->position." Ad ".$package_name['name'],
                     'total_amount' => $get_payment['price'],
                     'status' => $get_payment['payment_status'],
