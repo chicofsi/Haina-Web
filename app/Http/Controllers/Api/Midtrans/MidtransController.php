@@ -211,7 +211,7 @@ class MidtransController extends Controller
                 $status='PAID';
                 foreach ($token as $key => $value) {
 
-                    NotificationController::sendPush($transaction['id_user'],$value, "Payment successful", "Your Rp ".$hotel_amount."payment for booking at".$hotel_name." is successful", "Hotel", "finish");
+                    NotificationController::sendPush($transaction['user_id'],$value, "Payment successful", "Your Rp ".$hotel_amount." payment for booking at".$hotel_name." is successful", "Hotel", "finish");
                 }
 
                 $book = new HotelDarmaController();
@@ -222,7 +222,7 @@ class MidtransController extends Controller
                 $status='UNPAID';
                 foreach ($token as $key => $value) {
                     
-                    NotificationController::sendPush($transaction['id_user'],$value, "Waiting for payment", "There is a pending payment for booking at ".$hotel_name.". Please finish payment in 24 hours", "Hotel", "unfinish");
+                    NotificationController::sendPush($transaction['user_id'],$value, "Waiting for payment", "There is a pending payment for booking at ".$hotel_name.". Please finish payment in 24 hours", "Hotel", "unfinish");
                 }
             }else if($transaction_status=='expire'){
                 $settlement_time=null;
