@@ -232,7 +232,11 @@ class JobVacancyController extends Controller
                     $value->shortlisted_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->where('status', 'shortlisted')->get());
                     $value->interview_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->where('status', 'interview')->get());
 
-                    $form_data = $this->getVacancyData()->data;
+                    $form_data = $this->getVacancyData();
+
+                    foreach($form_data->data as $key_form => $value_form){
+                        $value_form = (object) $value_form;
+                    }
 
                     $value->form_data = $form_data;
 
