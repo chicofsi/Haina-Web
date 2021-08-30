@@ -202,7 +202,7 @@ class JobVacancyController extends Controller
 
         if($company){
             //$vacancy = JobVacancy::where('id_company', $company['id'])->where('deleted_at', null)->orWhere('deleted_at', '>', $today)->get();
-            $vacancy = JobVacancy::where('id_company', $company['id'])->where('deleted_at', '!=', null)->get();
+            $vacancy = JobVacancy::where('id_company', $company['id'])->where('deleted_at', '!=', null)->with('skill')->get();
 
             if($vacancy){
                 foreach($vacancy as $key => $value){
@@ -231,15 +231,7 @@ class JobVacancyController extends Controller
                     $edu_name = Education::where('id', $value->id_edu)->first();
                     $value->edu_name = $edu_name['name'];
 
-                    $skills_index = JobVacancySkill::where('id_vacancy', $value->id)->get();
-                    $skills = []; 
-                    foreach($skills_index as $key => $value){
-                        $skill_data = JobSkill::where('id', $value->id_skill)->first();
-
-                        array_push($skills, $skill_data);
-                    }
-
-                    $value->skills = (object) $skills;
+                    
 
                     $value->total_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->get());
                     $value->shortlisted_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->where('status', 'shortlisted')->get());
