@@ -228,10 +228,25 @@ class JobVacancyController extends Controller
                     $specialist_name = JobCategory::where('id', $value->id_specialist)->first();
                     $value->specialist_name = $specialist_name['name'];
 
+                    $edu_name = Education::where('id', $value->id_edu)->first();
+                    $value->edu_name = $edu_name['name'];
+
+                    $skills_index = JobVacationSkill::where('id_vacancy', $value->id)->get();
+                    $skills = []; 
+                    foreach($skills_index as $key => $value){
+                        $skill_data = JobSkill::where('id', $value->id_skill)->first();
+
+                        array_push($skills, $skill_data);
+                    }
+
+                    $value->skills = (object) $skills;
+
                     $value->total_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->get());
                     $value->shortlisted_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->where('status', 'shortlisted')->get());
                     $value->interview_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->where('status', 'interview')->get());
 
+
+                    /*
                     $level = JobVacancyLevel::all();
                     $type = JobVacancyType::all();
                     $education = Education::all();
@@ -249,6 +264,7 @@ class JobVacancyController extends Controller
                     ];
 
                     $value->form_data = $form_data;
+                    */
 
                 }
 
