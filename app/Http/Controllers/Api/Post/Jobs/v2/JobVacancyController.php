@@ -234,7 +234,7 @@ class JobVacancyController extends Controller
 
                     $form_data = $this->getVacancyData();
 
-                    $value->form_data = (object) $form_data;
+                    $value->form_data = (object) $form_data->data;
 
                 }
 
