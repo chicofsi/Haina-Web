@@ -64,7 +64,7 @@ class PendingTransactionResource extends JsonResource {
         
         return [
             'order_id' => $this->order_id,
-            'transaction_time' => $this->created_at,
+            'transaction_time' => date('Y-m-d h:i:s', $this->created_at),
             'product' => $name,
             'id_category' => $category,
             'total_amount' => $total_amount,
