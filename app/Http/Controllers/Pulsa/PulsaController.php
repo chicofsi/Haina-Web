@@ -936,7 +936,7 @@ class PulsaController extends Controller
         //$amount = array_column($list_pending, 'total_amount');
         //array_multisort($date, SORT_ASC, $amount, SORT_DESC, $list_pending);
 
-        $check_owner = Company::where('id', $check_vacancy['id_company'])->first();
+        $check_owner = Company::where('id_user', Auth::id())->first();
         $get_vacancy = JobVacancy::where('id_company', $check_owner['id'])->where('package', '!=', 1)->get();
 
         foreach($get_vacancy as $key => $value){
