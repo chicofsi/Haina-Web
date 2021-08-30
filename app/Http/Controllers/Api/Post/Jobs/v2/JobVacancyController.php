@@ -197,6 +197,9 @@ class JobVacancyController extends Controller
     }
 
     public function showVacancy(){
+        $tes = JobVacancyPayment::all();
+        dd($tes);
+
         $company = Company::where('id_user', Auth::id())->first();
 
         $today = strtotime(date("Y-m-d H:i:s"));
@@ -263,8 +266,6 @@ class JobVacancyController extends Controller
                 }
 
                 $vacancy = collect($vacancy)->sortByDesc('deleted_at')->toArray();
-
-                dd($vacancy);
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Show Vacancy Success!','data'=> $vacancy]), 200);
             }
