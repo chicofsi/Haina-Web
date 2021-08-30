@@ -264,6 +264,8 @@ class JobVacancyController extends Controller
 
                 $vacancy = collect($vacancy)->sortByDesc('deleted_at')->toArray();
 
+                dd($vacancy);
+
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Show Vacancy Success!','data'=> $vacancy]), 200);
             }
             else{
