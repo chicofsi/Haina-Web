@@ -17,7 +17,7 @@ class JobVacancyPayment extends Model
     ];
 
     public function vacancy(){
-        return $this->belongsTo('App\Models\JobVacancy', 'id', 'id_vacancy');
+        return $this->belongsTo('App\Models\JobVacancy', 'id_vacancy', 'id');
     }
 
     public function paymentMethod(){
