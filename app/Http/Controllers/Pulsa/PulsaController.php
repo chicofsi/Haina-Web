@@ -38,6 +38,7 @@ use App\Models\HotelDarmaBooking;
 use App\Models\HotelDarmaPayment;
 use App\Models\Company;
 use App\Models\JobVacancy;
+use App\Models\JobVacancyPackage;
 use App\Models\JobVacancyPayment;
 
 use DateTime;
@@ -945,8 +946,8 @@ class PulsaController extends Controller
             if($get_payment['payment_status'] == 'pending'){
 
                 $package_name = JobVacancyPackage::where('id', $value->package)->first();
-                $payment_name = TransactionPayment::select('id_payment_method')->where('id',$get_payment['payment_method_id'])->first();
-                $payment_cat = PaymentMethod::select('id_payment_method_category')->where('id', $payment_id['id_payment_method'])->first();
+                $payment_name = $get_payment['payment_method_id'];
+                $payment_cat = PaymentMethod::select('id_payment_method_category')->where('id', $payment_name)->first();
                 $payment_method = PaymentMethodCategory::select('name')->where('id', $payment_method['id_payment_method_category'])->first();
 
                 $ad_list = [
