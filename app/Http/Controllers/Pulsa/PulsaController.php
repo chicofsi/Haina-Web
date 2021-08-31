@@ -904,6 +904,14 @@ class PulsaController extends Controller
         $success=Transaction::where('id_user',$request->user()->id)->with('product','payment')->where('status','success')->get();
         $cancel=Transaction::where('id_user',$request->user()->id)->with('product','payment')->where('status','unsuccess')->get();
 
+        $pending_list=[];
+        $success_list=[];
+        $cancel_list=[];
+
+        array_push($pending_list, $pending);
+        array_push($success_list, $success);
+        array_push($cancel_list, $cancel);
+
         $check_owner = Company::where('id_user', Auth::id())->first();
         $get_vacancy = JobVacancy::where('id_company', $check_owner['id'])->where('package', '!=', 1)->get();
 
@@ -928,20 +936,20 @@ class PulsaController extends Controller
             
 
             if($get_payment['payment_status'] == 'pending'){
-                array_push($pending, $ad_list);
+                array_push($pending_list, $ad_list);
             }
             else if($get_payment['payment_status'] == 'settlement'){
-                array_push($success, $ad_list);
+                array_push($success_list, $ad_list);
             }
             else if($get_payment['payment_status'] == 'cancel' || $get_payment['payment_status'] == 'expire'){
-                array_push($cancel, $ad_list);
+                array_push($cancel_list, $ad_list);
             }
         }
 
-        $transaction['pending']=$pending;
-        $transaction['process']=$process;
-        $transaction['success']=$success;
-        $transaction['canceled']=$cancel;
+        $transaction['pending']=$pending_list;
+        //$transaction['process']=$process;
+        $transaction['success']=$success_list;
+        $transaction['canceled']=$cancel_list;
         
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Transaction List Success!','data'=> $transaction]), 200);
     
