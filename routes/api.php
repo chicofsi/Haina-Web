@@ -196,6 +196,9 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
 		Route::post('/testbooking',[TicketController::class, 'setBookingManual']);
 
+		Route::post('/history',[TicketController::class, 'getBookingList']);
+
+
 
 	});
 

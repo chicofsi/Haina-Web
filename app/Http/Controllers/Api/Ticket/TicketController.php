@@ -1197,6 +1197,16 @@ class TicketController extends Controller
             "timelimit" => $response->timeLimit
         ]);
 
+        $flight_contact = FlightContact::create([
+            "id_flight_book" => $flightbooking->id,
+            "title" => $bookingsession->contact_title,
+            "first_name" => $bookingsession->contact_first_name,
+            "last_name" => $bookingsession->contact_last_name,
+            "country_code_phone" => $bookingsession->contact_country_code_phone,
+            "area_code_phone" => $bookingsession->contact_area_code,
+            "remaining_phone_no" => $bookingsession->contact_remaining_phone_no,
+        ]);
+
         foreach ($detailssession as $key => $value) {
             $flightbookingdetails = FlightBookingDetails::create([
                 "id_flight_book" => $flightbooking->id,
@@ -1458,5 +1468,57 @@ class TicketController extends Controller
         }while (FlightBooking::where('order_id',$randomString)->first());
         
         return $randomString;
+    }
+
+    public function getBookingList(Request $request)
+    {
+        $booking = FlightBooking::where('id_user', Auth::id())->get();
+
+        if($booking){
+            $user_id = Auth::id();
+
+            $processtrans = FlightBooking::where('id_user', $user_id)->with('flightbookingdetails', 'payment', 'flightcontact')->where('status', 'process')->orderBy('updated_at', 'DESC')->get();
+
+            $pendingtrans = FlightBooking::where('id_user', $user_id)->with('flightbookingdetails', 'payment', 'flightcontact')->where('status', 'pending')->orderBy('updated_at', 'DESC')->get();
+
+            $successtrans = FlightBooking::where('id_user', $user_id)->with('flightbookingdetails', 'payment', 'flightcontact')->where('status', 'success')->orderBy('updated_at', 'DESC')->get();
+
+            foreach($processtrans as $key => $value){
+                $value->flightbookingdetails;
+
+                $payment_method = PaymentMethod::where('id',$value->payment->payment_method_id)->with('category')->first();
+                $value->payment->payment_method = $payment_method;
+                
+                //$value->special_request = "obj";
+            }
+
+            foreach($pendingtrans as $key => $value){
+                $value->flightbookingdetails;
+
+                $payment_method = PaymentMethod::where('id',$value->payment->payment_method_id)->with('category')->first();
+                $value->payment->payment_method = $payment_method;
+                
+                //$value->special_request = "obj";
+            }
+
+            foreach($successtrans as $key => $value){
+                $value->flightbookingdetails;
+
+                $payment_method = PaymentMethod::where('id',$value->payment->payment_method_id)->with('category')->first();
+                $value->payment->payment_method = $payment_method;
+                
+                //$value->special_request = "obj";
+            }
+
+            $data['success'] = $successtrans;
+            $data['pending'] = $pendingtrans;
+            $data['process'] = $processtrans;
+
+            return response()->json(new ValueMessage(['value'=>1, 'message'=>'Get Data Success!', 'data'=> $data]), 200); 
+
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0, 'message'=>'Data Not Found!', 'data'=> '']), 404);
+        }
     }
 }

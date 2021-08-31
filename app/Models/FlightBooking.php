@@ -27,8 +27,14 @@ class FLightBooking extends Model
     public function flightbookingdetails(){
     	return $this->hasMany('App\Models\FlightBookingDetails','id_flight_book','id');
     }
+
+    public function flightcontact(){
+        return $this->hasMany('App\Models\FlightContact','id_flight_book','id');
+    }
     public function user(){
         return $this->belongsTo('App\Models\User','id_user','id');
     } 
+
+
     
 }
