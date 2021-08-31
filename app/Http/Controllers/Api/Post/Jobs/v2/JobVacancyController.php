@@ -327,6 +327,15 @@ class JobVacancyController extends Controller
                             'id_edu' => $request->id_edu ?? $check_vacancy['id_edu'],
                             'description' => $request->description ?? $check_vacancy['description'],
                         ]);
+
+                        if($request->skill != null){
+                            $skill_id = explode(',', $request->skill);
+                            $vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+
+                            $vacancy->skill()->sync($skill_id);
+
+                            
+                        }
     
                         $vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
     
