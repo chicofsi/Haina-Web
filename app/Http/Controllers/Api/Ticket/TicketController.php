@@ -31,6 +31,7 @@ use App\Models\FlightTrip;
 use App\Models\FlightPassenger;
 use App\Models\FlightAddons;
 use App\Models\FlightAddonsMeal;
+use App\Models\FlightContact;
 use App\Models\FlightBookingDetails;
 use App\Models\Passengers;
 use App\Models\PaymentMethod;
@@ -963,25 +964,25 @@ class TicketController extends Controller
                     $detailssession=FlightDetailsSession::where('id_flight_booking_session',$bookingsession->id)->get();
 
                     foreach ($detailssession as $k => $v) {
-                        foreach ($value['trip'] as $key => $value) {
-                            $trip=FlightTripSession::where('id_flight_details_session',$v->id)->where('sch_origin',$value['origin'])->where('sch_destination',$value['destination'])->first();
+                        foreach ($value['trip'] as $key => $value_trip) {
+                            $trip=FlightTripSession::where('id_flight_details_session',$v->id)->where('sch_origin',$value_trip['origin'])->where('sch_destination',$value_trip['destination'])->first();
                             $seat="";
                             $compartment="";
-                            if(isset($value['seat'])){
-                                $seat=$value['seat'];
+                            if(isset($value_trip['seat'])){
+                                $seat=$value_trip['seat'];
                             }
 
-                            if(isset($value['compartment'])){
-                                $compartment=$value['compartment'];
+                            if(isset($value_trip['compartment'])){
+                                $compartment=$value_trip['compartment'];
                             }
 
                             $addons=[
                                 "id_flight_passenger_session" => $passangersession->id,
                                 "id_flight_trip_session" => $trip->id,
-                                "baggage_string" => $value['baggage'],
+                                "baggage_string" => $value_trip['baggage'],
                                 "seat" => $seat,
                                 "compartment" => $compartment,
-                                "meals" => json_encode($value['meals'])
+                                "meals" => json_encode($value_trip['meals'])
                             ];
                             $addonssession=FlightAddonsSession::create($addons);
                         }
@@ -1494,7 +1495,10 @@ class TicketController extends Controller
                     $val->payment->payment_method = $payment_method;
                     foreach ($val->flightbookingdetails as $key_details => $value_details) {
                         $flight_trip=FlightTrip::where('id_flight_booking_detail',$value_details->id)->get();
+                        $airlines=Airlines::where('airline_code',$value_details->airline_code)->first();
+
                         $value_details->trip=$flight_trip;
+                        $value_details->airline=$airlines;
                         foreach ($flight_trip as $key_trip => $value_trip) {
                             $flight_passenger=FlightPassenger::where('id_flight_trip',$value_trip->id)->with('passenger')->get();
                             foreach ($flight_passenger as $key_flight_passenger => $value_flight_passenger ){
@@ -1502,6 +1506,7 @@ class TicketController extends Controller
                             }
                         }
                         $val->passenger=$flight_passenger;
+
                     }
                     
                     //$value->special_request = "obj";
