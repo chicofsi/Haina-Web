@@ -204,18 +204,24 @@ class JobVacancyController extends Controller
         //$today = new DateTime("now");
 
         if($company){
-            //$vacancy = JobVacancy::where('id_company', $company['id'])->where('deleted_at', null)->orWhere('deleted_at', '>', $today)->get();
-            $vacancy = JobVacancy::where('id_company', $company['id'])->where('deleted_at', '!=', null)->with('skill')->get();
+            //$vacancy = JobVacancy::where('id_company', $company['id'])->where('deleted_at', '!=', null)->with('skill')->get();
+            $vacancy = JobVacancy::where('id_company', $company['id'])->with('skill')->get();
 
             if($vacancy){
                 foreach($vacancy as $key => $value){
-                    if(strtotime($value->deleted_at) < $today){
+                    if($value->deleted_at == null){
+                        $value->status = "unpaid";
+                    }
+                    else if(strtotime($value->deleted_at) < $today){
                         $value->status = "ended";
+                        $value->deleted_at = date('Y-m-d\TH:i:s.u\Z' , strtotime($value->deleted_at));
                     }
                     else{
                         $value->status = "active";
+                        $value->deleted_at = date('Y-m-d\TH:i:s.u\Z' , strtotime($value->deleted_at));
                     }
 
+                
                     $package_name = JobVacancyPackage::where('id', $value->package)->first();
                     $value->package_name = $package_name['name'];
 
