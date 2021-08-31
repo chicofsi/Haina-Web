@@ -72,7 +72,6 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('application/post'  , [JobsApplicationController::class, 'postJobsApplication']);
 		Route::post('application/my'  , [JobsApplicationController::class, 'getMyJobApplication']);
 		Route::post('vacancy/post'  , [JobsVacancyController::class, 'postJobsVacancy']);
-		Route::post('vacancy/update'  , [JobsVacancyController::class, 'updateVacancy']);
 		Route::post('vacancy/addskill'  , [JobsSkillController::class, 'addJobsSkill']);
 		Route::post('vacancy/getskill'  , [JobsSkillController::class, 'getJobsSkill']);
 		Route::post('vacancy/removeskill'  , [JobsSkillController::class, 'removeJobsSkill']);
@@ -87,6 +86,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		//sisi company
 		Route::get('vacancy'  , [JobVacancyController::class, 'showVacancy']);
 		Route::post('vacancy/post'  , [JobVacancyController::class, 'createVacancy']);
+		Route::post('vacancy/update'  , [JobVacancyController::class, 'updateVacancy']);
 		Route::post('vacancy/delete'  , [JobVacancyController::class, 'deleteVacancy']);
 
 		Route::get('vacancy/data'  , [JobVacancyController::class, 'getVacancyData']);
