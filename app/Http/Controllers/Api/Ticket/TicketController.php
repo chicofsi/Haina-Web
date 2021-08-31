@@ -1477,7 +1477,7 @@ class TicketController extends Controller
         if($booking){
             $user_id = Auth::id();
 
-            $processtrans = FlightBooking::where('user_id', $user_id)->with('flightbookingdetails', 'payment', 'flightcontact')->where('status', 'process')->orderBy('updated_at', 'DESC')->get();
+            $processtrans = FlightBooking::where('id_user', $user_id)->with('flightbookingdetails', 'payment', 'flightcontact')->where('status', 'process')->orderBy('updated_at', 'DESC')->get();
 
             $pendingtrans = FlightBooking::where('user_id', $user_id)->with('flightbookingdetails', 'payment', 'flightcontact')->where('status', 'pending')->orderBy('updated_at', 'DESC')->get();
 
