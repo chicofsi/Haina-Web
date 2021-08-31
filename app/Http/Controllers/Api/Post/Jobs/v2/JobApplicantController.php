@@ -22,6 +22,7 @@ use App\Models\PersonalAccessToken;
 use App\Models\UserLogs;
 use App\Models\Company;
 use App\Models\CompanyPhoto;
+use App\Models\JobCategory;
 use App\Models\JobVacancyApplicant;
 use App\Models\JobVacancy;
 use App\Models\JobVacancyInterview;
