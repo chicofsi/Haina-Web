@@ -40,6 +40,7 @@ use App\Models\Languages;
 use App\Models\Education;
 use App\Models\Payment;
 use App\Models\Post;
+use App\Models\City;
 use App\Models\UserNotification;
 use App\Models\PaymentMethod;
 use App\Models\PaymentMethodCategory;
@@ -155,6 +156,7 @@ class JobVacancyController extends Controller
                     $package_price = JobVacancyPackage::where('id', $new_vacancy['package'])->first();
 
                     $new_vacancy->price = $package_price['price'];
+                    $new_vacancy->order_id = $new_vacancy['package'].'-'.Str::random(3).'-'.$new_vacancy['id'];
 
                     $payment = PaymentMethod::where('id',$request->payment_method_id)->with('category')->first();
                     $new_vacancy['payment_data'] = json_decode($this->chargeMidtrans($new_vacancy, $payment));
@@ -177,6 +179,7 @@ class JobVacancyController extends Controller
                     $pending_payment = JobVacancyPayment::create([
                         'id_vacancy' => $new_vacancy->id,
                         'price' => $newvacancy_data->payment['amount'],
+                        'order_id' => $new_vacancy->order_id,
                         'midtrans_id' => '',
                         'payment_method_id' => $request->payment_method_id,
                         'va_number' => $newvacancy_data->payment['virtual_account'],
@@ -194,31 +197,79 @@ class JobVacancyController extends Controller
     }
 
     public function showVacancy(){
+
         $company = Company::where('id_user', Auth::id())->first();
 
         $today = strtotime(date("Y-m-d H:i:s"));
         //$today = new DateTime("now");
 
         if($company){
-            //$vacancy = JobVacancy::where('id_company', $company['id'])->where('deleted_at', null)->orWhere('deleted_at', '>', $today)->get();
-            $vacancy = JobVacancy::where('id_company', $company['id'])->where('deleted_at', '!=', null)->get();
+            //$vacancy = JobVacancy::where('id_company', $company['id'])->where('deleted_at', '!=', null)->with('skill')->get();
+            $vacancy = JobVacancy::where('id_company', $company['id'])->with('skill')->get();
 
             if($vacancy){
                 foreach($vacancy as $key => $value){
-                    if(strtotime($value->deleted_at) < $today){
+                    if($value->deleted_at == null){
+                        $value->status = "unpaid";
+                    }
+                    else if(strtotime($value->deleted_at) < $today){
                         $value->status = "ended";
+                        $value->deleted_at = date('Y-m-d\TH:i:s.u\Z' , strtotime($value->deleted_at));
                     }
                     else{
                         $value->status = "active";
+                        $value->deleted_at = date('Y-m-d\TH:i:s.u\Z' , strtotime($value->deleted_at));
                     }
+
+                
+                    $package_name = JobVacancyPackage::where('id', $value->package)->first();
+                    $value->package_name = $package_name['name'];
+
+                    $city_name = City::where('id', $value->id_city)->first();
+                    $value->city_name = $city_name['name'];
+
+                    $level_name = JobVacancyLevel::where('id', $value->level)->first();
+                    $value->level_name = $level_name['name'];
+
+                    $type_name = JobVacancyType::where('id', $value->type)->first();
+                    $value->type_name = $type_name['name'];
+
+                    $specialist_name = JobCategory::where('id', $value->id_specialist)->first();
+                    $value->specialist_name = $specialist_name['name'];
+
+                    $edu_name = Education::where('id', $value->id_edu)->first();
+                    $value->edu_name = $edu_name['name'];
+
+                    
 
                     $value->total_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->get());
                     $value->shortlisted_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->where('status', 'shortlisted')->get());
                     $value->interview_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->where('status', 'interview')->get());
 
-                    $vacancy = collect($vacancy)->sortByDesc('deleted_at')->toArray();
+
+                    /*
+                    $level = JobVacancyLevel::all();
+                    $type = JobVacancyType::all();
+                    $education = Education::all();
+                    $skill = JobSkill::all();
+                    $specialist = JobCategory::all();
+                    $package = JobVacancyPackage::all();
+
+                    $form_data = (object) [
+                        "level" => $level,
+                        "type" => $type,
+                        "education" => $education,
+                        "skill" => $skill,
+                        "specialist" => $specialist,
+                        "package" => $package
+                    ];
+
+                    $value->form_data = $form_data;
+                    */
 
                 }
+
+                $vacancy = collect($vacancy)->sortByDesc('deleted_at')->toArray();
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Show Vacancy Success!','data'=> $vacancy]), 200);
             }
@@ -230,6 +281,49 @@ class JobVacancyController extends Controller
             return response()->json(new ValueMessage(['value'=>0,'message'=>'You do not have any company!','data'=> '']), 404);
         }
 
+    }
+
+    public function updateVacancy(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_vacancy' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+            
+            if(!$check_vacancy){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
+            }
+            else{
+                $check_owner = Company::where('id', $check_vacancy['id_company'])->first();
+
+                if($check_owner['id_user'] != Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+                }
+                else{
+                    $data_update = JobVacancy::where('id', $request->id_vacancy)->update([
+                        'position' => $request->position ?? $check_vacancy['position'],
+                        'type' => $request->type ?? $check_vacancy['type'],
+                        'level' => $request->level ?? $check_vacancy['level'],
+                        'experience' => $request->experience ?? $check_vacancy['experience'],
+                        'id_specialist' => $request->id_specialist ?? $check_vacancy['id_specialist'],
+                        'id_city' => $request->id_city ?? $check_vacancy['id_city'],
+                        'address' => $request->address ?? $check_vacancy['address'],
+                        'min_salary' => $request->min_salary ?? $check_vacancy['min_salary'],
+                        'max_salary' => $request->max_salary ?? $check_vacancy['max_salary'],
+                        'salary_display' => $request->salary_display ?? $check_vacancy['salary_display'],
+                        'id_edu' => $request->id_edu ?? $check_vacancy['id_edu'],
+                        'description' => $request->description ?? $check_vacancy['description'],
+                    ]);
+
+                    $vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Update Vacancy Success!','data'=> $vacancy]), 200);
+                }
+            }
+        }
     }
 
     public function deleteVacancy(Request $request){
@@ -664,7 +758,7 @@ class JobVacancyController extends Controller
 		    ],
             "custom_field1"        => "JobAd",
 		    "transaction_details" => array(
-		        "order_id"            => $transaction->package.'-'.Str::random(3).'-'.$transaction->id,
+		        "order_id"            => $transaction->order_id,
 		        "gross_amount"		  => $transaction->price
 		    ),
 		];

@@ -86,6 +86,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		//sisi company
 		Route::get('vacancy'  , [JobVacancyController::class, 'showVacancy']);
 		Route::post('vacancy/post'  , [JobVacancyController::class, 'createVacancy']);
+		Route::post('vacancy/update'  , [JobVacancyController::class, 'updateVacancy']);
 		Route::post('vacancy/delete'  , [JobVacancyController::class, 'deleteVacancy']);
 
 		Route::get('vacancy/data'  , [JobVacancyController::class, 'getVacancyData']);

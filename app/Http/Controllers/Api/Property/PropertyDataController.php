@@ -124,7 +124,7 @@ class PropertyDataController extends Controller
                     'bathroom' => $request->bathroom,
                     'floor_level' => $request->floor_level,
                     'year' => $request->year,
-                    'certificate_type' => $request->certificate_type,
+                    'certificate_type' => str_replace('"','',$request->certificate_type),
                     'id_city' => $request->id_city,
                     'address' => $request->address,
                     'latitude' => $request->latitude ?? '0',

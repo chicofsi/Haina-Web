@@ -33,6 +33,14 @@ use App\Models\PaymentMethodCategory;
 use App\Models\CategoryService;
 use App\Models\EspayRequest;
 
+use App\Models\HotelDarma;
+use App\Models\HotelDarmaBooking;
+use App\Models\HotelDarmaPayment;
+use App\Models\Company;
+use App\Models\JobVacancy;
+use App\Models\JobVacancyPackage;
+use App\Models\JobVacancyPayment;
+
 use DateTime;
 
 
@@ -780,24 +788,62 @@ class PulsaController extends Controller
         if ($validator->fails()) {          
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
+
             $payment=PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
-            $transaction = $this->createTransaction($request->user()->id, $request->product_code, $request->customer_number, $payment, $request->id_inquiry);
-            if($transaction){
-                $transaction_data=Transaction::where('id',$transaction->id)->with('product')->first();
-                $data['payment_type']=$transaction->payment_data->payment_type;
-                $data['amount']=$transaction->payment_data->gross_amount;
-                $data['payment_status']=$transaction->payment_data->transaction_status;
-                foreach ($transaction->payment_data->va_numbers as $key => $value) {
-                    $data['virtual_account']=$value->va_number;
-                    $data['bank']=$value->bank;
+            $checkfive = Transaction::where('customer_number', $request->customer_number)->orderBy('created_at', 'desc')->first();
+
+            if($checkfive){
+                $startdate = new DateTime("now");
+                $checkdate = new DateTime($checkfive['created_at']);
+                $minutediff = $startdate->diff($checkdate);
+
+                $minutes = $minutediff->days * 24 * 60;
+                $minutes += $minutediff->h * 60;
+                $minutes += $minutediff->i;
+
+                if($minutes <= 5){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Please wait 5 minutes for the same transaction!','data'=> '']), 401);
                 }
-                $transaction_data['payment']=$data;
+                else{
+                    $transaction = $this->createTransaction($request->user()->id, $request->product_code, $request->customer_number, $payment, $request->id_inquiry);
+                    if($transaction){
+                        $transaction_data=Transaction::where('id',$transaction->id)->with('product')->first();
+                        $data['payment_type']=$transaction->payment_data->payment_type;
+                        $data['amount']=$transaction->payment_data->gross_amount;
+                        $data['payment_status']=$transaction->payment_data->transaction_status;
+                        foreach ($transaction->payment_data->va_numbers as $key => $value) {
+                            $data['virtual_account']=$value->va_number;
+                            $data['bank']=$value->bank;
+                        }
+                        $transaction_data['payment']=$data;
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction Success!','data'=> $transaction_data]), 200);
-            }else {
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Failed!','data'=> ""]), 400);
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction Success!','data'=> $transaction_data]), 200);
+                    }else {
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Failed!','data'=> ""]), 400);
 
+                    }
+                }
             }
+            else{
+                $transaction = $this->createTransaction($request->user()->id, $request->product_code, $request->customer_number, $payment, $request->id_inquiry);
+                if($transaction){
+                    $transaction_data=Transaction::where('id',$transaction->id)->with('product')->first();
+                    $data['payment_type']=$transaction->payment_data->payment_type;
+                    $data['amount']=$transaction->payment_data->gross_amount;
+                    $data['payment_status']=$transaction->payment_data->transaction_status;
+                    foreach ($transaction->payment_data->va_numbers as $key => $value) {
+                        $data['virtual_account']=$value->va_number;
+                        $data['bank']=$value->bank;
+                    }
+                    $transaction_data['payment']=$data;
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction Success!','data'=> $transaction_data]), 200);
+                }else {
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction Failed!','data'=> ""]), 400);
+
+                }
+            }
+            
         }
     }
 
@@ -880,7 +926,7 @@ class PulsaController extends Controller
         
         //dd($bill_list);
 
-        $hotel_pending=HotelBooking::where('user_id',$request->user()->id)->with('hotel', 'payment')->where('status','UNPAID')->get();
+        $hotel_pending=HotelDarmaBooking::where('user_id',$request->user()->id)->with('hotel', 'payment')->where('status','UNPAID')->get();
 
         foreach($hotel_pending as $key => $value){
             $hotel_list = new PendingTransactionResource($value);
@@ -891,8 +937,38 @@ class PulsaController extends Controller
         //$amount = array_column($list_pending, 'total_amount');
         //array_multisort($date, SORT_ASC, $amount, SORT_DESC, $list_pending);
 
+        $check_owner = Company::where('id_user', Auth::id())->first();
+        $get_vacancy = JobVacancy::where('id_company', $check_owner['id'])->where('package', '!=', 1)->get();
+
+        foreach($get_vacancy as $key => $value){
+            $get_payment = JobVacancyPayment::where('id_vacancy', $value->id)->with('vacancy')->first();
+
+            if($get_payment && $get_payment['payment_status'] == 'pending'){
+
+                $package_name = JobVacancyPackage::where('id', $value->package)->first();
+                $payment_name = $get_payment['payment_method_id'];
+                $payment_cat = PaymentMethod::select('id_payment_method_category')->where('id', $payment_name)->first();
+                $payment_method = PaymentMethodCategory::select('name')->where('id', $payment_cat['id_payment_method_category'])->first();
+
+                $ad_list = (object)[
+                    'order_id' => $get_payment['order_id'],
+                    'transaction_time' => date('Y-m-d\TH:i:s.u\Z' , strtotime($get_payment['created_at'])),
+                    'product' => $value->position." Ad ".$package_name['name'],
+                    'total_amount' => $get_payment['price'],
+                    'status' => $get_payment['payment_status'],
+                    'icon' => '&#xf0f2;',
+                    'id_payment_method' => $get_payment['payment_method_id'],
+                    'payment_method' => $payment_method['name']
+                ];
+                
+                array_push($list_pending, $ad_list);
+            }
+        }
+
+        //dd($list_pending);
+
         usort($list_pending, function($a, $b) {
-            return strcmp($a->transaction_time, $b->transaction_time);
+            return strcmp($b->transaction_time, $a->transaction_time);
         });
 
         if(isset($list_pending)){
