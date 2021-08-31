@@ -937,12 +937,14 @@ class PulsaController extends Controller
                     $ad_list = (object)[
                         'order_id' => $get_payment['order_id'],
                         'transaction_time' => date('Y-m-d\TH:i:s.u\Z' , strtotime($get_payment['created_at'])),
-                        'product' => $value->position." Ad ".$package_name['name'],
+                        'product' => $value->position." Ad (".$package_name['name'].")",
                         'total_amount' => $get_payment['price'],
                         'status' => $get_payment['payment_status'],
                         'icon' => '&#xf0f2;',
                         'id_payment_method' => $get_payment['payment_method_id'],
-                        'payment_method' => $payment_method['name']
+                        'payment_method' => $payment_method['name'],
+                        'virtual_account' => $get_payment['virtual_account'],
+                        'midtrans_id' => $get_payment['midtrans_id']
                     ];
 
                     if($get_payment['payment_status'] == 'pending'){
