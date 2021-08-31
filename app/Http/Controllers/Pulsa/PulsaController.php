@@ -947,7 +947,7 @@ class PulsaController extends Controller
                         'icon' => '&#xf0f2;',
                         'id_payment_method' => $get_payment['payment_method_id'],
                         'payment_method' => $payment_method['name'],
-                        'virtual_account' => $get_payment['virtual_account'],
+                        'va_number' => $get_payment['va_number'],
                         'midtrans_id' => $get_payment['midtrans_id']
                     ];
 
