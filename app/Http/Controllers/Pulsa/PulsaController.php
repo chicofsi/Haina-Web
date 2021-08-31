@@ -904,13 +904,69 @@ class PulsaController extends Controller
         $success=Transaction::where('id_user',$request->user()->id)->with('product','payment')->where('status','success')->get();
         $cancel=Transaction::where('id_user',$request->user()->id)->with('product','payment')->where('status','unsuccess')->get();
 
+        $pending_list=[];
+        $success_list=[];
+        $cancel_list=[];
+
+        foreach($pending as $key => $value){
+            array_push($pending_list, $value);
+        }
+        foreach($success as $key => $value){
+            array_push($success_list, $value);
+        }
+        foreach($cancel as $key => $value){
+            array_push($cancel_list, $value);
+        }
         
+    
+        $check_owner = Company::where('id_user', Auth::id())->first();
+        $get_vacancy = JobVacancy::where('id_company', $check_owner['id'])->where('package', '!=', 1)->get();
+
+        if($get_vacancy){
+            foreach($get_vacancy as $key => $value){
+                $get_payment = JobVacancyPayment::where('id_vacancy', $value->id)->with('vacancy')->first();
+                //dd($get_payment);
+                $ad_list = new \stdClass();
+    
+                if($get_payment){
+                    $package_name = JobVacancyPackage::where('id', $value->package)->first();
+                    $payment_name = $get_payment['payment_method_id'];
+                    $payment_cat = PaymentMethod::select('id_payment_method_category')->where('id', $payment_name)->first();
+                    $payment_method = PaymentMethodCategory::select('name')->where('id', $payment_cat['id_payment_method_category'])->first();
+        
+                    $ad_list = (object)[
+                        'category' => "Job Ad (".$package_name['name'].")",
+                        'order_id' => $get_payment['order_id'],
+                        'transaction_time' => date('Y-m-d\TH:i:s.u\Z' , strtotime($get_payment['created_at'])),
+                        'product' => $value->position." Ad ".$package_name['name'],
+                        'total_payment' => $get_payment['price'],
+                        'status' => $get_payment['payment_status'],
+                        'icon' => '&#xf0f2;',
+                        'id_payment_method' => $get_payment['payment_method_id'],
+                        'payment_method' => $payment_method['name'],
+                        'virtual_account' => $get_payment['virtual_account'],
+                        'midtrans_id' => $get_payment['midtrans_id']
+                    ];
+
+                    if($get_payment['payment_status'] == 'pending'){
+                        array_push($pending_list, $ad_list);
+                    }
+                    else if($get_payment['payment_status'] == 'settlement'){
+                        array_push($success_list, $ad_list);
+                    }
+                    else if($get_payment['payment_status'] == 'cancel' || $get_payment['payment_status'] == 'expire'){
+                        array_push($cancel_list, $ad_list);
+                    }
+                }
+                  
+            }
+        }
         
 
-        $transaction['pending']=$pending;
+        $transaction['pending']=$pending_list;
         //$transaction['process']=$process;
-        $transaction['success']=$success;
-        $transaction['canceled']=$cancel;
+        $transaction['success']=$success_list;
+        $transaction['canceled']=$cancel_list;
         
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Transaction List Success!','data'=> $transaction]), 200);
     
