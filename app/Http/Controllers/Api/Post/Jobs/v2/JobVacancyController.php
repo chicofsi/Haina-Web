@@ -331,7 +331,7 @@ class JobVacancyController extends Controller
                         if($request->skill != null){
                             $skill_id = explode(',', $request->skill);
                             foreach($skill_id as $key => $value){
-                                $vacancy = JobVacancy::where('id', $new_vacancy->id)->first();
+                                $vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
 
                                 $vacancy->skill()->sync($value);
 
