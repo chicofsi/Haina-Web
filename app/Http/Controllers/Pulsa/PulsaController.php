@@ -913,38 +913,44 @@ class PulsaController extends Controller
         array_push($cancel_list, $cancel);
 
         $check_owner = Company::where('id_user', Auth::id())->first();
-        $get_vacancy = JobVacancy::where('id_company', $check_owner['id'])->get();
+        $get_vacancy = JobVacancy::where('id_company', $check_owner['id'])->where('package', '!=', 1)->get();
 
-        foreach($get_vacancy as $key => $value){
-            $get_payment = JobVacancyPayment::where('id_vacancy', $value->id)->with('vacancy')->first();
+        if($get_vacancy){
+            foreach($get_vacancy as $key => $value){
+                $get_payment = JobVacancyPayment::where('id_vacancy', $value->id)->with('vacancy')->first();
 
-            $package_name = JobVacancyPackage::where('id', $value->package)->first();
-            $payment_name = $get_payment['payment_method_id'];
-            $payment_cat = PaymentMethod::select('id_payment_method_category')->where('id', $payment_name)->first();
-            $payment_method = PaymentMethodCategory::select('name')->where('id', $payment_cat['id_payment_method_category'])->first();
-
-            $ad_list = (object)[
-                'order_id' => $get_payment['order_id'],
-                'transaction_time' => date('Y-m-d\TH:i:s.u\Z' , strtotime($get_payment['created_at'])),
-                'product' => $value->position." Ad ".$package_name['name'],
-                'total_amount' => $get_payment['price'],
-                'status' => $get_payment['payment_status'],
-                'icon' => '&#xf0f2;',
-                'id_payment_method' => $get_payment['payment_method_id'],
-                'payment_method' => $payment_method['name']
-            ];
-            
-
-            if($get_payment['payment_status'] == 'pending'){
-                array_push($pending_list, $ad_list);
-            }
-            else if($get_payment['payment_status'] == 'settlement'){
-                array_push($success_list, $ad_list);
-            }
-            else if($get_payment['payment_status'] == 'cancel' || $get_payment['payment_status'] == 'expire'){
-                array_push($cancel_list, $ad_list);
+                $ad_list = new \stdClass();
+    
+                if($get_payment){
+                    $package_name = JobVacancyPackage::where('id', $value->package)->first();
+                    $payment_name = $get_payment['payment_method_id'];
+                    $payment_cat = PaymentMethod::select('id_payment_method_category')->where('id', $payment_name)->first();
+                    $payment_method = PaymentMethodCategory::select('name')->where('id', $payment_cat['id_payment_method_category'])->first();
+        
+                    $ad_list = (object)[
+                        'order_id' => $get_payment['order_id'],
+                        'transaction_time' => date('Y-m-d\TH:i:s.u\Z' , strtotime($get_payment['created_at'])),
+                        'product' => $value->position." Ad ".$package_name['name'],
+                        'total_amount' => $get_payment['price'],
+                        'status' => $get_payment['payment_status'],
+                        'icon' => '&#xf0f2;',
+                        'id_payment_method' => $get_payment['payment_method_id'],
+                        'payment_method' => $payment_method['name']
+                    ];
+                }
+                
+                if($get_payment['payment_status'] == 'pending'){
+                    array_push($pending_list, $ad_list);
+                }
+                else if($get_payment['payment_status'] == 'settlement'){
+                    array_push($success_list, $ad_list);
+                }
+                else if($get_payment['payment_status'] == 'cancel' || $get_payment['payment_status'] == 'expire'){
+                    array_push($cancel_list, $ad_list);
+                }
             }
         }
+        
 
         $transaction['pending']=$pending_list;
         //$transaction['process']=$process;
