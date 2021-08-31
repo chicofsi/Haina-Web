@@ -63,6 +63,24 @@ class JobApplicantController extends Controller
                 $value->pinned = "Y";
             }
 
+            $package_name = JobVacancyPackage::where('id', $value->package)->first();
+            $value->package_name = $package_name['name'];
+
+            $city_name = City::where('id', $value->id_city)->first();
+            $value->city_name = $city_name['name'];
+
+            $level_name = JobVacancyLevel::where('id', $value->level)->first();
+            $value->level_name = $level_name['name'];
+
+            $type_name = JobVacancyType::where('id', $value->type)->first();
+            $value->type_name = $type_name['name'];
+
+            $specialist_name = JobCategory::where('id', $value->id_specialist)->first();
+            $value->specialist_name = $specialist_name['name'];
+
+            $edu_name = Education::where('id', $value->id_edu)->first();
+            $value->edu_name = $edu_name['name'];
+
         }
 
         $ordered_vacancy = collect($get_vacancy)->sortByDesc('created_at')->sortByDesc('pinned')->toArray();
