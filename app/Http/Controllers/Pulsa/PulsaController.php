@@ -907,6 +907,9 @@ class PulsaController extends Controller
         $pending_list=[];
         $success_list=[];
         $cancel_list=[];
+        $pending_list_job=[];
+        $success_list_job=[];
+        $cancel_list_job=[];
 
         foreach($pending as $key => $value){
             array_push($pending_list, $value);
@@ -949,13 +952,13 @@ class PulsaController extends Controller
                     ];
 
                     if($get_payment['payment_status'] == 'pending'){
-                        array_push($pending_list, $ad_list);
+                        array_push($pending_list_job, $ad_list);
                     }
                     else if($get_payment['payment_status'] == 'settlement'){
-                        array_push($success_list, $ad_list);
+                        array_push($success_list_job, $ad_list);
                     }
                     else if($get_payment['payment_status'] == 'cancel' || $get_payment['payment_status'] == 'expire'){
-                        array_push($cancel_list, $ad_list);
+                        array_push($cancel_list_job, $ad_list);
                     }
                 }
                   
@@ -967,6 +970,10 @@ class PulsaController extends Controller
         //$transaction['process']=$process;
         $transaction['success']=$success_list;
         $transaction['canceled']=$cancel_list;
+        $transaction['pending_job']=$pending_list_job;
+        //$transaction['process']=$process;
+        $transaction['success_job']=$success_list_job;
+        $transaction['canceled_job']=$cancel_list_job;
         
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Transaction List Success!','data'=> $transaction]), 200);
     
