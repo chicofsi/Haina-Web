@@ -913,7 +913,7 @@ class PulsaController extends Controller
         array_push($cancel_list, $cancel);
 
         $check_owner = Company::where('id_user', Auth::id())->first();
-        $get_vacancy = JobVacancy::where('id_company', $check_owner['id'])->where('package', '!=', 1)->get();
+        $get_vacancy = JobVacancy::where('id_company', $check_owner['id'])->get();
 
         foreach($get_vacancy as $key => $value){
             $get_payment = JobVacancyPayment::where('id_vacancy', $value->id)->with('vacancy')->first();
