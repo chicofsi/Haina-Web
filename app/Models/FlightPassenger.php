@@ -25,7 +25,7 @@ class FlightPassenger extends Model
     }
 
     public function passenger(){
-        return $this->belongsTo('App\Models\Passenger', 'id_passenger', 'iata');
+        return $this->belongsTo('App\Models\Passengers', 'id_passenger', 'iata');
     }
     
     public function flightaddons(){

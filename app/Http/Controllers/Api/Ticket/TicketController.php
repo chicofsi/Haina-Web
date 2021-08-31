@@ -1477,42 +1477,39 @@ class TicketController extends Controller
         if($booking){
             $user_id = Auth::id();
 
-            $processtrans = FlightBooking::where('id_user', $user_id)->with('flightbookingdetails', 'payment', 'flightcontact')->where('status', 'process')->orderBy('updated_at', 'DESC')->get();
+            $data['processtrans'] = FlightBooking::where('id_user', $user_id)->with('flightbookingdetails', 'payment', 'flightcontact')->where('status', 'process')->orderBy('updated_at', 'DESC')->get();
 
-            $pendingtrans = FlightBooking::where('id_user', $user_id)->with('flightbookingdetails', 'payment', 'flightcontact')->where('status', 'pending')->orderBy('updated_at', 'DESC')->get();
+            $data['pendingtrans'] = FlightBooking::where('id_user', $user_id)->with('flightbookingdetails', 'payment', 'flightcontact')->where('status', 'pending')->orderBy('updated_at', 'DESC')->get();
 
-            $successtrans = FlightBooking::where('id_user', $user_id)->with('flightbookingdetails', 'payment', 'flightcontact')->where('status', 'success')->orderBy('updated_at', 'DESC')->get();
+            $data['successtrans'] = FlightBooking::where('id_user', $user_id)->with('flightbookingdetails', 'payment', 'flightcontact')->where('status', 'success')->orderBy('updated_at', 'DESC')->get();
 
-            foreach($processtrans as $key => $value){
-                $value->flightbookingdetails;
 
-                $payment_method = PaymentMethod::where('id',$value->payment->payment_method_id)->with('category')->first();
-                $value->payment->payment_method = $payment_method;
-                
-                //$value->special_request = "obj";
+            foreach($data as $key => $value){
+                $flight_passenger="";
+                foreach($value as $k => $val){
+
+
+                    $payment_method = PaymentMethod::where('id',$val->payment->payment_method_id)->with('category')->first();
+                    $val->payment->payment_method = $payment_method;
+                    foreach ($val->flightbookingdetails as $key_details => $value_details) {
+                        $flight_trip=FlightTrip::where('id_flight_booking_detail',$value_details->id)->get();
+                        $value_details->trip=$flight_trip;
+                        foreach ($flight_trip as $key_trip => $value_trip) {
+                            $flight_passenger=FlightPassenger::where('id_flight_trip',$value_trip->id)->with('passenger')->get();
+                            $val->passenger=$flightpassenger;
+                        }
+                    }
+                    
+                    //$value->special_request = "obj";
+                }
             }
 
-            foreach($pendingtrans as $key => $value){
-                $value->flightbookingdetails;
+            
 
-                $payment_method = PaymentMethod::where('id',$value->payment->payment_method_id)->with('category')->first();
-                $value->payment->payment_method = $payment_method;
-                
-                //$value->special_request = "obj";
-            }
 
-            foreach($successtrans as $key => $value){
-                $value->flightbookingdetails;
-
-                $payment_method = PaymentMethod::where('id',$value->payment->payment_method_id)->with('category')->first();
-                $value->payment->payment_method = $payment_method;
-                
-                //$value->special_request = "obj";
-            }
-
-            $data['success'] = $successtrans;
-            $data['pending'] = $pendingtrans;
-            $data['process'] = $processtrans;
+            $data['success'] = $data['successtrans'];
+            $data['pending'] = $data['pendingtrans'];
+            $data['process'] = $data['processtrans'];
 
             return response()->json(new ValueMessage(['value'=>1, 'message'=>'Get Data Success!', 'data'=> $data]), 200); 
 
