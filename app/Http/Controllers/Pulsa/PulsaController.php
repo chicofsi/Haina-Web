@@ -918,7 +918,7 @@ class PulsaController extends Controller
         if($get_vacancy){
             foreach($get_vacancy as $key => $value){
                 $get_payment = JobVacancyPayment::where('id_vacancy', $value->id)->with('vacancy')->first();
-
+                dd($get_payment);
                 $ad_list = new \stdClass();
     
                 if($get_payment){
