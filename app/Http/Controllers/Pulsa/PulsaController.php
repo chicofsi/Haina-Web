@@ -918,7 +918,7 @@ class PulsaController extends Controller
         if($get_vacancy){
             foreach($get_vacancy as $key => $value){
                 $get_payment = JobVacancyPayment::where('id_vacancy', $value->id)->with('vacancy')->first();
-                dd($get_payment);
+                //dd($get_payment);
                 $ad_list = new \stdClass();
     
                 if($get_payment){
@@ -937,17 +937,18 @@ class PulsaController extends Controller
                         'id_payment_method' => $get_payment['payment_method_id'],
                         'payment_method' => $payment_method['name']
                     ];
+
+                    if($get_payment['payment_status'] == 'pending'){
+                        array_push($pending_list, $ad_list);
+                    }
+                    else if($get_payment['payment_status'] == 'settlement'){
+                        array_push($success_list, $ad_list);
+                    }
+                    else if($get_payment['payment_status'] == 'cancel' || $get_payment['payment_status'] == 'expire'){
+                        array_push($cancel_list, $ad_list);
+                    }
                 }
-                
-                if($get_payment['payment_status'] == 'pending'){
-                    array_push($pending_list, $ad_list);
-                }
-                else if($get_payment['payment_status'] == 'settlement'){
-                    array_push($success_list, $ad_list);
-                }
-                else if($get_payment['payment_status'] == 'cancel' || $get_payment['payment_status'] == 'expire'){
-                    array_push($cancel_list, $ad_list);
-                }
+                  
             }
         }
         
