@@ -1472,7 +1472,7 @@ class TicketController extends Controller
 
     public function getBookingList(Request $request)
     {
-        $booking = FlightBooking::where('user_id', Auth::id())->get();
+        $booking = FlightBooking::where('id_user', Auth::id())->get();
 
         if($booking){
             $user_id = Auth::id();
