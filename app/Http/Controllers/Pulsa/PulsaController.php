@@ -942,6 +942,7 @@ class PulsaController extends Controller
                         'order_id' => $get_payment['order_id'],
                         'transaction_time' => date('Y-m-d\TH:i:s.u\Z' , strtotime($get_payment['created_at'])),
                         'product' => $value->position." Ad ".$package_name['name'],
+                        'package' => $package_name['name'],
                         'total_payment' => $get_payment['price'],
                         'status' => $get_payment['payment_status'],
                         'icon' => '&#xf0f2;',
