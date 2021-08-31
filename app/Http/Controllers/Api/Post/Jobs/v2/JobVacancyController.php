@@ -283,6 +283,49 @@ class JobVacancyController extends Controller
 
     }
 
+    public function updateVacancy(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_vacancy' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+            
+            if(!$check_vacancy){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
+            }
+            else{
+                $check_owner = Company::where('id', $check_vacancy['id_company'])->first();
+
+                if($check_owner['id_user'] != Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+                }
+                else{
+                    $data_update = JobVacancy::where('id', $request->id_vacancy)->update([
+                        'position' => $request->position ?? $check_vacancy['position'],
+                        'type' => $request->type ?? $check_vacancy['type'],
+                        'level' => $request->level ?? $check_vacancy['level'],
+                        'experience' => $request->experience ?? $check_vacancy['experience'],
+                        'id_specialist' => $request->id_specialist ?? $check_vacancy['id_specialist'],
+                        'id_city' => $request->id_city ?? $check_vacancy['check_vacancy'],
+                        'address' => $request->address ?? $check_vacancy['address'],
+                        'min_salary' => $request->min_salary ?? $check_vacancy['min_salary'],
+                        'max_salary' => $request->max_salary ?? $check_vacancy['max_salary'],
+                        'salary_display' => $request->salary_display ?? $check_vacancy['salary_display'],
+                        'id_edu' => $request->id_edu ?? $check_vacancy['id_edu'],
+                        'description' => $request->description ?? $check_vacancy['description']
+                    ]);
+
+                    $vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Update Vacancy Success!','data'=> $vacancy]), 200);
+                }
+            }
+        }
+    }
+
     public function deleteVacancy(Request $request){
         $validator = Validator::make($request->all(), [
             'id_vacancy' => 'required'

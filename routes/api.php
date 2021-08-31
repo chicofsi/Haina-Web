@@ -72,6 +72,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('application/post'  , [JobsApplicationController::class, 'postJobsApplication']);
 		Route::post('application/my'  , [JobsApplicationController::class, 'getMyJobApplication']);
 		Route::post('vacancy/post'  , [JobsVacancyController::class, 'postJobsVacancy']);
+		Route::post('vacancy/update'  , [JobsVacancyController::class, 'updateVacancy']);
 		Route::post('vacancy/addskill'  , [JobsSkillController::class, 'addJobsSkill']);
 		Route::post('vacancy/getskill'  , [JobsSkillController::class, 'getJobsSkill']);
 		Route::post('vacancy/removeskill'  , [JobsSkillController::class, 'removeJobsSkill']);
