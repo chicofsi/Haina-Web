@@ -908,10 +908,17 @@ class PulsaController extends Controller
         $success_list=[];
         $cancel_list=[];
 
-        array_push($pending_list, $pending);
-        array_push($success_list, $success);
-        array_push($cancel_list, $cancel);
-
+        foreach($pending as $key => $value){
+            array_push($pending_list, $value);
+        }
+        foreach($success as $key => $value){
+            array_push($success_list, $value);
+        }
+        foreach($cancel as $key => $value){
+            array_push($cancel_list, $value);
+        }
+        
+    
         $check_owner = Company::where('id_user', Auth::id())->first();
         $get_vacancy = JobVacancy::where('id_company', $check_owner['id'])->where('package', '!=', 1)->get();
 
