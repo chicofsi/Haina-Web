@@ -1496,8 +1496,11 @@ class TicketController extends Controller
                         $value_details->trip=$flight_trip;
                         foreach ($flight_trip as $key_trip => $value_trip) {
                             $flight_passenger=FlightPassenger::where('id_flight_trip',$value_trip->id)->with('passenger')->get();
-                            $val->passenger=$flightpassenger;
+                            foreach ($flight_passenger as $key_flight_passenger => $value_flight_passenger ){
+                                $flight_passenger[$key_flight_passenger]=$value_flight_passenger->passenger;
+                            }
                         }
+                        $val->passenger=$flight_passenger;
                     }
                     
                     //$value->special_request = "obj";
@@ -1507,9 +1510,6 @@ class TicketController extends Controller
             
 
 
-            $data['success'] = $data['successtrans'];
-            $data['pending'] = $data['pendingtrans'];
-            $data['process'] = $data['processtrans'];
 
             return response()->json(new ValueMessage(['value'=>1, 'message'=>'Get Data Success!', 'data'=> $data]), 200); 
 
