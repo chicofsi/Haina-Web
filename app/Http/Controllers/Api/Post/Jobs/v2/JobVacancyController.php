@@ -334,7 +334,6 @@ class JobVacancyController extends Controller
 
                             $vacancy->skill()->sync($skill_id);
 
-                            
                         }
     
                         $vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
