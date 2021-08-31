@@ -303,24 +303,36 @@ class JobVacancyController extends Controller
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
                 }
                 else{
-                    $data_update = JobVacancy::where('id', $request->id_vacancy)->update([
-                        'position' => $request->position ?? $check_vacancy['position'],
-                        'type' => $request->type ?? $check_vacancy['type'],
-                        'level' => $request->level ?? $check_vacancy['level'],
-                        'experience' => $request->experience ?? $check_vacancy['experience'],
-                        'id_specialist' => $request->id_specialist ?? $check_vacancy['id_specialist'],
-                        'id_city' => $request->id_city ?? $check_vacancy['id_city'],
-                        'address' => $request->address ?? $check_vacancy['address'],
-                        'min_salary' => $request->min_salary ?? $check_vacancy['min_salary'],
-                        'max_salary' => $request->max_salary ?? $check_vacancy['max_salary'],
-                        'salary_display' => $request->salary_display ?? $check_vacancy['salary_display'],
-                        'id_edu' => $request->id_edu ?? $check_vacancy['id_edu'],
-                        'description' => $request->description ?? $check_vacancy['description'],
-                    ]);
+                    $minsal = $request->min_salary ?? $check_vacancy['min_salary'];
+                    $maxsal = $request->max_salary ?? $check_vacancy['max_salary'];
 
-                    $vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+                    if($request->min_salary != null && $request->min_salary > $maxsal){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Min salary must be less than or equal to '.$maxsal,'data'=> '']), 401);
+                    }
+                    else if($request->max_salary != null && $request->max_salary < $minsal){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Max salary must be more than or equal to '.$minsal,'data'=> '']), 401);
+                    }
+                    else{
+                        $data_update = JobVacancy::where('id', $request->id_vacancy)->update([
+                            'position' => $request->position ?? $check_vacancy['position'],
+                            'type' => $request->type ?? $check_vacancy['type'],
+                            'level' => $request->level ?? $check_vacancy['level'],
+                            'experience' => $request->experience ?? $check_vacancy['experience'],
+                            'id_specialist' => $request->id_specialist ?? $check_vacancy['id_specialist'],
+                            'id_city' => $request->id_city ?? $check_vacancy['id_city'],
+                            'address' => $request->address ?? $check_vacancy['address'],
+                            'min_salary' => $request->min_salary ?? $check_vacancy['min_salary'],
+                            'max_salary' => $request->max_salary ?? $check_vacancy['max_salary'],
+                            'salary_display' => $request->salary_display ?? $check_vacancy['salary_display'],
+                            'id_edu' => $request->id_edu ?? $check_vacancy['id_edu'],
+                            'description' => $request->description ?? $check_vacancy['description'],
+                        ]);
+    
+                        $vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+    
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Update Vacancy Success!','data'=> $vacancy]), 200);
+                    }
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Update Vacancy Success!','data'=> $vacancy]), 200);
                 }
             }
         }
