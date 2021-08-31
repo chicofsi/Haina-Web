@@ -950,7 +950,7 @@ class PulsaController extends Controller
                 $payment_cat = PaymentMethod::select('id_payment_method_category')->where('id', $payment_name)->first();
                 $payment_method = PaymentMethodCategory::select('name')->where('id', $payment_cat['id_payment_method_category'])->first();
 
-                $ad_list = [
+                $ad_list = (object)[
                     'order_id' => $get_payment['order_id'],
                     'transaction_time' => date('Y-m-d\TH:i:s.u\Z' , strtotime($get_payment['created_at'])),
                     'product' => $value->position." Ad ".$package_name['name'],
