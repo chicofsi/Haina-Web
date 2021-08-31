@@ -36,6 +36,7 @@ use App\Models\UserEducationDetail;
 use App\Models\Languages;
 use App\Models\Education;
 use App\Models\Payment;
+use App\Models\City;
 use App\Models\Post;
 use App\Models\UserNotification;
 use App\Models\PaymentMethod;
