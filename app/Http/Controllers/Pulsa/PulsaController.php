@@ -956,7 +956,7 @@ class PulsaController extends Controller
                     'product' => $value->position." Ad ".$package_name['name'],
                     'total_amount' => $get_payment['price'],
                     'status' => $get_payment['payment_status'],
-                    'icon' => '',
+                    'icon' => '&#xf0f2;',
                     'id_payment_method' => $get_payment['payment_method_id'],
                     'payment_method' => $payment_method['name']
                 ];
@@ -968,7 +968,7 @@ class PulsaController extends Controller
         //dd($list_pending);
 
         usort($list_pending, function($a, $b) {
-            return strcmp($a->transaction_time, $b->transaction_time);
+            return strcmp($b->transaction_time, $a->transaction_time);
         });
 
         if(isset($list_pending)){
