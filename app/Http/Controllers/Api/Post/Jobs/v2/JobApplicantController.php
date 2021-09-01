@@ -65,6 +65,9 @@ class JobApplicantController extends Controller
                 $value->pinned = "Y";
             }
 
+            $company_name = Company::where('id', $value->id_company)->first();
+            $value->company_name = $company_name['name'];
+
             $package_name = JobVacancyPackage::where('id', $value->package)->first();
             $value->package_name = $package_name['name'];
 

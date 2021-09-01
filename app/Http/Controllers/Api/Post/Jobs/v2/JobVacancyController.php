@@ -221,6 +221,8 @@ class JobVacancyController extends Controller
                         $value->deleted_at = date('Y-m-d\TH:i:s.u\Z' , strtotime($value->deleted_at));
                     }
 
+                    $company_name = Company::where('id', $value->id_company)->first();
+                    $value->company_name = $company_name['name'];
                 
                     $package_name = JobVacancyPackage::where('id', $value->package)->first();
                     $value->package_name = $package_name['name'];
