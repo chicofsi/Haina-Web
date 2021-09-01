@@ -149,6 +149,8 @@ class JobVacancyController extends Controller
 
                     $display = JobVacancy::where('id', $new_vacancy->id)->first();
 
+                    NotificationController::sendPush($check_company['id_user'],$value, "Post vacancy successful", "Your post for ".$new_vacancy['position']."ad is successful", "Job", "");
+
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Free vacancy created successfully!','data'=> $display]), 200);
 
                 }

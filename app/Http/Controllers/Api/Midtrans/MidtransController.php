@@ -340,6 +340,7 @@ class MidtransController extends Controller
                     $update_expiry = JobVacancy::where('id', $order_id[2])->update([
                         'deleted_at' => $newtime
                     ]);
+
                 }
                 else if($transaction['package'] == 3){
                     $set_time = new DateTime($settlement_time);
@@ -349,6 +350,8 @@ class MidtransController extends Controller
                         'deleted_at' => $newtime
                     ]);
                 }
+
+                NotificationController::sendPush($company['id_user'],$value, "Payment successful", "Your payment for ".$transaction['position']."ad is successful", "Job", "");
 
             }
             else if($transaction_status=='pending'){
