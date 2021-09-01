@@ -328,7 +328,7 @@ class MidtransController extends Controller
             $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $company['id_user'])->get();
 
             foreach($usertoken as $key => $value){
-                array_push($token, $value); 
+                array_push($token, $value->name); 
             }
 
             if($transaction_status=='settlement'){

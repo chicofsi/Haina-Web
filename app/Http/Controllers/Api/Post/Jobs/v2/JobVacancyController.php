@@ -153,7 +153,7 @@ class JobVacancyController extends Controller
                     $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $check_company['id_user'])->get();
 
                     foreach($usertoken as $key => $value){
-                        array_push($token, $value); 
+                        array_push($token, $value->name); 
                     }
 
                     foreach ($token as $key => $value) {
@@ -613,7 +613,7 @@ class JobVacancyController extends Controller
         $company_data = Company::where('id', $vacancy_data['id_company'])->first();
 
         foreach($usertoken as $key => $value){
-            array_push($token, $value); 
+            array_push($token, $value->name); 
         }
 
         if($status == "accepted"){
