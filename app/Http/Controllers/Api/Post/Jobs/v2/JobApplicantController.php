@@ -68,6 +68,7 @@ class JobApplicantController extends Controller
             $company_name = Company::where('id', $value->id_company)->with('photo')->first();
             $value->company_name = $company_name['name'];
             $value->company_photo = $company_name['photo'];
+            $value->company_url = "https://hainaservice.com/storage/".$company_name['icon_url'];
 
             $package_name = JobVacancyPackage::where('id', $value->package)->first();
             $value->package_name = $package_name['name'];
