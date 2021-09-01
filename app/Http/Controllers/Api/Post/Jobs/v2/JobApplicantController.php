@@ -144,6 +144,14 @@ class JobApplicantController extends Controller
         }
     }
 
+    public function getDocs(){
+        $user = User::where('id', Auth::id())->first();
+
+        $user_docs = UserDocs::where('id_user', $user['id'])->where('id_docs_category', 1)->orderBy('date_created')->first();
+
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Docs Success!','data'=>$user_docs]), 200);
+    }
+
     public function withdrawApplication(Request $request){
         $validator = Validator::make($request->all(), [
             'id_vacancy' => 'required'
