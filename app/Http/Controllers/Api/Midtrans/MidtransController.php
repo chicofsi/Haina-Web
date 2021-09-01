@@ -375,7 +375,9 @@ class MidtransController extends Controller
                     'payment_status' => $transaction_status,
                     'va_number' => $va_number
                 ]);
-            return $vacancy_payment;
+
+            $job_payment = JobVacancyPayment::where('id_vacancy', $order_id[2])->first();
+            return $job_payment;
         }
 
     }
