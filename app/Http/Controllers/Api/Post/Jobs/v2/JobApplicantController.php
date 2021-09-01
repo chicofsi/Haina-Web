@@ -52,12 +52,12 @@ class JobApplicantController extends Controller
     public function showAvailableVacancy(){
         $check_company = Company::where('id_user', Auth::id())->first();
 
-        if($check_company){
-            $get_vacancy = JobVacancy::where('id_company', 'not_like', $check_company['id'])->get();
-        }
-        else{
+        // if($check_company){
+        //     $get_vacancy = JobVacancy::where('id_company', 'not_like', $check_company['id'])->get();
+        // }
+        // else{
             $get_vacancy = JobVacancy::all();
-        }
+        //}
         
         foreach($get_vacancy as $key => $value){
 
