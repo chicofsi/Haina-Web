@@ -708,7 +708,7 @@ class ForumController extends Controller
                         $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $post_owner['user_id'])->get();
 
                         foreach($usertoken as $key => $value){
-                            array_push($token, $value); 
+                            array_push($token, $value->name); 
                         }
 
                         $mod = User::where('id', $checkmod['user_id'])->first();
@@ -807,7 +807,7 @@ class ForumController extends Controller
                         $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $comment_owner['user_id'])->get();
     
                         foreach($usertoken as $key => $value){
-                            array_push($token, $value); 
+                            array_push($token, $value->name); 
                         }
     
                         $mod = User::where('id', $checkmod['user_id'])->first();

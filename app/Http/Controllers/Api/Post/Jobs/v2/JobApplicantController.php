@@ -150,6 +150,8 @@ class JobApplicantController extends Controller
 
         $user_docs = UserDocs::where('id_user', $user['id'])->where('id_docs_category', 1)->orderBy('created_at')->first();
 
+        $user_docs['docs_url'] = "http://hainaservice.com/storage/".$user_docs['docs_url'];
+
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Docs Success!','data'=>$user_docs]), 200);
     }
 
