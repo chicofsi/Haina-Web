@@ -350,9 +350,9 @@ class MidtransController extends Controller
                         'deleted_at' => $newtime
                     ]);
                 }
-
-                NotificationController::sendPush($company['id_user'],$value, "Payment successful", "Your payment for ".$transaction['position']."ad is successful", "Job", "");
-
+                foreach ($token as $key => $value) {
+                    NotificationController::sendPush($company['id_user'],$value, "Payment successful", "Your payment for ".$transaction['position']."ad is successful", "Job", "");
+                }
             }
             else if($transaction_status=='pending'){
                 $settlement_time=null;
