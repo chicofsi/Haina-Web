@@ -148,7 +148,7 @@ class JobApplicantController extends Controller
     public function getDocs(){
         $user = User::where('id', Auth::id())->first();
 
-        $user_docs = UserDocs::where('id_user', $user['id'])->where('id_docs_category', 1)->orderBy('date_created')->first();
+        $user_docs = UserDocs::where('id_user', $user['id'])->where('id_docs_category', 1)->orderBy('created_at')->first();
 
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Docs Success!','data'=>$user_docs]), 200);
     }
