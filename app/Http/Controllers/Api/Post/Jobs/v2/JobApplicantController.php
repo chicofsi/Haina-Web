@@ -32,6 +32,7 @@ use App\Models\JobVacancyPackage;
 use App\Models\JobVacancyType;
 use App\Models\JobSkill;
 use App\Models\User;
+use App\Models\UserDocs;
 use App\Models\UserWorkExperience;
 use App\Models\UserEducationDetail;
 use App\Models\Languages;
