@@ -198,6 +198,17 @@ class JobVacancyController extends Controller
                         'payment_status' => 'pending'
                     ]);
 
+                    $token = [];
+                    $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $check_company['id_user'])->get();
+
+                    foreach($usertoken as $key => $value){
+                        array_push($token, $value->name); 
+                    }
+
+                    foreach ($token as $key => $value) {
+                        NotificationController::sendPush($check_company['id_user'],$value, "Waiting for payment", "Your post for ".$new_vacancy['position']."ad is waiting for payment", "Job", "");
+                    }
+
                     $display = JobVacancy::where('id', $new_vacancy->id)->first();
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Paid vacancy created successfully!','data'=> $display]), 200);
