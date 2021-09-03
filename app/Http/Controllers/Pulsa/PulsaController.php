@@ -899,14 +899,12 @@ class PulsaController extends Controller
 
     public function transactionList(Request $request)
     {
-        $pending=Transaction::where('id_user',$request->user()->id)->with('product','payment')->where('status','pending payment')->get();
-        $process=Transaction::where('id_user',$request->user()->id)->with('product','payment')->where('status','process')->get();
+        $pending=Transaction::where('id_user',$request->user()->id)->with('product','payment')->where('status','pending payment')->orWhere('status','process')->get();
         $success=Transaction::where('id_user',$request->user()->id)->with('product','payment')->where('status','success')->get();
         $cancel=Transaction::where('id_user',$request->user()->id)->with('product','payment')->where('status','unsuccess')->get();
 
         $pending_list=[];
         $success_list=[];
-        $process_list=[];
         $cancel_list=[];
         $pending_list_job=[];
         $success_list_job=[];
@@ -920,9 +918,6 @@ class PulsaController extends Controller
         }
         foreach($cancel as $key => $value){
             array_push($cancel_list, $value);
-        }
-        foreach($process as $key => $value){
-            array_push($process_list, $value);
         }
         
     
@@ -978,7 +973,6 @@ class PulsaController extends Controller
         
 
         $transaction['pending']=$pending_list;
-        $transaction['process']=$process_list;
         $transaction['success']=$success_list;
         $transaction['canceled']=$cancel_list;
         
