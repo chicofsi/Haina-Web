@@ -37,7 +37,9 @@ use App\Http\Controllers\Api\Hotel\HotelDarmaController;
 use App\Http\Controllers\Api\Ticket\TicketController;
 use App\Http\Controllers\Api\Property\PropertyDataController;
 use App\Http\Controllers\Api\PostCategoryController;
+use App\Http\Controllers\Api\Search\SearchController;
 use App\Http\Controllers\Api\CityController;
+use App\Http\Controllers\Api\Midtrans\MidtransController;
 use App\Http\Controllers\Api\Forum\ForumController;
 
 use App\Http\Controllers\Api\Post\Jobs\v2\JobVacancyController;
@@ -59,6 +61,9 @@ Route::post('login', [UserController::class, 'login']);
 Route::post('check', [UserController::class, 'check']);
 Route::post('login/google', [UserController::class, 'loginWithGoogle']);
 Route::post('register', [UserController::class, 'register']);
+Route::post('search', [SearchController::class, 'searchAll']);
+Route::get('checkbalance', [MidtransController::class, 'espayCheckBalance']);
+
 
 Route::middleware(['auth:sanctum'])->group(function(){
     Route::post('detail', [UserController::class, 'detail']);

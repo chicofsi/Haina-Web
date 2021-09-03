@@ -1485,11 +1485,9 @@ class TicketController extends Controller
 
             $data['successtrans'] = FlightBooking::where('id_user', $user_id)->with('flightbookingdetails', 'payment', 'flightcontact')->where('status', 'success')->orderBy('updated_at', 'DESC')->get();
 
-
             foreach($data as $key => $value){
                 $flight_passenger="";
                 foreach($value as $k => $val){
-
 
                     $payment_method = PaymentMethod::where('id',$val->payment->payment_method_id)->with('category')->first();
                     $val->payment->payment_method = $payment_method;
@@ -1506,7 +1504,6 @@ class TicketController extends Controller
                             }
                         }
                         $val->passenger=$flight_passenger;
-
                     }
                     
                     //$value->special_request = "obj";

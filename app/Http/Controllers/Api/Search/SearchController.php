@@ -51,6 +51,17 @@ class SearchController extends Controller
 
     public function searchAll(Request $request)
     {
-        
+        $news= News::with('category')->where('title','like',"%"+$request->search+"%")->get();
+ 
+
+        $jobs = JobVacancy::where('position','like',"%"+$request->search+"%")->orderBy('created_at','desc')->get();
+
+        $forum = Subforum::where('name', 'like',"%"+$request->search+"%")->get();
+
+        $data['news'] = $news;
+        $data['jobs'] = $jobs;
+        $data['forum'] = $forum;
+
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Search Complete!','data'=> $data]), 200);
     }
 }
