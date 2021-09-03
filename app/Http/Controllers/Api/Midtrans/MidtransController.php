@@ -35,6 +35,7 @@ use App\Models\Company;
 use App\Models\FlightBooking;
 use App\Models\FlightBookingDetails;
 use App\Models\FlightBookingPayment;
+use App\Models\AdminAlert;
 
 use App\Models\User;
 use DateTime;
@@ -436,9 +437,7 @@ class MidtransController extends Controller
                     'response_code'=>$response->getStatusCode(),
                 ]
             );
-
-            $result = json_decode($bodyresponse);
-            return $result;
+            return json_decode($bodyresponse)->balance;
         }catch(RequestException $e) {
             echo Psr7\Message::toString($e->getRequest());
             if ($e->hasResponse()) {
@@ -463,70 +462,93 @@ class MidtransController extends Controller
         $current_date = new DateTime();
         $signature=hash('sha256',strtoupper("##".$sender_id."##".$transaction->customer_number."##".$transaction->product->product_code."##".$amount."##".$uuid."##djHKvcScStINUlaK##"),false);
 
-        $body=[
-            "rq_uuid"       => $uuid,
-            "rq_datetime"   => $datetime,
-            "sender_id"     => $sender_id,
-            "password"      => $password,
-            "order_id"      => $transaction->customer_number,
-            "product_code"  => $transaction->product->product_code,
-            "amount"        => $amount,
-            "signature"     => $signature
-        ];
 
-        $product=Product::where('id',$transaction->product->id)->first();
+        if($this->espayCheckBalance()<$amount/100){
+            AdminAlert::create([
+                "alert_type" => "balance",
+                "message" => "espay balance insufficent",
+                "datetime" => $datetime,
+                "solved" => 0
+            ]);
+            return 0;
+        }else{
 
-        if($product->inquiry_type=="inquiry"){
-            $body["data"]=json_decode(TransactionInquiry::where('order_id',$order_id)->first()->inquiry_data);
+            $body=[
+                "rq_uuid"       => $uuid,
+                "rq_datetime"   => $datetime,
+                "sender_id"     => $sender_id,
+                "password"      => $password,
+                "order_id"      => $transaction->customer_number,
+                "product_code"  => $transaction->product->product_code,
+                "amount"        => $amount,
+                "signature"     => $signature
+            ];
+
+            $product=Product::where('id',$transaction->product->id)->first();
+
+            if($product->inquiry_type=="inquiry"){
+                $body["data"]=json_decode(TransactionInquiry::where('order_id',$order_id)->first()->inquiry_data);
+            }
+            try {
+                $response=$this->client->request(
+                    'POST',
+                    'paymentreport',
+                    [
+                        'form_params' => $body,
+                        'on_stats' => function (TransferStats $stats) use (&$url) {
+                            $url = $stats->getEffectiveUri();
+                        }
+                    ]  
+                );
+
+                $bodyresponse=$response->getBody()->getContents();
+                EspayRequest::insert(
+                    [
+                        'order_id'=>$transaction->order_id,
+                        'uuid'=>$uuid,
+                        'request'=>json_encode($body),
+                        'response'=>$bodyresponse,
+                        'error_code'=>json_decode($bodyresponse)->error_code,   
+                        'url'=>$url,
+                        'response_code'=>$response->getStatusCode(),
+                    ]
+                );
+
+                $bill = json_decode($bodyresponse);
+                
+                if(isset($bill) && $bill->error_code == "0000"){
+                    $transaction=Transaction::where('order_id',$order_id)->update(['status'=>'success']);
+
+                    return 1;
+                }
+                else if($bill->error_code == 610){
+                    return 0;
+                }
+                else if($bill->error_code == 802){
+                    return 0;
+                }
+                else if($bill->error_code == 800){
+                    AdminAlert::create([
+                        "alert_type" => "balance",
+                        "message" => "espay balance insufficent",
+                        "datetime" => $datetime,
+                        "solved" => 0
+                    ]);
+                    return 0;
+                }                
+                else{
+                    return 0;
+                }
+
+            }catch(RequestException $e) {
+                echo Psr7\Message::toString($e->getRequest());
+                if ($e->hasResponse()) {
+                    echo Psr7\Message::toString($e->getResponse());
+                }
+                return;
+            }
         }
-        try {
-            $response=$this->client->request(
-                'POST',
-                'paymentreport',
-                [
-                    'form_params' => $body,
-                    'on_stats' => function (TransferStats $stats) use (&$url) {
-                        $url = $stats->getEffectiveUri();
-                    }
-                ]  
-            );
 
-            $bodyresponse=$response->getBody()->getContents();
-            EspayRequest::insert(
-                [
-                    'order_id'=>$transaction->order_id,
-                    'uuid'=>$uuid,
-                    'request'=>json_encode($body),
-                    'response'=>$bodyresponse,
-                    'error_code'=>json_decode($bodyresponse)->error_code,   
-                    'url'=>$url,
-                    'response_code'=>$response->getStatusCode(),
-                ]
-            );
 
-            $bill = json_decode($bodyresponse);
-            
-            if(isset($bill) && $bill->error_code == "0000"){
-                $transaction=Transaction::where('order_id',$order_id)->update(['status'=>'success']);
-
-                return 1;
-            }
-            else if($bill->error_code == 610){
-                return 0;
-            }
-            else if($bill->error_code == 802){
-                return 0;
-            }
-            else{
-                return 0;
-            }
-
-        }catch(RequestException $e) {
-            echo Psr7\Message::toString($e->getRequest());
-            if ($e->hasResponse()) {
-                echo Psr7\Message::toString($e->getResponse());
-            }
-            return;
-        }
     }
 }
