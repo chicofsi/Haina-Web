@@ -927,9 +927,10 @@ class PulsaController extends Controller
         
     
         $check_owner = Company::where('id_user', Auth::id())->first();
-        $get_vacancy = JobVacancy::where('id_company', $check_owner['id'])->where('package', '!=', 1)->get();
+        
+        if($check_owner){
+            $get_vacancy = JobVacancy::where('id_company', $check_owner['id'])->where('package', '!=', 1)->get();
 
-        if($get_vacancy){
             foreach($get_vacancy as $key => $value){
                 $get_payment = JobVacancyPayment::where('id_vacancy', $value->id)->with('vacancy')->first();
                 //dd($get_payment);
@@ -968,6 +969,11 @@ class PulsaController extends Controller
                 }
                   
             }
+
+            $transaction['pending_job']=$pending_list_job;
+            //$transaction['process']=$process;
+            $transaction['success_job']=$success_list_job;
+            $transaction['canceled_job']=$cancel_list_job;
         }
         
 
@@ -975,10 +981,7 @@ class PulsaController extends Controller
         //$transaction['process']=$process;
         $transaction['success']=$success_list;
         $transaction['canceled']=$cancel_list;
-        $transaction['pending_job']=$pending_list_job;
-        //$transaction['process']=$process;
-        $transaction['success_job']=$success_list_job;
-        $transaction['canceled_job']=$cancel_list_job;
+        
         
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Transaction List Success!','data'=> $transaction]), 200);
     
