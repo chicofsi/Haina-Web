@@ -470,6 +470,7 @@ class MidtransController extends Controller
                 "datetime" => $datetime,
                 "solved" => 0
             ]);
+            return 0;
         }else{
 
             $body=[
