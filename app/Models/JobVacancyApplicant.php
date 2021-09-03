@@ -12,7 +12,7 @@ class JobVacancyApplicant extends Model
     protected $table = 'job_vacancy_applicant';
 
     protected $fillable = [
-    	'id_vacancy', 'id_user', 'status', 'applicant_notes'
+    	'id_vacancy', 'id_user', 'status', 'applicant_notes', 'id_resume'
     ];
 
     public function vacancy(){
@@ -20,6 +20,9 @@ class JobVacancyApplicant extends Model
     } 
     public function user(){
     	return $this->belongsTo('App\Models\User','id_user','id');
+    }
+    public function resume(){
+    	return $this->belongsTo('App\Models\UserDocs','id_resume','id');
     }
 
 }

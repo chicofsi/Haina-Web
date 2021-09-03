@@ -104,7 +104,8 @@ class JobApplicantController extends Controller
     public function applyJob(Request $request){
         $validator = Validator::make($request->all(), [
             'id_vacancy' => 'required',
-            'applicant_notes' => 'required'
+            'applicant_notes' => 'required',
+            'id_resume' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -135,6 +136,7 @@ class JobApplicantController extends Controller
                         'id_vacancy' => $request->id_vacancy,
                         'status' => 'applied',
                         'applicant_notes' => $request->applicant_notes,
+                        'id_resume' => $request->id_resume
                     ];
     
                     $new_applicant = JobVacancyApplicant::create($applicant);

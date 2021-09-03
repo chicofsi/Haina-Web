@@ -602,7 +602,7 @@ class JobVacancyController extends Controller
                     $user_profile = User::where('id', $check_applicant['id_user'])->with('education', 'work_experience')->first();
 
                     $edu_name = Education::where('id', $user_profile->education->id_edu)->first();
-                    $docs = UserDocs::where('id_user', $user_profile['id'])->get();
+                    $docs = UserDocs::where('id', $check_applicant['id_resume'])->get();
 
                     $user_profile->user_docs = $docs;
                     $user_profile->education->edu_level = $edu_name['name'];
