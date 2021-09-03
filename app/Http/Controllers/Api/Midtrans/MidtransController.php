@@ -397,7 +397,7 @@ class MidtransController extends Controller
         $datetime=Date('Y-m-d H:i:s');
         $time = Date('YmdHms');
 
-        $uuid="HAINAAPP".$order_id."inq".$time;
+        $uuid="HAINAAPPcheckbalance".$time;
 
         //$uuid=$request->uuid;
         $sender_id="HAINAAPP";
