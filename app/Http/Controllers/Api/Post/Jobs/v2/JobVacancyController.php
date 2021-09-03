@@ -245,6 +245,7 @@ class JobVacancyController extends Controller
 
                     $company_name = Company::where('id', $value->id_company)->first();
                     $value->company_name = $company_name['name'];
+                    $value->company_desc = $company_name['description'];
                 
                     $package_name = JobVacancyPackage::where('id', $value->package)->first();
                     $value->package_name = $package_name['name'];

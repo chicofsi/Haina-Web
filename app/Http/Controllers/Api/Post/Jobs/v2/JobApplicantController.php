@@ -68,6 +68,7 @@ class JobApplicantController extends Controller
 
             $company_name = Company::where('id', $value->id_company)->with('photo')->first();
             $value->company_name = $company_name['name'];
+            $value->company_desc = $company_name['description'];
             $value->company_photo = $company_name['photo'];
 
             foreach($value->company_photo as $keyphoto => $valuephoto){
