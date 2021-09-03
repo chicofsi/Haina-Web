@@ -978,7 +978,7 @@ class PulsaController extends Controller
         
 
         $transaction['pending']=$pending_list;
-        //$transaction['process']=$process;
+        $transaction['process']=$process_list;
         $transaction['success']=$success_list;
         $transaction['canceled']=$cancel_list;
         
