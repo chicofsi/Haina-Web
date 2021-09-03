@@ -923,9 +923,10 @@ class PulsaController extends Controller
         
     
         $check_owner = Company::where('id_user', Auth::id())->first();
-        $get_vacancy = JobVacancy::where('id_company', $check_owner['id'])->where('package', '!=', 1)->get();
+        
+        if($check_owner){
+            $get_vacancy = JobVacancy::where('id_company', $check_owner['id'])->where('package', '!=', 1)->get();
 
-        if($get_vacancy){
             foreach($get_vacancy as $key => $value){
                 $get_payment = JobVacancyPayment::where('id_vacancy', $value->id)->with('vacancy')->first();
                 //dd($get_payment);
@@ -964,6 +965,9 @@ class PulsaController extends Controller
                 }
                   
             }
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Error in getting transaction!','data'=> '']), 404);
         }
         
 
