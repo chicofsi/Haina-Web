@@ -965,9 +965,11 @@ class PulsaController extends Controller
                 }
                   
             }
-        }
-        else{
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Error in getting transaction!','data'=> '']), 404);
+
+            $transaction['pending_job']=$pending_list_job;
+            //$transaction['process']=$process;
+            $transaction['success_job']=$success_list_job;
+            $transaction['canceled_job']=$cancel_list_job;
         }
         
 
@@ -975,10 +977,7 @@ class PulsaController extends Controller
         //$transaction['process']=$process;
         $transaction['success']=$success_list;
         $transaction['canceled']=$cancel_list;
-        $transaction['pending_job']=$pending_list_job;
-        //$transaction['process']=$process;
-        $transaction['success_job']=$success_list_job;
-        $transaction['canceled_job']=$cancel_list_job;
+        
         
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Transaction List Success!','data'=> $transaction]), 200);
     
