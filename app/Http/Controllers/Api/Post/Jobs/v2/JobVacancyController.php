@@ -280,7 +280,6 @@ class JobVacancyController extends Controller
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'You do not have any company!','data'=> '']), 404);
         }
-
     }
 
     public function updateVacancy(Request $request){
