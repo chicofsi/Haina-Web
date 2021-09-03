@@ -51,6 +51,13 @@ class MidtransController extends Controller
                 'Authorization' => $header,
             ]
         ]);
+        $this->clientbalance = new Client([
+            'base_uri' => 'https://sandbox-api.espay.id/rest/billertools/',
+            'timeout'  => 150.0,
+            'headers' => [
+                'Authorization' => $header,
+            ]
+        ]);
     }
 	public function notificationHandler (Request $request)
     {
@@ -383,6 +390,64 @@ class MidtransController extends Controller
             return $job_payment;
         }
 
+    }
+
+    public function espayCheckBalance()
+    {
+        $datetime=Date('Y-m-d H:i:s');
+        $time = Date('YmdHms');
+
+        $uuid="HAINAAPP".$order_id."inq".$time;
+
+        //$uuid=$request->uuid;
+        $sender_id="HAINAAPP";
+        $password="zclwXJlnApNbBhYF";
+        $amount=($transaction->total_payment-$transaction->profit)*100;
+        $current_date = new DateTime();
+        $signature=hash('sha256',strtoupper("##".$sender_id."##".$uuid."##djHKvcScStINUlaK##"),false);
+
+        $body=[
+            "rq_uuid"       => $uuid,
+            "rq_datetime"   => $datetime,
+            "sender_id"     => $sender_id,
+            "password"      => $password,
+            "signature"     => $signature
+        ];
+
+        try {
+            $response=$this->clientbalance->request(
+                'POST',
+                'getbalance',
+                [
+                    'form_params' => $body,
+                    'on_stats' => function (TransferStats $stats) use (&$url) {
+                        $url = $stats->getEffectiveUri();
+                    }
+                ]  
+            );
+
+            $bodyresponse=$response->getBody()->getContents();
+            EspayRequest::insert(
+                [
+                    'order_id'=>$transaction->order_id,
+                    'uuid'=>$uuid,
+                    'request'=>json_encode($body),
+                    'response'=>$bodyresponse,
+                    'error_code'=>json_decode($bodyresponse)->error_code,   
+                    'url'=>$url,
+                    'response_code'=>$response->getStatusCode(),
+                ]
+            );
+
+            $result = json_decode($bodyresponse);
+            return $result;
+        }catch(RequestException $e) {
+            echo Psr7\Message::toString($e->getRequest());
+            if ($e->hasResponse()) {
+                echo Psr7\Message::toString($e->getResponse());
+            }
+            return;
+        }
     }
 
     public function espayPayment($order_id)
