@@ -402,7 +402,6 @@ class MidtransController extends Controller
         //$uuid=$request->uuid;
         $sender_id="HAINAAPP";
         $password="zclwXJlnApNbBhYF";
-        $amount=($transaction->total_payment-$transaction->profit)*100;
         $current_date = new DateTime();
         $signature=hash('sha256',strtoupper("##".$sender_id."##".$uuid."##djHKvcScStINUlaK##"),false);
 
@@ -429,7 +428,6 @@ class MidtransController extends Controller
             $bodyresponse=$response->getBody()->getContents();
             EspayRequest::insert(
                 [
-                    'order_id'=>$transaction->order_id,
                     'uuid'=>$uuid,
                     'request'=>json_encode($body),
                     'response'=>$bodyresponse,
