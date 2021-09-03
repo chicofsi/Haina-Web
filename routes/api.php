@@ -106,7 +106,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		//sisi user
 		Route::post('vacancy/apply'  , [JobApplicantController::class, 'applyJob']);
 		Route::post('vacancy/withdraw'  , [JobApplicantController::class, 'withdrawApplication']);
-		
+		Route::get('vacancy/docs', [JobApplicantController::class, 'getDocs']);
+
 		Route::get('vacancy/show_all', [JobApplicantController::class, 'showAvailableVacancy']);
 
 	});

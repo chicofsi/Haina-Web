@@ -328,7 +328,7 @@ class MidtransController extends Controller
             $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $company['id_user'])->get();
 
             foreach($usertoken as $key => $value){
-                array_push($token, $value); 
+                array_push($token, $value->name); 
             }
 
             if($transaction_status=='settlement'){
@@ -340,6 +340,7 @@ class MidtransController extends Controller
                     $update_expiry = JobVacancy::where('id', $order_id[2])->update([
                         'deleted_at' => $newtime
                     ]);
+
                 }
                 else if($transaction['package'] == 3){
                     $set_time = new DateTime($settlement_time);
@@ -349,7 +350,9 @@ class MidtransController extends Controller
                         'deleted_at' => $newtime
                     ]);
                 }
-
+                foreach ($token as $key => $value) {
+                    NotificationController::sendPush($company['id_user'],$value, "Payment successful", "Your payment for ".$transaction['position']."ad is successful", "Job", "");
+                }
             }
             else if($transaction_status=='pending'){
                 $settlement_time=null;
@@ -375,7 +378,9 @@ class MidtransController extends Controller
                     'payment_status' => $transaction_status,
                     'va_number' => $va_number
                 ]);
-            return $vacancy_payment;
+
+            $job_payment = JobVacancyPayment::where('id_vacancy', $order_id[2])->first();
+            return $job_payment;
         }
 
     }

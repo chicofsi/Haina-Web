@@ -149,6 +149,17 @@ class JobVacancyController extends Controller
 
                     $display = JobVacancy::where('id', $new_vacancy->id)->first();
 
+                    $token = [];
+                    $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $check_company['id_user'])->get();
+
+                    foreach($usertoken as $key => $value){
+                        array_push($token, $value->name); 
+                    }
+
+                    foreach ($token as $key => $value) {
+                        NotificationController::sendPush($check_company['id_user'],$value, "Post vacancy successful", "Your post for ".$new_vacancy['position']."ad is successful", "Job", "");
+                    }
+                    
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Free vacancy created successfully!','data'=> $display]), 200);
 
                 }
@@ -187,6 +198,17 @@ class JobVacancyController extends Controller
                         'payment_status' => 'pending'
                     ]);
 
+                    $token = [];
+                    $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $check_company['id_user'])->get();
+
+                    foreach($usertoken as $key => $value){
+                        array_push($token, $value->name); 
+                    }
+
+                    foreach ($token as $key => $value) {
+                        NotificationController::sendPush($check_company['id_user'],$value, "Waiting for payment", "Your post for ".$new_vacancy['position']."ad is waiting for payment", "Job", "");
+                    }
+
                     $display = JobVacancy::where('id', $new_vacancy->id)->first();
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Paid vacancy created successfully!','data'=> $display]), 200);
@@ -221,6 +243,8 @@ class JobVacancyController extends Controller
                         $value->deleted_at = date('Y-m-d\TH:i:s.u\Z' , strtotime($value->deleted_at));
                     }
 
+                    $company_name = Company::where('id', $value->id_company)->first();
+                    $value->company_name = $company_name['name'];
                 
                     $package_name = JobVacancyPackage::where('id', $value->package)->first();
                     $value->package_name = $package_name['name'];
@@ -577,7 +601,7 @@ class JobVacancyController extends Controller
                     $user_profile = User::where('id', $check_applicant['id_user'])->with('education', 'work_experience')->first();
 
                     $edu_name = Education::where('id', $user_profile->education->id_edu)->first();
-                    $docs = UserDocs::where('id_user', $user_profile['id'])->get();
+                    $docs = UserDocs::where('id', $check_applicant['id_resume'])->get();
 
                     $user_profile->user_docs = $docs;
                     $user_profile->education->edu_level = $edu_name['name'];
@@ -599,7 +623,7 @@ class JobVacancyController extends Controller
         $company_data = Company::where('id', $vacancy_data['id_company'])->first();
 
         foreach($usertoken as $key => $value){
-            array_push($token, $value); 
+            array_push($token, $value->name); 
         }
 
         if($status == "accepted"){
