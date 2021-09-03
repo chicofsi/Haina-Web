@@ -462,7 +462,6 @@ class MidtransController extends Controller
         $current_date = new DateTime();
         $signature=hash('sha256',strtoupper("##".$sender_id."##".$transaction->customer_number."##".$transaction->product->product_code."##".$amount."##".$uuid."##djHKvcScStINUlaK##"),false);
 
-
         if($this->espayCheckBalance()<$amount/100){
             AdminAlert::create([
                 "alert_type" => "balance",

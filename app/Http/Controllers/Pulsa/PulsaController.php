@@ -906,6 +906,7 @@ class PulsaController extends Controller
 
         $pending_list=[];
         $success_list=[];
+        $process_list=[];
         $cancel_list=[];
         $pending_list_job=[];
         $success_list_job=[];
@@ -919,6 +920,9 @@ class PulsaController extends Controller
         }
         foreach($cancel as $key => $value){
             array_push($cancel_list, $value);
+        }
+        foreach($process as $key => $value){
+            array_push($process_list, $value);
         }
         
     
