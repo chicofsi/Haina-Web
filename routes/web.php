@@ -51,7 +51,7 @@ Route::group(['prefix' => 'dashboard','middleware' =>'auth:admin'], function() {
         return view('admin.dashboard');
     })->name('dashboard');
 
-    Auth::routes(['verify' => true]);
+    
     
     Route::get('/menu'  , [ManageMenu::class, 'index']);
     Route::post('/menu/store'  , [ManageMenu::class, 'store']);
