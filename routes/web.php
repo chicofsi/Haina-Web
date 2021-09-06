@@ -37,7 +37,6 @@ Route::get('/', function () {
    	return redirect()->intended('/login');
 });
 
-Auth::routes(['verify' => true]);
 
 Route::get('/login', [LoginController::class, 'getLogin'])->middleware('guest')->name('login');
 Route::post('/login', [LoginController::class, 'postLogin']);
