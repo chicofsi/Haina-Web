@@ -940,7 +940,7 @@ class PulsaController extends Controller
                     $ad_list = (object)[
                         'category' => "Job Ad (".$package_name['name'].")",
                         'order_id' => $get_payment['order_id'],
-                        'transaction_time' => date('Y-m-d\TH:i:s.u\Z' , strtotime($get_payment['created_at'])),
+                        'transaction_time' => date('Y-m-d H:i:s' , strtotime($get_payment['created_at'])),
                         'product' => $value->position." Ad ".$package_name['name'],
                         'package' => $package_name['name'],
                         'total_payment' => $get_payment['price'],
