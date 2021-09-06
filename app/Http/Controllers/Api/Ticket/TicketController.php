@@ -1173,9 +1173,10 @@ class TicketController extends Controller
                     }
                 }else{
 
-                    $this->setBooking($bodyresponse,$request->id_payment_method);
+                    $flightbooking=$this->setBooking($bodyresponse,$request->id_payment_method);
+                    $flightbooking=FlightBooking::where('id',$flightbooking->id)->with('payment','flightbookingdetails','flightcontact')->first();
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $flightbooking]), 200);
                 }
             }catch(RequestException $e) {
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
@@ -1302,6 +1303,7 @@ class TicketController extends Controller
         }
         $payment=PaymentMethod::where('id',$id_payment_method)->with('category')->first();
         $this->chargeMidtrans($flightbooking,$payment);
+        return $flightbooking;
     }
 
     public function chargeMidtrans($transaction,$payment)

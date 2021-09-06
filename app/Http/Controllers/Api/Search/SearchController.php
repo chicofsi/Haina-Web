@@ -63,5 +63,7 @@ class SearchController extends Controller
         $data['forum'] = $forum;
 
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Search Complete!','data'=> $data]), 200);
+
+        
     }
 }
