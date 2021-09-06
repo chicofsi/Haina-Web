@@ -169,6 +169,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		
 		Route::post('/inquiry'  , [PulsaController::class, 'getInquiry']);
 		Route::post('/transaction'  , [PulsaController::class, 'addTransaction']);
+		Route::post('/cancel', [PulsaController::class, 'cancelTransaction']);
 		Route::post('/list'  , [PulsaController::class, 'transactionList']);
 	});
 
@@ -178,6 +179,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/transaction'  , [PulsaController::class, 'addBillsTransaction']);
 		//Route::post('/amountbill'  , [PulsaController::class, 'getAmountBills']);
 		Route::post('/directbill'  , [PulsaController::class, 'getDirectBills']);
+		Route::post('/cancel', [PulsaController::class, 'cancelTransaction']);
 	});
 
 	Route::post('/pending_transaction'  , [PulsaController::class, 'pendingTransactionList']);
