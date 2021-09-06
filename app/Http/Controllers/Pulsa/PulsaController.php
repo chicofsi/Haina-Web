@@ -897,6 +897,35 @@ class PulsaController extends Controller
         }
     }
 
+    public function cancelTransaction(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_transaction' => 'required'
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            $get_transaction = Transaction::where('id', $request->id_transaction)->first();
+
+            if($get_transaction){
+                $get_payment_data = TransactionPayment::where('id_transaction', $get_transaction['id'])->first();
+
+                $update_payment = TransactionPayment::where('id_transaction', $get_transaction['id'])->update([
+                    'payment_status' => 'expire'
+                ]);
+
+                $update_transaction = Transaction::where('id', $request->id_transaction)->update([
+                    'status' => 'unsuccess'
+                ]);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $get_transaction]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction not found!','data'=> ""]), 404);
+            }
+        }
+    }
+
     public function transactionList(Request $request)
     {
         $pending=Transaction::where('id_user',$request->user()->id)->with('product','payment')->where('status','pending payment')->orWhere('status','process')->get();
