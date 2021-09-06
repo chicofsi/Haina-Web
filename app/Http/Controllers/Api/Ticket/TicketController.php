@@ -968,23 +968,26 @@ class TicketController extends Controller
                             $trip=FlightTripSession::where('id_flight_details_session',$v->id)->where('sch_origin',$value_trip['origin'])->where('sch_destination',$value_trip['destination'])->first();
                             $seat="";
                             $compartment="";
-                            if(isset($value_trip['seat'])){
-                                $seat=$value_trip['seat'];
-                            }
+                            if($trip){
+                                if(isset($value_trip['seat'])){
+                                    $seat=$value_trip['seat'];
+                                }
 
-                            if(isset($value_trip['compartment'])){
-                                $compartment=$value_trip['compartment'];
-                            }
+                                if(isset($value_trip['compartment'])){
+                                    $compartment=$value_trip['compartment'];
+                                }
 
-                            $addons=[
-                                "id_flight_passenger_session" => $passangersession->id,
-                                "id_flight_trip_session" => $trip->id,
-                                "baggage_string" => $value_trip['baggage'],
-                                "seat" => $seat,
-                                "compartment" => $compartment,
-                                "meals" => json_encode($value_trip['meals'])
-                            ];
-                            $addonssession=FlightAddonsSession::create($addons);
+                                $addons=[
+                                    "id_flight_passenger_session" => $passangersession->id,
+                                    "id_flight_trip_session" => $trip->id,
+                                    "baggage_string" => $value_trip['baggage'],
+                                    "seat" => $seat,
+                                    "compartment" => $compartment,
+                                    "meals" => json_encode($value_trip['meals'])
+                                ];
+                                $addonssession=FlightAddonsSession::create($addons);
+                            }
+                            
                         }
                         
                     }
@@ -1170,9 +1173,10 @@ class TicketController extends Controller
                     }
                 }else{
 
-                    $this->setBooking($bodyresponse,$request->id_payment_method);
+                    $flightbooking=$this->setBooking($bodyresponse,$request->id_payment_method);
+                    $flightbooking=FlightBooking::where('id',$flightbooking->id)->with('payment','flightbookingdetails','flightcontact')->first();
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $flightbooking]), 200);
                 }
             }catch(RequestException $e) {
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
@@ -1299,6 +1303,7 @@ class TicketController extends Controller
         }
         $payment=PaymentMethod::where('id',$id_payment_method)->with('category')->first();
         $this->chargeMidtrans($flightbooking,$payment);
+        return $flightbooking;
     }
 
     public function chargeMidtrans($transaction,$payment)
