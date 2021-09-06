@@ -498,6 +498,8 @@ class TicketController extends Controller
                         }
 
                         FlightDetailsSession::where('id_flight_booking_session',$bookingsession->id)->delete();
+
+
                         $detailssession=FlightDetailsSession::create([
                             "id_flight_booking_session" => $bookingsession->id,
                             "type" => "depart",
@@ -511,13 +513,12 @@ class TicketController extends Controller
                             $tripdepart=FlightTripSession::create([
                                 "id_flight_details_session" => $detailssession->id,
                                 "type" => "depart",
-                                "airline_code" => $value['flightDetail'][0]['airlineCode'],
-                                "flight_number" => $value['flightDetail'][0]['flightNumber'],
-                                "sch_origin" => $value['flightDetail'][0]['fdOrigin'],
-                                "sch_destination" => $value['flightDetail'][0]['fdDestination'],
-                                "sch_depart_time" => $value['flightDetail'][0]['fdDepartTime'],
-                                "sch_arrival_time" => $value['flightDetail'][0]['fdArrivalTime'],
-                                "flight_class" => $value['availableDetail'][0]['flightClass'],
+                                "airline_code" => $value['airlineCode'],
+                                "flight_number" => $value['flightNumber'],
+                                "sch_origin" => $value['fdOrigin'],
+                                "sch_destination" => $value['fdDestination'],
+                                "sch_depart_time" => $value['fdDepartTime'],
+                                "sch_arrival_time" => $value['fdArrivalTime'],
                                 "detail_schedule" => $bodyresponse->priceDepart[$key]->classFare,
                                 "garuda_number" => $bodyresponse->priceDepart[$key]->garudaNumber,
                                 "garuda_availability" => $bodyresponse->priceDepart[$key]->garudaAvailability,
@@ -538,20 +539,18 @@ class TicketController extends Controller
                                 $tripdepart=FlightTripSession::create([
                                     "id_flight_details_session" => $detailssession->id,
                                     "type" => "return",
-                                    "airline_code" => $value['flightDetail'][0]['airlineCode'],
-                                    "flight_number" => $value['flightDetail'][0]['flightNumber'],
-                                    "sch_origin" => $value['flightDetail'][0]['fdOrigin'],
-                                    "sch_destination" => $value['flightDetail'][0]['fdDestination'],
-                                    "sch_depart_time" => $value['flightDetail'][0]['fdDepartTime'],
-                                    "sch_arrival_time" => $value['flightDetail'][0]['fdArrivalTime'],
-                                    "flight_class" => $value['availableDetail'][0]['flightClass'],
+                                    "airline_code" => $value['airlineCode'],
+                                    "flight_number" => $value['flightNumber'],
+                                    "sch_origin" => $value['fdOrigin'],
+                                    "sch_destination" => $value['fdDestination'],
+                                    "sch_depart_time" => $value['fdDepartTime'],
+                                    "sch_arrival_time" => $value['fdArrivalTime'],
                                     "detail_schedule" => $bodyresponse->priceReturn[$key]->classFare,
                                     "garuda_number" => $bodyresponse->priceReturn[$key]->garudaNumber,
                                     "garuda_availability" => $bodyresponse->priceReturn[$key]->garudaAvailability
                                 ]);
                             }
                         }
-                        
                         
                         $bookingsession=FlightBookingSession::where('id_user',Auth::id())->update([
                             'airline_id'=>$airline,

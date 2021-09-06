@@ -16,26 +16,19 @@ class FlightSchedule extends JsonResource
      */
     public function toArray($request)
     {
+        $flightdetail=[];
+        $flightTime=[];
+
         $airline=Airlines::where('airline_code',$this->airlineID)->first();
         foreach ($this->segment as $key => $value) {
-            if($value->length()>1){
-                foreach($value as $k=>$v){
-                    $flightdetail[$k]=$v;
-                    $flightTime[$k]=[
-                        "origin" => $v->fdOrigin,
-                        "destination" => $v->fdDestination,
-                        "depart_time"=>$v->fdDepartTime,
-                        "arrival_time"=>$v->fdArrivalTime
-                    ];
-                }
-            }else{
-                $flightdetail[$key]=$value;
-                $flightTime[$key]=[
-                    "origin" => $value->flightDetail[0]->fdOrigin,
-                    "destination" => $value->flightDetail[0]->fdDestination,
-                    "depart_time"=>$value->flightDetail[0]->fdDepartTime,
-                    "arrival_time"=>$value->flightDetail[0]->fdArrivalTime
-                ];
+            foreach($value->flightDetail as $k=>$v){
+                array_push($flightdetail,$v);
+                array_push($flightTime,[
+                    "origin" => $v->fdOrigin,
+                    "destination" => $v->fdDestination,
+                    "depart_time"=>$v->fdDepartTime,
+                    "arrival_time"=>$v->fdArrivalTime
+                ]);
             }
 
         }
