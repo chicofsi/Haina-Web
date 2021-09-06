@@ -37,6 +37,8 @@ Route::get('/', function () {
    	return redirect()->intended('/login');
 });
 
+Auth::routes(['verify' => true]);
+
 Route::get('/login', [LoginController::class, 'getLogin'])->middleware('guest')->name('login');
 Route::post('/login', [LoginController::class, 'postLogin']);
 
@@ -114,6 +116,10 @@ Route::group(['prefix' => 'dashboard','middleware' =>'auth:admin'], function() {
     Route::post('/user/detail'  , [ManageUser::class, 'show']);
     Route::post('/user/accept'  , [ManageUser::class, 'accept']);
     Route::post('/user/suspend'  , [ManageUser::class, 'suspend']);
+
+    Route::get('/email/verify', function () {
+        return view('auth.verify-email');
+    })->middleware('auth')->name('verification.notice');
 
 });
 

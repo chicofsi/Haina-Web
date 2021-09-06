@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
@@ -165,6 +166,7 @@ class UserController extends Controller
             
             $input['password'] = Hash::make($request['password']);
             $user = User::create($input);
+            event(new Registered($user));
             $success['token'] =  $user->createToken($request->device_token)->plainTextToken;
 
             UserLogs::create([
