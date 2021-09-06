@@ -519,6 +519,7 @@ class TicketController extends Controller
                                 "sch_destination" => $value['fdDestination'],
                                 "sch_depart_time" => $value['fdDepartTime'],
                                 "sch_arrival_time" => $value['fdArrivalTime'],
+                                "flight_class" => $value['available_detail'][0]['flightClass'],
                                 "detail_schedule" => $bodyresponse->priceDepart[$key]->classFare,
                                 "garuda_number" => $bodyresponse->priceDepart[$key]->garudaNumber,
                                 "garuda_availability" => $bodyresponse->priceDepart[$key]->garudaAvailability,
@@ -545,12 +546,14 @@ class TicketController extends Controller
                                     "sch_destination" => $value['fdDestination'],
                                     "sch_depart_time" => $value['fdDepartTime'],
                                     "sch_arrival_time" => $value['fdArrivalTime'],
+                                    "flight_class" => $value['available_detail'][0]['flightClass'],
                                     "detail_schedule" => $bodyresponse->priceReturn[$key]->classFare,
                                     "garuda_number" => $bodyresponse->priceReturn[$key]->garudaNumber,
                                     "garuda_availability" => $bodyresponse->priceReturn[$key]->garudaAvailability
                                 ]);
                             }
                         }
+                        
                         
                         $bookingsession=FlightBookingSession::where('id_user',Auth::id())->update([
                             'airline_id'=>$airline,
