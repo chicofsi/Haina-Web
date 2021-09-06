@@ -166,7 +166,8 @@ class UserController extends Controller
             
             $input['password'] = Hash::make($request['password']);
             $user = User::create($input);
-            event(new Registered($user));
+            $user->sendEmailVerificationNotification();
+            //event(new Registered($user));
             $success['token'] =  $user->createToken($request->device_token)->plainTextToken;
 
             UserLogs::create([
