@@ -899,7 +899,7 @@ class PulsaController extends Controller
 
     public function cancelTransaction(Request $request){
         $validator = Validator::make($request->all(), [
-            'id_transaction' => 'required_without:id_job'
+            'id_transaction' => 'required_without_all:id_job'
         ]);
 
         if ($validator->fails()) {          
