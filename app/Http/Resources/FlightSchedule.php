@@ -3,6 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\URL;
+
 
 
 use App\Models\Airlines;
@@ -19,7 +21,9 @@ class FlightSchedule extends JsonResource
         $flightdetail=[];
         $flightTime=[];
 
+
         $airline=Airlines::where('airline_code',$this->airlineID)->first();
+        $airline->image=URL::to('storage/'.$airline->image);
         foreach ($this->segment as $key => $value) {
             foreach($value->flightDetail as $k=>$v){ 
                 $v->available_detail=$value->availableDetail;
