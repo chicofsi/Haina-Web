@@ -967,12 +967,20 @@ class PulsaController extends Controller
                 $get_vacancy = JobVacancy::where('id', $request->id_vacancy)->where('status', 'not like', 'unsuccess')->where('package', '!=', 1)->first();
 
                 if($get_vacancy){
-                    $get_payment_data = JobVacancyPayment::where('id_vacancy', $request->id_vacancy)->with('vacancy')->first();
-                    $payment = PaymentMethod::where('id',$get_payment_data['payment_method_id'])->with('category')->first();
+                    $check_company = Company::where('id', $get_vacancy->id_company)->first();
 
-                    $cancel = json_decode($this->cancelMidtrans($get_vacancy, $payment, "JobAd"));
+                    if($check_company['id_user'] != Auth::id()){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+                    }
+                    else{
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $cancel]), 200);
+                        $get_payment_data = JobVacancyPayment::where('id_vacancy', $request->id_vacancy)->with('vacancy')->first();
+                        $payment = PaymentMethod::where('id',$get_payment_data['payment_method_id'])->with('category')->first();
+
+                        $cancel = json_decode($this->cancelMidtrans($get_vacancy, $payment, "JobAd"));
+
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $cancel]), 200);
+                    }
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Job transaction not found!','data'=> ""]), 404);
