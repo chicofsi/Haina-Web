@@ -445,8 +445,9 @@ class JobVacancyController extends Controller
                 }
                 else{
                     $applicant = JobVacancyApplicant::where('id_vacancy', $request->id_vacancy)->where('status', 'applied')->with('user.education', 'user.work_experience')->get();
-                    dd($value->user->education);
+                    
                     foreach($applicant as $key => $value){
+                        dd($value->user->education);
                         $edu_name = Education::where('id', $value->user->education['id'])->first();
 
                         $value->user->education->edu_level = $edu_name['name'];
