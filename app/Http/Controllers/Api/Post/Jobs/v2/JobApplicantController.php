@@ -51,13 +51,14 @@ use App\Http\Controllers\Api\Notification\NotificationController;
 class JobApplicantController extends Controller
 {
     public function showAvailableVacancy(){
+        $today = strtotime(date("Y-m-d H:i:s"));
         $check_company = Company::where('id_user', Auth::id())->first();
 
         // if($check_company){
         //     $get_vacancy = JobVacancy::where('id_company', 'not_like', $check_company['id'])->get();
         // }
         // else{
-            $get_vacancy = JobVacancy::where('status', 'not like', 'unsuccess')->get();
+            $get_vacancy = JobVacancy::where('status', 'not like', 'unsuccess')->whereDate('deleted_at', '>', $today)->get();
         //}
         
         foreach($get_vacancy as $key => $value){
