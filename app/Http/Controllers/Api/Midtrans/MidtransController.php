@@ -389,7 +389,7 @@ class MidtransController extends Controller
                 'va_number' => $va_number
             ]);
 
-            $vacancy_data=JobVacancy::where('id_vacancy', $order_id[2])->update([
+            $vacancy_data=JobVacancy::where('id', $order_id[2])->update([
                 'status' => $status
             ]);
 
