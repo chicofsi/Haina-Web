@@ -961,7 +961,7 @@ class PulsaController extends Controller
                 }
             }
             else{
-                $get_vacancy = JobVacancy::where('id', $request->id_vacancy)->where('package', '!=', 1)->first();
+                $get_vacancy = JobVacancy::where('id', $request->id_vacancy)->where('status', 'not like', 'unsuccess')->where('package', '!=', 1)->first();
 
                 if($get_vacancy){
                     $get_payment_data = JobVacancyPayment::where('id_vacancy', $request->id_vacancy)->with('vacancy')->first();
