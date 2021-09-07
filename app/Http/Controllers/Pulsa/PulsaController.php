@@ -704,7 +704,7 @@ class PulsaController extends Controller
             $id = $transaction['order_id'];
         }
         else if($type == "JobAd"){
-            $get_id = JobVacationPayment::where('id_vacancy',$transaction['id'])->first();
+            $get_id = JobVacancyPayment::where('id_vacancy',$transaction['id'])->first();
 
             $id = $get_id['order_id'];
         }
