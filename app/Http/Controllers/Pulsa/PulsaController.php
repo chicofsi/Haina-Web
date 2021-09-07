@@ -12,6 +12,7 @@ use App\Http\Resources\InquiryBills as InquiryBillsResource;
 use App\Http\Resources\PendingTransactionResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Collection;
 
 use GuzzleHttp\Client;
