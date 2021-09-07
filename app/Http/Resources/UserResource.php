@@ -4,6 +4,8 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\URL;
+use App\Models\Education;
+use App\Models\UserEducation;
 
 class User extends JsonResource
 {
@@ -15,6 +17,9 @@ class User extends JsonResource
      */
     public function toArray($request)
     {
+
+        $education = UserEducation::where('id_user', $this->id)->first();
+        $education_level = Education::where('id', $education['id_edu'])->first();
         //$photo_url=URL::to('storage/'.$this->photo);
         return [
             'fullname' => $this->fullname,
@@ -26,6 +31,8 @@ class User extends JsonResource
             'gender' => $this->gender,
             'about' => $this->about,
             'photo' => $photo_url,
+            'education' => $education_level['name'],
+            'education_detail' => $education,
         ];
     }
 }
