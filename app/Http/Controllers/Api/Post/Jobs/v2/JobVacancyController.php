@@ -144,6 +144,7 @@ class JobVacancyController extends Controller
                     date_add($date, date_interval_create_from_date_string('7 days'));
 
                     $vacancy_update = JobVacancy::where('id', $new_vacancy->id)->update([
+                        'status' => 'success',
                         'deleted_at' => $date
                     ]);
 
@@ -165,6 +166,10 @@ class JobVacancyController extends Controller
                 }
                 else{
                     $package_price = JobVacancyPackage::where('id', $new_vacancy['package'])->first();
+
+                    $vacancy_update = JobVacancy::where('id', $new_vacancy->id)->update([
+                        'status' => 'pending'
+                    ]);
 
                     $new_vacancy->price = $package_price['price'];
                     $new_vacancy->order_id = $new_vacancy['package'].'-'.Str::random(3).'-'.$new_vacancy['id'];
@@ -227,19 +232,16 @@ class JobVacancyController extends Controller
 
         if($company){
             //$vacancy = JobVacancy::where('id_company', $company['id'])->where('deleted_at', '!=', null)->with('skill')->get();
-            $vacancy = JobVacancy::where('id_company', $company['id'])->with('skill')->get();
+            $vacancy = JobVacancy::where('id_company', $company['id'])->where('status', 'not like', 'unsuccess')->with('skill')->get();
 
             if($vacancy){
                 foreach($vacancy as $key => $value){
-                    if($value->deleted_at == null){
-                        $value->status = "unpaid";
-                    }
-                    else if(strtotime($value->deleted_at) < $today){
-                        $value->status = "ended";
+                    if(strtotime($value->deleted_at) < $today){
+                        $value->expiry_status = "ended";
                         $value->deleted_at = date('Y-m-d\TH:i:s.u\Z' , strtotime($value->deleted_at));
                     }
                     else{
-                        $value->status = "active";
+                        $value->expiry_status = "active";
                         $value->deleted_at = date('Y-m-d\TH:i:s.u\Z' , strtotime($value->deleted_at));
                     }
 
@@ -378,7 +380,7 @@ class JobVacancyController extends Controller
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
         }else{
-            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->where('status','not like', 'unsuccess')->first();
             
             if(!$check_vacancy){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
@@ -430,7 +432,7 @@ class JobVacancyController extends Controller
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
         }else{
-            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->where('status','not like', 'unsuccess')->first();
             
             if(!$check_vacancy){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
@@ -469,7 +471,7 @@ class JobVacancyController extends Controller
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
         }else{
-            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->where('status','not like', 'unsuccess')->first();
             
             if(!$check_vacancy){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
@@ -508,7 +510,7 @@ class JobVacancyController extends Controller
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
         }else{
-            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->where('status','not like', 'unsuccess')->first();
             
             if(!$check_vacancy){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
@@ -550,7 +552,7 @@ class JobVacancyController extends Controller
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
         }else{
-            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->where('status','not like', 'unsuccess')->first();
             
             if(!$check_vacancy){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);

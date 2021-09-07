@@ -57,7 +57,7 @@ class JobApplicantController extends Controller
         //     $get_vacancy = JobVacancy::where('id_company', 'not_like', $check_company['id'])->get();
         // }
         // else{
-            $get_vacancy = JobVacancy::all();
+            $get_vacancy = JobVacancy::where('status', 'not like', 'unsuccess')->get();
         //}
         
         foreach($get_vacancy as $key => $value){
