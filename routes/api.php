@@ -169,6 +169,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		
 		Route::post('/inquiry'  , [PulsaController::class, 'getInquiry']);
 		Route::post('/transaction'  , [PulsaController::class, 'addTransaction']);
+		Route::post('/cancel', [PulsaController::class, 'cancelTransaction']);
 		Route::post('/list'  , [PulsaController::class, 'transactionList']);
 	});
 
@@ -178,6 +179,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/transaction'  , [PulsaController::class, 'addBillsTransaction']);
 		//Route::post('/amountbill'  , [PulsaController::class, 'getAmountBills']);
 		Route::post('/directbill'  , [PulsaController::class, 'getDirectBills']);
+		Route::post('/cancel', [PulsaController::class, 'cancelTransaction']);
 	});
 
 	Route::post('/pending_transaction'  , [PulsaController::class, 'pendingTransactionList']);
@@ -293,6 +295,22 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	});
 	
 });
+
+Route::get('/email/verify', function () {
+	return view('auth.verify-email');
+})->middleware('auth:api')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+	$request->fulfill();
+
+	return redirect('/home');
+})->middleware(['auth:api', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+	$request->user()->sendEmailVerificationNotification();
+
+	return back()->with('message', 'Verification link sent!');
+})->middleware(['auth:api', 'throttle:6,1'])->name('verification.send');
 
 Route::post('/cityList', [CityController::class, 'getCity']);
 Route::post('/provinceList', [CityController::class, 'getProvince']);

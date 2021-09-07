@@ -700,6 +700,38 @@ class PulsaController extends Controller
         return $make_call;
     }
 
+    public function cancelMidtrans($transaction, $payment, $type)
+    {
+        if($type == "PPOB"){
+            $id = $transaction['order_id'];
+        }
+        else if($type == "JobAd"){
+            $get_id = JobVacancyPayment::where('id_vacancy',$transaction['id'])->first();
+
+            $id = $get_id['order_id'];
+        }
+         
+
+        $username="SB-Mid-server-uUu-OOYw1hyxA9QH8wAbtDRl";
+        $url="https://api.sandbox.midtrans.com/v2/".$id."/cancel";
+        $data_array =  array(
+            "payment_type"          => $payment->category->url,
+            "bank_transfer"         => array(
+                "bank"              => $payment->name
+            ),
+            "custom_field1"        => $type,
+            "transaction_details"   => array(
+                "order_id"          => $transaction->order_id,
+                "gross_amount"      => $transaction->total_payment
+            ),
+        );
+
+        $header="Authorization: Basic ".base64_encode($username.":");
+        // return json_encode($data_array)."BLABLABLAB".$header."davdavd".$username.":";
+        $make_call = $this->callAPI($url, json_encode($data_array),$header);
+        return $make_call;
+    }
+
     function callAPI( $url, $data, $header = false){
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_POST, 1);
@@ -899,6 +931,67 @@ class PulsaController extends Controller
         }
     }
 
+    public function cancelTransaction(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_transaction' => 'required_without_all:id_vacancy',
+            'id_vacancy' => 'required_without_all:id_transaction'
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            if($request->id_transaction != null){
+                $get_transaction = Transaction::where('id', $request->id_transaction)->first();
+
+                if($get_transaction){
+                    $get_payment_data = TransactionPayment::where('id_transaction', $get_transaction['id'])->first();
+                    $payment = PaymentMethod::where('id',$get_payment_data['id_payment_method'])->with('category')->first();
+
+                    /*
+                    $update_payment = TransactionPayment::where('id_transaction', $get_transaction['id'])->update([
+                        'payment_status' => 'cancel'
+                    ]);
+
+                    $update_transaction = Transaction::where('id', $request->id_transaction)->update([
+                        'status' => 'unsuccess'
+                    ]);
+                    */
+
+                    $cancel = json_decode($this->cancelMidtrans($get_transaction, $payment, "PPOB"));
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $cancel]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction not found!','data'=> ""]), 404);
+                }
+            }
+            else{
+                $get_vacancy = JobVacancy::where('id', $request->id_vacancy)->where('status', 'not like', 'unsuccess')->where('package', '!=', 1)->first();
+
+                if($get_vacancy){
+                    $check_company = Company::where('id', $get_vacancy->id_company)->first();
+
+                    if($check_company['id_user'] != Auth::id()){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+                    }
+                    else{
+
+                        $get_payment_data = JobVacancyPayment::where('id_vacancy', $request->id_vacancy)->with('vacancy')->first();
+                        $payment = PaymentMethod::where('id',$get_payment_data['payment_method_id'])->with('category')->first();
+
+                        $cancel = json_decode($this->cancelMidtrans($get_vacancy, $payment, "JobAd"));
+
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $cancel]), 200);
+                    }
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Job transaction not found!','data'=> ""]), 404);
+                }
+            }
+
+        }
+    }
+
     public function transactionList(Request $request)
     {
         $pending=Transaction::where('id_user',$request->user()->id)->with('product','payment')->where('status','pending payment')->orWhere('status','process')->get();
@@ -943,6 +1036,7 @@ class PulsaController extends Controller
                     $payment_method = PaymentMethodCategory::select('name')->where('id', $payment_cat['id_payment_method_category'])->first();
         
                     $ad_list = (object)[
+                        'id_vacancy' => $get_payment['id_vacancy'],
                         'category' => "Job Ad (".$package_name['name'].")",
                         'order_id' => $get_payment['order_id'],
                         'transaction_time' => date('Y-m-d\TH:i:s.u\Z' , strtotime($get_payment['created_at'])),
@@ -970,12 +1064,34 @@ class PulsaController extends Controller
                   
             }
 
+            usort($pending_list_job, function($a, $b) {
+                return strcmp($b->transaction_time, $a->transaction_time);
+            });
+
+            usort($cancel_list_job, function($a, $b) {
+                return strcmp($b->transaction_time, $a->transaction_time);
+            });
+
+            usort($success_list_job, function($a, $b) {
+                return strcmp($b->transaction_time, $a->transaction_time);
+            });
+
             $transaction['pending_job']=$pending_list_job;
             //$transaction['process']=$process;
             $transaction['success_job']=$success_list_job;
             $transaction['canceled_job']=$cancel_list_job;
+
         }
         
+        usort($pending_list, function($a, $b) {
+            return strcmp($b->transaction_time, $a->transaction_time);
+        });
+        usort($cancel_list, function($a, $b) {
+            return strcmp($b->transaction_time, $a->transaction_time);
+        });
+        usort($success_list, function($a, $b) {
+            return strcmp($b->transaction_time, $a->transaction_time);
+        });
 
         $transaction['pending']=$pending_list;
         $transaction['success']=$success_list;

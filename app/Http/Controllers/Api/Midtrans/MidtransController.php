@@ -330,7 +330,7 @@ class MidtransController extends Controller
             $transaction = JobVacancy::where('id', $order_id[2])->first();
             $company = Company::where('id', $transaction['id_company'])->first();
 
-            //$status = "";
+            $status = "";
 
             $token = [];
             $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $company['id_user'])->get();
@@ -340,6 +340,7 @@ class MidtransController extends Controller
             }
 
             if($transaction_status=='settlement'){
+                $status='success';
                 $settlement_time=date("Y-m-d H:i:s",strtotime($request->settlement_time));
                 if($transaction['package'] == 2){
                     $set_time = new DateTime($settlement_time);
@@ -366,9 +367,11 @@ class MidtransController extends Controller
                 $settlement_time=null;
             }
             else if($transaction_status=='expire'){
+                $status='unsuccess';
                 $settlement_time=null;
             }
             else if($transaction_status=='cancel'){
+                $status='unsuccess';
                 $settlement_time=null;
             }
 
@@ -378,14 +381,17 @@ class MidtransController extends Controller
             }
 
 
-            $vacancy_payment=JobVacancyPayment::where('id_vacancy', $order_id[2])->update(
-                [
-                    'midtrans_id' => $transaction_id,
-                    'payment_method_id' => $payment->id,
-                    'settlement_time' => $settlement_time,
-                    'payment_status' => $transaction_status,
-                    'va_number' => $va_number
-                ]);
+            $vacancy_payment=JobVacancyPayment::where('id_vacancy', $order_id[2])->update([
+                'midtrans_id' => $transaction_id,
+                'payment_method_id' => $payment->id,
+                'settlement_time' => $settlement_time,
+                'payment_status' => $transaction_status,
+                'va_number' => $va_number
+            ]);
+
+            $vacancy_data=JobVacancy::where('id', $order_id[2])->update([
+                'status' => $status
+            ]);
 
             $job_payment = JobVacancyPayment::where('id_vacancy', $order_id[2])->first();
             return $job_payment;

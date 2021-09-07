@@ -118,22 +118,6 @@ Route::group(['prefix' => 'dashboard','middleware' =>'auth:admin'], function() {
     Route::post('/user/accept'  , [ManageUser::class, 'accept']);
     Route::post('/user/suspend'  , [ManageUser::class, 'suspend']);
 
-    Route::get('/email/verify', function () {
-        return view('auth.verify-email');
-    })->middleware('auth:api')->name('verification.notice');
-
-    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-        $request->fulfill();
-    
-        return redirect('/home');
-    })->middleware(['auth:api', 'signed'])->name('verification.verify');
-
-    Route::post('/email/verification-notification', function (Request $request) {
-        $request->user()->sendEmailVerificationNotification();
-    
-        return back()->with('message', 'Verification link sent!');
-    })->middleware(['auth:api', 'throttle:6,1'])->name('verification.send');
-
 });
 
 Route::group(['prefix' => 'service-dashboard','middleware' =>'auth:service_admin'], function() {
