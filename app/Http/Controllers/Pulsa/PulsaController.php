@@ -943,6 +943,7 @@ class PulsaController extends Controller
 
                 if($get_transaction){
                     $get_payment_data = TransactionPayment::where('id_transaction', $get_transaction['id'])->first();
+                    $payment = PaymentMethod::where('id',$get_payment_data['id_payment_method'])->with('category')->first();
 
                     /*
                     $update_payment = TransactionPayment::where('id_transaction', $get_transaction['id'])->update([
@@ -954,7 +955,9 @@ class PulsaController extends Controller
                     ]);
                     */
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $get_transaction]), 200);
+                    $cancel = json_decode($this->cancelMidtrans($get_transaction, $payment, "PPOB"));
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $cancel]), 200);
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction not found!','data'=> ""]), 404);
