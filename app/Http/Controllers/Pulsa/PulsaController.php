@@ -1062,12 +1062,34 @@ class PulsaController extends Controller
                   
             }
 
+            usort($pending_list_job, function($a, $b) {
+                return strcmp($b->transaction_time, $a->transaction_time);
+            });
+
+            usort($cancel_list_job, function($a, $b) {
+                return strcmp($b->transaction_time, $a->transaction_time);
+            });
+
+            usort($success_list_job, function($a, $b) {
+                return strcmp($b->transaction_time, $a->transaction_time);
+            });
+
             $transaction['pending_job']=$pending_list_job;
             //$transaction['process']=$process;
             $transaction['success_job']=$success_list_job;
             $transaction['canceled_job']=$cancel_list_job;
+
         }
         
+        usort($pending_list, function($a, $b) {
+            return strcmp($b->transaction_time, $a->transaction_time);
+        });
+        usort($cancel_list, function($a, $b) {
+            return strcmp($b->transaction_time, $a->transaction_time);
+        });
+        usort($success_list, function($a, $b) {
+            return strcmp($b->transaction_time, $a->transaction_time);
+        });
 
         $transaction['pending']=$pending_list;
         $transaction['success']=$success_list;
