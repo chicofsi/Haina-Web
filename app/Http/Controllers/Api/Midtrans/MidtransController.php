@@ -108,7 +108,7 @@ class MidtransController extends Controller
                 $settlement_time=null;
                 $status='unsuccess';
                 foreach ($token as $key => $value) {
-                    NotificationController::sendPush($transaction['id_user'],$value, "Transaction cancelled", "Your transaction for ".$transaction_product." has been cancelled.", "Transaction","cancel");
+                    NotificationController::sendPush($transaction['id_user'],$value, "Transaction cancelled", "Your transaction for ".$transaction_product." has been successfully cancelled.", "Transaction","cancel");
                 }
             }
 
@@ -373,6 +373,10 @@ class MidtransController extends Controller
             else if($transaction_status=='cancel'){
                 $status='unsuccess';
                 $settlement_time=null;
+
+                foreach ($token as $key => $value) {
+                    NotificationController::sendPush($company['id_user'],$value, "Job Ad Cancelled", "Your transaction for ".$transaction['position']."ad is successfuly cancelled", "Job", "");
+                }
             }
 
             foreach ($request['va_numbers'] as $key => $value) {
