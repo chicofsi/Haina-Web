@@ -899,12 +899,19 @@ class PulsaController extends Controller
 
     public function cancelTransaction(Request $request){
         $validator = Validator::make($request->all(), [
-            'id_transaction' => 'required'
+            'id_transaction' => 'required_without:id_job'
         ]);
 
         if ($validator->fails()) {          
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
+            if($request->id_transaction != null){
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $request->id_transaction]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $request->id_job]), 200);
+            }
+            /*
             $get_transaction = Transaction::where('id', $request->id_transaction)->first();
 
             if($get_transaction){
@@ -923,6 +930,7 @@ class PulsaController extends Controller
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction not found!','data'=> ""]), 404);
             }
+            */
         }
     }
 
