@@ -177,7 +177,7 @@ return [
         App\Providers\FortifyServiceProvider::class,
         App\Providers\JetstreamServiceProvider::class,
 
-
+        Laravel\Passport\PassportServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
         Kreait\Laravel\Firebase\ServiceProvider::class,
 
