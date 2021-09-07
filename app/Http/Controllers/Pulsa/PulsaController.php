@@ -698,6 +698,38 @@ class PulsaController extends Controller
         return $make_call;
     }
 
+    public function cancelMidtrans($transaction, $payment, $type)
+    {
+        if($type == "PPOB"){
+            $id = $transaction['order_id'];
+        }
+        else if($type == "JobAd"){
+            $get_id = JobVacationPayment::where('id_vacancy',$transaction['id'])->first();
+
+            $id = $get_id['order_id'];
+        }
+         
+
+        $username="SB-Mid-server-uUu-OOYw1hyxA9QH8wAbtDRl";
+        $url="https://api.sandbox.midtrans.com/v2/".$id."/cancel";
+        $data_array =  array(
+            "payment_type"          => $payment->category->url,
+            "bank_transfer"         => array(
+                "bank"              => $payment->name
+            ),
+            "custom_field1"        => $type,
+            "transaction_details"   => array(
+                "order_id"          => $transaction->order_id,
+                "gross_amount"      => $transaction->total_payment
+            ),
+        );
+
+        $header="Authorization: Basic ".base64_encode($username.":");
+        // return json_encode($data_array)."BLABLABLAB".$header."davdavd".$username.":";
+        $make_call = $this->callAPI($url, json_encode($data_array),$header);
+        return $make_call;
+    }
+
     function callAPI( $url, $data, $header = false){
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_POST, 1);
@@ -912,6 +944,7 @@ class PulsaController extends Controller
                 if($get_transaction){
                     $get_payment_data = TransactionPayment::where('id_transaction', $get_transaction['id'])->first();
 
+                    /*
                     $update_payment = TransactionPayment::where('id_transaction', $get_transaction['id'])->update([
                         'payment_status' => 'cancel'
                     ]);
@@ -919,6 +952,7 @@ class PulsaController extends Controller
                     $update_transaction = Transaction::where('id', $request->id_transaction)->update([
                         'status' => 'unsuccess'
                     ]);
+                    */
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $get_transaction]), 200);
                 }
@@ -931,12 +965,11 @@ class PulsaController extends Controller
 
                 if($get_vacancy){
                     $get_payment_data = JobVacancyPayment::where('id_vacancy', $request->id_vacancy)->with('vacancy')->first();
+                    $payment = PaymentMethod::where('id',$get_payment_data['payment_method_id'])->with('category')->first();
 
-                    $update_payment = JobVacancyPayment::where('id_vacancy', $request->id_vacancy)->update([
-                        'payment_status' => 'cancel'
-                    ]);
+                    $cancel = json_decode($this->cancelMidtrans($get_vacancy, $payment, "JobAd"));
 
-
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $cancel]), 200);
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Job transaction not found!','data'=> ""]), 404);
