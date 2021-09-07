@@ -21,7 +21,6 @@ class User extends JsonResource
         $education = UserEducation::where('id_user', $this->id)->first();
         $education_level = Education::where('id', $education['id_edu'])->first();
 
-        dd($education_level);
         //$photo_url=URL::to('storage/'.$this->photo);
         return [
             'fullname' => $this->fullname,
@@ -34,7 +33,7 @@ class User extends JsonResource
             'about' => $this->about,
             'photo' => $photo_url,
             'education' => $education_level['name'],
-            'education_detail' => $education,
+            'education_detail' => $education
         ];
     }
 }
