@@ -899,39 +899,50 @@ class PulsaController extends Controller
 
     public function cancelTransaction(Request $request){
         $validator = Validator::make($request->all(), [
-            'id_transaction' => 'required_without_all:id_job',
-            'id_job' => 'required_without_all:id_transaction'
+            'id_transaction' => 'required_without_all:id_vacancy',
+            'id_vacancy' => 'required_without_all:id_transaction'
         ]);
 
         if ($validator->fails()) {          
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
             if($request->id_transaction != null){
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $request->id_transaction]), 200);
+                $get_transaction = Transaction::where('id', $request->id_transaction)->first();
+
+                if($get_transaction){
+                    $get_payment_data = TransactionPayment::where('id_transaction', $get_transaction['id'])->first();
+
+                    $update_payment = TransactionPayment::where('id_transaction', $get_transaction['id'])->update([
+                        'payment_status' => 'cancel'
+                    ]);
+
+                    $update_transaction = Transaction::where('id', $request->id_transaction)->update([
+                        'status' => 'unsuccess'
+                    ]);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $get_transaction]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction not found!','data'=> ""]), 404);
+                }
             }
             else{
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $request->id_job]), 200);
+                $get_vacancy = JobVacancy::where('id_vacancy', $request->id_vacancy)->where('package', '!=', 1)->first();
+
+                if($get_vacancy){
+                    $get_payment_data = JobVacancyPayment::where('id_vacancy', $request->id_vacancy)->with('vacancy')->first();
+
+                    $update_payment = JobVacancyPayment::where('id_vacancy', $request->id_vacancy)->update([
+                        'payment_status' => 'cancel'
+                    ]);
+
+
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Job transaction not found!','data'=> ""]), 404);
+                }
             }
-            /*
-            $get_transaction = Transaction::where('id', $request->id_transaction)->first();
 
-            if($get_transaction){
-                $get_payment_data = TransactionPayment::where('id_transaction', $get_transaction['id'])->first();
-
-                $update_payment = TransactionPayment::where('id_transaction', $get_transaction['id'])->update([
-                    'payment_status' => 'expire'
-                ]);
-
-                $update_transaction = Transaction::where('id', $request->id_transaction)->update([
-                    'status' => 'unsuccess'
-                ]);
-
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $get_transaction]), 200);
-            }
-            else{
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction not found!','data'=> ""]), 404);
-            }
-            */
         }
     }
 
@@ -979,6 +990,7 @@ class PulsaController extends Controller
                     $payment_method = PaymentMethodCategory::select('name')->where('id', $payment_cat['id_payment_method_category'])->first();
         
                     $ad_list = (object)[
+                        'id_vacancy' => $get_payment['id_vacancy'],
                         'category' => "Job Ad (".$package_name['name'].")",
                         'order_id' => $get_payment['order_id'],
                         'transaction_time' => date('Y-m-d\TH:i:s.u\Z' , strtotime($get_payment['created_at'])),
