@@ -503,8 +503,10 @@ class PulsaController extends Controller
 
             if($providerspref){
                 $provider=Providers::where('id',$providerspref->providers->id)->first();
+                $provider->photo_url=URL::to('storage/'.$provider->photo_url);
 
                 $data['provider']=$provider;
+
 
                 $productgrouppulsa=ProductGroup::where('id_providers',$provider->id)->where('id_product_category',1)->with('product')->first();
 
