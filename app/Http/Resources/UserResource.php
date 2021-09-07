@@ -31,7 +31,7 @@ class User extends JsonResource
             'birthdate' => $this->birthdate,
             'gender' => $this->gender,
             'about' => $this->about,
-            'photo' => $photo_url,
+            //'photo' => $photo_url,
             'education' => $education_level['name'],
             'education_detail' => $education
         ];
