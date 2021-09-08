@@ -22,8 +22,8 @@ class User extends JsonResource
         $education_level = Education::where('id', $education['id_edu'])->first();
         $latest_work = UserWorkExperience::where('id_user', $this->id)->orderBy('created_at', 'desc')->first();
 
-        if($latest_work['date_end'] == null){
-            $latest_work['date_end'] == "now";
+        if($latest_work && $latest_work['date_end'] == null){
+            $latest_work['date_end'] = "now";
         }
 
         $photo_url=URL::to('storage/'.$this->photo);
