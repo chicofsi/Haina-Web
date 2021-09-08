@@ -131,7 +131,7 @@ class UserQualificationController extends Controller
             'company' => 'required',
             'city' => 'required',
             'date_start' => 'required|date|date:YY-MM-DD|before:date_end',
-            'date_end' => 'date:YY-MM-DD'
+            'date_end' => 'date:YY-MM-DD',
             'position' => 'required',
             'description' => 'required',
             'salary' => 'required'
