@@ -139,20 +139,28 @@ class UserQualificationController extends Controller
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
         }else{
-            $workexp = [
-                'id_user' => Auth::id(),
-                'company' => $request->company,
-                'city' => $request->city,
-                'date_start' => $request->date_start,
-                'date_end' => $request->date_end,
-                'position' => $request->position,
-                'description' => $request->description,
-                'salary' => $request->salary
-            ];
+            $check_exp = UserWorkExperience::where('id_user', Auth::id())->get();
 
-            $new_workexp = UserWorkExperience::create($workexp);
-
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Work experience added successfully!','data'=> $new_workexp]), 200);
+            if($check_exp){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Work already exists!','data'=> '']), 401);
+            }
+            else{
+                $workexp = [
+                    'id_user' => Auth::id(),
+                    'company' => $request->company,
+                    'city' => $request->city,
+                    'date_start' => $request->date_start,
+                    'date_end' => $request->date_end,
+                    'position' => $request->position,
+                    'description' => $request->description,
+                    'salary' => $request->salary
+                ];
+    
+                $new_workexp = UserWorkExperience::create($workexp);
+    
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Work experience added successfully!','data'=> $new_workexp]), 200);
+            }
+            
         }
     }
 
