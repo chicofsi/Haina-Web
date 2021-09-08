@@ -6,6 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\URL;
 use App\Models\Education;
 use App\Models\UserEducation;
+use App\Models\UserWorkExperience;
 
 class User extends JsonResource
 {
@@ -19,6 +20,7 @@ class User extends JsonResource
     {
         $education = UserEducation::where('id_user', $this->id)->first();
         $education_level = Education::where('id', $education['id_edu'])->first();
+        $latest_work = UserWorkExperience::where('id_user', $this->id)->orderBy('created_at', 'desc')->first();
 
         $photo_url=URL::to('storage/'.$this->photo);
         return [
@@ -32,7 +34,8 @@ class User extends JsonResource
             'about' => $this->about,
             'photo' => $photo_url,
             'education' => $education_level['name'],
-            'education_detail' => $education
+            'education_detail' => $education,
+            'latest_work' => $latest_work
         ];
     }
 }
