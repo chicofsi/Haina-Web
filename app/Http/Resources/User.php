@@ -19,7 +19,11 @@ class User extends JsonResource
     public function toArray($request)
     {
         $education = UserEducation::where('id_user', $this->id)->first();
-        $education_level = Education::where('id', $education['id_edu'])->first();
+
+        if($education){
+            $education_level = Education::where('id', $education['id_edu'])->first();
+        }
+        
         $latest_work = UserWorkExperience::where('id_user', $this->id)->first();
 
         if($latest_work && $latest_work['date_end'] == null){
@@ -37,7 +41,7 @@ class User extends JsonResource
             'gender' => $this->gender,
             'about' => $this->about,
             'photo' => $photo_url,
-            'education' => $education_level['name'],
+            'education' => $education_level['name'] ?? null,
             'education_detail' => $education,
             'latest_work' => $latest_work
         ];
