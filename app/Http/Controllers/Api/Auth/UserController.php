@@ -204,6 +204,7 @@ class UserController extends Controller
         }else{
             $data=$request->user();
         }
+        dd($data);
    		return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Data Success','data'=> new UserResource($data)]),$this->successStatus);
 	
     }
