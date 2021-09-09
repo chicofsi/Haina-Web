@@ -1795,16 +1795,20 @@ class HotelDarmaController extends Controller
                     }
                 }
                 else{
+                    $data=[];
                     foreach ($bodyresponsehotel->hotels as $key => $value) {
                         $value->city=City::where('id_darma',$value->cityID)->first()->name;
                         $value->type="hotels";
+                        unset($value->countryID);
+                        unset($value->cityID);
+                        array_push($data,$value);
                     }
-                    $data['hotel']=$bodyresponsehotel->hotels;
-
                     foreach ($bodyresponsecity->cities as $key => $value) {
                         $value->type="city";
+                        $value->city="Indonesia";
+                        unset($value->CountryID);
+                        array_push($data,$value);
                     }
-                    $data['city']=$bodyresponsecity->cities;
 
 
 
