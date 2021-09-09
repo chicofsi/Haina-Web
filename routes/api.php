@@ -158,6 +158,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::get('/'  , [UserQualificationController::class, 'showWorkExperience']);
 		Route::post('/add'  , [UserQualificationController::class, 'addWorkExperience']);
 		Route::post('/delete'  , [UserQualificationController::class, 'deleteWorkExperience']);
+		Route::post('/update'  , [UserQualificationController::class, 'updateWorkExperience']);
 	});
 
 	Route::post('notification'  , [NotificationController::class, 'getUserNotification']);

@@ -181,34 +181,28 @@ class UserQualificationController extends Controller
 
     public function updateWorkExperience(Request $request){
         $validator = Validator::make($request->all(), [
-            'id' => 'required',
-            'company' => $request->company,
-            'city' => $request->city,
-            'date_start' => $request->date_start,
-            'date_end' => $request->date_end,
-            'position' => $request->position,
-            'description' => $request->description,
-            'salary' => $request->salary
+            'date_start' => 'date|date:YY-MM-DD|before:date_end',
+            'date_end' => 'date:YY-MM-DD'
         ]);
     
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
         }else{
-            $check_workexp = UserWorkExperience::where('id', $request->id)->get();
+            $check_workexp = UserWorkExperience::where('id_user', Auth::id())->first();
 
             if($check_workexp){
                 if($check_workexp['id_user'] != Auth::id()){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
                 }
                 else{
-                    $update_workexp = UserWorkExperience::where('id', $request->id)->update([
-                        'company' => $request->company,
-                        'city' => $request->city,
-                        'date_start' => $request->date_start,
-                        'date_end' => $request->date_end,
-                        'position' => $request->position,
-                        'description' => $request->description,
-                        'salary' => $request->salary
+                    $update_workexp = UserWorkExperience::where('user_id', Auth::id())->update([
+                        'company' => $request->company ?? $check_workexp['company'],
+                        'city' => $request->city ?? $check_workexp['city'],
+                        'date_start' => $request->date_start ?? $check_workexp['date_start'],
+                        'date_end' => $request->date_end ?? $check_workexp['date_end'],
+                        'position' => $request->position ?? $check_workexp['position'],
+                        'description' => $request->description ?? $check_workexp['description'],
+                        'salary' => $request->salary ?? $check_workexp['salary']
                     ]);
 
                     $curr_workexp = UserWorkExperience::where('id', $request->id)->first();
