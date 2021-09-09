@@ -22,7 +22,7 @@ class User extends JsonResource
 
         if($education){
             $education_level = Education::where('id', $education['id_edu'])->first();
-            $education->$education_level = $education_level['name'];
+            $education->education_level = $education_level['name'];
         }
         
         $latest_work = UserWorkExperience::where('id_user', $this->id)->first();
