@@ -213,7 +213,7 @@ class UserQualificationController extends Controller
                             'salary' => $request->salary ?? $check_workexp['salary']
                         ]);
     
-                        $curr_workexp = UserWorkExperience::where('id', $request->id)->first();
+                        $curr_workexp = UserWorkExperience::where('id_user', Auth::id())->first();
     
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Work experience updated successfully!','data'=> $curr_workexp]), 200);
                     }
