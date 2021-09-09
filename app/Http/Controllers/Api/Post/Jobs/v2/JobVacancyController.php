@@ -444,7 +444,7 @@ class JobVacancyController extends Controller
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
                 }
                 else{
-                    $applicant = JobVacancyApplicant::where('id_vacancy', $request->id_vacancy)->with('user.education', 'user.work_experience')->get();
+                    $applicant = JobVacancyApplicant::where('id_vacancy', $request->id_vacancy)->where('status', 'applied')->with('user.education', 'user.work_experience')->get();
 
                     foreach($applicant as $key => $value){
                         if($value->user->education != null){
