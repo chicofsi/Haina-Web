@@ -98,7 +98,6 @@ class UserQualificationController extends Controller
             'year_start' => 'nullable|integer',
             'year_end' => 'nullable|integer',
             'gpa' => 'numeric|nullable',
-            'major' => 'numeric|nullable',
             'id_edu' => 'nullable|integer'
         ]);
     
@@ -121,6 +120,12 @@ class UserQualificationController extends Controller
                     }
                     else if($id_edu < $check_edu['id_edu']){
                         return response()->json(new ValueMessage(['value'=>0,'message'=>'Education level cannot be lower','data'=> '']), 401);
+                    }
+                    else if($id_edu > 1 && $request->gpa == null){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'GPA must be filled if education is not high school (1)','data'=> '']), 401);
+                    }
+                    else if($id_edu > 1 && $request->major == null){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Major must be filled if education is not high school (1)','data'=> '']), 401);
                     }
                     else{
                         $update_edu = UserEducation::where('id_user', Auth::id())->update([
