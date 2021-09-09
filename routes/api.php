@@ -211,6 +211,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	});
 
 	Route::group(['prefix' => 'hotel_darma'], function(){
+		Route::post('/search', [HotelDarmaController::class, 'searchHotelQuery']);
 		//HotelDarmaController
 
 		Route::post('/issue_booking', [HotelDarmaController::class, 'issueBooking']);
