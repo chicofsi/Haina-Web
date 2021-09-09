@@ -1696,7 +1696,7 @@ class HotelDarmaController extends Controller
         }
     }
 
-    public function searchHotelQuery(Request $requests)
+    public function searchHotelQuery(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'search' => 'required',
