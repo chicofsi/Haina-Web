@@ -113,6 +113,34 @@ class UserQualificationController extends Controller
         }
     }
 
+    public function updateLastEducation(Request $request){
+        $validator = Validator::make($request->all(), [
+            'year_start' => 'nullable|integer',
+            'year_end' => 'nullable|integer',
+            'gpa' => 'numeric|required_unless:id_edu,1',
+            'major' => 'numeric|required_unless:id_edu,1',
+            'id_edu' => 'nullable|integer'
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_edu = UserEducation::where('id_user', Auth::id())->first();
+
+            if($check_edu){
+                if($check_edu['id_user'] != Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+                }
+                else{
+
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Education data not found!','data'=> '']), 404);
+            }
+        }
+    }
+
     public function deleteLastEducation(Request $request){
         $check_edu = UserEducation::where('id_user', Auth::id())->first();
 
@@ -181,8 +209,8 @@ class UserQualificationController extends Controller
 
     public function updateWorkExperience(Request $request){
         $validator = Validator::make($request->all(), [
-            'date_start' => 'date:YY-MM-DD',
-            'date_end' => 'date:YY-MM-DD'
+            'date_start' => 'nullable|date:YY-MM-DD',
+            'date_end' => 'nullable|date:YY-MM-DD'
         ]);
     
         if ($validator->fails()) {
