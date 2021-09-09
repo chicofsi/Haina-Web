@@ -1806,7 +1806,7 @@ class HotelDarmaController extends Controller
                     foreach ($bodyresponsecity->cities as $key => $value) {
                         $value->type="city";
                         $value->city="Indonesia";
-                        unset($value->countryID);
+                        unset($value->CountryID);
                         array_push($data,$value);
                     }
 
