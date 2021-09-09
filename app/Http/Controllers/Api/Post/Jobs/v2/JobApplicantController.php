@@ -51,7 +51,7 @@ use App\Http\Controllers\Api\Notification\NotificationController;
 class JobApplicantController extends Controller
 {
     public function showAvailableVacancy(){
-        $today = strtotime(date("Y-m-d H:i:s"));
+        $today = date("Y-m-d H:i:s");
         $check_company = Company::where('id_user', Auth::id())->first();
 
         // if($check_company){
