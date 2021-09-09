@@ -77,27 +77,7 @@ class UserQualificationController extends Controller
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Last education added successfully!','data'=> $new_edu]), 200);
             }
             else{
-                if($request->id_edu < $check_edu['id_edu']){
-                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Newest education must be equal or higher level!','data'=> '']), 403);
-                }
-                else if($request->year_end < $check_edu['year_end']){
-                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Newest education must end after current education!','data'=> '']), 403);
-                }
-                else{
-                    $update_edu = UserEducation::where('id_user', Auth::id())->update([
-                        'institution' => $request->institution,
-                        'year_start' => $request->year_start,
-                        'year_end' => $request->year_end,
-                        'gpa' => $request->gpa ?? '',
-                        'major' => $request->major ?? '',
-                        'id_edu' => $request->id_edu,
-                        'city' => $request->city
-                    ]);
-
-                    $curr_edu = UserEducation::where('id_user', Auth::id())->first();
-
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Last education updated successfully!','data'=> $curr_edu]), 200);
-                }
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Last education already exists!','data'=> '']), 401);
             }
         }
     }
@@ -132,7 +112,31 @@ class UserQualificationController extends Controller
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
                 }
                 else{
+                    $start_year = $request->year_start ?? $check_edu['year_start'];
+                    $end_year = $request->year_end ?? $check_edu['year_end'];
+                    $id_edu = $request->id_edu ?? $check_edu['id_edu'];
 
+                    if($start_year > $end_year){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'End year must be later than start year!','data'=> '']), 401);
+                    }
+                    else if($id_edu < $check_edu['id_edu']){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Education level cannot be lower','data'=> '']), 401);
+                    }
+                    else{
+                        $update_edu = UserEducation::where('id_user', Auth::id())->update([
+                            'institution' => $request->institution ?? $check_edu['institution'],
+                            'year_start' => $request->year_start ?? $check_edu['year_start'],
+                            'year_end' => $request->year_end ?? $check_edu['year_end'],
+                            'gpa' => $request->gpa ?? $check_edu['gpa'],
+                            'major' => $request->major ?? $check_edu['major'],
+                            'id_edu' => $request->id_edu ?? $check_edu['id_edu'],
+                            'city' => $request->city ?? $check_edu['city']
+                        ]);
+
+                        $curr_edu = UserEducation::where('id_user', Auth::id())->first();
+
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Last education updated successfully!','data'=> $curr_edu]), 200);
+                    }
                 }
             }
             else{
@@ -255,30 +259,17 @@ class UserQualificationController extends Controller
     }
 
     public function deleteWorkExperience(Request $request){
-        $validator = Validator::make($request->all(), [
-            'id' => 'required',
-        ]);
-    
-        if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 400);
-        }else{
-            $check_workexp = UserWorkExperience::where('id', $request->id)->get();
+
+            $check_workexp = UserWorkExperience::where('id_user', Auth::id())->get();
 
             if(!$check_workexp){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Work experience data not found!','data'=> '']), 404);
             }
             else{
-                if($check_workexp['id_user'] != Auth::id()){
-                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
-                }
-                else{
-                    $delete_workexp = UserWorkExperience::where('id', $request->id)->delete();
+                $delete_workexp = UserWorkExperience::where('id', $request->id)->delete();
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Work experience deleted successfully!','data'=> $curr_workexp]), 200);
-                }
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Work experience deleted successfully!','data'=> $curr_workexp]), 200);
             }
-
-        }
     }
 
 }
