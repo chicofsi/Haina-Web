@@ -152,6 +152,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::get('/'  , [UserQualificationController::class, 'showLastEducation']);
 		Route::post('/add'  , [UserQualificationController::class, 'addLastEducation']);
 		Route::post('/delete'  , [UserQualificationController::class, 'deleteLastEducation']);
+		Route::post('/update'  , [UserQualificationController::class, 'updateLastEducation']);
 	});
 
 	Route::group(['prefix' => 'work_exp'], function() {
