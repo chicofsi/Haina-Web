@@ -933,14 +933,6 @@ class PulsaController extends Controller
     }
 
     public function cancelTransaction(Request $request){
-        $validator = Validator::make($request->all(), [
-            'id_transaction' => 'required_without_all:id_vacancy',
-            'id_vacancy' => 'required_without_all:id_transaction'
-        ]);
-
-        if ($validator->fails()) {          
-            return response()->json(['error'=>$validator->errors()], 400);                        
-        }else{
             if($request->id_transaction != null){
                 $get_transaction = Transaction::where('id', $request->id_transaction)->first();
 
@@ -990,7 +982,7 @@ class PulsaController extends Controller
                 }
             }
 
-        }
+        
     }
 
     public function transactionList(Request $request)
