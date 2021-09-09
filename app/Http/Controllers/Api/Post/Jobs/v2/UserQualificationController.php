@@ -181,7 +181,7 @@ class UserQualificationController extends Controller
 
     public function updateWorkExperience(Request $request){
         $validator = Validator::make($request->all(), [
-            'date_start' => 'date:YY-MM-DD|before:date_end',
+            'date_start' => 'date:YY-MM-DD',
             'date_end' => 'date:YY-MM-DD'
         ]);
     
@@ -195,10 +195,12 @@ class UserQualificationController extends Controller
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
                 }
                 else{
-                    if($request->date_end != null){
-                        if($request->date_start > $check_workexp['date_start']){
-                            return response()->json(new ValueMessage(['value'=>0,'message'=>'End date must be later than start date!','data'=> '']), 401);
-                        }
+
+                    $start_date = $request->date_start ?? $check_workexp['date_start'];
+                    $end_date = $request->date_end ?? $check_workexp['date_end'];
+
+                    if($start_date > $end_date){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'End date must be later than start date!','data'=> '']), 401);
                     }
                     else{
                         $update_workexp = UserWorkExperience::where('id_user', Auth::id())->update([
@@ -215,7 +217,7 @@ class UserQualificationController extends Controller
     
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Work experience updated successfully!','data'=> $curr_workexp]), 200);
                     }
-  
+
                 }
             }
             else{
