@@ -140,7 +140,7 @@ class UserQualificationController extends Controller
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
         }else{
-            $check_exp = UserWorkExperience::where('id_user', Auth::id())->get();
+            $check_exp = UserWorkExperience::where('id_user', Auth::id())->first();
 
             if($check_exp){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Work already exists!','data'=> '']), 401);
