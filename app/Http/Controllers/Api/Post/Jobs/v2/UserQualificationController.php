@@ -97,8 +97,8 @@ class UserQualificationController extends Controller
         $validator = Validator::make($request->all(), [
             'year_start' => 'nullable|integer',
             'year_end' => 'nullable|integer',
-            'gpa' => 'numeric|required_unless:id_edu,1',
-            'major' => 'numeric|required_unless:id_edu,1',
+            'gpa' => 'numeric|nullable',
+            'major' => 'numeric|nullable',
             'id_edu' => 'nullable|integer'
         ]);
     
