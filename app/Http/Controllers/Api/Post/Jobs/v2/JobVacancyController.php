@@ -448,9 +448,9 @@ class JobVacancyController extends Controller
 
                     foreach($applicant as $key => $value){
                         if($value->education != null){
-                            $edu_name = Education::where('id', $value->user->education->id)->first();
+                            $edu_name = Education::where('id', $value->user->education->id_edu)->first();
 
-                            $value->user->education->edu_level = $edu_name['name'];
+                            $value->user->education->education_level = $edu_name['name'];
                         }
                         
                     }
@@ -491,7 +491,7 @@ class JobVacancyController extends Controller
                     foreach($applicant as $key => $value){
                         $edu_name = Education::where('id', $value->user->education->id_edu)->first();
 
-                        $value->user->education->edu_level = $edu_name['name'];
+                        $value->user->education->education_level = $edu_name['name'];
                     }
 
                     if(count($applicant) > 0){
@@ -533,7 +533,7 @@ class JobVacancyController extends Controller
                         $interview_schedule = JobVacancyInterview::where('id_user', $value->id_user)->where('id_vacancy', $value->id_vacancy)->first();
 
                         $value->interview_data = $interview_schedule;
-                        $value->user->education->edu_level = $edu_name['name'];
+                        $value->user->education->education_level = $edu_name['name'];
                     }
 
                     if(count($applicant) > 0){
@@ -572,7 +572,7 @@ class JobVacancyController extends Controller
                     foreach($applicant as $key => $value){
                         $edu_name = Education::where('id', $value->user->education->id_edu)->first();
 
-                        $value->user->education->edu_level = $edu_name['name'];
+                        $value->user->education->education_level = $edu_name['name'];
                     }
 
                     if(count($applicant) > 0){
@@ -610,7 +610,7 @@ class JobVacancyController extends Controller
                     $docs = UserDocs::where('id', $check_applicant['id_resume'])->get();
 
                     $user_profile->user_docs = $docs;
-                    $user_profile->education->edu_level = $edu_name['name'];
+                    $user_profile->education->education_level = $edu_name['name'];
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant details found!','data'=> $user_profile]), 200);
                 }
