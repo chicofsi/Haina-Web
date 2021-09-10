@@ -672,7 +672,7 @@ class JobVacancyController extends Controller
 
                     $check_applicant = JobVacancyApplicant::where('id', $request->id_applicant)->first();
 
-                    statusNotif($check_applicant['id_user'], $check_applicant['id_vacancy'], $request->status);
+                    $this->statusNotif($check_applicant['id_user'], $check_applicant['id_vacancy'], $request->status);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant status update success!','data'=>$check_applicant]), 200);
                 }
@@ -687,7 +687,7 @@ class JobVacancyController extends Controller
 
                     $check_applicant = JobVacancyApplicant::where('id', $request->id_applicant)->first();
 
-                    statusNotif($check_applicant['id_user'], $check_applicant['id_vacancy'], $request->status);
+                    $this->statusNotif($check_applicant['id_user'], $check_applicant['id_vacancy'], $request->status);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant status update success!','data'=>$check_applicant]), 200);
                 }
@@ -702,7 +702,7 @@ class JobVacancyController extends Controller
 
                     $check_applicant = JobVacancyApplicant::where('id', $request->id_applicant)->first();
 
-                    statusNotif($check_applicant['id_user'], $check_applicant['id_vacancy'], $request->status);
+                    $this->statusNotif($check_applicant['id_user'], $check_applicant['id_vacancy'], $request->status);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant status update success!','data'=>$check_applicant]), 200);
                 }
