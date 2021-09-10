@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\Api\Auth\UserController;
 use App\Http\Controllers\Api\Post\PostController;
 use App\Http\Controllers\Api\Post\LocationController;
@@ -299,6 +301,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	
 });
 
+//Reset pass email
 Route::get('/email/verify', function () {
 	return view('auth.verify-email');
 })->middleware('auth:api')->name('verification.notice');
@@ -314,6 +317,29 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 	return back()->with('message', 'Verification link sent!');
 })->middleware(['auth:api', 'throttle:6,1'])->name('verification.send');
+
+Route::get('/forgot-password', function () {
+    return view('auth.forgot-password');
+})->middleware('guest')->name('password.request');
+
+Route::post('/forgot-password', function (Request $request) {
+    $request->validate(['email' => 'required|email']);
+
+    $status = Password::sendResetLink(
+        $request->only('email')
+    );
+
+    return $status === Password::RESET_LINK_SENT
+                ? back()->with(['status' => __($status)])
+                : back()->withErrors(['email' => __($status)]);
+})->middleware('guest')->name('password.email');
+
+Route::get('/reset-password/{token}', function ($token) {
+    return view('auth.reset-password', ['token' => $token]);
+})->middleware('guest')->name('password.reset');
+
+Route::post('/reset-password',[UserController::class, 'resetPassword'])->middleware('guest')->name('password.update');
+//
 
 Route::post('/cityList', [CityController::class, 'getCity']);
 Route::post('/provinceList', [CityController::class, 'getProvince']);
