@@ -269,7 +269,7 @@ class JobVacancyController extends Controller
 
                     
 
-                    $value->total_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->get());
+                    $value->total_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->where('status', 'applied')->get());
                     $value->shortlisted_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->where('status', 'shortlisted')->get());
                     $value->interview_applicant = count(JobVacancyApplicant::where('id_vacancy', $value->id)->where('status', 'interview')->get());
 
