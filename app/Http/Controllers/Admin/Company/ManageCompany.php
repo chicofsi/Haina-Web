@@ -118,7 +118,7 @@ class ManageCompany extends Controller
         }
 
         foreach ($token as $key => $value) {
-            NotificationController::sendPush($value, "Company Listing Approved", $company['name']." is approved. Start posting job vacancies now!", "Job", "");
+            NotificationController::sendPush($user_id['id_user'], $value, "Company Listing Approved", $company['name']." is approved. Start posting job vacancies now!", "Job", "");
         }
                          
         return Response()->json($companyupdate);

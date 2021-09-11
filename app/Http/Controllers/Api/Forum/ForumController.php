@@ -720,7 +720,9 @@ class ForumController extends Controller
                             'message' => $mod['username'].' deleted "'.$post_owner['title'].'" from '.$subforum['name'].'.'
                         ]);
 
-                        NotificationController::sendPush($token, "Your post is removed", "Your post ".$post_owner['title']."is removed by a moderator.", "Forum", "delete");
+                        foreach ($token as $key => $value) {
+                            NotificationController::sendPush($post_owner['user_id'], $value, "Your post is removed", "Your post ".$post_owner['title']."is removed by a moderator.", "Forum", "delete");
+                        }
                     }
                     $delete_post = ForumPost::where('id', $request->post_id)->where('deleted_at', null)->update([
                         'deleted_at' => date('Y-m-d H:i:s')
@@ -819,7 +821,9 @@ class ForumController extends Controller
                             'message' => $mod['username'].' deleted "'.$comment_owner['content'].'" from '.$post_name['title'].' in '.$subforum['name'].'.'
                         ]);
     
-                        NotificationController::sendPush($token, "Your comment is removed", "Your comment at".$post_name['title']."is removed by a moderator.", "Forum", "delete");
+                        foreach ($token as $key => $value) {
+                            NotificationController::sendPush($comment_owner['user_id'], $value, "Your comment is removed", "Your comment at".$post_name['title']."is removed by a moderator.", "Forum", "delete");
+                        }
                     }
     
                     //$delete_comment = ForumComment::where('id', $request->comment_id)->delete();
