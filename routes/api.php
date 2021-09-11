@@ -168,76 +168,81 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
 	Route::post('/payment/method'  , [PulsaController::class, 'getPaymentMethod']);
 	
-	Route::group(['prefix' => 'pulsa'],function ()
-	{
-		
-		Route::post('/inquiry'  , [PulsaController::class, 'getInquiry']);
-		Route::post('/transaction'  , [PulsaController::class, 'addTransaction']);
-		Route::post('/cancel', [PulsaController::class, 'cancelTransaction']);
-		Route::post('/list'  , [PulsaController::class, 'transactionList']);
-	});
+	Route::middleware('verified')->group(function () {
+		Route::group(['prefix' => 'pulsa'],function ()
+		{
+			
+			Route::post('/inquiry'  , [PulsaController::class, 'getInquiry']);
+			Route::post('/transaction'  , [PulsaController::class, 'addTransaction']);
+			Route::post('/cancel', [PulsaController::class, 'cancelTransaction']);
+			Route::post('/list'  , [PulsaController::class, 'transactionList']);
+		});
 
-	Route::group(['prefix' => 'bills'],function ()
-	{
-		Route::post('/inquiry'  , [PulsaController::class, 'getInquiryBills']);
-		Route::post('/transaction'  , [PulsaController::class, 'addBillsTransaction']);
-		//Route::post('/amountbill'  , [PulsaController::class, 'getAmountBills']);
-		Route::post('/directbill'  , [PulsaController::class, 'getDirectBills']);
-		Route::post('/cancel', [PulsaController::class, 'cancelTransaction']);
+		Route::group(['prefix' => 'bills'],function ()
+		{
+			Route::post('/inquiry'  , [PulsaController::class, 'getInquiryBills']);
+			Route::post('/transaction'  , [PulsaController::class, 'addBillsTransaction']);
+			//Route::post('/amountbill'  , [PulsaController::class, 'getAmountBills']);
+			Route::post('/directbill'  , [PulsaController::class, 'getDirectBills']);
+			Route::post('/cancel', [PulsaController::class, 'cancelTransaction']);
+		});
+
+		Route::group(['prefix' => 'ticket'], function() {
+
+			Route::post('/airport',[TicketController::class, 'getAirport']);
+			Route::post('/airline',[TicketController::class, 'getAirline']);
+			Route::post('/schedule',[TicketController::class, 'getAirlineSchedule']);
+			Route::post('/price',[TicketController::class, 'getAirlinePrice']);
+			Route::post('/route',[TicketController::class, 'getRoute']);
+			Route::post('/test',[TicketController::class, 'testOCR']);
+			Route::get('/addons',[TicketController::class, 'getAirlineAddons']);
+			Route::get('/seat',[TicketController::class, 'getAirlineSeat']);
+			Route::post('/setaddons',[TicketController::class, 'setPassengerAddons']);
+			Route::post('/passenger',[TicketController::class, 'setPassenger']);
+			Route::post('/booking',[TicketController::class, 'setAirlineBooking']);
+	
+			Route::get('/nationality',[TicketController::class, 'getNationality']);
+	
+			Route::post('/testbooking',[TicketController::class, 'setBookingManual']);
+	
+			Route::post('/history',[TicketController::class, 'getBookingList']);
+	
+	
+	
+		});
+	
+		Route::group(['prefix' => 'hotel_darma'], function(){
+			Route::post('/search', [HotelDarmaController::class, 'searchHotelQuery']);
+			//HotelDarmaController
+	
+			Route::post('/issue_booking', [HotelDarmaController::class, 'issueBooking']);
+			Route::post('/create_booking', [HotelDarmaController::class, 'createBooking']);
+			Route::post('/price_policy', [HotelDarmaController::class, 'showPricePolicy']);
+			Route::post('/search_room', [HotelDarmaController::class, 'searchRoom']);
+			Route::post('/search_hotel', [HotelDarmaController::class, 'searchHotel']);
+	
+			Route::post('/hotel_name', [HotelDarmaController::class, 'searchByHotelName']);
+	
+			Route::post('/booking_list', [HotelDarmaController::class, 'getBookingList']);
+			Route::post('/booking_detail', [HotelDarmaController::class, 'getBookingDetail']);
+	
+			Route::post('/cancel', [HotelDarmaController::class, 'cancel']);
+	
+			Route::post('/all_cities', [HotelDarmaController::class, 'getIndoCities']);
+			Route::post('/cities', [HotelDarmaController::class, 'getCity']);
+			Route::post('/countries', [HotelDarmaController::class, 'getCountry']);
+			Route::post('/passports', [HotelDarmaController::class, 'getPassport']);
+	
+			Route::post('/testimage', [HotelDarmaController::class, 'testImage']);
+		});
 	});
+	
 
 	Route::post('/pending_transaction'  , [PulsaController::class, 'pendingTransactionList']);
 
 	Route::get('/post_category',[PostCategoryController::class, 'getCategory']);
 
-	Route::group(['prefix' => 'ticket'], function() {
-
-		Route::post('/airport',[TicketController::class, 'getAirport']);
-		Route::post('/airline',[TicketController::class, 'getAirline']);
-		Route::post('/schedule',[TicketController::class, 'getAirlineSchedule']);
-		Route::post('/price',[TicketController::class, 'getAirlinePrice']);
-		Route::post('/route',[TicketController::class, 'getRoute']);
-		Route::post('/test',[TicketController::class, 'testOCR']);
-		Route::get('/addons',[TicketController::class, 'getAirlineAddons']);
-		Route::get('/seat',[TicketController::class, 'getAirlineSeat']);
-		Route::post('/setaddons',[TicketController::class, 'setPassengerAddons']);
-		Route::post('/passenger',[TicketController::class, 'setPassenger']);
-		Route::post('/booking',[TicketController::class, 'setAirlineBooking']);
-
-		Route::get('/nationality',[TicketController::class, 'getNationality']);
-
-		Route::post('/testbooking',[TicketController::class, 'setBookingManual']);
-
-		Route::post('/history',[TicketController::class, 'getBookingList']);
-
-
-
-	});
-
-	Route::group(['prefix' => 'hotel_darma'], function(){
-		Route::post('/search', [HotelDarmaController::class, 'searchHotelQuery']);
-		//HotelDarmaController
-
-		Route::post('/issue_booking', [HotelDarmaController::class, 'issueBooking']);
-		Route::post('/create_booking', [HotelDarmaController::class, 'createBooking']);
-		Route::post('/price_policy', [HotelDarmaController::class, 'showPricePolicy']);
-		Route::post('/search_room', [HotelDarmaController::class, 'searchRoom']);
-		Route::post('/search_hotel', [HotelDarmaController::class, 'searchHotel']);
-
-		Route::post('/hotel_name', [HotelDarmaController::class, 'searchByHotelName']);
-
-		Route::post('/booking_list', [HotelDarmaController::class, 'getBookingList']);
-		Route::post('/booking_detail', [HotelDarmaController::class, 'getBookingDetail']);
-
-		Route::post('/cancel', [HotelDarmaController::class, 'cancel']);
-
-		Route::post('/all_cities', [HotelDarmaController::class, 'getIndoCities']);
-		Route::post('/cities', [HotelDarmaController::class, 'getCity']);
-		Route::post('/countries', [HotelDarmaController::class, 'getCountry']);
-		Route::post('/passports', [HotelDarmaController::class, 'getPassport']);
-
-		Route::post('/testimage', [HotelDarmaController::class, 'testImage']);
-	});
+	
 
 	Route::group(['prefix' => 'property'], function(){
 		Route::get('/facility', [PropertyDataController::class, 'listFacility']);
