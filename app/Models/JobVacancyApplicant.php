@@ -16,7 +16,7 @@ class JobVacancyApplicant extends Model
     ];
 
     public function vacancy(){
-    	return $this->belongsTo('App\Models\JobVacancy','id_job_vacancy','id');
+    	return $this->belongsTo('App\Models\JobVacancy','id_vacancy','id');
     } 
     public function user(){
     	return $this->belongsTo('App\Models\User','id_user','id');
