@@ -142,6 +142,17 @@ class JobApplicantController extends Controller
                     ];
     
                     $new_applicant = JobVacancyApplicant::create($applicant);
+
+                    $token = [];
+                    $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $check_owner['id_user'])->get();
+
+                    foreach($usertoken as $key => $value){
+                        array_push($token, $value->name); 
+                    }
+
+                    foreach ($token as $key => $value) {
+                        NotificationController::sendPush($check_owner['id_user'],$value, "A new candidate applied!", "There is a new candidate for ".$check_vacancy['position'], "Job", "");
+                    }
     
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Apply Job Success!','data'=>$new_applicant]), 200);
                 }
