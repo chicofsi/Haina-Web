@@ -168,7 +168,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
 	Route::post('/payment/method'  , [PulsaController::class, 'getPaymentMethod']);
 	
-	Route::middleware('verified')->group(function () {
+	//verified email only
+	//Route::middleware('verified')->group(function () {
 		Route::group(['prefix' => 'pulsa'],function ()
 		{
 			
@@ -235,7 +236,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	
 			Route::post('/testimage', [HotelDarmaController::class, 'testImage']);
 		});
-	});
+	//});
 	
 
 	Route::post('/pending_transaction'  , [PulsaController::class, 'pendingTransactionList']);
