@@ -205,4 +205,19 @@ class JobApplicantController extends Controller
         }
     }
 
+    public function myJobApplications (Request $request){
+        $my_application = JobVacancyApplicant::where('id_user', Auth::id())->with('vacancy')->get();
+
+        if(count($my_application) > 0){
+            //foreach($my_application as $key => $value){
+
+            //}
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Job Application List Success!','data'=>$my_application]), 200);
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'No applications job found!','data'=> '']), 404);
+        }
+    }
+
 }
