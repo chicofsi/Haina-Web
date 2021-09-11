@@ -55,10 +55,10 @@
                                                 </table>
                                               </div>
                                               <div style="font-family: Roboto-Regular,Helvetica,Arial,sans-serif; font-size: 14px; color: rgba(0,0,0,0.87); line-height: 20px; padding-top: 20px;" align="center">
-                                                We have received your registration request. To continue registration, please click the following link. If you do not feel like you registered in our system, then just ignore this email.
+                                                Thank you for registering to Haina App. To be able to use all of the app features, please click the following link to verify your email address. If you do not feel like you registered in our system, then you can just simply ignore this email.
                                                 <div style="padding-top: 32px;" align="center">
                                                   <a href="{{ $data['url_activation'] }}" style="font-family: 'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif; line-height: 16px; color: #ffffff; font-weight: 400; text-decoration: none; font-size: 14px; display: inline-block; background-color: #4184f3; border-radius: 5px; min-width: 90px; padding: 10px 24px;" target="_blank" data-saferedirecturl="{{ $data['url_activation'] }}">
-                                                    Verified
+                                                    Verify Email
                                                   </a>
                                                 </div>
                                               </div>
