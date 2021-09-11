@@ -19,6 +19,8 @@ use App\Http\Controllers\Api\Midtrans\MidtransController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
+// email verified controller
+use App\Http\Controllers\Api\EmailVerifiedController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +41,8 @@ Route::get('/', function () {
    	return redirect()->intended('/login');
 });
 
+// verified email
+Route::get('/email-verified', [EmailVerifiedController::class, 'verified_get']);
 
 Route::get('/login', [LoginController::class, 'getLogin'])->middleware('guest')->name('login');
 Route::post('/login', [LoginController::class, 'postLogin']);
@@ -51,8 +55,8 @@ Route::group(['prefix' => 'dashboard','middleware' =>'auth:admin'], function() {
         return view('admin.dashboard');
     })->name('dashboard');
 
-    
-    
+
+
     Route::get('/menu'  , [ManageMenu::class, 'index']);
     Route::post('/menu/store'  , [ManageMenu::class, 'store']);
     Route::post('/menu/edit'  , [ManageMenu::class, 'edit']);

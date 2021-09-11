@@ -21,10 +21,18 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserLogs;
 use App\Models\UserGoogle;
+use App\Models\EmailTokenModels;
+
+// for email configuration
+use App\Mail\ConstructEmail1;
+use Illuminate\Support\Facades\Mail;
+
+// use Laravel's built-in function
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
-    
+
     public $successStatus = 200;
 
     public function check(Request $request)
@@ -47,7 +55,7 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
-        
+
     	$validator = Validator::make($request->all(), [
             'device_name' => 'required',
             'device_token' => 'required',
@@ -79,13 +87,13 @@ class UserController extends Controller
             }
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'User Credential Wrong!','data'=> '']), 401);
-            }     
-           
+            }
+
         }
-        
-    
-        
-	    
+
+
+
+
     }
 
     public function loginWithGoogle(Request $request)
@@ -96,23 +104,23 @@ class UserController extends Controller
         // Retrieve the Firebase credential's token
         $idTokenString = $request->firebase_token;
 
-        
+
         try { // Try to verify the Firebase credential token with Google
-          
+
             $verifiedIdToken = $auth->verifyIdToken($idTokenString);
-          
+
         } catch (\InvalidArgumentException $e) { // If the token has the wrong format
-          
+
             return response()->json([
                 'message' => 'Unauthorized - Can\'t parse the token: ' . $e->getMessage()
-            ], 401);        
-          
+            ], 401);
+
         } catch (InvalidToken $e) { // If the token is invalid (expired ...)
-          
+
             return response()->json([
                 'message' => 'Unauthorized - Token is invalide: ' . $e->getMessage()
             ], 401);
-          
+
         }
 
         // Retrieve the UID (User ID) from the verified Firebase credential's token
@@ -140,8 +148,8 @@ class UserController extends Controller
 
 
         }
-        
-        
+
+
     }
 
     public function register(Request $request)
@@ -154,12 +162,13 @@ class UserController extends Controller
             'password' => 'required',
             'device_token' => 'required',
             'device_name' => 'required',
-            
+
         ]);
 
         if ($validator->fails()) {
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Field Empty!','data'=> $validator->errors()]), 400);         
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Field Empty!','data'=> $validator->errors()]), 400);
         }else{
+
             $input = $request->all();
 
             $usergoogle=UserGoogle::where('email',$request->email)->first();
@@ -167,12 +176,15 @@ class UserController extends Controller
                 $input['firebase_uid']=$usergoogle->uid;
                 UserGoogle::where('email',$request->email)->delete();
             }
-            
+
             $input['password'] = Hash::make($request['password']);
             $user = User::create($input);
-            $user->sendEmailVerificationNotification();
+
+            # $user->sendEmailVerificationNotification();
+
             //event(new Registered($user));
-            $success['token'] =  $user->createToken($request->device_token)->plainTextToken;
+            $fix_token = $user->createToken($request->device_token)->plainTextToken;
+            $success['token'] = $fix_token;
 
             UserLogs::create([
                    'id_user' => $user->id,
@@ -180,16 +192,52 @@ class UserController extends Controller
                    'message' => 'User successfully registered to the sistem on '.$request->device_name.', username='.$user->username
                 ]);
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Register Success!','data'=> $success]),$this->successStatus);
+            //return response()->json(new ValueMessage(['value'=>1,'message'=>'Register Success!','data'=> $success]),$this->successStatus);
+            try {
+              // save to email_tokens
+              // create ids
+              $ids = $this->generate_random_string(64);
+              // current time
+              $now = date('Y-m-d h:i:s');
+              // set valid_until
+              $valid_until = date('Y-m-d h:i:s', strtotime('+1 hours', strtotime($now)));
+              // save
+              $create = EmailTokenModels::create([
+                'ids' => $ids,
+                'email' => $request->email,
+                'token' => $fix_token,
+                'valid_until' => $valid_until,
+                'created_at' => $now,
+                'updated_at' => $now,
+                'deleted_at' => null
+              ]);
+              $data = [
+                'email_destination' => $request->email,
+                'fix_token' => $fix_token,
+                'url_activation' => url('/email-verified?user='.$request->email.'&token='.$fix_token),
+                'full_name' => $request->fullname
+              ];
+              $sendemail = Mail::to($request->email)->send(new ConstructEmail1($data));
+              return response()->json(new ValueMessage(['value'=>1,'message'=>'Register Success!','data'=> $success]),$this->successStatus);
+            } catch (\Exception $e) {
+              return response()->json(new ValueMessage(['value'=>0,'message'=>'Email failed to send!','data'=> $success]),$this->successStatus);
+            }
         }
+    }
 
-        
-
+    private function generate_random_string($length) {
+      $characters = '0123456789qwertyuiopasdfghjklzxcvbnm';
+      $characters_length = strlen($characters);
+      $random_string = '';
+      for ($i = 0; $i < $length; $i++) {
+          $random_string .= $characters[rand(0, $characters_length - 1)];
+      }
+      return $random_string;
     }
 
     public function logout(Request $request)
     {
-       	
+
         UserLogs::create([
                    'id_user' => $request->user()->id,
                    'id_user_activity' => 3,
@@ -203,19 +251,19 @@ class UserController extends Controller
     public function detail(Request $request)
     {
         if($request->user()->photo==null){
-            $data=$request->user(); 
+            $data=$request->user();
             $data->photo='user_photo/default_user.jpg';
         }else{
             $data=$request->user();
         }
-        
+
    		return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Data Success','data'=> new UserResource($data)]),$this->successStatus);
-	
+
     }
     public function updatePhoto(Request $request)
     {
         if ($files = $request->file('photo')) {
-        
+
             $fileName= str_replace(' ','-',$request->user()->id."_".$request->user()->username);
             $guessExtension = $request->file('photo')->guessExtension();
 
@@ -233,7 +281,7 @@ class UserController extends Controller
 
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Update Photo Success','data'=> '']),$this->successStatus);
         }
-        
+
     }
 
     public function updateProfile(Request $request)
@@ -255,7 +303,7 @@ class UserController extends Controller
         if($request->has('about')){
             $change['about']=$request->about;
         }
-        
+
 
         User::where('id',$request->user()->id)->update($change);
 
@@ -273,7 +321,7 @@ class UserController extends Controller
 
 
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Update Profile Success','data'=> '']),$this->successStatus);
-  
+
     }
 
     public function resetPassword(Request $request){
@@ -282,20 +330,20 @@ class UserController extends Controller
             'email' => 'required|email',
             'password' => 'required|min:6|confirmed',
         ]);
-    
+
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
                 $user->forceFill([
                     'password' => Hash::make($password)
                 ])->setRememberToken(Str::random(60));
-    
+
                 $user->save();
-    
+
                 event(new PasswordReset($user));
             }
         );
-    
+
         return $status === Password::PASSWORD_RESET
                     ? redirect()->route('login')->with('status', __($status))
                     : back()->withErrors(['email' => [__($status)]]);
@@ -309,7 +357,7 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Field Empty!','data'=> $validator->errors()]), 400);         
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Field Empty!','data'=> $validator->errors()]), 400);
         }else{
             if(auth()->guard('web-users')->attempt(['email'=>$request->user()->email,'password'=>$request->current_password])){
 
@@ -328,8 +376,8 @@ class UserController extends Controller
             }else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Password Wrong','data'=> '']),401);
             }
-            
+
         }
-    
+
     }
 }
