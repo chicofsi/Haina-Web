@@ -206,7 +206,7 @@ class JobApplicantController extends Controller
     }
 
     public function myJobApplications (Request $request){
-        $my_application = JobVacancyApplicant::where('id_user', Auth::id())->with('vacancy')->get();
+        $my_application = JobVacancyApplicant::where('id_user', Auth::id())->with('vacancy', 'vacancy.company')->get();
 
         if(count($my_application) > 0){
             //foreach($my_application as $key => $value){
