@@ -1797,11 +1797,14 @@ class HotelDarmaController extends Controller
                 else{
                     $data=[];
                     foreach ($bodyresponsehotel->hotels as $key => $value) {
-                        $value->City=City::where('id_darma',$value->cityID)->first()->name;
-                        $value->Type="hotels";
-                        unset($value->countryID);
-                        unset($value->cityID);
-                        array_push($data,$value);
+                        $city=City::where('id_darma',$value->cityID)->first();
+                        if($city){
+                            $value->City=$city->name;
+                            $value->Type="hotels";
+                            unset($value->countryID);
+                            unset($value->cityID);
+                            array_push($data,$value);
+                        }
                     }
                     foreach ($bodyresponsecity->cities as $key => $value) {
                         $value->Type="city";
