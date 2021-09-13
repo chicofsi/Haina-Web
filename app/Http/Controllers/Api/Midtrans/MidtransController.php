@@ -223,7 +223,7 @@ class MidtransController extends Controller
                 }
 
                 $book = new HotelDarmaController();
-                $book->issueBooking();
+                $book->issueBooking($transaction['user_id']);
                 //HotelDarmaController::issueBooking();
 
             }else if($transaction_status=='pending'){

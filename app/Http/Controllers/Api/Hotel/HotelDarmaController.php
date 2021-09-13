@@ -1225,13 +1225,13 @@ class HotelDarmaController extends Controller
         }
     }
 
-    public function issueBooking(){
-        $bookingsession=$this->checkSession(Auth::id());
+    public function issueBooking($user_id){
+        $bookingsession=$this->checkSession($user_id);
         if(! $bookingsession){
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Search Hotel First!','data'=> '']), 401);
         }
         else{
-            $userid=$this->username;
+            $userid=$user_id;
             $token=$this->checkLoginUser();
             $passport = $bookingsession->pax_passport;
             $country = $bookingsession->country_id;
@@ -1330,7 +1330,7 @@ class HotelDarmaController extends Controller
 
             try{
                 $body = [
-                    'userID' => $userid,
+                    'userID' => $user_id,
                     'accessToken' => $token,
                     'paxPassport' => $passport,
                     'countryID' => $country,
