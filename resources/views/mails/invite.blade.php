@@ -1,5 +1,5 @@
 Dear {{ $demo->receiver }},
-<p>We received your application for <b>{{ $demo->position }}</b> in our company and we are pleased to invite you 
+<p>{{ $demo->sender }} received your application for <b>{{ $demo->position }}</b> in their company and we are pleased to inform that you are invited 
     for an interview.
 </p>
  
@@ -20,7 +20,7 @@ Dear {{ $demo->receiver }},
 @else
     <div>
         <p><b>Method:</b>&nbsp;Online Interview</p>
-        <p><b>Time:</b>&nbsp;{{ $demo->time }}</p>
+        <p><b>Time:</b>{{ date('l, j F Y - H:i', strtotime($demo->time)) }} WIB</p>
         <p><b>Link:</b>&nbsp;{{ $demo->location }}</p>
         <p><b>Duration:</b>&nbsp;{{ $demo->duration }} minutes</p>
     </div>
