@@ -9,7 +9,7 @@ Dear {{ $demo->receiver }},
         <p><b>Location:</b>&nbsp;{{ $demo->location }}</p>
         <p><b>Time:</b>&nbsp;{{ $demo->time }}</p>
         <p><b>Contact Person:</b>&nbsp;{{ $demo->cp_name }} ({{ $demo->cp_phone }})</p>
-        <p><b>Time:</b>&nbsp;{{ $demo->time }} minutes</p>
+        <p><b>Time:</b>&nbsp;{{ date('l, j F Y - H:i', strtotime($demo->time)) }} WIB</p>
     </div>
 @elseif ($demo->method == "phone")
     <div>
