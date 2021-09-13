@@ -1796,6 +1796,13 @@ class HotelDarmaController extends Controller
                 }
                 else{
                     $data=[];
+                    foreach ($bodyresponsecity->cities as $key => $value) {
+                        $value->Type="city";
+                        $value->City="Indonesia";
+                        $value->id_city=$value->ID;
+                        unset($value->CountryID);
+                        array_push($data,$value);
+                    }
                     foreach ($bodyresponsehotel->hotels as $key => $value) {
                         $city=City::where('id_darma',$value->cityID)->first();
                         if($city){
@@ -1806,13 +1813,6 @@ class HotelDarmaController extends Controller
                             unset($value->cityID);
                             array_push($data,$value);
                         }
-                    }
-                    foreach ($bodyresponsecity->cities as $key => $value) {
-                        $value->Type="city";
-                        $value->City="Indonesia";
-                        $value->id_city=$value->ID;
-                        unset($value->CountryID);
-                        array_push($data,$value);
                     }
 
 
