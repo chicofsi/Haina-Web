@@ -1,5 +1,4 @@
  <?php
-
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -113,7 +112,7 @@ class NewsController extends Controller
             foreach ($news as $key => $value) {
                 $newsData[$key]=new NewsResource($value);
             }
-            
+
             if(!$newsData){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'News Doesn\'t Exist!','data'=> '']), 404);
             }
