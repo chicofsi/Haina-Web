@@ -1815,6 +1815,27 @@ class HotelDarmaController extends Controller
                         }
                     }
 
+                    
+                    $body = [
+                        'user_id' => Auth::id(),
+                        'pax_passport' => "ID",
+                        'country_id' => "ID",
+                        'check_in_date' => $request->check_in_date,
+                        'check_out_date' => $request->check_out_date
+                    ];
+    
+                    $booksession = HotelDarmaBookingSession::create($body);
+
+                    $roomreq_session = [
+                        'id_booking_session' => $booksession->id,
+                        'room_type' => 0,
+                        'is_request_child_bed' => 0,
+                        'child_num' => 0,
+                    ];
+
+                    $roomrequestdata = HotelDarmaBookingRoomReq::create($roomreq_session);
+
+
 
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $data]), 200);
