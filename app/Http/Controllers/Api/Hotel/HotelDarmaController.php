@@ -1518,7 +1518,7 @@ class HotelDarmaController extends Controller
 
             try{
                 $body = [
-                    'userID' => $user_id,
+                    'userID' => $request->user_id,
                     'accessToken' => $token,
                     'paxPassport' => $passport,
                     'countryID' => $country,
