@@ -7,6 +7,7 @@ use App\Models\News;
 use App\Models\NewsCategory;
 use App\Http\Resources\News as NewsResource;
 use App\Http\Resources\ValueMessage;
+use Illuminate\Support\Facades\Validator;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\TransferStats;
