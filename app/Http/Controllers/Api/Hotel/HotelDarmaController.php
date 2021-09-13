@@ -59,7 +59,7 @@ class HotelDarmaController extends Controller
         ]);
     }
 
-    public function login()
+    public function login($user_id)
     {
         $userid=$this->username;
         $token=date('Y-m-d').'T'.date('H:i:s');
@@ -98,10 +98,10 @@ class HotelDarmaController extends Controller
                 }
             }
             else{
-                $session=DarmawisataSession::where('id_user',Auth::user()->id)->delete();
+                $session=DarmawisataSession::where('id_user',$user_id)->delete();
                 $session=DarmawisataSession::create([
                     'access_token'=>$bodyresponse->accessToken,
-                    'id_user'=>Auth::user()->id
+                    'id_user'=>$user_id
                 ]);
                 return $bodyresponse->accessToken;
             }
@@ -110,14 +110,14 @@ class HotelDarmaController extends Controller
         }
     }
 
-    public function checkLoginUser()
+    public function checkLoginUser($user_id)
     {
-        $token=DarmawisataSession::where('id_user',Auth::id())->whereRaw(' created BETWEEN DATE_SUB(now() , INTERVAL 15 MINUTE) AND now()')->first();
+        $token=DarmawisataSession::where('id_user',$user_id)->whereRaw(' created BETWEEN DATE_SUB(now() , INTERVAL 15 MINUTE) AND now()')->first();
         if($token){
             return $token->access_token;
         }else{
-            DarmawisataSession::where('id_user',Auth::id())->delete();
-            return $this->login();
+            DarmawisataSession::where('id_user',$user_id)->delete();
+            return $this->login($user_id);
         }
     }
 
@@ -141,7 +141,7 @@ class HotelDarmaController extends Controller
 
     public function getCountry(Request $request){
         $userid=$this->username;
-        $token=$this->checkLoginUser();
+        $token=$this->checkLoginUser(Auth::id());
         $body=[
             'userID'=>$userid,
             'accessToken'=>$token
@@ -197,7 +197,7 @@ class HotelDarmaController extends Controller
 
     public function getPassport(Request $request){
         $userid=$this->username;
-        $token=$this->checkLoginUser();
+        $token=$this->checkLoginUser(Auth::id());
         $body=[
             'userID'=>$userid,
             'accessToken'=>$token
@@ -241,7 +241,7 @@ class HotelDarmaController extends Controller
 
     public function getCity(Request $request){
         $userid = $this->username;
-        $token = $this->checkLoginUser();
+        $token = $this->checkLoginUser(Auth::id());
         $country = $request->country_id;
         $cityfilter = $request->city_filter;
 
@@ -291,7 +291,7 @@ class HotelDarmaController extends Controller
 
     public function getAllCityCountry(Request $request){
         $userid=$this->username;
-        $token=$this->checkLoginUser();
+        $token=$this->checkLoginUser(Auth::id());
         $body=[
             'userID'=>$userid,
             'accessToken'=>$token
@@ -335,7 +335,7 @@ class HotelDarmaController extends Controller
 
     public function getImages($hotel_id){
         $userid=$this->username;
-        $token=$this->checkLoginUser();
+        $token=$this->checkLoginUser(Auth::id());
         
         $body = [
             'userID'=>$userid,
@@ -428,7 +428,7 @@ class HotelDarmaController extends Controller
             $this->deleteSession(Auth::id());
 
             $userid = $this->username;
-            $token = $this->checkLoginUser();
+            $token = $this->checkLoginUser(Auth::id());
             $passport = $request->pax_passport;
             $country = $request->country_id;
             $city = $request->city_id;
@@ -576,7 +576,7 @@ class HotelDarmaController extends Controller
             $this->deleteSession(Auth::id());
 
             $userid = $this->username;
-            $token = $this->checkLoginUser();
+            $token = $this->checkLoginUser(Auth::id());
             $room_request = [
                 'roomType' => "Single",
                 'isRequestChildBed' => false,
@@ -676,7 +676,7 @@ class HotelDarmaController extends Controller
             }
             else{
                 $userid=$this->username;
-                $token=$this->checkLoginUser();
+                $token=$this->checkLoginUser(Auth::id());
                 $passport = $bookingsession->pax_passport;
                 $country = $bookingsession->country_id;
                 //$city = $request->city_id ?? $bookingsession->city_id;
@@ -929,7 +929,7 @@ class HotelDarmaController extends Controller
             }
             else{
                 $userid=$this->username;
-                $token=$this->checkLoginUser();
+                $token=$this->checkLoginUser(Auth::id());
                 $passport = $bookingsession->pax_passport;
                 $country = $bookingsession->country_id;
                 $city = $bookingsession->city_id;
@@ -1232,7 +1232,7 @@ class HotelDarmaController extends Controller
         }
         else{
             $userid=$user_id;
-            $token=$this->checkLoginUser();
+            $token=$this->checkLoginUser(Auth::id());
             $passport = $bookingsession->pax_passport;
             $country = $bookingsession->country_id;
             $city = $bookingsession->city_id;
@@ -1420,7 +1420,7 @@ class HotelDarmaController extends Controller
         }
         else{
             $userid=$request->user_id;
-            $token=$this->checkLoginUser();
+            $token=$this->checkLoginUser(Auth::id());
             $passport = $bookingsession->pax_passport;
             $country = $bookingsession->country_id;
             $city = $bookingsession->city_id;
@@ -1781,7 +1781,7 @@ class HotelDarmaController extends Controller
 
     public function getBookingDetail(Request $request){
         $userid=$this->username;
-        $token=$this->checkLoginUser();
+        $token=$this->checkLoginUser(Auth::id());
 
         $booking = HotelDarmaBooking::where('reservation_no', $request->reservation_no)->first();
 
@@ -1900,7 +1900,7 @@ class HotelDarmaController extends Controller
             $this->deleteSession(Auth::id());
 
             $userid = $this->username;
-            $token = $this->checkLoginUser();
+            $token = $this->checkLoginUser(Auth::id());
             $room_request = [
                 'roomType' => "Single",
                 'isRequestChildBed' => false,
