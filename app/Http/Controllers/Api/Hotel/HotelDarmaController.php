@@ -1369,7 +1369,7 @@ class HotelDarmaController extends Controller
                     ]
                 );
                 
-                if($bodyresponse->status=="FAILED"){
+                if($bodyresponse->status=="FAILED" && $bodyresponse->respMessage != "ticket status is PROCESSED please check booking detail"){
                     if($bodyresponse->respMessage=="member authentication failed"){
                         return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
                     }else if($bodyresponse->respMessage=="wrong format request or null mandatory data"){
