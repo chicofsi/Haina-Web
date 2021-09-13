@@ -222,9 +222,9 @@ class MidtransController extends Controller
                     NotificationController::sendPush($transaction['user_id'],$value, "Payment successful", "Your Rp ".$hotel_amount." payment for booking at".$hotel_name." is successful", "Hotel", "finish");
                 }
 
-                //$book = new HotelDarmaController();
-                //$book->issueBooking();
-                HotelDarmaController::issueBooking();
+                $book = new HotelDarmaController();
+                $book->issueBooking();
+                //HotelDarmaController::issueBooking();
 
             }else if($transaction_status=='pending'){
                 $settlement_time=null;
