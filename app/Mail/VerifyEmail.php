@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class ConstructEmail1 extends Mailable
+class VerifyEmail extends Mailable
 {
     use Queueable, SerializesModels;
     public $data;
@@ -28,8 +28,8 @@ class ConstructEmail1 extends Mailable
      */
     public function build() {
       return $this->subject('Verify Email Address')
-                  ->from('info@hainaservice.com', 'Haina Security Team')
-                  ->view('email.template1')
+                  ->from('info@hainaservice.com', 'Haina App Team')
+                  ->view('mail.verify')
                   ->with([
                     'data' => $this->data
                   ]);

@@ -24,7 +24,7 @@ use App\Models\UserGoogle;
 use App\Models\EmailTokenModels;
 
 // for email configuration
-use App\Mail\ConstructEmail1;
+use App\Mail\VerifyEmail;
 use Illuminate\Support\Facades\Mail;
 
 // use Laravel's built-in function
@@ -217,7 +217,7 @@ class UserController extends Controller
                 'url_activation' => url('/email-verified?user='.$request->email.'&token='.$fix_token),
                 'full_name' => $request->fullname
               ];
-              $sendemail = Mail::to($request->email)->send(new ConstructEmail1($data));
+              $sendemail = Mail::to($request->email)->send(new VerifyEmail($data));
               return response()->json(new ValueMessage(['value'=>1,'message'=>'Register Success!','data'=> $success]),$this->successStatus);
             } catch (\Exception $e) {
               return response()->json(new ValueMessage(['value'=>0,'message'=>'Email failed to send!','data'=> $success]),$this->successStatus);
