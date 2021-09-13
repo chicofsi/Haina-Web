@@ -100,13 +100,15 @@ class NewsController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $news= News::with('category')->where('language',$request->lang);
+            $news=News::with('category')->where('language',$request->lang);
             if($request->has('id_news')){
-                $news= $news->where('id',$request->id_news)->get();
+                $news=$news->where('id',$request->id_news);
             }
             if($request->has('id_category')){
-                $news= $news->where('id_category',$request->id_category)->get();
+                $news=$news->where('id_category',$request->id_category);
             }
+
+            $news=$news->get();
 
             $newsData=null;
 
