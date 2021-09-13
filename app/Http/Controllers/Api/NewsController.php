@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\News;
 use App\Models\NewsCategory;
 use App\Http\Resources\News as NewsResource;
+use App\Http\Resources\NewsAPI as NewsAPIResource;
 use App\Http\Resources\ValueMessage;
 use Illuminate\Support\Facades\Validator;
 
@@ -66,7 +67,7 @@ class NewsController extends Controller
 		$newsData=null;
 
 		foreach($result->articles->results as $key => $value){
-			$newsData[$key] = new NewsResource($value);
+			$newsData[$key] = new NewsAPIResource($value);
 		}
 
         if(isset($result)){
