@@ -34,7 +34,8 @@ class InviteMail extends Mailable
      */
     public function build()
     {
-        return $this->from('info@hainaservice.com')
+        return $this->subject('Interview Invitation - '.$this->demo->sender)
+        ->from('info@hainaservice.com', 'Haina App Team')
                     ->view('mails.invite');
                     
                     /*
