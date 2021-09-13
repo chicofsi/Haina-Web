@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 namespace App\Http\Controllers\Api;
 
@@ -91,26 +91,37 @@ class NewsController extends Controller
     }
 
     public function getNews(Request $request){
-    	if($request->has('id_news')){
-    		$news= News::select('id','title','url','photo_url','id_category')->with('category')->where('id',$request->id_news)->get();
-    	}
-    	else if($request->has('id_category')){
-    		$news= News::select('id','title','url','photo_url','id_category')->with('category')->where('id_category',$request->id_category)->get();
-    	}else{
-    		$news= News::select('id','title','url','photo_url','id_category')->with('category')->get();
-    	}
 
-    	$newsData=null;
+        $validator = Validator::make($request->all(), [
+            'lang' => 'required'
+        ]);
 
-    	foreach ($news as $key => $value) {
-    		$newsData[$key]=new NewsResource($value);
-    	}
-    	if(!$newsData){
-    		return response()->json(new ValueMessage(['value'=>0,'message'=>'News Doesn\'t Exist!','data'=> '']), 404);
-    	}
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $news= News::with('category')->where('language',$request->lang);
+            if($request->has('id_news')){
+                $news= $news->where('id',$request->id_news)->get();
+            }
+            if($request->has('id_category')){
+                $news= $news->where('id_category',$request->id_category)->get();
+            }
 
-    	return response()->json(new ValueMessage(['value'=>1,'message'=>'Get News Success!','data'=> $newsData]), $this->successStatus);
+            $newsData=null;
 
+            foreach ($news as $key => $value) {
+                $newsData[$key]=new NewsResource($value);
+            }
+            if(!$newsData){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'News Doesn\'t Exist!','data'=> '']), 404);
+            }
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get News Success!','data'=> $newsData]), $this->successStatus);
+
+        }
+
+    	
     }
 
     public function getNewsCategory(){

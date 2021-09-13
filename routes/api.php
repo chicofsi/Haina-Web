@@ -366,7 +366,7 @@ Route::post('test/notification'  , [NotificationController::class, 'notifSend'])
 Route::get('news'  , [NewsController::class, 'index']);
 Route::get('news/category'  , [NewsController::class, 'getNewsCategory']);
 Route::get('news/get'  , [NewsController::class, 'getArticle']);
-//Route::post('news/get'  , [NewsController::class, 'getNews']);
+Route::post('news/get-article'  , [NewsController::class, 'getNews']);
 Route::post('currency'  , [CurrencyController::class, 'index']);
 Route::get('currency/list'  , [CurrencyController::class, 'getList']);
 Route::get('covid/jkt'  , [CovidController::class, 'index']);
