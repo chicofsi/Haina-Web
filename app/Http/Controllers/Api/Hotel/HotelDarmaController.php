@@ -1800,6 +1800,7 @@ class HotelDarmaController extends Controller
                         $city=City::where('id_darma',$value->cityID)->first();
                         if($city){
                             $value->City=$city->name;
+                            $value->id_city=$value->cityID;
                             $value->Type="hotels";
                             unset($value->countryID);
                             unset($value->cityID);
@@ -1809,6 +1810,7 @@ class HotelDarmaController extends Controller
                     foreach ($bodyresponsecity->cities as $key => $value) {
                         $value->Type="city";
                         $value->City="Indonesia";
+                        $value->id_city=$value->ID;
                         unset($value->CountryID);
                         array_push($data,$value);
                     }
