@@ -1462,7 +1462,7 @@ class HotelDarmaController extends Controller
                 $request = new Request();
                 $request->agent_os_ref = $valuepro->agent_os_ref;
                 $check_status = $this->getBookingDetail($request);
-                dd($check_status->voucherNo);
+                //dd($check_status);
 
 
                 if($check_status->voucherNo != null){
