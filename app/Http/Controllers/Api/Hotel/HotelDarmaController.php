@@ -1452,7 +1452,7 @@ class HotelDarmaController extends Controller
         if($booking){
             $user_id = Auth::id();
 
-            $unpaid = ['pending', 'process'];
+            $paid = ['success', 'process'];
             $cancel = ['cancel', 'expire'];
 
             //check and update status process
@@ -1470,13 +1470,28 @@ class HotelDarmaController extends Controller
                         'status' => 'success',
                         'reservation_no' => $check_status->voucherNo
                     ]);
+
+                    $token = [];
+                    $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $valuepro->user_id)->get();
+
+                    $hotel_name = HotelDarma::select('hotel_name')->where('id', $transaction->hotel_id)->first();
+                    $hotel_amount = number_format($transaction['total_price'], 2, ",", ".");
+
+                    foreach($usertoken as $key => $value){
+                        array_push($token, $value->name); 
+                    }
+
+                    foreach ($token as $key => $value) {
+
+                        NotificationController::sendPush($valuepro->user_id,$value, "Booking issued", "Your reservation for booking at".$hotel_name['hotel_name']." is issued", "Hotel", "finish");
+                    }
                 }
             }
 
             
             //masukan all booking ke  list
-            $paidtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->where('status', 'success')->orderBy('updated_at', 'DESC')->get();
-            $unpaidtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->whereIn('status', $unpaid)->orderBy('updated_at', 'DESC')->get();
+            $paidtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->whereIn('status', $paid)->orderBy('updated_at', 'DESC')->get();
+            $unpaidtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->where('status', 'pending')->orderBy('updated_at', 'DESC')->get();
             $canceltrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->whereIn('status', $cancel)->orderBy('updated_at', 'DESC')->get();
 
             foreach($paidtrans as $key => $value){
@@ -1522,87 +1537,44 @@ class HotelDarmaController extends Controller
                 //$value->special_request = "obj";
             }
             foreach($unpaidtrans as $key => $value){
-                if($value->status = 'pending'){
+                $total_guest = HotelDarmaPaxesList::where('booking_id', $value->id)->count();
+                $value->total_guests = $total_guest;
 
-                    $bookingpaxes = HotelDarmaBookingSession::where('user_id', Auth::id())->first();
-                    $roomreq = HotelDarmaBookingRoomReq::where('id_booking_session', $bookingpaxes['id'])->first();
-                    $total_guest = HotelDarmaBookingPaxes::where('id_room_req', $roomreq['id'])->count();
-                    $value->total_guests = $total_guest;
+                $total_night = strtotime($value->check_out) - strtotime($value->check_in);
+                $value->total_nights = $total_night / 86400;
 
-                    $total_night = strtotime($value->check_out) - strtotime($value->check_in);
-                    $value->total_nights = $total_night / 86400;
+                $payment_method = HotelDarmaPayment::where('booking_id', $value->id)->first();
+                $payment = PaymentMethod::where('id',$payment_method['payment_method_id'])->with('category')->first();
+                $value->payment_method = $payment;
 
-                    $payment_method = HotelDarmaPayment::where('booking_id', $value->id)->first();
-                    $payment = PaymentMethod::where('id',$payment_method['payment_method_id'])->with('category')->first();
-                    $value->payment_method = $payment;
+                $images = HotelDarmaImage::where('hotel_id', $value->hotel_id)->get();
+                $value->images = $images;
 
-                    $images = HotelDarmaImage::where('hotel_id', $value->hotel_id)->get();
-                    $value->images = $images;
+                $hotel = HotelDarma::where('id', $value->hotel_id)->first();
+                $special_request = [];
+                
+                if($hotel['request_array'] == true){
+                    $request_id = explode(',', $value->requests);
+                    
 
-                    $hotel = HotelDarma::where('id', $value->hotel_id)->first();
-                    $special_request = [];
-                    if($hotel['request_array'] == true){
-                        $request_id = explode(',', $value->requests);
-                        
+                    foreach($request_id as $key_req => $value_req){
 
-                        foreach($request_id as $key_req => $value_req){
+                        $getDesc = HotelDarmaRequestList::where('id', $value_req)->where('hotel_id', $hotel['id'])->first();
 
-                            $getDesc = HotelDarmaRequestList::where('id', $value_req)->where('hotel_id', $hotel['id'])->first();
-
-                            $new_request = (object) [
-                                "ID" => $getDesc['id'] ?? '0',
-                                "description" => $getDesc['description'] ?? $value_req
-                            ];
-                            
-                            array_push($special_request, $new_request);
-                        }
-                        
-                        //dd($special_request);
-                        $value->special_request = $special_request;
+                        $new_request = (object) [
+                            "ID" => $getDesc['id'] ?? '0',
+                            "description" => $getDesc['description'] ?? $value_req
+                        ];
+                        array_push($special_request, $new_request);
                     }
-                    else{
-                        $value->special_request = $value->requests;
-                    }
+                    
+                    //dd($special_request);
+                    $value->special_request = $special_request;
                 }
                 else{
-                    $total_guest = HotelDarmaPaxesList::where('booking_id', $value->id)->count();
-                    $value->total_guests = $total_guest;
-
-                    $total_night = strtotime($value->check_out) - strtotime($value->check_in);
-                    $value->total_nights = $total_night / 86400;
-
-                    $payment_method = HotelDarmaPayment::where('booking_id', $value->id)->first();
-                    $payment = PaymentMethod::where('id',$payment_method['payment_method_id'])->with('category')->first();
-                    $value->payment_method = $payment;
-
-                    $images = HotelDarmaImage::where('hotel_id', $value->hotel_id)->get();
-                    $value->images = $images;
-
-                    $hotel = HotelDarma::where('id', $value->hotel_id)->first();
-                    $special_request = [];
-                    
-                    if($hotel['request_array'] == true){
-                        $request_id = explode(',', $value->requests);
-                        
-
-                        foreach($request_id as $key_req => $value_req){
-
-                            $getDesc = HotelDarmaRequestList::where('id', $value_req)->where('hotel_id', $hotel['id'])->first();
-
-                            $new_request = (object) [
-                                "ID" => $getDesc['id'] ?? '0',
-                                "description" => $getDesc['description'] ?? $value_req
-                            ];
-                            array_push($special_request, $new_request);
-                        }
-                        
-                        //dd($special_request);
-                        $value->special_request = $special_request;
-                    }
-                    else{
-                        $value->special_request = $value->requests;
-                    }
+                    $value->special_request = $value->requests;
                 }
+                
             }
             foreach($canceltrans as $key => $value){
 
