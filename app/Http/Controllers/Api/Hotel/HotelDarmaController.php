@@ -1468,7 +1468,7 @@ class HotelDarmaController extends Controller
                 if(isset($check_status->voucherNo)){
                     $update_booking = HotelDarmaBooking::where('id', $valuepro->id)->update([
                         'status' => 'success',
-                        'reservation_no' => $check_status->data->voucherNo
+                        'reservation_no' => $check_status->voucherNo
                     ]);
                 }
             }
