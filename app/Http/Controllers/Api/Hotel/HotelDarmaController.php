@@ -1459,13 +1459,16 @@ class HotelDarmaController extends Controller
             $processtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->where('status', 'process')->orderBy('updated_at', 'DESC')->get();
 
             foreach($processtrans as $keypro => $valuepro){
+                $request = new Request();
                 $request->agent_os_ref = $valuepro->agent_os_ref;
-                $check_status = $this->getBookingDetail($request->agent_os_ref);
+                $check_status = $this->getBookingDetail($request);
+                //dd($check_status);
+                //ErrorException: Trying to get property 'voucherNo' of non-object
 
-                if($check_status->data->voucherNo != null){
+                if(isset($check_status->voucherNo)){
                     $update_booking = HotelDarmaBooking::where('id', $valuepro->id)->update([
                         'status' => 'success',
-                        'reservation_no' => $check_status->data->voucherNo
+                        'reservation_no' => $check_status->voucherNo
                     ]);
                 }
             }
@@ -1747,16 +1750,18 @@ class HotelDarmaController extends Controller
             //return $response;
             if($bodyresponse->status=="FAILED"){
                 if($bodyresponse->respMessage=="member authentication failed"){
-                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+                    return $bodyresponse->respMessage;
+                    //return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
                 }
             }
             else{
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Booking Detail Success!','data'=> $bodyresponse->bookingDetail]), 200);
+                return $bodyresponse->bookingDetail;
+                //return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Booking Detail Success!','data'=> $bodyresponse->bookingDetail]), 200);
             }
         }catch(RequestException $e) {
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
         }
-        return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);        
+        //return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);        
     }
 
     public function testImage(Request $request){
