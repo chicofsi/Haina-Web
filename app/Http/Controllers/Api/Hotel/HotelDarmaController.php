@@ -1751,7 +1751,7 @@ class HotelDarmaController extends Controller
             }
             else{
                 $payment_data = HotelDarmaPayment::where('booking_id', $booking['id'])->first();
-                $payment = PaymentMethod::where('id',$payment_data['id_payment_method'])->with('category')->first();
+                $payment = PaymentMethod::where('id',$payment_data['payment_method_id'])->with('category')->first();
                 $cancel = json_decode($this->cancelMidtrans($booking, $payment));
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $cancel]), 200);
