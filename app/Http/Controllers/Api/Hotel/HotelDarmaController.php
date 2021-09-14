@@ -1750,7 +1750,8 @@ class HotelDarmaController extends Controller
                 return response()->json(new ValueMessage(['value'=>0, 'message'=>'Unauthorized!', 'data'=> '']), 401);
             }
             else{
-                $payment = HotelDarmaPayment::where('booking_id', $booking['id'])->first();
+                $payment_data = HotelDarmaPayment::where('booking_id', $booking['id'])->first();
+                $payment = PaymentMethod::where('id',$payment_data['id_payment_method'])->with('category')->first();
                 $cancel = json_decode($this->cancelMidtrans($booking, $payment));
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $cancel]), 200);
