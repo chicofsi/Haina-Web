@@ -1538,7 +1538,7 @@ class HotelDarmaController extends Controller
                     }
                 }
                 else{
-                    
+
                 }
             }
             foreach($canceltrans as $key => $value){
@@ -1921,6 +1921,8 @@ class HotelDarmaController extends Controller
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
                 }
                 else{
+                    unset($booking->users->firebase_uid);
+                    unset($booking->users->expected_salary);
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Booking Data Successful!','data'=> $booking]), 401);
                 }
 
