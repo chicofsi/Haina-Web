@@ -21,6 +21,8 @@ use Illuminate\Http\Request;
 
 // email verified controller
 use App\Http\Controllers\Api\EmailVerifiedController;
+// reset password controller
+use App\Http\Controllers\Api\ResetPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +45,10 @@ Route::get('/', function () {
 
 // verified email
 Route::get('/email-verified', [EmailVerifiedController::class, 'verified_get']);
+
+// reset password
+Route::get('/reset-password', [ResetPasswordController::class, '_get']);
+Route::post('/reset-password', [ResetPasswordController::class, '_post']);
 
 Route::get('/login', [LoginController::class, 'getLogin'])->middleware('guest')->name('login');
 Route::post('/login', [LoginController::class, 'postLogin']);
