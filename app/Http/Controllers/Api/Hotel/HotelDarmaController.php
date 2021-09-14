@@ -1459,8 +1459,9 @@ class HotelDarmaController extends Controller
             $processtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->where('status', 'process')->orderBy('updated_at', 'DESC')->get();
 
             foreach($processtrans as $keypro => $valuepro){
+                $request = new Request();
                 $request->agent_os_ref = $valuepro->agent_os_ref;
-                $check_status = $this->getBookingDetail($request->agent_os_ref);
+                $check_status = $this->getBookingDetail($request);
 
                 if($check_status->data->voucherNo != null){
                     $update_booking = HotelDarmaBooking::where('id', $valuepro->id)->update([
