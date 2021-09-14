@@ -1100,6 +1100,30 @@ class HotelDarmaController extends Controller
 		return $make_call;
 	}
 
+    public function cancelMidtrans($transaction, $payment)
+    {
+         
+
+        $username="SB-Mid-server-uUu-OOYw1hyxA9QH8wAbtDRl";
+        $url="https://api.sandbox.midtrans.com/v2/".$transaction->agent_os_ref."/cancel";
+        $data_array =  array(
+            "payment_type"          => $payment->category->url,
+            "bank_transfer"         => array(
+                "bank"              => $payment->name
+            ),
+            "custom_field1"        => "HotelDarma",
+            "transaction_details"   => array(
+                "order_id"          => $transaction->agent_os_ref,
+                "gross_amount"      => $transaction->total_price
+            ),
+        );
+
+        $header="Authorization: Basic ".base64_encode($username.":");
+        // return json_encode($data_array)."BLABLABLAB".$header."davdavd".$username.":";
+        $make_call = $this->callAPI($url, json_encode($data_array),$header);
+        return $make_call;
+    }
+
     //callAPI
     function callAPI( $url, $data, $header = false){
 		$curl = curl_init();
@@ -1163,7 +1187,7 @@ class HotelDarmaController extends Controller
                     'total_price' => $room->room_price,
                     'requests' => $request->special_request,
                     'breakfast' => $room->breakfast,
-                    'status' => 'UNPAID',
+                    'status' => 'pending',
                     'cancelation_policy' => $bookingsession->cancel_policy
                 ];
 
@@ -1609,9 +1633,12 @@ class HotelDarmaController extends Controller
         if($booking){
             $user_id = Auth::id();
 
-            $paidtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->where('status', 'PAID')->orderBy('updated_at', 'DESC')->get();
-            $unpaidtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->where('status', 'UNPAID')->orderBy('updated_at', 'DESC')->get();
-            $canceltrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->where('status', 'CANCELLED')->orderBy('updated_at', 'DESC')->get();
+            $unpaid = ['pending', 'process'];
+            $cancel = ['cancel', 'expire'];
+
+            $paidtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->where('status', 'success')->orderBy('updated_at', 'DESC')->get();
+            $unpaidtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->whereIn('status', $unpaid)->orderBy('updated_at', 'DESC')->get();
+            $canceltrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->whereIn('status', $cancel)->orderBy('updated_at', 'DESC')->get();
 
             foreach($paidtrans as $key => $value){
                 $total_guest = HotelDarmaPaxesList::where('booking_id', $value->id)->count();
@@ -1719,11 +1746,10 @@ class HotelDarmaController extends Controller
         $booking = HotelDarmaBooking::where('id', $request->booking_id)->first();
 
         if($booking){
-            $cancelbooking = HotelDarmaBooking::where('id', $request->booking_id)->update([
-                'status' => 'CANCELLED'
-            ]);
+            $payment = HotelDarmaPayment::where('booking_id', $booking['id'])->first();
+            $cancel = json_decode($this->cancelMidtrans($booking, $payment));
 
-            return response()->json(new ValueMessage(['value'=>1, 'message'=>'Booking cancelled!', 'data'=> $booking]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $cancel]), 200);
         }
         else{
             return response()->json(new ValueMessage(['value'=>0, 'message'=>'Booking Data Not Found!', 'data'=> '']), 404);

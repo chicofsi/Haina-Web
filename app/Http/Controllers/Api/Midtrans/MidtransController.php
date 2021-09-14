@@ -216,7 +216,7 @@ class MidtransController extends Controller
             $status="";
             if($transaction_status=='settlement'){
                 $settlement_time=date("Y-m-d H:i:s",strtotime($request->settlement_time));
-                $status='PAID';
+                $status='process';
                 foreach ($token as $key => $value) {
 
                     NotificationController::sendPush($transaction['user_id'],$value, "Payment successful ".$hotel_name, "Your Rp ".$hotel_amount." payment for booking at".$hotel_name." is successful", "Hotel", "finish");
@@ -228,17 +228,17 @@ class MidtransController extends Controller
 
             }else if($transaction_status=='pending'){
                 $settlement_time=null;
-                $status='UNPAID';
+                $status='pending';
                 foreach ($token as $key => $value) {
                     
                     NotificationController::sendPush($transaction['user_id'],$value, "Waiting for payment", "There is a pending payment for booking at ".$hotel_name.". Please finish payment soon.", "Hotel", "unfinish");
                 }
             }else if($transaction_status=='expire'){
                 $settlement_time=null;
-                $status='CANCELLED';
+                $status='expire';
             }else if($transaction_status=='cancel'){
                 $settlement_time=null;
-                $status='CANCELLED';
+                $status='cancel';
                 //NotificationController::sendPush($transaction['id_user'],$valuw, "Booking cancelled", "Your booking for ".$hotel_name." has been cancelled.", "Hotel", "cancel");
             }
 
