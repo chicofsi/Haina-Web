@@ -227,6 +227,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	
 			Route::post('/booking_list', [HotelDarmaController::class, 'getBookingList']);
 			Route::post('/booking_detail', [HotelDarmaController::class, 'getBookingDetail']);
+			Route::post('/booking_data', [HotelDarmaController::class, 'bookingData']);
 	
 			Route::post('/cancel', [HotelDarmaController::class, 'cancel']);
 	

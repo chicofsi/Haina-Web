@@ -36,4 +36,8 @@ class HotelDarmaBooking extends Model
     public function request(){
         return $this->belongsToMany(HotelDarmaRequestList::class, 'hotel_darma_requests', 'booking_id', 'request_id');
     }
+
+    public function paxes(){
+        return $this->hasMany('App\Models\HotelDarmaPaxesList', 'booking_id');
+    }
 }
