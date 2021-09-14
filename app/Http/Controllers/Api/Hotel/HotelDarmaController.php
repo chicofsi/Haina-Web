@@ -1786,15 +1786,30 @@ class HotelDarmaController extends Controller
         $userid=$this->username;
         $token=$this->checkLoginUser(Auth::id());
 
-        $booking = HotelDarmaBooking::where('reservation_no', $request->reservation_no)->first();
+        if($request->reservation_no){
+            $booking = HotelDarmaBooking::where('reservation_no', $request->reservation_no)->first();
 
-        $body = [
-            'userID'=>$userid,
-            'accessToken'=>$token,
-            'osRefNo' => $booking['os_ref_no'],
-            'reservationNo' => $request->reservation_no,
-            'agentOsRef' => $booking['agent_os_ref']
-        ];
+            $body = [
+                'userID'=>$userid,
+                'accessToken'=>$token,
+                'osRefNo' => $booking['os_ref_no'],
+                'reservationNo' => $request->reservation_no,
+                'agentOsRef' => $booking['agent_os_ref']
+            ];
+        }
+        else{
+            $booking = HotelDarmaBooking::where('agent_os_ref', $request->agent_os_ref)->first();
+
+            $body = [
+                'userID'=>$userid,
+                'accessToken'=>$token,
+                'osRefNo' => $booking['os_ref_no'],
+                'reservationNo' => $booking['reservation_no'],
+                'agentOsRef' => $request->agent_os_ref
+            ];
+        }
+
+        
 
         try {
             $response=$this->client->request(
