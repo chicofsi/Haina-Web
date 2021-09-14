@@ -1102,7 +1102,7 @@ class HotelDarmaController extends Controller
 
     public function cancelMidtrans($transaction, $payment)
     {
-         
+         dd($transaction);
 
         $username="SB-Mid-server-uUu-OOYw1hyxA9QH8wAbtDRl";
         $url="https://api.sandbox.midtrans.com/v2/".$transaction->agent_os_ref."/cancel";
