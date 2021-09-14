@@ -1413,17 +1413,24 @@ class HotelDarmaController extends Controller
 
                     $bookingid = HotelDarmaBooking::where('agent_os_ref',$bodyresponse->agentOsRef)->first();
 
-                    foreach($getpaxes as $key => $value){
-                        $booking_paxes_data = [
-                            'booking_id' => $bookingid['id'],
-                            'title' => $value->title,
-                            'first_name' => $value->first_name,
-                            'last_name' => $value->last_name
-                        ];
+                    
+                    $check_dup_paxes = HotelDarmaPaxesList::where('booking_id', $bookingid['id'])->get();
 
-                        $booking_paxes = HotelDarmaPaxesList::create($booking_paxes_data);
+                    if(!$check_dup_paxes){
+                        foreach($getpaxes as $key => $value){
+                            $booking_paxes_data = [
+                                'booking_id' => $bookingid['id'],
+                                'title' => $value->title,
+                                'first_name' => $value->first_name,
+                                'last_name' => $value->last_name
+                            ];
+
+                            $booking_paxes = HotelDarmaPaxesList::create($booking_paxes_data);
+                        }
+                        
                     }
-
+                        
+                
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
                 }
 
@@ -1448,6 +1455,23 @@ class HotelDarmaController extends Controller
             $unpaid = ['pending', 'process'];
             $cancel = ['cancel', 'expire'];
 
+            //check and update status process
+            $processtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->where('status', 'process')->orderBy('updated_at', 'DESC')->get();
+
+            foreach($processtrans as $keypro => $valuepro){
+                $request->agent_os_ref = $valuepro->agent_os_ref;
+                $check_status = $this->getBookingDetail($request->agent_os_ref);
+
+                if($check_status->data->voucherNo != null){
+                    $update_booking = HotelDarmaBooking::where('id', $valuepro->id)->update([
+                        'status' => 'success',
+                        'reservation_no' => $check_status->data->voucherNo
+                    ]);
+                }
+            }
+
+            
+            //masukan all booking ke  list
             $paidtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->where('status', 'success')->orderBy('updated_at', 'DESC')->get();
             $unpaidtrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->whereIn('status', $unpaid)->orderBy('updated_at', 'DESC')->get();
             $canceltrans = HotelDarmaBooking::where('user_id', $user_id)->with('hotel', 'payment', 'room')->whereIn('status', $cancel)->orderBy('updated_at', 'DESC')->get();
