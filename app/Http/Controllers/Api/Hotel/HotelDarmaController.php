@@ -1462,9 +1462,10 @@ class HotelDarmaController extends Controller
                 $request = new Request();
                 $request->agent_os_ref = $valuepro->agent_os_ref;
                 $check_status = $this->getBookingDetail($request);
+                dd($check_status);
+                //ErrorException: Trying to get property 'voucherNo' of non-object
 
-
-                if($check_status->voucherNo){
+                if($check_status->voucherNo != null){
                     $update_booking = HotelDarmaBooking::where('id', $valuepro->id)->update([
                         'status' => 'success',
                         'reservation_no' => $check_status->data->voucherNo
