@@ -1462,7 +1462,7 @@ class HotelDarmaController extends Controller
                 $request = new Request();
                 $request->agent_os_ref = $valuepro->agent_os_ref;
                 $check_status = $this->getBookingDetail($request);
-                dd($check_status);
+                dd($check_status->data);
                 if($check_status->data->voucherNo != null){
                     $update_booking = HotelDarmaBooking::where('id', $valuepro->id)->update([
                         'status' => 'success',
