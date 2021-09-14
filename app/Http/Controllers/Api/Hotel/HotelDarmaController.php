@@ -1462,9 +1462,8 @@ class HotelDarmaController extends Controller
                 $request = new Request();
                 $request->agent_os_ref = $valuepro->agent_os_ref;
                 $check_status = $this->getBookingDetail($request);
-                dd($check_status);
+                //dd($check_status);
 
-                
 
                 if($check_status->data->voucherNo != null){
                     $update_booking = HotelDarmaBooking::where('id', $valuepro->id)->update([
@@ -1751,16 +1750,18 @@ class HotelDarmaController extends Controller
             //return $response;
             if($bodyresponse->status=="FAILED"){
                 if($bodyresponse->respMessage=="member authentication failed"){
-                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
+                    return $bodyresponse->respMessage;
+                    //return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
                 }
             }
             else{
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Booking Detail Success!','data'=> $bodyresponse->bookingDetail]), 200);
+                return $bodyresponse->bookingDetail;
+                //return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Booking Detail Success!','data'=> $bodyresponse->bookingDetail]), 200);
             }
         }catch(RequestException $e) {
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
         }
-        return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);        
+        //return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);        
     }
 
     public function testImage(Request $request){
