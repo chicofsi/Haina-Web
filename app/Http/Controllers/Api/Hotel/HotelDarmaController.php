@@ -1232,7 +1232,7 @@ class HotelDarmaController extends Controller
         }
         else{
             $userid=$this->username;
-            $token=$this->checkLoginUser(Auth::id());
+            $token=$this->checkLoginUser($user_id);
             $passport = $bookingsession->pax_passport;
             $country = $bookingsession->country_id;
             $city = $bookingsession->city_id;
