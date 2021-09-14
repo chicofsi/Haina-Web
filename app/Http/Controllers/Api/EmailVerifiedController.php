@@ -9,6 +9,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Api\Response\ErrorController;
 use App\Http\Controllers\Api\Response\SuccessController;
 
+// for email configuration
+use App\Mail\VerifyEmail;
+use Illuminate\Support\Facades\Mail;
+
 // use Models
 use App\Models\EmailTokenModels;
 use App\Models\FixUsersModels;
@@ -52,6 +56,61 @@ class EmailVerifiedController extends Controller {
                               'updated_at' => Carbon::now()
                             ]);
     return (isset($update) && $update == '1') ? response()->json($this->SuccessController->success_201('your email has been verified', '')) : response()->json($this->ErrorController->error_500('an error occurred while verifying your email. contact administrator to fix this problem'));
+  }
+
+  public function resend_verified_get() {
+    if(!isset($_GET['user']) ||
+       !isset($_GET['name']) ||
+       empty($_GET['user']) ||
+       empty($_GET['name']))
+    return response()->json($this->ErrorController->error_400('incomplete parameters'));
+    // inisialisasi
+    $email_user = htmlentities(addslashes($_GET['user']));
+    $fullname = htmlentities(addslashes($_GET['name']));
+    // chek
+    $check = FixUsersModels::where('email', $email_user);
+    if ($check->get()->count() < 1) return response()->json($this->ErrorController->error_404('email is not registered in our system'));
+    try {
+      // save to email_tokens
+      // create ids
+      $ids = $this->generate_random_string(64);
+      // token
+      $fix_token = $this->generate_random_string(64);
+      // current time
+      $now = date('Y-m-d h:i:s');
+      // set valid_until
+      $valid_until = date('Y-m-d h:i:s', strtotime('+1 hours', strtotime($now)));
+      // save
+      $create = EmailTokenModels::create([
+        'ids' => $ids,
+        'email' => $email_user,
+        'token' => $fix_token,
+        'valid_until' => $valid_until,
+        'created_at' => $now,
+        'updated_at' => $now,
+        'deleted_at' => null
+      ]);
+      $data = [
+        'email_destination' => $email_user,
+        'fix_token' => $fix_token,
+        'url_activation' => url('/email-verified?user='.$email_user.'&token='.$fix_token),
+        'full_name' => $fullname
+      ];
+      $sendemail = Mail::to($email_user)->send(new VerifyEmail($data));
+      return response()->json($this->SuccessController->success_201('Resend email verified succes!', ''));
+    } catch (\Exception $e) {
+      return response()->json($this->ErrorController->error_404('Email failed to send!'));
+    }
+  }
+
+  private function generate_random_string($length) {
+    $characters = '0123456789qwertyuiopasdfghjklzxcvbnm';
+    $characters_length = strlen($characters);
+    $random_string = '';
+    for ($i = 0; $i < $length; $i++) {
+        $random_string .= $characters[rand(0, $characters_length - 1)];
+    }
+    return $random_string;
   }
 
 }

@@ -29,7 +29,7 @@ class VerifyEmail extends Mailable
     public function build() {
       return $this->subject('Verify Email Address')
                   ->from('info@hainaservice.com', 'Haina App Team')
-                  ->view('mail.verify')
+                  ->view('mails.verify')
                   ->with([
                     'data' => $this->data
                   ]);

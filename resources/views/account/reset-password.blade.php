@@ -8,21 +8,21 @@
   <title>Reset Password</title>
 
   <!-- favicon -->
-  <link rel="shortcut icon" href="{{ url('/vendor/general') }}/img/haina-square.PNG" />
-  <link rel="apple-touch-icon" href="{{ url('/vendor/general') }}/img/haina-square.PNG" />
-  <link rel="apple-touch-icon" sizes="72x72" href="{{ url('/vendor/general') }}/img/haina-square.PNG" />
-  <link rel="apple-touch-icon" sizes="114x114" href="{{ url('/vendor/general') }}/img/haina-square.PNG" />
+  <link rel="shortcut icon" href="vendor/general/img/haina-square.PNG" />
+  <link rel="apple-touch-icon" href="vendor/general/img/haina-square.PNG" />
+  <link rel="apple-touch-icon" sizes="72x72" href="vendor/general/img/haina-square.PNG" />
+  <link rel="apple-touch-icon" sizes="114x114" href="vendor/general/img/haina-square.PNG" />
 
   <!-- General CSS Files -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 
   <!-- CSS Libraries -->
-  <link rel="stylesheet" href="{{ url('/vendor/stisla-master') }}/node_modules/bootstrap-social/bootstrap-social.css">
+  <link rel="stylesheet" href="vendor/stisla-master/node_modules/bootstrap-social/bootstrap-social.css">
 
   <!-- Template CSS -->
-  <link rel="stylesheet" href="{{ url('/vendor/stisla-master') }}/assets/css/style.css">
-  <link rel="stylesheet" href="{{ url('/vendor/stisla-master') }}/assets/css/components.css">
+  <link rel="stylesheet" href="vendor/stisla-master/assets/css/style.css">
+  <link rel="stylesheet" href="vendor/stisla-master/assets/css/components.css">
 </head>
 
 <body> <?php // style="background-color:#d5eaf1" ?>
@@ -61,7 +61,6 @@
                       Old password is required
                     </div>
                   </div>
-                  <hr>
                   <div class="form-group">
                     <label for="new_password">New Password</label>
                     <input type="password" class="form-control" name="new_password" tabindex="1" required id="new_password"

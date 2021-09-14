@@ -45,6 +45,7 @@ Route::get('/', function () {
 
 // verified email
 Route::get('/email-verified', [EmailVerifiedController::class, 'verified_get']);
+Route::get('/resend-verified-email', [EmailVerifiedController::class, 'resend_verified_get']);
 
 // reset password
 Route::get('/reset-password', [ResetPasswordController::class, '_get']);
