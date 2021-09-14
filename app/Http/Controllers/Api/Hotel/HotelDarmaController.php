@@ -1102,7 +1102,7 @@ class HotelDarmaController extends Controller
 
     public function cancelMidtrans($transaction, $payment)
     {
-         dd($transaction);
+        //dd($transaction);
 
         $username="SB-Mid-server-uUu-OOYw1hyxA9QH8wAbtDRl";
         $url="https://api.sandbox.midtrans.com/v2/".$transaction->agent_os_ref."/cancel";
@@ -1746,7 +1746,7 @@ class HotelDarmaController extends Controller
         $booking = HotelDarmaBooking::where('id', $request->booking_id)->first();
 
         if($booking){
-            if($booking['user_id' != Auth::id()]){
+            if($booking['user_id'] != Auth::id()){
                 return response()->json(new ValueMessage(['value'=>0, 'message'=>'Unauthorized!', 'data'=> '']), 401);
             }
             else{
