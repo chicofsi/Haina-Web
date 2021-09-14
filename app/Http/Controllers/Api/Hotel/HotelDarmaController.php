@@ -1538,7 +1538,43 @@ class HotelDarmaController extends Controller
                     }
                 }
                 else{
+                    $total_guest = HotelDarmaPaxesList::where('booking_id', $value->id)->count();
+                    $value->total_guests = $total_guest;
 
+                    $total_night = strtotime($value->check_out) - strtotime($value->check_in);
+                    $value->total_nights = $total_night / 86400;
+
+                    $payment_method = HotelDarmaPayment::where('booking_id', $value->id)->first();
+                    $payment = PaymentMethod::where('id',$payment_method['payment_method_id'])->with('category')->first();
+                    $value->payment_method = $payment;
+
+                    $images = HotelDarmaImage::where('hotel_id', $value->hotel_id)->get();
+                    $value->images = $images;
+
+                    $hotel = HotelDarma::where('id', $value->hotel_id)->first();
+                    $special_request = [];
+                    
+                    if($hotel['request_array'] == true){
+                        $request_id = explode(',', $value->requests);
+                        
+
+                        foreach($request_id as $key_req => $value_req){
+
+                            $getDesc = HotelDarmaRequestList::where('id', $value_req)->where('hotel_id', $hotel['id'])->first();
+
+                            $new_request = (object) [
+                                "ID" => $getDesc['id'] ?? '0',
+                                "description" => $getDesc['description'] ?? $value_req
+                            ];
+                            array_push($special_request, $new_request);
+                        }
+                        
+                        //dd($special_request);
+                        $value->special_request = $special_request;
+                    }
+                    else{
+                        $value->special_request = $value->requests;
+                    }
                 }
             }
             foreach($canceltrans as $key => $value){
