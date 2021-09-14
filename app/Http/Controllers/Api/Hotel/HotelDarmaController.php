@@ -544,7 +544,7 @@ class HotelDarmaController extends Controller
             catch(RequestException $e){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
             }
-            //return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
         }
            
     }
@@ -655,7 +655,7 @@ class HotelDarmaController extends Controller
             }catch(RequestException $e) {
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
             }
-            //return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
 
 
         }
@@ -904,7 +904,7 @@ class HotelDarmaController extends Controller
                 }catch(RequestException $e) {
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
                 }
-                //return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
 
             }
         }
@@ -1069,7 +1069,7 @@ class HotelDarmaController extends Controller
                 catch(RequestException $e) {
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
                 }
-                //return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
             }
 
         }
@@ -1441,7 +1441,7 @@ class HotelDarmaController extends Controller
                 }
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
             }
-            //return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
         }
 
     }
@@ -1733,7 +1733,7 @@ class HotelDarmaController extends Controller
         }catch(RequestException $e) {
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
         }
-        //return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);        
+        return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);        
     }
 
     public function testImage(Request $request){
