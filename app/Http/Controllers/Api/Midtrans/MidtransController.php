@@ -219,7 +219,7 @@ class MidtransController extends Controller
                 $status='process';
                 foreach ($token as $key => $value) {
 
-                    NotificationController::sendPush($transaction['user_id'],$value, "Payment successful ".$hotel_name, "Your Rp ".$hotel_amount." payment for booking at".$hotel_name." is successful", "Hotel", "finish");
+                    NotificationController::sendPush($transaction['user_id'],$value, "Payment successful ", "Your Rp ".$hotel_amount." payment for booking at".$hotel_name['hotel_name']." is successful", "Hotel", "finish");
                 }
 
                 $book = new HotelDarmaController();
@@ -231,7 +231,7 @@ class MidtransController extends Controller
                 $status='pending';
                 foreach ($token as $key => $value) {
                     
-                    NotificationController::sendPush($transaction['user_id'],$value, "Waiting for payment", "There is a pending payment for booking at ".$hotel_name.". Please finish payment soon.", "Hotel", "unfinish");
+                    NotificationController::sendPush($transaction['user_id'],$value, "Waiting for payment", "There is a pending payment for booking at ".$hotel_name['hotel_name'].". Please finish payment soon.", "Hotel", "unfinish");
                 }
             }else if($transaction_status=='expire'){
                 $settlement_time=null;
@@ -239,7 +239,7 @@ class MidtransController extends Controller
             }else if($transaction_status=='cancel'){
                 $settlement_time=null;
                 $status='cancel';
-                //NotificationController::sendPush($transaction['id_user'],$valuw, "Booking cancelled", "Your booking for ".$hotel_name." has been cancelled.", "Hotel", "cancel");
+                NotificationController::sendPush($transaction['id_user'],$valuw, "Booking cancelled", "Your booking for ".$hotel_name['hotel_name']." has been cancelled.", "Hotel", "cancel");
             }
 
             $hotelbooking=HotelDarmaBooking::where('agent_os_ref',$order_id)->update(['status'=>$status]);
