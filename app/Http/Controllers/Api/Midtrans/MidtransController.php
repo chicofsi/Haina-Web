@@ -219,7 +219,7 @@ class MidtransController extends Controller
                 $status='PAID';
                 foreach ($token as $key => $value) {
 
-                    NotificationController::sendPush($transaction['user_id'],$value, "Payment successful", "Your Rp ".$hotel_amount." payment for booking at".$hotel_name." is successful", "Hotel", "finish");
+                    NotificationController::sendPush($transaction['user_id'],$value, "Payment successful ".$hotel_name, "Your Rp ".$hotel_amount." payment for booking at".$hotel_name." is successful", "Hotel", "finish");
                 }
 
                 $book = new HotelDarmaController();
@@ -231,7 +231,7 @@ class MidtransController extends Controller
                 $status='UNPAID';
                 foreach ($token as $key => $value) {
                     
-                    NotificationController::sendPush($transaction['user_id'],$value, "Waiting for payment", "There is a pending payment for booking at ".$hotel_name.". Please finish payment in 24 hours", "Hotel", "unfinish");
+                    NotificationController::sendPush($transaction['user_id'],$value, "Waiting for payment", "There is a pending payment for booking at ".$hotel_name.". Please finish payment soon.", "Hotel", "unfinish");
                 }
             }else if($transaction_status=='expire'){
                 $settlement_time=null;
@@ -239,11 +239,11 @@ class MidtransController extends Controller
             }else if($transaction_status=='cancel'){
                 $settlement_time=null;
                 $status='CANCELLED';
-                //NotificationController::sendPush($transaction['id_user'],$token, "Booking cancelled", "Your booking for ".$hotel_name." has been cancelled.", "Hotel");
+                //NotificationController::sendPush($transaction['id_user'],$valuw, "Booking cancelled", "Your booking for ".$hotel_name." has been cancelled.", "Hotel", "cancel");
             }
 
             $hotelbooking=HotelDarmaBooking::where('agent_os_ref',$order_id)->update(['status'=>$status]);
-            $hotelbooking=HotelDarmaBooking::where('agent_os_ref',$order_id)->with('hotel','room')->first();
+            $hotelbookingdata=HotelDarmaBooking::where('agent_os_ref',$order_id)->with('hotel','room')->first();
 
             foreach ($request['va_numbers'] as $key => $value) {
                 $va_number=$value['va_number'];
@@ -252,7 +252,7 @@ class MidtransController extends Controller
 
             $hotelbookingpayment=HotelDarmaPayment::updateOrCreate(
                 [
-                    'booking_id' => $hotelbooking->id
+                    'booking_id' => $hotelbookingdata->id
                 ],
                 [
                     'midtrans_id' => $transaction_id,
