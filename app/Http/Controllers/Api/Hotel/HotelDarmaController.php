@@ -544,7 +544,7 @@ class HotelDarmaController extends Controller
             catch(RequestException $e){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
             }
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
+            //return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
         }
            
     }
@@ -655,7 +655,7 @@ class HotelDarmaController extends Controller
             }catch(RequestException $e) {
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
             }
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
+            //return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
 
 
         }
@@ -904,7 +904,7 @@ class HotelDarmaController extends Controller
                 }catch(RequestException $e) {
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
                 }
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
+                //return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
 
             }
         }
@@ -1069,7 +1069,7 @@ class HotelDarmaController extends Controller
                 catch(RequestException $e) {
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
                 }
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
+                //return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
             }
 
         }
@@ -1405,6 +1405,9 @@ class HotelDarmaController extends Controller
 
             }
             catch(RequestException $e) {
+                if ($e->hasResponse()) {
+                    echo Psr7\Message::toString($e->getResponse());
+                }
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Access Token Wrong!','data'=> '']), 401);
             }
             //return response()->json(new ValueMessage(['value'=>0,'message'=>'not get!','data'=> '']), 401);
