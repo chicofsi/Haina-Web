@@ -1746,10 +1746,16 @@ class HotelDarmaController extends Controller
         $booking = HotelDarmaBooking::where('id', $request->booking_id)->first();
 
         if($booking){
-            $payment = HotelDarmaPayment::where('booking_id', $booking['id'])->first();
-            $cancel = json_decode($this->cancelMidtrans($booking, $payment));
+            if($booking['user_id' != Auth::id()]){
+                return response()->json(new ValueMessage(['value'=>0, 'message'=>'Unauthorized!', 'data'=> '']), 401);
+            }
+            else{
+                $payment = HotelDarmaPayment::where('booking_id', $booking['id'])->first();
+                $cancel = json_decode($this->cancelMidtrans($booking, $payment));
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $cancel]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction cancelled!','data'=> $cancel]), 200);
+            }
+            
         }
         else{
             return response()->json(new ValueMessage(['value'=>0, 'message'=>'Booking Data Not Found!', 'data'=> '']), 404);
