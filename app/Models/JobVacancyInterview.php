@@ -12,7 +12,7 @@ class JobVacancyInterview extends Model
     protected $table = 'job_vacancy_interview';
 
     protected $fillable = [
-    	 'id_user', 'id_vacancy', 'invitation', 'time', 'method', 'location', 'cp_name', 'cp_phone'
+    	 'id_user', 'id_vacancy', 'time', 'method', 'location', 'cp_name', 'cp_phone'
     ];
 
     public function vacancy(){

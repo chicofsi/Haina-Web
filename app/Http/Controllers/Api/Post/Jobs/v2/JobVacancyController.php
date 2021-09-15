@@ -721,8 +721,8 @@ class JobVacancyController extends Controller
             'method' => 'in:phone,live,online',
             'duration' => 'required_unless:method,live',
             'location' => 'required_unless:method,phone',
-            'cp_name' => 'required_if:method,live',
-            'cp_phone' => 'required_if:method,live'
+            'cp_name' => 'required',
+            'cp_phone' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
@@ -742,7 +742,6 @@ class JobVacancyController extends Controller
                         $new_invite = [
                             'id_user' => $check_applicant['id_user'],
                             'id_vacancy' => $check_applicant['id_vacancy'],
-                            'invitation' => $request->invitation ?? '',
                             'time' => $request->time,
                             'method' => $request->method,
                             'duration' => $request->duration ?? 0,
