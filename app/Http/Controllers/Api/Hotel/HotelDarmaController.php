@@ -773,7 +773,7 @@ class HotelDarmaController extends Controller
                         }
                     }
                     else{
-                        $bookingsession=ion::where('user_id',Auth::id())->update([
+                        $bookingsession=HotelDarmaBookingSession::where('user_id',Auth::id())->update([
                             'hotel_id'=>$hotelid,
                             'internal_code'=>$bodyresponse->hotelInfo->internalCode
                         ]);
