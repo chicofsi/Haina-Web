@@ -676,11 +676,9 @@ class JobVacancyController extends Controller
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant status update success!','data'=>$check_applicant]), 200);
                 }
-                else{
-                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Invalid status update!','data'=> '']), 404);
-                }
+                
 
-                if($check_applicant['status'] == "shortlisted" && $request->status == "not accepted"){
+                else if($check_applicant['status'] == "shortlisted" && $request->status == "not accepted"){
                     $update_status = JobVacancyApplicant::where('id', $request->id_applicant)->update([
                         'status' => $request->status
                     ]);
@@ -691,11 +689,9 @@ class JobVacancyController extends Controller
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant status update success!','data'=>$check_applicant]), 200);
                 }
-                else{
-                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Invalid status update!','data'=> '']), 404);
-                }
+                
 
-                if($check_applicant['status'] == "interview" && ($request->status == "accepted" || $request->status == "not accepted")){
+                else if($check_applicant['status'] == "interview" && ($request->status == "accepted" || $request->status == "not accepted")){
                     $update_status = JobVacancyApplicant::where('id', $request->id_applicant)->update([
                         'status' => $request->status
                     ]);
