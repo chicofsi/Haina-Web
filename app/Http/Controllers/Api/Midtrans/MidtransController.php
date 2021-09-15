@@ -239,7 +239,9 @@ class MidtransController extends Controller
             }else if($transaction_status=='cancel'){
                 $settlement_time=null;
                 $status='cancel';
-                NotificationController::sendPush($transaction['id_user'],$value, "Booking cancelled", "Your booking for ".$hotel_name['hotel_name']." has been cancelled.", "Hotel", "cancel");
+                foreach ($token as $key => $value) {
+                    NotificationController::sendPush($transaction['user_id'],$value, "Booking cancelled", "Your booking for ".$hotel_name['hotel_name']." has been cancelled.", "Hotel", "cancel");
+                }
             }
 
             $hotelbooking=HotelDarmaBooking::where('agent_os_ref',$order_id)->update(['status'=>$status]);
