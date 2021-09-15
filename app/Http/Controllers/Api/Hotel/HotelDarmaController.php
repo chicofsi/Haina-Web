@@ -1471,27 +1471,7 @@ class HotelDarmaController extends Controller
 
                 if(isset($check_status->voucherNo)){
                     //down
-                    $booking_session = HotelDarmaBookingSession::where('agent_os_ref', $valuepro->agent_os_ref)->first();
-                    $room_req = HotelDarmaBookingRoomReq::where('id_booking_session',$booking_session['id'])->first();
-                    $getpaxes = HotelDarmaBookingPaxes::where('id_room_req', $room_req['id'])->get();
-
-                    $check_dup_paxes = HotelDarmaPaxesList::where('booking_id', $valuepro->id)->first();
-
-                    //dd($check_dup_paxes);
                     
-                    if($check_dup_paxes == null){
-                        foreach($getpaxes as $key => $value){
-                            $booking_paxes_data = [
-                                'booking_id' => $valuepro->id,
-                                'title' => $value->title,
-                                'first_name' => $value->first_name,
-                                'last_name' => $value->last_name
-                            ];
-
-                            $booking_paxes = HotelDarmaPaxesList::create($booking_paxes_data);
-                        }
-                        
-                    }
 
                     $update_booking = HotelDarmaBooking::where('id', $valuepro->id)->update([
                         'status' => 'success',
