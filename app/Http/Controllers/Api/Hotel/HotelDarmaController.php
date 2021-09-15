@@ -1503,7 +1503,6 @@ class HotelDarmaController extends Controller
                     $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $valuepro->user_id)->get();
 
                     $hotel_name = HotelDarma::select('hotel_name')->where('id', $valuepro->hotel_id)->first();
-                    $hotel_amount = number_format($transaction['total_price'], 2, ",", ".");
 
                     foreach($usertoken as $key => $value){
                         array_push($token, $value->name); 
