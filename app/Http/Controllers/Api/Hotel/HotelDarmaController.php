@@ -1417,7 +1417,7 @@ class HotelDarmaController extends Controller
                     $bookingid = HotelDarmaBooking::where('agent_os_ref',$bodyresponse->agentOsRef)->first();
 
 
-                    $check_dup_paxes = HotelDarmaPaxesList::where('booking_id', $bookingid['id'])->get();
+                    $check_dup_paxes = HotelDarmaPaxesList::where('booking_id', $bookingid['id'])->first();
                     
                     //jump
                     if($check_dup_paxes == null){
@@ -1475,7 +1475,7 @@ class HotelDarmaController extends Controller
                     $room_req = HotelDarmaBookingRoomReq::where('id_booking_session',$booking_session['id'])->first();
                     $checkpaxes = HotelDarmaBookingPaxes::where('id_room_req', $room_req['id'])->first();
 
-                    $check_dup_paxes = HotelDarmaPaxesList::where('booking_id', $valuepro->id)->get();
+                    $check_dup_paxes = HotelDarmaPaxesList::where('booking_id', $valuepro->id)->first();
             
                     
                     if($check_dup_paxes == null){
