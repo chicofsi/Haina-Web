@@ -719,7 +719,7 @@ class JobVacancyController extends Controller
             'id_applicant' => 'required',
             'time' => 'required',
             'method' => 'in:phone,live,online',
-            'duration' => 'required_unless:method,live',
+            'duration' => 'required',
             'location' => 'required_unless:method,phone',
             'cp_name' => 'required',
             'cp_phone' => 'required'
