@@ -1476,7 +1476,7 @@ class HotelDarmaController extends Controller
                     $checkpaxes = HotelDarmaBookingPaxes::where('id_room_req', $room_req['id'])->first();
 
                     $check_dup_paxes = HotelDarmaPaxesList::where('booking_id', $valuepro->id)->first();
-            
+                    dd($check_dup_paxes);
                     
                     if($check_dup_paxes == null){
                         foreach($getpaxes as $key => $value){
