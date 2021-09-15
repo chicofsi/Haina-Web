@@ -169,6 +169,19 @@ class UserController extends Controller
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Field Empty!','data'=> $validator->errors()]), 400);
         }else{
 
+            // regex for password
+            $uppercase = preg_match('@[A-Z]@', $request->password);
+            $lowercase = preg_match('@[a-z]@', $request->password);
+            $number = preg_match('@[0-9]@', $request->password);
+            if (!$uppercase || !$lowercase || !$number || strlen($request->password) < 8)
+            return response()->json([
+              'error' => [
+                  'code' => 400,
+                  'detail' => 'bad_request',
+                  'message' => 'password must contain lowercase letters, uppercase letters, numbers and at least 8 characters',
+              ]
+            ]);
+
             $input = $request->all();
 
             $usergoogle=UserGoogle::where('email',$request->email)->first();
@@ -198,9 +211,9 @@ class UserController extends Controller
               // create ids
               $ids = $this->generate_random_string(64);
               // current time
-              $now = date('Y-m-d h:i:s');
+              $now = Carbon::now();
               // set valid_until
-              $valid_until = date('Y-m-d h:i:s', strtotime('+1 hours', strtotime($now)));
+              $valid_until = date('Y-m-d H:i:s', strtotime('+1 hours', strtotime($now)));
               // save
               $create = EmailTokenModels::create([
                 'ids' => $ids,
