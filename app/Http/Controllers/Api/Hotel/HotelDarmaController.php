@@ -1471,7 +1471,7 @@ class HotelDarmaController extends Controller
 
                 if(isset($check_status->voucherNo)){
                     //down
-                    $booking_session = HotelDarmaBookingSesssion::where('agent_os_ref', $valuepro->agent_os_ref)->first();
+                    $booking_session = HotelDarmaBookingSession::where('agent_os_ref', $valuepro->agent_os_ref)->first();
                     $room_req = HotelDarmaBookingRoomReq::where('id_booking_session',$bookingsession['id'])->first();
                     $checkpaxes = HotelDarmaBookingPaxes::where('id_room_req', $room_req['id'])->first();
 
