@@ -1466,10 +1466,14 @@ class HotelDarmaController extends Controller
                 //ErrorException: Trying to get property 'voucherNo' of non-object
 
                 if(isset($check_status->voucherNo)){
+                    $issuebooking = $this->issueBooking($user_id);
+
+                    /*
                     $update_booking = HotelDarmaBooking::where('id', $valuepro->id)->update([
                         'status' => 'success',
                         'reservation_no' => $check_status->voucherNo
                     ]);
+                    */
 
                     $token = [];
                     $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $valuepro->user_id)->get();
