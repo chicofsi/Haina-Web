@@ -1420,7 +1420,7 @@ class HotelDarmaController extends Controller
                     $check_dup_paxes = HotelDarmaPaxesList::where('booking_id', $bookingid['id'])->get();
                     
                     //jump
-                    if(!$check_dup_paxes){
+                    if($check_dup_paxes == null){
                         foreach($getpaxes as $key => $value){
                             $booking_paxes_data = [
                                 'booking_id' => $bookingid['id'],
@@ -1478,7 +1478,7 @@ class HotelDarmaController extends Controller
                     $check_dup_paxes = HotelDarmaPaxesList::where('booking_id', $valuepro->id)->get();
             
                     
-                    if(!$check_dup_paxes){
+                    if($check_dup_paxes == null){
                         foreach($getpaxes as $key => $value){
                             $booking_paxes_data = [
                                 'booking_id' => $valuepro->id,
@@ -1502,7 +1502,7 @@ class HotelDarmaController extends Controller
                     $token = [];
                     $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $valuepro->user_id)->get();
 
-                    $hotel_name = HotelDarma::select('hotel_name')->where('id', $transaction->hotel_id)->first();
+                    $hotel_name = HotelDarma::select('hotel_name')->where('id', $valuepro->hotel_id)->first();
                     $hotel_amount = number_format($transaction['total_price'], 2, ",", ".");
 
                     foreach($usertoken as $key => $value){
