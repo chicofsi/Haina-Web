@@ -35,6 +35,7 @@ use App\Models\HotelDarmaPaxesList;
 use App\Models\HotelDarmaRequestList;
 use App\Models\PaymentMethod;
 use App\Models\PaymentMethodCategory;
+use App\Models\PersonalAccessToken;
 
 use App\Http\Resources\ValueMessage;
 use App\Http\Resources\HotelDarmaBookingResource;
@@ -1413,9 +1414,10 @@ class HotelDarmaController extends Controller
 
                     $bookingid = HotelDarmaBooking::where('agent_os_ref',$bodyresponse->agentOsRef)->first();
 
-                    
-                    $check_dup_paxes = HotelDarmaPaxesList::where('booking_id', $bookingid['id'])->get();
 
+                    $check_dup_paxes = HotelDarmaPaxesList::where('booking_id', $bookingid['id'])->get();
+                    
+                    //jump
                     if(!$check_dup_paxes){
                         foreach($getpaxes as $key => $value){
                             $booking_paxes_data = [
@@ -1466,14 +1468,34 @@ class HotelDarmaController extends Controller
                 //ErrorException: Trying to get property 'voucherNo' of non-object
 
                 if(isset($check_status->voucherNo)){
-                    $issuebooking = $this->issueBooking($user_id);
+                    //down
+                    $booking_session = HotelDarmaBookingSesssion::where('agent_os_ref', $valuepro->agent_os_ref)->first();
+                    $room_req = HotelDarmaBookingRoomReq::where('id_booking_session',$bookingsession['id'])->first();
+                    $checkpaxes = HotelDarmaBookingPaxes::where('id_room_req', $room_req['id'])->first();
 
-                    /*
+                    $check_dup_paxes = HotelDarmaPaxesList::where('booking_id', $valuepro->id)->get();
+            
+                    
+                    if(!$check_dup_paxes){
+                        foreach($getpaxes as $key => $value){
+                            $booking_paxes_data = [
+                                'booking_id' => $valuepro->id,
+                                'title' => $value->title,
+                                'first_name' => $value->first_name,
+                                'last_name' => $value->last_name
+                            ];
+
+                            $booking_paxes = HotelDarmaPaxesList::create($booking_paxes_data);
+                        }
+                        
+                    }
+
                     $update_booking = HotelDarmaBooking::where('id', $valuepro->id)->update([
                         'status' => 'success',
                         'reservation_no' => $check_status->voucherNo
                     ]);
-                    */
+                    
+                    
 
                     $token = [];
                     $usertoken = PersonalAccessToken::select('name')->where('tokenable_id', $valuepro->user_id)->get();
