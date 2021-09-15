@@ -37,6 +37,8 @@ use App\Models\PaymentMethod;
 use App\Models\PaymentMethodCategory;
 use App\Models\PersonalAccessToken;
 
+use App\Http\Controllers\Api\Notification\NotificationController;
+
 use App\Http\Resources\ValueMessage;
 use App\Http\Resources\HotelDarmaBookingResource;
 
@@ -771,7 +773,7 @@ class HotelDarmaController extends Controller
                         }
                     }
                     else{
-                        $bookingsession=HotelDarmaBookingSession::where('user_id',Auth::id())->update([
+                        $bookingsession=ion::where('user_id',Auth::id())->update([
                             'hotel_id'=>$hotelid,
                             'internal_code'=>$bodyresponse->hotelInfo->internalCode
                         ]);
