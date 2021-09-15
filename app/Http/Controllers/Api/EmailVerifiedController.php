@@ -46,7 +46,7 @@ class EmailVerifiedController extends Controller {
     $ids = $check->first()['ids'];
     $valid_until = $check->first()['valid_until'];
     // set date now
-    $date_now = date('Y-m-d h:i:s');
+    $date_now = date('Y-m-d H:i:s');
     // check condition valid until
     if ($date_now > $valid_until) return response()->json($this->ErrorController->error_404('token has expired'));
     // update field email_verified_at
@@ -70,6 +70,19 @@ class EmailVerifiedController extends Controller {
     // chek
     $check = FixUsersModels::where('email', $email_user);
     if ($check->get()->count() < 1) return response()->json($this->ErrorController->error_404('email is not registered in our system'));
+    // check highest created_at value
+    $check_highest = EmailTokenModels::where('email', $email_user)
+                                     ->where('deleted_at', NULL)
+                                     ->orderBy('created_at', 'DESC')
+                                     ->take(1);
+    $created_at = $check_highest->first()['created_at'];
+    // cek apakah email sudah pernah dikirim dalam 1 menit yang lalu
+    // cek nilai created_at
+    $created_at_plus1 = date('Y-m-d H:i:s', strtotime('+1 minutes', strtotime($created_at)));
+    $fix_carbon_now = date('Y-m-d H:i:s', strtotime(Carbon::now()));
+    if ($fix_carbon_now <= $created_at_plus1)
+    return response()->json($this->ErrorController->error_403('You have to wait for 1 minute to be able to resend email verified request again'));
+    // try sending email
     try {
       // save to email_tokens
       // create ids
@@ -77,9 +90,9 @@ class EmailVerifiedController extends Controller {
       // token
       $fix_token = $this->generate_random_string(64);
       // current time
-      $now = date('Y-m-d h:i:s');
+      $now = date('Y-m-d H:i:s');
       // set valid_until
-      $valid_until = date('Y-m-d h:i:s', strtotime('+1 hours', strtotime($now)));
+      $valid_until = date('Y-m-d H:i:s', strtotime('+1 hours', strtotime($now)));
       // save
       $create = EmailTokenModels::create([
         'ids' => $ids,

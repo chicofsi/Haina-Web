@@ -42,28 +42,19 @@
                   <i class="fa {{ Session::get('session_icon_reset_password') }}" style="padding-right:10px"></i>
                   {{ Session::get('session_message_reset_password') }}
                 </div>
-                @endif
+                @else
                 <div class="alert alert-info">
                   <i class="fa fa-info-circle" style="padding-right:10px"></i>
                   Password must contain lowercase letters, uppercase letters, numbers and at least 8 characters
                 </div>
+                @endif
                 <form method="POST" class="needs-validation" novalidate="">
                   @csrf
                   <input type="hidden" name="email" value="{{ $email }}">
-                  <div class="form-group">
-                    <label for="old_password">Old Password</label>
-                    <input type="password" class="form-control" name="old_password" tabindex="1" required id="old_password"autofocus
-                    @if(null !== (Session::get('session_message_reset_password')) and Session::get('session_message_reset_password') !== '')
-                    value="{{ Session::get('session_data_old_password') }}"
-                    @endif
-                    >
-                    <div class="invalid-feedback">
-                      Old password is required
-                    </div>
-                  </div>
+                  <input type="hidden" name="token_user" value="{{ $token }}">
                   <div class="form-group">
                     <label for="new_password">New Password</label>
-                    <input type="password" class="form-control" name="new_password" tabindex="1" required id="new_password"
+                    <input type="password" class="form-control" name="new_password" tabindex="1" required autofocus id="new_password"
                     @if(null !== (Session::get('session_message_reset_password')) and Session::get('session_message_reset_password') !== '')
                     value="{{ Session::get('session_data_new_password') }}"
                     @endif
@@ -127,10 +118,8 @@
   <!-- Page Specific JS File -->
   <script type="text/javascript">
   function Toggle() {
-    var old_password = document.getElementById("old_password");
     var new_password = document.getElementById("new_password");
     var repeat_password = document.getElementById("repeat_password");
-    (old_password.type === "password") ? old_password.type = "text" : old_password.type = "password";
     (new_password.type === "password") ? new_password.type = "text" : new_password.type = "password";
     (repeat_password.type === "password") ? repeat_password.type = "text" : repeat_password.type = "password";
   }
