@@ -1204,7 +1204,7 @@ class HotelDarmaController extends Controller
                 $room_req = HotelDarmaBookingRoomReq::where('id_booking_session',$bookingsession->id)->first();
                 $checkpaxes = HotelDarmaBookingPaxes::where('id_room_req', $room_req->id)->first();
                 
-                if(! $checkpaxes){
+                if($checkpaxes == null){
                     foreach($request->paxes as $key => $value){
                     
 
