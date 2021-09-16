@@ -822,7 +822,6 @@ class HotelDarmaController extends Controller
                                     'room_name' => $value->name,
                                     'room_type_id' => $roomtype,
                                     'room_image' => $value->image,
-                                    'room_price' => $value->price,
                                     'breakfast' => $value->breakfast,
                                     'id_darma_room' => $value->ID
                                 ];
@@ -1032,6 +1031,7 @@ class HotelDarmaController extends Controller
                             'room_id'=>$roomid,
                             'breakfast'=>$breakfast,
                             'cancel_policy'=>$bodyresponse->cancelPolicy,
+                            'total_price' =>$bodyresponse->totalPrice,
                             'agent_os_ref' => $idbooking
                         ]);
 
@@ -1178,11 +1178,6 @@ class HotelDarmaController extends Controller
                 $hotel = HotelDarma::where('id_darma', $bookingsession->hotel_id)->first();
                 $room = HotelDarmaRoom::where('id_darma_room', $bookingsession->room_id)->first();
 
-                $total_night = strtotime($bookingsession->check_out_date) - strtotime($bookingsession->check_in_date);
-                $nights = $total_night / 86400;
-
-                $totalprice = $room->room_price * $nights;
-
                 $body = [
                     'hotel_id' => $hotel->id,
                     'room_id' => $room->id,
@@ -1192,7 +1187,7 @@ class HotelDarmaController extends Controller
                     'booking_date' => null,
                     'check_in' => $bookingsession->check_in_date,
                     'check_out' => $bookingsession->check_out_date,
-                    'total_price' => $totalprice,
+                    'total_price' => $bookingsession->total_price,
                     'requests' => $request->special_request,
                     'breakfast' => $room->breakfast,
                     'status' => 'pending',

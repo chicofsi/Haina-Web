@@ -15,7 +15,7 @@ class HotelDarmaRoom extends Model
     public $timestamps = false;
 
     protected $fillable = [ 
-        'hotel_id', 'room_name', 'room_type_id', 'room_image', 'room_price', 'breakfast', 'id_darma_room'
+        'hotel_id', 'room_name', 'room_type_id', 'room_image', 'breakfast', 'id_darma_room'
     ];
 
     public function hotel(){
