@@ -1221,6 +1221,32 @@ class HotelDarmaController extends Controller
 
                 $payment = PaymentMethod::where('id',$request->id_payment_method)->with('category')->first();
                 $newbooking = HotelDarmaBooking::create($body);
+
+                $add_roomreq = HotelDarmaBooking::where('id', $newbooking->id)->update([
+                    'room_type' => $room_req->room_type, 
+                    'is_request_child_bed' => $room_req->is_request_child_bed,
+                    'child_num' => $room_req->child_num,
+                    'child_age' => $room_req->child_age, 
+                    'smoking_room' => $room_req->smoking_room, 
+                    'phone' => $room_req->phone, 
+                    'email' => $room_req->email, 
+                    'request_description' => $room_req->request_description
+                ]);
+
+                $bookingpaxes = HotelDarmaBookingPaxes::where('id_room_req', $room_req->id)->get();
+
+                foreach($bookingpaxes as $key => $value){
+                    $booking_paxes_data = [
+                        'booking_id' => $newbooking->id,
+                        'title' => $value->title,
+                        'first_name' => $value->first_name,
+                        'last_name' => $value->last_name
+                    ];
+
+                    $booking_paxes = HotelDarmaPaxesList::create($booking_paxes_data);
+                }
+                
+
                 $newbooking['payment_data'] = json_decode($this->chargeMidtrans($newbooking, $payment));
 
                 if($newbooking){
@@ -1252,7 +1278,7 @@ class HotelDarmaController extends Controller
         }
     }
 
-    public function issueBooking($user_id){
+    public function issueBooking($user_id, $agent_os_ref){
         $bookingsession=$this->checkSession($user_id);
         if(! $bookingsession){
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Search Hotel First!','data'=> '']), 401);
@@ -1270,10 +1296,13 @@ class HotelDarmaController extends Controller
             $internalcode = $bookingsession->internal_code;
             $breakfast = $bookingsession->breakfast;
 
-            $room_req_data = HotelDarmaBookingRoomReq::where('id_booking_session',$bookingsession->id)->first();
+            $room_req_data = HotelDarmaBooking::select('room_type', 'is_request_child_bed',
+            'child_num', 'child_age', 'smoking_room', 'phone', 'email', 'request_description')->where('agent_os_ref',$agent_os_ref)->first();
+
+            $booking_data = HotelDarmaBooking::where('agent_os_ref', $agent_os_ref)->first();
 
             $paxes_array = [];
-            $getpaxes = HotelDarmaBookingPaxes::where('id_room_req', $room_req_data->id)->get();
+            $getpaxes = HotelDarmaPaxesList::where('booking_id', $booking_data->id)->get();
 
             foreach($getpaxes as $key => $value){
 
@@ -1285,8 +1314,9 @@ class HotelDarmaController extends Controller
                 
                 array_push($paxes_array, $pax);
             }
+            
 
-            $booking_data = HotelDarmaBooking::where('agent_os_ref', $bookingsession->agent_os_ref)->first();
+            
 
             if($room_req_data['room_type'] == 0){
                 $roomtype = "Single";
@@ -1304,7 +1334,7 @@ class HotelDarmaController extends Controller
                 $roomtype = "Quad";
             }
 
-            $hotel = HotelDarma::where('id_darma', $bookingsession->hotel_id)->first();
+            $hotel = HotelDarma::where('id_darma',  $booking_data->hotel_id)->first();
 
             if($hotel['request_array'] == true){
                 $request_id = explode(',', $room_req_data['request_description']);
@@ -1370,7 +1400,7 @@ class HotelDarmaController extends Controller
                     'breakfast' => $breakfast,
                     'roomRequest' => array($room_request),
                     'bedType' => $bedType,
-                    'agentOsRef' => $bookingsession->agent_os_ref
+                    'agentOsRef' => $agent_os_ref
                 ];
 
                 $response=$this->client->request(
@@ -1416,10 +1446,9 @@ class HotelDarmaController extends Controller
 
                     $bookingid = HotelDarmaBooking::where('agent_os_ref',$bodyresponse->agentOsRef)->first();
 
-
+                    /*
                     $check_dup_paxes = HotelDarmaPaxesList::where('booking_id', $bookingid['id'])->first();
                     
-                    //jump
                     if($check_dup_paxes == null){
                         foreach($getpaxes as $key => $value){
                             $booking_paxes_data = [
@@ -1433,6 +1462,7 @@ class HotelDarmaController extends Controller
                         }
                         
                     }
+                    */
                         
                 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $bodyresponse]), 200);
@@ -1470,7 +1500,6 @@ class HotelDarmaController extends Controller
                 //ErrorException: Trying to get property 'voucherNo' of non-object
 
                 if(isset($check_status->voucherNo)){
-                    //down
                     
 
                     $update_booking = HotelDarmaBooking::where('id', $valuepro->id)->update([

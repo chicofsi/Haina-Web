@@ -14,7 +14,8 @@ class HotelDarmaBooking extends Model
 
     protected $fillable = [ 
         'hotel_id', 'room_id', 'user_id', 'reservation_no', 'agent_os_ref', 'booking_date', 'check_in', 'check_out',
-        'total_price', 'requests', 'breakfast', 'status', 'cancelation_policy'
+        'total_price', 'requests', 'breakfast', 'status', 'cancelation_policy', 'room_type', 'is_request_child_bed',
+        'child_num', 'child_age', 'smoking_room', 'phone', 'email', 'request_description'
     ];
 
     public function hotel(){
