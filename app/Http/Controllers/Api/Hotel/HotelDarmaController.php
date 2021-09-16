@@ -1178,8 +1178,10 @@ class HotelDarmaController extends Controller
                 $hotel = HotelDarma::where('id_darma', $bookingsession->hotel_id)->first();
                 $room = HotelDarmaRoom::where('id_darma_room', $bookingsession->room_id)->first();
 
-                $total_night = strtotime($bookingsession->check_in_date) - strtotime($bookingsession->check_out_date);
+                $total_night = strtotime($bookingsession->check_out_date) - strtotime($bookingsession->check_in_date);
                 $nights = $total_night / 86400;
+
+                $totalprice = $room->room_price * $nights;
 
                 $body = [
                     'hotel_id' => $hotel->id,
@@ -1190,7 +1192,7 @@ class HotelDarmaController extends Controller
                     'booking_date' => null,
                     'check_in' => $bookingsession->check_in_date,
                     'check_out' => $bookingsession->check_out_date,
-                    'total_price' => $room->room_price * $nights,
+                    'total_price' => $totalprice,
                     'requests' => $request->special_request,
                     'breakfast' => $room->breakfast,
                     'status' => 'pending',
