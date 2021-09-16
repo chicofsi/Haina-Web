@@ -1334,7 +1334,7 @@ class HotelDarmaController extends Controller
                 $roomtype = "Quad";
             }
 
-            $hotel = HotelDarma::where('id_darma',  $booking_data->hotel_id)->first();
+            $hotel = HotelDarma::where('id',  $booking_data->hotel_id)->first();
 
             if($hotel['request_array'] == true){
                 $request_id = explode(',', $room_req_data['request_description']);
