@@ -1179,7 +1179,7 @@ class HotelDarmaController extends Controller
                 $room = HotelDarmaRoom::where('id_darma_room', $bookingsession->room_id)->first();
 
                 $total_night = strtotime($bookingsession->check_out_date) - strtotime($bookingsession->check_in_date);
-                $nights = $total_night / 86400 - 1;
+                $nights = $total_night / 86400;
 
                 $totalprice = $room->room_price * $nights;
 
