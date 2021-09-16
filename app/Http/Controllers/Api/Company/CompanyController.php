@@ -24,6 +24,8 @@ class CompanyController extends Controller
                 'icon' => 'required|image',
                 'name' => 'required',
                 'description' => 'required',
+                'siup' => 'required',
+                'id_province' => 'required'
             ]);
 
             if ($validator->fails()) {          
@@ -41,7 +43,9 @@ class CompanyController extends Controller
                     'name' => $request->name,
                     'icon_url' => substr($file,7),
                     'description' => $request->description,
-                    'status' => 'pending review'
+                    'status' => 'pending review',
+                    'siup' => $request->siup,
+                    'id_province' => $request->id_province
                 ]);
 
                 UserLogs::create([
