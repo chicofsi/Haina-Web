@@ -164,7 +164,7 @@ class NotificationController extends Controller
 
     public function getUserNotification(Request $request)
     {
-        $usernotif=UserNotification::where('id_user',$request->user()->id)->with('notificationcategory')->get();
+        $usernotif=UserNotification::where('id_user',$request->user()->id)->with('notificationcategory')->orderBy('created_at', 'desc')->get();
 
 
         if($usernotif->isEmpty()){
