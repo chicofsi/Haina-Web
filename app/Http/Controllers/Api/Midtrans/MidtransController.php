@@ -92,21 +92,29 @@ class MidtransController extends Controller
             if($transaction_status=='settlement'){
                 $settlement_time=date("Y-m-d H:i:s",strtotime($request->settlement_time));
                 $status='process';
+
+                NotificationController::createNotif($transaction['id_user'], "Payment successful", "Your Rp ".$transaction_amount." payment for ".$transaction_product." is successful", 5);
                 foreach ($token as $key => $value) {
                     NotificationController::sendPush($transaction['id_user'],$value, "Payment successful", "Your Rp ".$transaction_amount." payment for ".$transaction_product." is successful", "Transaction","finish");
                 }
+                
             }else if($transaction_status=='pending'){
                 $settlement_time=null;
                 $status='pending payment';
+
+                NotificationController::createNotif($transaction['id_user'], "Waiting for payment", "There is a pending payment for ".$transaction_product.". Please finish payment in 24 hours", 5);
                 foreach ($token as $key => $value) {
                     NotificationController::sendPush($transaction['id_user'],$value, "Waiting for payment", "There is a pending payment for ".$transaction_product.". Please finish payment in 24 hours", "Transaction","unfinish");
                 }
+                
             }else if($transaction_status=='expire'){
                 $settlement_time=null;
                 $status='unsuccess';
             }else if($transaction_status=='cancel'){
                 $settlement_time=null;
                 $status='unsuccess';
+
+                NotificationController::createNotif($transaction['id_user'], "Transaction cancelled", "Your transaction for ".$transaction_product." has been successfully cancelled.", 5);
                 foreach ($token as $key => $value) {
                     NotificationController::sendPush($transaction['id_user'],$value, "Transaction cancelled", "Your transaction for ".$transaction_product." has been successfully cancelled.", "Transaction","cancel");
                 }
@@ -217,6 +225,7 @@ class MidtransController extends Controller
             if($transaction_status=='settlement'){
                 $settlement_time=date("Y-m-d H:i:s",strtotime($request->settlement_time));
                 $status='process';
+                NotificationController::createNotif($transaction['user_id'], "Payment successful", "Your Rp ".$hotel_amount." payment for booking at".$hotel_name['hotel_name']." is successful", 3);
                 foreach ($token as $key => $value) {
 
                     NotificationController::sendPush($transaction['user_id'],$value, "Payment successful ", "Your Rp ".$hotel_amount." payment for booking at".$hotel_name['hotel_name']." is successful", "Hotel", "finish");
@@ -229,9 +238,10 @@ class MidtransController extends Controller
             }else if($transaction_status=='pending'){
                 $settlement_time=null;
                 $status='pending';
+                NotificationController::createNotif($transaction['user_id'], "Waiting for payment", "There is a pending payment for booking at ".$hotel_name['hotel_name'].". Please finish payment in 24 hours.", 3);
                 foreach ($token as $key => $value) {
                     
-                    NotificationController::sendPush($transaction['user_id'],$value, "Waiting for payment", "There is a pending payment for booking at ".$hotel_name['hotel_name'].". Please finish payment soon.", "Hotel", "unfinish");
+                    NotificationController::sendPush($transaction['user_id'],$value, "Waiting for payment", "There is a pending payment for booking at ".$hotel_name['hotel_name'].". Please finish payment in 24 hours.", "Hotel", "unfinish");
                 }
             }else if($transaction_status=='expire'){
                 $settlement_time=null;
@@ -239,6 +249,7 @@ class MidtransController extends Controller
             }else if($transaction_status=='cancel'){
                 $settlement_time=null;
                 $status='cancel';
+                NotificationController::createNotif($transaction['user_id'], "Booking cancelled", "Your booking for ".$hotel_name['hotel_name']." has been cancelled.", 3);
                 foreach ($token as $key => $value) {
                     NotificationController::sendPush($transaction['user_id'],$value, "Booking cancelled", "Your booking for ".$hotel_name['hotel_name']." has been cancelled.", "Hotel", "cancel");
                 }
@@ -283,6 +294,7 @@ class MidtransController extends Controller
             if($transaction_status=='settlement'){
                 $settlement_time=date("Y-m-d H:i:s",strtotime($request->settlement_time));
                 $status='process';
+                NotificationController::createNotif($transaction['id_user'], "Payment successful", "Your Rp ".$transaction_amount." payment for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to." is successful", 4);
                 foreach ($token as $key => $value) {
 
                     NotificationController::sendPush($transaction['id_user'],$value, "Payment successful", "Your Rp ".$transaction_amount." payment for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to." is successful", "Flight","finish");
@@ -290,6 +302,7 @@ class MidtransController extends Controller
             }else if($transaction_status=='pending'){
                 $settlement_time=null;
                 $status='pending';
+                NotificationController::createNotif($transaction['id_user'], "Waiting for payment", "There is a pending payment for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to.". Please finish payment in 24 hours", 4);
                 foreach ($token as $key => $value) {
 
                     NotificationController::sendPush($transaction['id_user'],$value, "Waiting for payment", "There is a pending payment for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to.". Please finish payment in 24 hours", "Flight", "unfinish");
@@ -300,6 +313,7 @@ class MidtransController extends Controller
             }else if($transaction_status=='cancel'){
                 $settlement_time=null;
                 $status='canceled';
+                NotificationController::createNotif($transaction['id_user'], "Booking cancelled", "Your booking for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to." has been cancelled.", 4);
                 foreach ($token as $key => $value) {
 
                     NotificationController::sendPush($transaction['id_user'],$value, "Booking cancelled", "Your booking for flight ticket from ".$flight_details->depart_from." to ".$flight_details->depart_to." has been cancelled.", "Flight", "unfinish");
@@ -362,6 +376,8 @@ class MidtransController extends Controller
                         'deleted_at' => $newtime
                     ]);
                 }
+
+                NotificationController::createNotif($company['id_user'], "Payment successful", "Your payment for ".$transaction['position']."ad is successful", 2);
                 foreach ($token as $key => $value) {
                     NotificationController::sendPush($company['id_user'],$value, "Payment successful", "Your payment for ".$transaction['position']."ad is successful", "Job", "");
                 }
@@ -377,6 +393,7 @@ class MidtransController extends Controller
                 $status='unsuccess';
                 $settlement_time=null;
 
+                NotificationController::createNotif($company['id_user'], "Job Ad Cancelled", "Your transaction for ".$transaction['position']."ad is successfuly cancelled", 2);
                 foreach ($token as $key => $value) {
                     NotificationController::sendPush($company['id_user'],$value, "Job Ad Cancelled", "Your transaction for ".$transaction['position']."ad is successfuly cancelled", "Job", "");
                 }
