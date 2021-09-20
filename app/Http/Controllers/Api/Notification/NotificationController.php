@@ -167,15 +167,16 @@ class NotificationController extends Controller
 
     public function getUserNotification(Request $request)
     {
-        $usernotif=UserNotification::where('id_user',$request->user()->id)->with('notificationcategory')->orderBy('created_at', 'desc')->get();
+        $notifcategory=NotificationCategory::get();
+        $data=[];
 
-
-        if($usernotif->isEmpty()){
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Notification Doesn\'t Exist!','data'=> '']), 404);
-        }else{
-
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get User Notification Success!','data'=> $usernotif]), 200);
+        foreach ($notifcategory as $key => $value) {
+            $data[$value->name]=UserNotification::where('id_user',$request->user()->id)->where('id_category',$value->id)->orderBy('created_at', 'desc')->get();
         }
+
+
+        
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Get User Notification Success!','data'=> $data]), 200);
     }
 
     
