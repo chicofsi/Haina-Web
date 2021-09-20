@@ -138,7 +138,7 @@ class NotificationController extends Controller
     }
 
 
-    public function createNotif($idUser,$title,$body,$idCategory)
+    public static function createNotif($idUser,$title,$body,$idCategory)
     {
 
         $notification = UserNotification::create([
