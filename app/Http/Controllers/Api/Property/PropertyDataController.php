@@ -414,6 +414,7 @@ class PropertyDataController extends Controller
                             array_push($token, $value->name); 
                         }
 
+                        NotificationController::createNotif($property['id_user'], "Someone is interested with your property!", $buyername." did a ".$request->transaction_type." transaction with ".$property['name'], 7);
                         foreach ($token as $key => $value) {
                             NotificationController::sendPush($property['id_user'], $value, "Someone is interested with your property!", $buyername." did a ".$request->transaction_type." transaction with ".$property['name'], "Property", "");
                         }
@@ -471,17 +472,19 @@ class PropertyDataController extends Controller
                     $property = PropertyData::where('id', $transaction['id_property'])->update([
                         'status' => $request->status
                     ]);
-                    /*
+                    
+                    NotificationController::createNotif($property['id_user'], "Your transaction is finished", "Transaction for ".$property['title']." is being finished", 7);
                     foreach($token as $key => $value) {
-                        NotificationController::sendPush($value, "Your transaction is finished", "Transaction for ".$property['title']." is being finished", "Property", "");
+                        NotificationController::sendPush($property['id_user'], $value, "Your transaction is finished", "Transaction for ".$property['title']." is being finished", "Property", "");
                     }
-                    */
+                    
                 }
                 else if($request->status == "cancel"){
                     $property = PropertyData::where('id', $transaction['id_property'])->update([
                         'status' => 'available'
                     ]);
                     
+                    NotificationController::createNotif($property['id_user'], "Your transaction is cancelled", "Transaction for ".$property['title']." is being cancelled", 7);
                     foreach($token as $key => $value) {
                         NotificationController::sendPush($property['id_user'], $value, "Your transaction is cancelled", "Transaction for ".$property['title']." is being cancelled", "Property", "");
                     }

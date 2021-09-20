@@ -150,6 +150,7 @@ class JobApplicantController extends Controller
                         array_push($token, $value->name); 
                     }
 
+                    NotificationController::createNotif($check_owner['id_user'], "A new candidate applied!", "There is a new candidate for ".$check_vacancy['position'], 2);
                     foreach ($token as $key => $value) {
                         NotificationController::sendPush($check_owner['id_user'],$value, "A new candidate applied!", "There is a new candidate for ".$check_vacancy['position'], "Job", "");
                     }
