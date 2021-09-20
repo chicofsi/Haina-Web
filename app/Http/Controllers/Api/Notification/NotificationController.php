@@ -137,14 +137,17 @@ class NotificationController extends Controller
     }
 
 
-    public function createNotif($idUser,$message,$idCategory)
+    public function createNotif($idUser,$title,$body,$idCategory)
     {
+
         $notification = UserNotification::create([
-            'message' => $message,
+            'title' => $title,
+            'body' => $body,
             'id_category' => $idCategory,
             'id_user' => $idUser,
         ]);
 
+        /*
         $notifcat = NotificationCategory::where('id',$idCategory)->first();
 
         $user=User::where('id',$idUser)->first();
@@ -153,11 +156,11 @@ class NotificationController extends Controller
         $title=$notifcat->name;
         $body=$message;
 
+        /*
         foreach ($token as $key => $value) {
             $this->sendPush($value,$title,$body);
         }
-
-        
+        */
 
     }
 
