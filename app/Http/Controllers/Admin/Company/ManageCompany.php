@@ -117,10 +117,11 @@ class ManageCompany extends Controller
             array_push($token, $value->name); 
         }
 
+        NotificationController::createNotif($user_id['id_user'], "Company Listing Approved", $company['name']." is approved. Start posting job vacancies now!", 2);
         foreach ($token as $key => $value) {
             NotificationController::sendPush($user_id['id_user'], $value, "Company Listing Approved", $company['name']." is approved. Start posting job vacancies now!", "Job", "");
         }
-        NotificationController::createNotif($user_id['id_user'], "Company Listing Approved", $company['name']." is approved. Start posting job vacancies now!", 2);
+        
                          
         return Response()->json($companyupdate);
     }
@@ -156,10 +157,10 @@ class ManageCompany extends Controller
             array_push($token, $value->name); 
         }
 
+        NotificationController::createNotif($user_id['id_user'], "Company Suspended", $company['name']." is suspended. Please contact admin for more details.", 2);
         foreach ($token as $key => $value) {
             NotificationController::sendPush($value, "Company Suspended", $company['name']." is suspended. Please contact admin for more details.", "Job", "");
         }
-        NotificationController::createNotif($user_id['id_user'], "Company Suspended", $company['name']." is suspended. Please contact admin for more details.", 2);
             
                          
         return Response()->json($companyupdate);
