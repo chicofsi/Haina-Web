@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Notification;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Resources\ValueMessage;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\UserNotification;
