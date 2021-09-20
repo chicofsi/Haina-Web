@@ -175,6 +175,9 @@ class NotificationController extends Controller
 
             $value['img'] = URL::to('storage/'.$value['img']);
             $value['notif']=UserNotification::where('id_user',$request->user()->id)->where('id_category',$value->id)->orderBy('created_at', 'desc')->get();
+            foreach ($value['notif'] as $key_notif => $value_notif) {
+                $value_notif['created_at']=date('d M Y - H:i:s', $value_notif->created_at->timestamp);
+            }
         }
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Get User Notification Success!','data'=> $data]), 200);
     }
