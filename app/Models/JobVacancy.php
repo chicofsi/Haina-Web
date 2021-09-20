@@ -44,4 +44,8 @@ class JobVacancy extends Model
         return $this->hasOne('App\Models\City', 'id', 'id_city');
     }
 
+    public function bookmark(){
+        return $this->belongsToMany('App\Models\User', 'job_bookmark', 'id_job_vacancy', 'id_user');
+    }
+
 }
