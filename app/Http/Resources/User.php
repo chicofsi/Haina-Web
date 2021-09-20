@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\URL;
 use App\Models\Education;
 use App\Models\UserEducation;
 use App\Models\UserWorkExperience;
+use App\Models\UserNotification;
 
 class User extends JsonResource
 {
@@ -32,8 +33,11 @@ class User extends JsonResource
         }
 
         $photo_url=URL::to('storage/'.$this->photo);
+
+        $count = UserNotification::where('id_user',$this->id)->where('opened',0)->count();
         return [
             'fullname' => $this->fullname,
+            'notification_count' => $count,
             'email' => $this->email,
             'phone' => $this->phone,
             'username' => $this->username,
