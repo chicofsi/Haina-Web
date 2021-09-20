@@ -170,6 +170,9 @@ class NotificationController extends Controller
         $data=NotificationCategory::get();;
 
         foreach ($data as $key => $value) {
+            
+
+            $value['img'] = URL::to('storage/'.$value['img']);
             $value['notif']=UserNotification::where('id_user',$request->user()->id)->where('id_category',$value->id)->orderBy('created_at', 'desc')->get();
         }
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Get User Notification Success!','data'=> $data]), 200);
