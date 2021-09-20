@@ -157,6 +157,7 @@ class JobVacancyController extends Controller
                         array_push($token, $value->name); 
                     }
 
+                    NotificationController::createNotif($check_company['id_user'], "Post vacancy successful", "Your post for ".$new_vacancy['position']."ad is successful", 2);
                     foreach ($token as $key => $value) {
                         NotificationController::sendPush($check_company['id_user'],$value, "Post vacancy successful", "Your post for ".$new_vacancy['position']."ad is successful", "Job", "");
                     }
@@ -210,6 +211,7 @@ class JobVacancyController extends Controller
                         array_push($token, $value->name); 
                     }
 
+                    NotificationController::createNotif($check_company['id_user'], "Waiting for payment", "Your post for ".$new_vacancy['position']."ad is waiting for payment", 2);
                     foreach ($token as $key => $value) {
                         NotificationController::sendPush($check_company['id_user'],$value, "Waiting for payment", "Your post for ".$new_vacancy['position']."ad is waiting for payment", "Job", "");
                     }
@@ -640,11 +642,13 @@ class JobVacancyController extends Controller
         }
 
         if($status == "accepted"){
+            NotificationController::createNotif($id_user, "Application accepted", $company_data['name']." accepted your application for ".$vacancy_data['position'], 1);
             foreach ($token as $key => $value) {
                 NotificationController::sendPush($id_user, $value, "Application accepted", $company_data['name']." accepted your application for ".$vacancy_data['position'], "Job","");
             }
         }
         else{
+            NotificationController::createNotif($id_user, "Application not accepted", $company_data['name']." decided not to accept your application for ".$vacancy_data['position'], 1);
             foreach ($token as $key => $value) {
                 NotificationController::sendPush($id_user, $value, "Application not accepted", $company_data['name']." decided not to accept your application for ".$vacancy_data['position'], "Job","");
             }
@@ -762,6 +766,7 @@ class JobVacancyController extends Controller
                             array_push($token, $value->name); 
                         }
     
+                        NotificationController::createNotif($check_applicant['id_user'], "Interview Invitation", $company_data['name']." invited your for interview for ".$vacancy_data['position'], 1);
                         foreach ($token as $key => $value) {
                             NotificationController::sendPush($check_applicant['id_user'], $value, "Interview Invitation", $company_data['name']." invited your for interview for ".$vacancy_data['position'], "Job","");
                         }
