@@ -1257,6 +1257,7 @@ class ForumController extends Controller
                 $subforum['category'] = $category_name['name'];
                 $subforum['category_zh'] = $category_name['name_zh'];
                 $subforum['role'] = "mod";
+                $subforum['post_count'] = count(ForumPost::where('subforum_id', $subforum['id'])->where('deleted_at', null)->get());
 
                 $post = ForumPost::where('subforum_id', $subforum['id'])->where('deleted_at', null)->get();
                 foreach($post as $keypost => $valuepost){
