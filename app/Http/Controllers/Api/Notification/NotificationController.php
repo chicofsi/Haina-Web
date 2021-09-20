@@ -181,12 +181,11 @@ class NotificationController extends Controller
 
     public function openNotification(Request $request)
     {
-        $notification = UserNotification::where('id',$request->id)->update(['opened' => 1]);
-
-        return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $notification]), 200);
+        $notification = UserNotification::where('id',$request->id)->where('id_user',$request->user()->id)->update(['opened' => 1]);
+        if($notification==1){
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Success!','data'=> $notification]), 200);
+        }else{
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Failed!','data'=> $notification]), 200);
+        }
     }
-
-    
-
-
 }
