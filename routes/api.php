@@ -165,6 +165,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	});
 
 	Route::post('notification'  , [NotificationController::class, 'getUserNotification']);
+	Route::post('open-notification'  , [NotificationController::class, 'openNotification']);
 
 	Route::post('/payment/method'  , [PulsaController::class, 'getPaymentMethod']);
 	
