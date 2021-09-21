@@ -1813,7 +1813,7 @@ class ForumController extends Controller
         $engage = array_column($threads, 'engagement_count');
         $views = array_column($threads, 'view_count');
 
-        array_multisort($like, SORT_DESC, $comment, SORT_DESC, $threads);
+        array_multisort($engage, SORT_DESC, $views, SORT_DESC, $threads);
         $hot_threads = array_slice($threads, 0, 5);
 
         if(count($hot_threads) > 0){
