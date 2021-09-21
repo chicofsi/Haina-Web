@@ -115,10 +115,10 @@ class JobApplicantController extends Controller
     public function searchVacancy(Request $request){
         
         $validator = Validator::make($request->all(), [
-            'id_edu' => 'numeric|between: 0,9',
-            'id_specialist' => 'numeric|between: 0,14',
-            'type' => 'numeric|between: 0,6',
-            'level' => 'numeric|between: 0,6',
+            'id_edu' => 'numeric|between: 1,8',
+            'id_specialist' => 'numeric|between: 1,14',
+            'type' => 'numeric|between: 1,4',
+            'level' => 'numeric|between: 1,5',
             'id_city' => 'numeric|gte: 0',
             'experience' => 'numeric|gte: 0',
             'min_salary' => 'numeric|gte: 0'
