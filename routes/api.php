@@ -114,6 +114,9 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::get('vacancy/docs', [JobApplicantController::class, 'getDocs']);
 		Route::get('vacancy/my_applications', [JobApplicantController::class, 'myJobApplications']);
 		Route::get('vacancy/show_all', [JobApplicantController::class, 'showAvailableVacancy']);
+
+		Route::post('vacancy/search', [JobApplicantController::class, 'searchVacancy']);
+
 		Route::post('vacancy/add_bookmark', [JobApplicantController::class, 'addVacancyBookmark']);
 		Route::post('vacancy/remove_bookmark', [JobApplicantController::class, 'removeVacancyBookmark']);
 		Route::get('vacancy/my_bookmark', [JobApplicantController::class, 'showVacancyBookmark']);

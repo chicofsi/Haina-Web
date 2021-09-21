@@ -112,6 +112,94 @@ class JobApplicantController extends Controller
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Show Vacancies Success!','data'=>$ordered_vacancy]), 200);
     }
 
+    public function searchVacancy(Request $request){
+        
+        $validator = Validator::make($request->all(), [
+            'id_edu' => 'numeric|between: 0,9',
+            'id_specialist' => 'numeric|between: 0,14',
+            'type' => 'numeric|between: 0,6',
+            'level' => 'numeric|between: 0,6',
+            'id_city' => 'numeric|gte: 0',
+            'experience' => 'numeric|gte: 0'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $today = date("Y-m-d H:i:s");
+
+            $search = JobVacancy::where('status', 'not like', 'unsuccess')->whereDate('deleted_at', '>', $today)->when(request()->has('min_salary'), function($q){
+                            $q->where('min_salary', '>=', request('min_salary'));
+                    })->when(request()->has('id_edu'), function($q){
+                            $q->where('id_edu', '<=', request('id_edu'));
+                    })->when(request()->has('id_specialist'), function($q){
+                            $q->where('id_specialist', request('id_specialist'));
+                    })->when(request()->has('id_city'), function($q){
+                            $q->where('id_city', request('id_city'));
+                    })->when(request()->has('type'), function($q){
+                            $q->where('type', request('type'));
+                    })->when(request()->has('level'), function($q){
+                            $q->where('level', request('level'));
+                    })->when(request()->has('experience'), function($q){
+                            $q->where('experience', request('experience'));
+                    })->get();
+
+            if(count($search) == 0){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No job vacancy found for this search!','data'=> '']), 404);
+            }
+            else{
+                foreach($search as $key => $value){
+                    if($value->package == 3){
+                        $value->pinned = "Y";
+                    }
+        
+                    $company_name = Company::where('id', $value->id_company)->with('photo')->first();
+                    $value->company_name = $company_name['name'];
+                    $value->company_desc = $company_name['description'];
+                    $value->company_photo = $company_name['photo'];
+        
+                    foreach($value->company_photo as $keyphoto => $valuephoto){
+                        $valuephoto->photo_url = "https://hainaservice.com/storage/".$valuephoto->photo_url;
+                    }
+        
+                    $value->company_url = "https://hainaservice.com/storage/".$company_name['icon_url'];
+        
+                    $package_name = JobVacancyPackage::where('id', $value->package)->first();
+                    $value->package_name = $package_name['name'];
+        
+                    $city_name = City::where('id', $value->id_city)->first();
+                    $value->city_name = $city_name['name'];
+        
+                    $level_name = JobVacancyLevel::where('id', $value->level)->first();
+                    $value->level_name = $level_name['name'];
+        
+                    $type_name = JobVacancyType::where('id', $value->type)->first();
+                    $value->type_name = $type_name['name'];
+        
+                    $specialist_name = JobCategory::where('id', $value->id_specialist)->first();
+                    $value->specialist_name = $specialist_name['name'];
+        
+                    $edu_name = Education::where('id', $value->id_edu)->first();
+                    $value->edu_name = $edu_name['name'];
+        
+                    $bookmark_status = JobVacancyBookmark::where('id_user',Auth::id())->where('id_job_vacancy', $value->id)->first();
+                    if($bookmark_status != null){
+                        $value->bookmarked = 1;
+                    }
+                    else{
+                        $value->bookmarked = 0;
+                    }
+                }
+
+                $ordered_vacancy = collect($get_vacancy)->sortByDesc('created_at')->sortByDesc('pinned')->toArray();
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Search Vacancies Success!','data'=>$ordered_vacancy]), 200);
+            }
+
+        }
+
+    }
+
     public function applyJob(Request $request){
         $validator = Validator::make($request->all(), [
             'id_vacancy' => 'required',
