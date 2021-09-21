@@ -1518,7 +1518,7 @@ class HotelDarmaController extends Controller
                         array_push($token, $value->name); 
                     }
 
-                    NotificationController::createNotif($valuepro->user_id, "Booking issued", "Your reservation for booking at".$hotel_name['hotel_name']." is issued", 3);
+                    NotificationController::createNotif($valuepro->user_id, "Booking issued", "Your reservation for booking at".$hotel_name['hotel_name']." is issued", 3, 1);
                     foreach ($token as $key => $value) {
 
                         NotificationController::sendPush($valuepro->user_id,$value, "Booking issued", "Your reservation for booking at".$hotel_name['hotel_name']." is issued", "Hotel", "finish");

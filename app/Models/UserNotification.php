@@ -16,7 +16,7 @@ class UserNotification extends Model
     protected $table = 'user_notification';
 
     protected $fillable = [
-        'id_category','id_user', 'title', 'body', 'opened'
+        'id_category','id_user', 'title', 'body', 'opened', 'id_icon'
     ];
 
 
@@ -26,5 +26,8 @@ class UserNotification extends Model
     } 
     public function user(){
         return $this->belongsTo('App\Models\User','id_user','id');
+    }
+    public function icon(){
+        return $this->belongsTo('App\Models\NotificationIcon','id_icon','id');
     }
 }

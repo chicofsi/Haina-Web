@@ -138,7 +138,7 @@ class NotificationController extends Controller
     }
 
 
-    public static function createNotif($idUser,$title,$body,$idCategory)
+    public static function createNotif($idUser,$title,$body,$idCategory,$idIcon)
     {
 
         $notification = UserNotification::create([
@@ -146,6 +146,7 @@ class NotificationController extends Controller
             'body' => $body,
             'id_category' => $idCategory,
             'id_user' => $idUser,
+            'id_icon' => $idIcon
         ]);
 
         /*
@@ -174,7 +175,7 @@ class NotificationController extends Controller
             
 
             $value['img'] = URL::to('storage/'.$value['img']);
-            $value['notif']=UserNotification::where('id_user',$request->user()->id)->where('id_category',$value->id)->orderBy('created_at', 'desc')->get();
+            $value['notif']=UserNotification::where('id_user',$request->user()->id)->where('id_category',$value->id)->orderBy('created_at', 'desc')->with('icon')->get();
             foreach ($value['notif'] as $key_notif => $value_notif) {
                 $value_notif['date']=$value_notif->created_at->format('d M Y H:i:s');
             }
