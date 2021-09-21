@@ -191,7 +191,7 @@ class JobApplicantController extends Controller
                     }
                 }
 
-                $ordered_vacancy = collect($get_vacancy)->sortByDesc('created_at')->sortByDesc('pinned')->toArray();
+                $ordered_vacancy = collect($search)->sortByDesc('created_at')->sortByDesc('pinned')->toArray();
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Search Vacancies Success!','data'=>$ordered_vacancy]), 200);
             }
