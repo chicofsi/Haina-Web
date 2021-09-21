@@ -390,6 +390,7 @@ class JobApplicantController extends Controller
             foreach($value->company_photo as $keyphoto => $valuephoto){
                 $valuephoto->photo_url = "https://hainaservice.com/storage/".$valuephoto->photo_url;
             }
+            $value->company_url = "https://hainaservice.com/storage/".$company_name['icon_url'];
 
             $city_name = City::where('id', $value->id_city)->first();
             $value->city_name = $city_name['name'];
@@ -405,7 +406,7 @@ class JobApplicantController extends Controller
 
             $edu_name = Education::where('id', $value->id_edu)->first();
             $value->edu_name = $edu_name['name'];
-            
+
             $bookmark_status = JobVacancyBookmark::where('id_user',Auth::id())->where('id_job_vacancy', $value->id)->first();
             if($bookmark_status == null){
                 unset($get_vacancy[$key]);
