@@ -1716,10 +1716,12 @@ class ForumController extends Controller
     }
 
     public function showHotThreads(Request $request){
+        $date = new DateTime("now");
+        $datebefore = $date->modify('-30 days');
 
         $list_post = ForumPost::where('deleted_at', null)->with(['comments' => function($q){
             $q->where('forum_comment.deleted_at', '=', null);
-        }], 'images', 'videos')->get();
+        }], 'images', 'videos')->whereBetween($datebefore, $date)->get();
         $hot_threads = [];
         $threads = [];
 
@@ -1788,6 +1790,7 @@ class ForumController extends Controller
                 'comment_count' => count(ForumComment::where('post_id', $value->id)->where('deleted_at', null)->get()),
                 'view_count' => $value->view_count,
                 'share_count' => $value->share_count,
+                'engagement_count' => $likes + count(ForumComment::where('post_id', $value->id)->where('deleted_at', null)->get()),
                 'created' => $value->created_at,
                 'content' => $value->content,
                 'images' => $value->images,
@@ -1807,11 +1810,10 @@ class ForumController extends Controller
 
         }
 
-        $like = array_column($threads, 'like_count');
-        $comment = array_column($threads, 'comment_count');
+        $engage = array_column($threads, 'engagement_count');
+        $views = array_column($threads, 'view_count');
 
         array_multisort($like, SORT_DESC, $comment, SORT_DESC, $threads);
-        //dd($threads);
         $hot_threads = array_slice($threads, 0, 5);
 
         if(count($hot_threads) > 0){
