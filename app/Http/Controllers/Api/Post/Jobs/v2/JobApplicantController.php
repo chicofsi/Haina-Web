@@ -237,15 +237,22 @@ class JobApplicantController extends Controller
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
         }else{
-            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->whereDate('deleted_at', '>', $today)->first();
 
             if(!$check_vacancy){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
             }
             else{
-                $check_vacancy->bookmark()->attach(Auth::id());
+                $bookmark_status = JobVacancyBookmark::where('id_user',Auth::id())->where('id_job_vacancy', $request->id_vacancy)->first();
+                if($bookmark_status != null){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Job is already bookmarked!','data'=> '']), 404);
+                }
+                else{
+                    $check_vacancy->bookmark()->attach(Auth::id());
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmark added!','data'=> ['id_vacancy' => $request->id_vacancy, 'id_user' => Auth::id()]]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmark added!','data'=> ['id_vacancy' => $request->id_vacancy, 'id_user' => Auth::id()]]), 200);
+                }
+                
             }
         }
     }
@@ -258,15 +265,23 @@ class JobApplicantController extends Controller
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
         }else{
-            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->first();
+            $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->whereDate('deleted_at', '>', $today)->first();
 
             if(!$check_vacancy){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No Vacancy found!','data'=> '']), 404);
             }
             else{
-                $check_vacancy->bookmark()->detach(Auth::id());
+                $bookmark_status = JobVacancyBookmark::where('id_user',Auth::id())->where('id_job_vacancy', $request->id_vacancy)->first();
+                if($bookmark_status != null){
+                    $check_vacancy->bookmark()->detach(Auth::id());
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmark removed!','data'=> ['id_vacancy' => $request->id_vacancy, 'id_user' => Auth::id()]]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmark removed!','data'=> ['id_vacancy' => $request->id_vacancy, 'id_user' => Auth::id()]]), 200);
+                    
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'You did not bookmark this job!','data'=> '']), 404);
+                }
+
             }
         }
     }
