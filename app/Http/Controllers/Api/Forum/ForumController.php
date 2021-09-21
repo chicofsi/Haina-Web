@@ -1721,7 +1721,7 @@ class ForumController extends Controller
 
         $list_post = ForumPost::where('deleted_at', null)->with(['comments' => function($q){
             $q->where('forum_comment.deleted_at', '=', null);
-        }], 'images', 'videos')->whereBetween($datebefore, $date)->get();
+        }], 'images', 'videos')->whereBetween('created_at', [$datebefore, $date])->get();
         $hot_threads = [];
         $threads = [];
 
