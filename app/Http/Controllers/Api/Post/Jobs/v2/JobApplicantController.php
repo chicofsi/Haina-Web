@@ -59,7 +59,7 @@ class JobApplicantController extends Controller
         //     $get_vacancy = JobVacancy::where('id_company', 'not_like', $check_company['id'])->get();
         // }
         // else{
-            $get_vacancy = JobVacancy::where('status', 'not like', 'unsuccess')->whereDate('deleted_at', '>', $today)->with()->get();
+            $get_vacancy = JobVacancy::where('status', 'not like', 'unsuccess')->whereDate('deleted_at', '>', $today)->get();
         //}
         
         foreach($get_vacancy as $key => $value){
@@ -245,7 +245,7 @@ class JobApplicantController extends Controller
             else{
                 $check_vacancy->bookmark()->attach(Auth::id());
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmark added!','data'=> '']), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmark added!','data'=> ['id_vacancy' => $request->id_vacancy, 'id_user' => Auth::id()]]), 200);
             }
         }
     }
@@ -266,7 +266,7 @@ class JobApplicantController extends Controller
             else{
                 $check_vacancy->bookmark()->detach(Auth::id());
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmark removed!','data'=> '']), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmark removed!','data'=> ['id_vacancy' => $request->id_vacancy, 'id_user' => Auth::id()]]), 200);
             }
         }
     }
