@@ -294,7 +294,7 @@ class JobApplicantController extends Controller
 
         foreach($get_vacancy as $key => $value){
             $bookmark_status = JobVacancyBookmark::where('id_user',Auth::id())->where('id_job_vacancy', $value->id)->first();
-            if($bookmark_status != null){
+            if($bookmark_status == null){
                 unset($get_vacancy[$key]);
             }
         }
