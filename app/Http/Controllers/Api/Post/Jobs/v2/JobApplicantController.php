@@ -288,6 +288,21 @@ class JobApplicantController extends Controller
         }
     }
 
-    
+    public function showVacancyBookmark(){
+        $today = date("Y-m-d H:i:s");
+        $get_vacancy = JobVacancy::where('status', 'not like', 'unsuccess')->whereDate('deleted_at', '>', $today)->get();
+
+        foreach($get_vacancy as $key => $value){
+            $bookmark_status = JobVacancyBookmark::where('id_user',Auth::id())->where('id_job_vacancy', $value->id)->first();
+            if($bookmark_status != null){
+                unset($get_vacancy[$key]);
+            }
+        }
+
+        $ordered_vacancy = collect($get_vacancy)->sortByDesc('created_at')->toArray();
+
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Show Bookmarked Vacancy Success!','data'=>$ordered_vacancy]), 200);
+
+    }
 
 }

@@ -116,7 +116,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::get('vacancy/show_all', [JobApplicantController::class, 'showAvailableVacancy']);
 		Route::post('vacancy/add_bookmark', [JobApplicantController::class, 'addVacancyBookmark']);
 		Route::post('vacancy/remove_bookmark', [JobApplicantController::class, 'removeVacancyBookmark']);
-
+		Route::get('vacancy/rmy_bookmark', [JobApplicantController::class, 'showVacancyBookmark']);
 	});
 	////
 
