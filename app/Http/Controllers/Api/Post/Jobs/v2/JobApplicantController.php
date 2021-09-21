@@ -237,6 +237,7 @@ class JobApplicantController extends Controller
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
         }else{
+            $today = date("Y-m-d H:i:s");
             $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->whereDate('deleted_at', '>', $today)->first();
 
             if(!$check_vacancy){
@@ -265,6 +266,7 @@ class JobApplicantController extends Controller
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
         }else{
+            $today = date("Y-m-d H:i:s");
             $check_vacancy = JobVacancy::where('id', $request->id_vacancy)->whereDate('deleted_at', '>', $today)->first();
 
             if(!$check_vacancy){
@@ -285,5 +287,7 @@ class JobApplicantController extends Controller
             }
         }
     }
+
+    
 
 }
