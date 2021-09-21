@@ -1717,7 +1717,7 @@ class ForumController extends Controller
 
     public function showHotThreads(Request $request){
         $date = new DateTime("now");
-        $datebefore = $date->modify('-30 days');
+        $datebefore = $date->modify('-90 days');
 
         $list_post = ForumPost::where('deleted_at', null)->with(['comments' => function($q){
             $q->where('forum_comment.deleted_at', '=', null);
