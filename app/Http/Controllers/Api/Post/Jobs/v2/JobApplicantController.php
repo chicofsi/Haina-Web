@@ -301,7 +301,12 @@ class JobApplicantController extends Controller
 
         $ordered_vacancy = collect($get_vacancy)->sortByDesc('created_at')->toArray();
 
-        return response()->json(new ValueMessage(['value'=>1,'message'=>'Show Bookmarked Vacancy Success!','data'=>$ordered_vacancy]), 200);
+        if(count($ordered_vacancy) == 0){
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'No Bookmarked Vacancy Found!','data'=>'']), 404);
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Show Bookmarked Vacancy Success!','data'=>$ordered_vacancy]), 200);
+        }
 
     }
 
