@@ -120,7 +120,8 @@ class JobApplicantController extends Controller
             'type' => 'numeric|between: 0,6',
             'level' => 'numeric|between: 0,6',
             'id_city' => 'numeric|gte: 0',
-            'experience' => 'numeric|gte: 0'
+            'experience' => 'numeric|gte: 0',
+            'min_salary' => 'numeric|gte: 0'
         ]);
 
         if ($validator->fails()) {
