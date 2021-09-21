@@ -25,6 +25,7 @@ use App\Models\CompanyPhoto;
 use App\Models\JobCategory;
 use App\Models\JobVacancyApplicant;
 use App\Models\JobVacancy;
+use App\Models\JobVacancyBookmark;
 use App\Models\JobVacancyInterview;
 use App\Models\JobVacancyPayment;
 use App\Models\JobVacancyLevel;
@@ -58,7 +59,7 @@ class JobApplicantController extends Controller
         //     $get_vacancy = JobVacancy::where('id_company', 'not_like', $check_company['id'])->get();
         // }
         // else{
-            $get_vacancy = JobVacancy::where('status', 'not like', 'unsuccess')->whereDate('deleted_at', '>', $today)->get();
+            $get_vacancy = JobVacancy::where('status', 'not like', 'unsuccess')->whereDate('deleted_at', '>', $today)->with()->get();
         //}
         
         foreach($get_vacancy as $key => $value){
@@ -95,6 +96,14 @@ class JobApplicantController extends Controller
 
             $edu_name = Education::where('id', $value->id_edu)->first();
             $value->edu_name = $edu_name['name'];
+
+            $bookmark_status = JobVacancyBookmark::where('id_user',Auth::id())->where('id_job_vacancy', $value->id)->first();
+            if($bookmark_status != null){
+                $value->bookmarked = 1;
+            }
+            else{
+                $value->bookmarked = 0;
+            }
 
         }
 
