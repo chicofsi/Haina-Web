@@ -382,6 +382,30 @@ class JobApplicantController extends Controller
         $get_vacancy = JobVacancy::where('status', 'not like', 'unsuccess')->whereDate('deleted_at', '>', $today)->get();
 
         foreach($get_vacancy as $key => $value){
+            $company_name = Company::where('id', $value->id_company)->with('photo')->first();
+            $value->company_name = $company_name['name'];
+            $value->company_desc = $company_name['description'];
+            $value->company_photo = $company_name['photo'];
+
+            foreach($value->company_photo as $keyphoto => $valuephoto){
+                $valuephoto->photo_url = "https://hainaservice.com/storage/".$valuephoto->photo_url;
+            }
+
+            $city_name = City::where('id', $value->id_city)->first();
+            $value->city_name = $city_name['name'];
+
+            $level_name = JobVacancyLevel::where('id', $value->level)->first();
+            $value->level_name = $level_name['name'];
+
+            $type_name = JobVacancyType::where('id', $value->type)->first();
+            $value->type_name = $type_name['name'];
+
+            $specialist_name = JobCategory::where('id', $value->id_specialist)->first();
+            $value->specialist_name = $specialist_name['name'];
+
+            $edu_name = Education::where('id', $value->id_edu)->first();
+            $value->edu_name = $edu_name['name'];
+            
             $bookmark_status = JobVacancyBookmark::where('id_user',Auth::id())->where('id_job_vacancy', $value->id)->first();
             if($bookmark_status == null){
                 unset($get_vacancy[$key]);
