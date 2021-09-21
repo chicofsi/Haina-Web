@@ -1719,11 +1719,11 @@ class ForumController extends Controller
         $date = new DateTime("now");
         $datebefore = date_add($date, date_interval_create_from_date_string('-90 days'));
 
-        dd($datebefore);
+        //dd($datebefore);
 
         $list_post = ForumPost::where('deleted_at', null)->with(['comments' => function($q){
             $q->where('forum_comment.deleted_at', '=', null);
-        }], 'images', 'videos')->whereBetween('created_at', [$datebefore, $date])->get();
+        }], 'images', 'videos')->get();
         $hot_threads = [];
         $threads = [];
 
