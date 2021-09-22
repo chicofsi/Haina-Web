@@ -2404,7 +2404,7 @@ class ForumController extends Controller
     public function searchForumFollowers(Request $request){
         $validator = Validator::make($request->all(), [
             'subforum_id' => 'required',
-            'keyword' => 'nullable|gte:2'
+            'keyword' => 'nullable'
         ]);
 
         if ($validator->fails()) {
