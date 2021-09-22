@@ -2385,7 +2385,7 @@ class ForumController extends Controller
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
                 }
                 else{
-                    $banlist = ForumBanlist::where('subforum_id', $request->subforum_id)->get();
+                    $banlist = ForumBan::where('subforum_id', $request->subforum_id)->get();
 
                     if(count($banlist) > 0){
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Banlist Success!','data'=> $banlist]), 200);
