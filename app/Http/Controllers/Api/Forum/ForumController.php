@@ -2425,6 +2425,9 @@ class ForumController extends Controller
                 })->first();
 
                 if($check_user_id != null){
+                    $value->username = $check_user_id['username'];
+                    $value->photo = "https://hainaservice.com/storage/".$check_user_id['photo'];
+                    $value->member_since = date("F Y", strtotime($check_user_id['created_at']));
                     array_push($result, $get_followers[$key]);
                 }
             }
