@@ -1717,7 +1717,7 @@ class ForumController extends Controller
 
     public function showHotThreads(Request $request){
         $date = date("Y-m-d H:i:s");
-        $datebefore = date_add($date, date_interval_create_from_date_string('-90 days'));
+        $datebefore = date_add(strtotime($date), date_interval_create_from_date_string('-90 days'));
 
         //dd($datebefore);
 
