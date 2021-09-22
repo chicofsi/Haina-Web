@@ -311,6 +311,9 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/share', [ForumController::class, 'sharePost']);
 		Route::get('/my_role', [ForumController::class, 'myRoles']);
 		Route::get('/my_ban', [ForumController::class, 'myBans']);
+
+		Route::post('/banlist', [ForumController::class, 'showBanList']);
+		Route::post('/search_user', [ForumController::class, 'searchForumFollowers']);
 	});
 	
 });
