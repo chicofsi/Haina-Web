@@ -720,9 +720,9 @@ class ForumController extends Controller
                             'message' => $mod['username'].' deleted "'.$post_owner['title'].'" from '.$subforum['name'].'.'
                         ]);
 
-                        NotificationController::createNotif($post_owner['user_id'], "Your post is removed", "Your post ".$post_owner['title']."is removed by a moderator.", 6, 3);
+                        NotificationController::createNotif($post_owner['user_id'], "Your post is removed", "Your post ".$post_owner['title']." is removed by a moderator.", 6, 3);
                         foreach ($token as $key => $value) {
-                            NotificationController::sendPush($post_owner['user_id'], $value, "Your post is removed", "Your post ".$post_owner['title']."is removed by a moderator.", "Forum", "delete");
+                            NotificationController::sendPush($post_owner['user_id'], $value, "Your post is removed", "Your post ".$post_owner['title']." is removed by a moderator.", "Forum", "delete");
                         }
                     }
                     $delete_post = ForumPost::where('id', $request->post_id)->where('deleted_at', null)->update([
@@ -822,9 +822,9 @@ class ForumController extends Controller
                             'message' => $mod['username'].' deleted "'.$comment_owner['content'].'" from '.$post_name['title'].' in '.$subforum['name'].'.'
                         ]);
     
-                        NotificationController::createNotif($comment_owner['user_id'], "Your comment is removed", "Your comment at".$post_name['title']."is removed by a moderator.", 6, 3);
+                        NotificationController::createNotif($comment_owner['user_id'], "Your comment is removed", "Your comment at ".$post_name['title']." is removed by a moderator.", 6, 3);
                         foreach ($token as $key => $value) {
-                            NotificationController::sendPush($comment_owner['user_id'], $value, "Your comment is removed", "Your comment at".$post_name['title']."is removed by a moderator.", "Forum", "delete");
+                            NotificationController::sendPush($comment_owner['user_id'], $value, "Your comment is removed", "Your comment at ".$post_name['title']." is removed by a moderator.", "Forum", "delete");
                         }
                     }
     

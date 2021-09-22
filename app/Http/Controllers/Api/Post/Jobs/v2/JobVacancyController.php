@@ -67,6 +67,10 @@ class JobVacancyController extends Controller
 
         $specialist = JobCategory::all();
 
+        foreach($specialist as $key => $value){
+            $value->photo_url = "https://hainaservice.com/storage/".$value->photo_url;
+        }
+
         $package = JobVacancyPackage::all();
 
         $data->vacancy_level = $level;
