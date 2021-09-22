@@ -2411,12 +2411,18 @@ class ForumController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $keyword = str_replace(['%','\\'],'',$request->keyword);
+            $keyeord = "";
+            if($request->keyword){
+                $keyword = str_replace(['%','\\'],'',$request->keyword);
+            }
+            
             $result = [];
             $get_followers = SubforumFollowers::where('subforum_id', $request->subforum_id)->get();
 
             foreach($get_followers as $key => $value){
-                $check_user_id = User::where('username', 'like', '%'.$keyword.'%')->first();
+                $check_user_id = User::when(request()->has('keyword'), function($q){
+                    $q->where('username', 'like', '%'.$keyword.'%');
+                })->first();
 
                 if($check_user_id != null){
                     array_push($result, $get_followers[$key]);
