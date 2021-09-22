@@ -2367,4 +2367,69 @@ class ForumController extends Controller
         }
     }
 
+    public function showBanList(Request $request){
+        $validator = Validator::make($request->all(), [
+            'subforum_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check_subforum = Subforum::where('id', $request->subforum_id)->first();
+
+            if($check_subforum != null){
+                $checkmod = ForumMod::where('user_id', Auth::id())->where('subforum_id', $request->subforum_id)->first();
+
+                if(!$checkmod){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 401);
+                }
+                else{
+                    $banlist = ForumBanlist::where('subforum_id', $request->subforum_id)->get();
+
+                    if(count($banlist) > 0){
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Banlist Success!','data'=> $banlist]), 200);
+                    }
+                    else{
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Banlist empty!','data'=> '']), 404);
+                    }
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Subforum Not Found!','data'=> '']), 404);
+            }
+        }
+    }
+
+    public function searchForumFollowers(Request $request){
+        $validator = Validator::make($request->all(), [
+            'subforum_id' => 'required',
+            'keyword' => 'gte:2'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $keyword = str_replace(['%','\\'],'',$request->keyword);
+            $result = [];
+            $get_followers = SubforumFollowers::where('subforum_id', $request->subforum_id)->get();
+
+            foreach($get_followers as $key => $value){
+                $check_user_id = User::where('username', 'like', '%'.$keyword.'%')->first();
+
+                if($check_user_id != null){
+                    array_push($result, $get_followers[$key]);
+                }
+            }
+
+            if(count($result) > 0){
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Search Subforum Followers Success!','data'=> $result]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Subforum Followers Not Found!','data'=> '']), 404);
+            }
+        }
+    }
+
 }
