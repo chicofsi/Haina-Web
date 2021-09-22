@@ -1716,14 +1716,14 @@ class ForumController extends Controller
     }
 
     public function showHotThreads(Request $request){
-        $date = new DateTime("now");
+        $date = date("Y-m-d H:i:s");
         $datebefore = date_add($date, date_interval_create_from_date_string('-90 days'));
 
         //dd($datebefore);
 
         $list_post = ForumPost::where('deleted_at', null)->with(['comments' => function($q){
             $q->where('forum_comment.deleted_at', '=', null);
-        }], 'images', 'videos')->get();
+        }], 'images', 'videos')->whereDate('created_at', '>', $datebefore)->whereDate('created_at', '<=', $date)->get();
         $hot_threads = [];
         $threads = [];
 
