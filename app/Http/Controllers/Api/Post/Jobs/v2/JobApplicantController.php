@@ -142,7 +142,7 @@ class JobApplicantController extends Controller
                     })->when(request()->has('level'), function($q){
                             $q->where('level', request('level'));
                     })->when(request()->has('experience'), function($q){
-                            $q->where('experience', request('experience'));
+                            $q->where('experience', '<=' ,request('experience'));
                     })->get();
 
             if(count($search) == 0){
