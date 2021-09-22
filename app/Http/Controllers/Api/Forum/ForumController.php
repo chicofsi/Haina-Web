@@ -528,8 +528,12 @@ class ForumController extends Controller
                     $post = ForumPost::where('id', $request->post_id)->first();
 
                     $checkmod = ForumMod::where('user_id', $value->user_id)->where('subforum_id', $post['subforum_id'])->first();
+                    $checkban = ForumBan::where('subforum_id', $request->subforum_id)->where('user_id', $value->user_id)->first();
 
-                    if($checkmod){
+                    if($checkban){
+                        $value->mod = "banned";
+                    }
+                    else if($checkmod){
                         $value->mod = $checkmod['role'];
                     }
                     else{
