@@ -2411,24 +2411,26 @@ class ForumController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $keyeord = "";
+            $keyword = "";
             if($request->keyword){
                 $keyword = str_replace(['%','\\'],'',$request->keyword);
             }
             
             $result = [];
+
             $get_followers = SubforumFollowers::where('subforum_id', $request->subforum_id)->get();
 
             foreach($get_followers as $key => $value){
-                $check_user_id = User::when(request()->has('keyword'), function($q){
-                    $q->where('username', 'like', '%'.$keyword.'%');
-                })->first();
+                $check_user_id = User::where('id', $value->user_id)->first();
 
                 if($check_user_id != null){
-                    $value->username = $check_user_id['username'];
-                    $value->photo = "https://hainaservice.com/storage/".$check_user_id['photo'];
-                    $value->member_since = date("F Y", strtotime($check_user_id['created_at']));
-                    array_push($result, $get_followers[$key]);
+                    if(($request->keyword != null && stripos($value->username, $keyword) != false) || $request->keyword == null){
+                        $value->username = $check_user_id['username'];
+                        $value->photo = "https://hainaservice.com/storage/".$check_user_id['photo'];
+                        $value->member_since = date("F Y", strtotime($check_user_id['created_at']));
+                        array_push($result, $get_followers[$key]);
+                    }
+                    
                 }
             }
 
