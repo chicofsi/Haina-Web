@@ -2507,7 +2507,7 @@ class ForumController extends Controller
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Remove bookmark post success!','data'=> ['user_id' => Auth::id(), 'post_id' => $request->post_id, 'post_title' => $check_post['title']]]), 200);
                 }
                 else{
-                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Post is already bookmarked!','data'=> '']), 404);
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'You do not bookmark this post!','data'=> '']), 404);
                 }
             }
 
@@ -2533,7 +2533,7 @@ class ForumController extends Controller
                 $post['comments'] = $comments;
                 $post['subforum_data'] = $subforum;
                 
-                if($ucheck_upvote){
+                if($check_upvote){
                     $post['upvoted'] = true;
                 }
                 else{
