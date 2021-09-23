@@ -312,6 +312,10 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::get('/my_role', [ForumController::class, 'myRoles']);
 		Route::get('/my_ban', [ForumController::class, 'myBans']);
 
+		Route::get('/my_bookmark', [ForumController::class, 'showPostBookmark']);
+		Route::post('/add_bookmark', [ForumController::class, 'addPostBookmark']);
+		Route::post('/remove_bookmark', [ForumController::class, 'removePostBookmark']);
+
 		Route::post('/banlist', [ForumController::class, 'showBanList']);
 		Route::post('/search_user', [ForumController::class, 'searchForumFollowers']);
 	});

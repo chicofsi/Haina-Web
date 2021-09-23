@@ -67,6 +67,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany('App\Models\JobVacancy', 'job_bookmark', 'id_user', 'id_job_vacancy');
     }
 
+    public function forum_bookmark(){
+        return $this->belongsToMany('App\Models\ForumPost', 'forum_bookmark', 'user_id', 'post_id');
+    }
+
     public function education(){
         return $this->hasOne('App\Models\UserEducation', 'id_user', 'id'); 
     }

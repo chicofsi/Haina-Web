@@ -35,4 +35,8 @@ class ForumPost extends Model
         return $this->hasMany('App\Models\ForumVideo','post_id','id');
     }
 
+    public function forum_bookmark(){
+        return $this->belongsToMany('App\Models\User', 'forum_bookmark', 'post_id', 'user_id');
+    }
+
 }

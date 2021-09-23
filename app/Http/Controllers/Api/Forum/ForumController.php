@@ -17,6 +17,7 @@ use App\Models\ForumCategory;
 use App\Models\Subforum;
 use App\Models\SubforumFollowers;
 use App\Models\ForumBan;
+use App\Models\ForumBookmark;
 use App\Models\ForumPost;
 use App\Models\ForumComment;
 use App\Models\ForumFollowers;
@@ -2445,6 +2446,102 @@ class ForumController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Subforum Followers Not Found!','data'=> '']), 404);
             }
         }
+    }
+
+    public function addPostBookmark(Request $request){
+        $validator = Validator::make($request->all(), [
+            'post_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_post = ForumPost::where('id', $request->post_id)-> where('deleted_at', null)->first();
+
+            if(!$check_post){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
+            }
+            else{
+                $check_bookmark = ForumBookmark::where('post_id', $request->post_id)->where('user_id', Auth::id)->first();
+
+                if($check_bookmark != null){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Post is already bookmarked!','data'=> '']), 404);
+                }
+                else{
+                    $check_post->forum_bookmark()->attach(Auth::id());
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmark post success!','data'=> ['user_id' => Auth::id(), 'post_id' => $request->post_id, 'post_title' => $check_post['title']]]), 200);
+                }
+            }
+        }
+    }
+
+    public function removePostBookmark(Request $request){
+        $validator = Validator::make($request->all(), [
+            'post_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_post = ForumPost::where('id', $request->post_id)-> where('deleted_at', null)->first();
+
+            if(!$check_post){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
+            }
+            else{
+                $bookmark_status = JobVacancyBookmark::where('id_user',Auth::id())->where('id_job_vacancy', $request->id_vacancy)->first();
+
+                if($bookmark_status != null){
+                    $check_post->forum_bookmark()->detach(Auth::id());
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Remove bookmark post success!','data'=> ['user_id' => Auth::id(), 'post_id' => $request->post_id, 'post_title' => $check_post['title']]]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Post is already bookmarked!','data'=> '']), 404);
+                }
+            }
+
+        }
+    }
+
+    public function showPostBookmark(){
+        $check_bookmark = ForumBookmark::where('user_id', Auth::id())->get();
+        $result = [];
+        if(count($check_bookmark) > 0){
+            foreach($check_bookmark as $key => $value){
+                $post = ForumPost::where('id', $value->post_id)->with('images')->first();
+    
+                $author = User::where('id', $post['user_id'])->first();
+                $likes = count(ForumUpvote::where('post_id', $post['id'])->get());
+                $comments = count(ForumComment::where('post_id', $post['id'])->where('deleted_at', null)->get());
+    
+                $check_upvote = ForumUpvote::where('post_id', $post['id'])->where('user_id', Auth::id())->first();
+                $subforum = Subforum::where('id', $post['subforum_id'])->first();
+    
+                $post['author'] = $author['username'];
+                $post['likes'] = $likes;
+                $post['comments'] = $comments;
+                $post['subforum_data'] = $subforum;
+                
+                if($ucheck_upvote){
+                    $post['upvoted'] = true;
+                }
+                else{
+                    $post['upvoted'] = false;
+                }
+
+                array_push($result, $post);
+            }
+
+            $ordered_result = collect($result)->sortByDesc('created_at')->toArray();
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Show Bookmarked Post Success!','data'=>$ordered_result]), 200);
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'No Bookmarked Posts Found!','data'=>'']), 404);
+        }
+        
     }
 
 }
