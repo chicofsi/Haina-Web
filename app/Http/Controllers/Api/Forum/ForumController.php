@@ -2490,7 +2490,7 @@ class ForumController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
             }
             else{
-                $bookmark_status = JobVacancyBookmark::where('id_user',Auth::id())->where('id_job_vacancy', $request->id_vacancy)->first();
+                $bookmark_status = ForumBookmark::where('id_user',Auth::id())->where('id_job_vacancy', $request->id_vacancy)->first();
 
                 if($bookmark_status != null){
                     $check_post->forum_bookmark()->detach(Auth::id());
