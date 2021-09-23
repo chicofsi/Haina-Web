@@ -166,6 +166,15 @@ class ForumController extends Controller
 
                         $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
+                        $bookmark_status = ForumBookmark::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+
+                        if($bookmark_status){
+                            $valuepost->bookmarked = true;
+                        }
+                        else{
+                            $valuepost->bookmarked = false;
+                        }
+
                         $subforum_data['category'] = $category_name['name'];
                         $subforum_data['category_zh'] = $category_name['name_zh'];
 
@@ -231,6 +240,15 @@ class ForumController extends Controller
                 $author = User::where('id', $value->user_id)->first();
     
                 $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
+
+                $bookmark_status = ForumBookmark::where('post_id', $value->id)->where('user_id', Auth::id())->first();
+
+                if($bookmark_status){
+                    $value->bookmarked = true;
+                }
+                else{
+                    $value->bookmarked = false;
+                }
     
                 $subforum_data = Subforum::where('id', $value->subforum_id)->first();
                 $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', Auth::id())->first();
@@ -420,6 +438,15 @@ class ForumController extends Controller
                     $lastpost = $check_comment['created_at'];
                 }
 
+                $bookmark_status = ForumBookmark::where('post_id', $value->id)->where('user_id', Auth::id())->first();
+
+                if($bookmark_status){
+                    $value->bookmarked = true;
+                }
+                else{
+                    $value->bookmarked = false;
+                }
+
                 $subforum_data = Subforum::where('id', $value->subforum_id)->first();
                 $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', Auth::id())->first();
     
@@ -470,6 +497,7 @@ class ForumController extends Controller
                     'content' => $value->content,
                     'images' => $value->images,
                     'videos' => $value->videos,
+                    'bookmarked' => $value->bookmarked,
                     'subforum_follow' => $follow_subforum,
                     'subforum_data' => $subforum_data,
                     'author_data' => $author,
@@ -580,10 +608,10 @@ class ForumController extends Controller
                 $bookmark_status = ForumBookmark::where('post_id', $request->post_id)->where('user_id', Auth::id())->first();
 
                 if($bookmark_status){
-                    $post_detail['bookmarked'] == 'true';
+                    $post_detail['bookmarked'] = true;
                 }
                 else{
-                    $post_detail['bookmarked'] == 'false';
+                    $post_detail['bookmarked'] = false;
                 }
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Post displayed successfully!','data'=> $post_detail]), 200);
@@ -958,6 +986,15 @@ class ForumController extends Controller
                     if($valuepost->user_id != Auth::id()){
                     $valuepost->upvoted = $upvote;
                     }
+
+                    $bookmark_status = ForumBookmark::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+
+                    if($bookmark_status){
+                        $valuepost->bookmarked = true;
+                    }
+                    else{
+                        $valuepost->bookmarked = false;
+                    }
                     
                     $valuepost->author = $author['username'];
                     $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
@@ -1026,6 +1063,15 @@ class ForumController extends Controller
                 }
                 if($valuethread->user_id != Auth::id()){
                     $valuethread->upvoted = $upvote;
+                }
+
+                $bookmark_status = ForumBookmark::where('post_id', $valuethread->id)->where('user_id', Auth::id())->first();
+
+                if($bookmark_status){
+                    $valuethread->bookmarked = true;
+                }
+                else{
+                    $valuethread->bookmarked = false;
                 }
 
                 $valuethread->author = $author['username'];
@@ -1324,6 +1370,15 @@ class ForumController extends Controller
                         $follow_subforum = false;
                     }
 
+                    $bookmark_status = ForumBookmark::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+
+                    if($bookmark_status){
+                        $valuepost->bookmarked = true;
+                    }
+                    else{
+                        $valuepost->bookmarked = false;
+                    }
+
                     $images = ForumImage::where('post_id', $valuepost->id)->get();
                     $videos = ForumVideo::where('post_id', $valuepost->id)->get();
                     $upvoted = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
@@ -1442,6 +1497,15 @@ class ForumController extends Controller
                         }
                         else{
                             $follow_subforum = false;
+                        }
+
+                        $bookmark_status = ForumBookmark::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+
+                        if($bookmark_status){
+                            $valuepost->bookmarked = true;
+                        }
+                        else{
+                            $valuepost->bookmarked = false;
                         }
 
                         $images = ForumImage::where('post_id', $valuepost->id)->get();
@@ -1625,6 +1689,15 @@ class ForumController extends Controller
             else{
                 $upvote = true;
             }
+
+            $bookmark_status = ForumBookmark::where('post_id', $value->id)->where('user_id', Auth::id())->first();
+
+            if($bookmark_status){
+                $value->bookmarked = true;
+            }
+            else{
+                $value->bookmarked = false;
+            }
             
             $subforum_data = Subforum::where('id', $value->subforum_id)->first();
             $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', Auth::id())->first();
@@ -1665,6 +1738,7 @@ class ForumController extends Controller
                 'content' => $value->content,
                 'images' => $value->images,
                 'videos' => $value->videos,
+                'bookmarked' => $value->bookmarked,
                 'subforum_follow' => $follow_subforum,
                 'subforum_data' => $subforum_data,
                 'author_data' => $author
@@ -1770,7 +1844,14 @@ class ForumController extends Controller
                 $follow_author = false;
             }*/
             
-            
+            $bookmark_status = ForumBookmark::where('post_id', $value->id)->where('user_id', Auth::id())->first();
+
+            if($bookmark_status){
+                $value->bookmarked = true;
+            }
+            else{
+                $value->bookmarked = false;
+            }
 
             $subforum_data = Subforum::where('id', $value->subforum_id)->first();
             $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', Auth::id())->first();
@@ -1812,6 +1893,7 @@ class ForumController extends Controller
                 'content' => $value->content,
                 'images' => $value->images,
                 'videos' => $value->videos,
+                'bookmarked' => $value->bookmarked,
                 'subforum_follow' => $follow_subforum,
                 'subforum_data' => $subforum_data,
                 'author_data' => $author
@@ -1983,7 +2065,16 @@ class ForumController extends Controller
                     $author = User::where('id', $valuepost->user_id)->first();
         
                     $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
-        
+
+                    $bookmark_status = ForumBookmark::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+
+                    if($bookmark_status){
+                        $valuepost->bookmarked = true;
+                    }
+                    else{
+                        $valuepost->bookmarked = false;
+                    }
+    
                     $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
                     $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
         
@@ -2092,6 +2183,15 @@ class ForumController extends Controller
                     $author = User::where('id', $valuepost->user_id)->first();
         
                     $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+
+                    $bookmark_status = ForumBookmark::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+
+                    if($bookmark_status){
+                        $valuepost->bookmarked = true;
+                    }
+                    else{
+                        $valuepost->bookmarked = false;
+                    }
         
                     $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
                     $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
@@ -2202,6 +2302,15 @@ class ForumController extends Controller
                     $author = User::where('id', $valuepost->user_id)->first();
         
                     $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+
+                    $bookmark_status = ForumBookmark::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+
+                    if($bookmark_status){
+                        $valuepost->bookmarked = true;
+                    }
+                    else{
+                        $valuepost->bookmarked = false;
+                    }
         
                     $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
                     $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
@@ -2519,7 +2628,7 @@ class ForumController extends Controller
         $result = [];
         if(count($check_bookmark) > 0){
             foreach($check_bookmark as $key => $value){
-                $post = ForumPost::where('id', $value->post_id)->with('images')->first();
+                $post = ForumPost::where('id', $value->post_id)->with('images', 'videos')->first();
     
                 $author = User::where('id', $post['user_id'])->first();
                 $likes = count(ForumUpvote::where('post_id', $post['id'])->get());
