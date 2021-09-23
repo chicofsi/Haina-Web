@@ -577,6 +577,15 @@ class ForumController extends Controller
                     'view_count' => $add_view
                 ]);
 
+                $bookmark_status = ForumBookmark::where('post_id', $request->post_id)->where('user_id', Auth::id())->first();
+
+                if($bookmark_status){
+                    $post_detail['bookmarked'] == 'true';
+                }
+                else{
+                    $post_detail['bookmarked'] == 'false';
+                }
+
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Post displayed successfully!','data'=> $post_detail]), 200);
             }
         }
@@ -2490,7 +2499,7 @@ class ForumController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
             }
             else{
-                $bookmark_status = ForumBookmark::where('id_user',Auth::id())->where('id_job_vacancy', $request->id_vacancy)->first();
+                $bookmark_status = ForumBookmark::where('post_id', $request->post_id)->where('user_id', Auth::id())->first();
 
                 if($bookmark_status != null){
                     $check_post->forum_bookmark()->detach(Auth::id());
