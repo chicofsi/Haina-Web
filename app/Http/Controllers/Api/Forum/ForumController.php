@@ -2462,7 +2462,7 @@ class ForumController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
             }
             else{
-                $check_bookmark = ForumBookmark::where('post_id', $request->post_id)->where('user_id', Auth::id)->first();
+                $check_bookmark = ForumBookmark::where('post_id', $request->post_id)->where('user_id', Auth::id())->first();
 
                 if($check_bookmark != null){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Post is already bookmarked!','data'=> '']), 404);
