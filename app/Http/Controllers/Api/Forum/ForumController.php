@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Forum;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -1921,6 +1922,29 @@ class ForumController extends Controller
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'No posts found!','data'=> '']), 404);
+        }
+    }
+
+    public function showHomeThreads(){
+        $subforum_followed = SubforumFollowers::where('user_id', Auth::id())->get();
+
+        if($subforum_followed){
+            $id_followed = [];
+            foreach($subforum_followed as $key => $value){
+                array_push($value->subforum_id);
+            }
+
+            $list_post = ForumPost::where('deleted_at', null)->with('comments', 'images', 'videos')->whereIn('subforum_id', $id_followed)->orderBy('created_at', 'desc')->get();
+            $home_threads = [];
+            $threads = [];
+
+            //foreach($list_post as $keypost => $valuepost){
+
+            //}
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Home/following threads succesfully displayed!','data'=> $home_threads]), 200);
+        }
+        else{
+            showAllThreads();
         }
     }
 
