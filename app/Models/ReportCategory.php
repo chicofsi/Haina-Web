@@ -17,7 +17,7 @@ class ReportCategory extends Model
     protected $table = 'report_category';
 
     protected $fillable = [
-    	'title', 'icon', 'default_message', 'id_report_for'
+    	'title', 'default_message', 'id_report_for'
     ];
 
     public function userreport(){

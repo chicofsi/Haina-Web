@@ -1575,8 +1575,8 @@ class ForumController extends Controller
             }
 
             $list_post = ForumPost::where('deleted_at', null)->whereIn('subforum_id', $id_followed)->orderBy('created_at', 'desc')->with('comments', 'images', 'videos')->get();
-            //$home_threads = [];
-            //$threads = [];
+            $home_threads = [];
+            $threads = [];
 
             foreach($list_post as $keypost => $valuepost){
                 $author = User::where('id', $valuepost->user_id)->first();
@@ -1644,8 +1644,34 @@ class ForumController extends Controller
                 $valuepost->subforum_follow = $follow_subforum;
                 $valuepost->subforum_data = $subforum_data;
                 $valuepost->author_data = $author;
+    
+                array_push($threads, $list_post[$keypost]);
             }
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Home/following threads succesfully displayed!','data'=> $list_post]), 200);
+
+            $total = count($threads);
+            $per_page = 10;
+            $current_page = $request->page ?? 1;
+    
+            $starting_point = ($current_page * $per_page) - $per_page;
+    
+            //$result = $threads->offset(($current_page - 1) * $per_page)->limit($per_page)->get();
+    
+            $threads = array_slice($threads, $starting_point, $per_page);
+
+            $result = new \stdClass();
+            $result->threads = $threads;
+            $result->total = $total;
+            $result->current_page = (int)$current_page;
+            $result->total_page = ceil($total/$per_page);
+
+            if(count($threads) > 0){
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Home/following threads succesfully displayed!','data'=> $result]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No posts found!','data'=> '']), 404);
+            }
+            
         }
         else{
             showAllThreads();
