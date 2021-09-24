@@ -1941,7 +1941,7 @@ class ForumController extends Controller
             //foreach($list_post as $keypost => $valuepost){
 
             //}
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Home/following threads succesfully displayed!','data'=> $home_threads]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Home/following threads succesfully displayed!','data'=> $id_followed]), 200);
         }
         else{
             showAllThreads();
