@@ -1934,14 +1934,14 @@ class ForumController extends Controller
                 array_push($id_followed, $value->subforum_id);
             }
 
-            $list_post = ForumPost::where('deleted_at', null)->with('comments', 'images', 'videos')->whereIn('subforum_id', $id_followed)->orderBy('created_at', 'desc')->get();
+            $list_post = ForumPost::where('deleted_at', null)->whereIn('subforum_id', $id_followed)->orderBy('created_at', 'desc')->with('comments', 'images', 'videos')->get();
             $home_threads = [];
             $threads = [];
 
             //foreach($list_post as $keypost => $valuepost){
 
             //}
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Home/following threads succesfully displayed!','data'=> $id_followed]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Home/following threads succesfully displayed!','data'=> $list_post]), 200);
         }
         else{
             showAllThreads();
