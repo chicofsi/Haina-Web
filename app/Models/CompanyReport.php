@@ -16,7 +16,7 @@ class CompanyReport extends Model
     protected $table = 'company_report';
 
     protected $fillable = [
-        'id_user_reporter','id_company_reported', 'id_report_category','message'
+        'id_user_reporter','id_company_reported', 'id_report_category'
     ];
 
 

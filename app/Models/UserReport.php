@@ -16,7 +16,7 @@ class UserReport extends Model
     protected $table = 'user_report';
 
     protected $fillable = [
-        'id_user_reporter','id_user_reported', 'id_report_category','message'
+        'id_user_reporter','id_user_reported', 'id_report_category'
     ];
 
 
@@ -29,5 +29,9 @@ class UserReport extends Model
     }
     public function reported(){
         return $this->belongsTo('App\Models\User','id_user_reported','id');
+    }
+
+    public function subforum(){
+        return $this->belongsToMany('App\Models\Subforum', 'report_list_subforum', 'report_id', 'subforum_id');
     }
 }

@@ -43,6 +43,7 @@ use App\Http\Controllers\Api\Search\SearchController;
 use App\Http\Controllers\Api\CityController;
 use App\Http\Controllers\Api\Midtrans\MidtransController;
 use App\Http\Controllers\Api\Forum\ForumController;
+use App\Http\Controllers\Api\Report\ReportController;
 
 use App\Http\Controllers\Api\Post\Jobs\v2\JobVacancyController;
 use App\Http\Controllers\Api\Post\Jobs\v2\JobApplicantController;
