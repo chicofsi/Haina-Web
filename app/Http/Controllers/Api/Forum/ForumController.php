@@ -1931,7 +1931,7 @@ class ForumController extends Controller
         if($subforum_followed){
             $id_followed = [];
             foreach($subforum_followed as $key => $value){
-                array_push($value->subforum_id);
+                array_push($id_followed, $value->subforum_id);
             }
 
             $list_post = ForumPost::where('deleted_at', null)->with('comments', 'images', 'videos')->whereIn('subforum_id', $id_followed)->orderBy('created_at', 'desc')->get();
