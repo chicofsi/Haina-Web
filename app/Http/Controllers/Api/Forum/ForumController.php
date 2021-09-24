@@ -1565,7 +1565,7 @@ class ForumController extends Controller
         }
     }
 
-    public function showHomeThreads(){
+    public function showHomeThreads(Request $request){
         $subforum_followed = SubforumFollowers::where('user_id', Auth::id())->get();
 
         if($subforum_followed){
