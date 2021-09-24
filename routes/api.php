@@ -321,6 +321,10 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/banlist', [ForumController::class, 'showBanList']);
 		Route::post('/search_user', [ForumController::class, 'searchForumFollowers']);
 	});
+
+	Route::group(['prefix' => 'report'], function(){
+		Route::post('/new', [ReportController::class, 'fileReport']);
+	});
 	
 });
 
