@@ -1935,12 +1935,76 @@ class ForumController extends Controller
             }
 
             $list_post = ForumPost::where('deleted_at', null)->whereIn('subforum_id', $id_followed)->orderBy('created_at', 'desc')->with('comments', 'images', 'videos')->get();
-            $home_threads = [];
-            $threads = [];
+            //$home_threads = [];
+            //$threads = [];
 
-            //foreach($list_post as $keypost => $valuepost){
+            foreach($list_post as $keypost => $valuepost){
+                $author = User::where('id', $valuepost->user_id)->first();
 
-            //}
+                $likes = count(ForumUpvote::where('post_id', $valuepost->id)->get());
+
+                $check_comment = ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->orderBy('created_at', 'desc')->first();
+    
+                $author = User::where('id', $valuepost->user_id)->first();
+    
+                $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+
+                $bookmark_status = ForumBookmark::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+
+                if($bookmark_status){
+                    $valuepost->bookmarked = true;
+                }
+                else{
+                    $valuepost->bookmarked = false;
+                }
+
+                $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
+                $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
+    
+                $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
+                $subforum_data['creator_username'] = $subforum_creator['username'];
+
+                $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
+
+                $subforum_data['category'] = $category_name['name'];
+                $subforum_data['category_zh'] = $category_name['name_zh'];
+
+                $subforum_followers_count = count(SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->get());
+                $subforum_post_count = count(ForumPost::where('subforum_id', $valuepost->subforum_id)->where('deleted_at', null)->get());
+
+                $subforum_data['subforum_followers'] = $subforum_followers_count;
+                $subforum_data['post_count'] = $subforum_post_count;
+
+                $images = ForumImage::where('post_id', $valuepost->id)->get();
+                $videos = ForumVideo::where('post_id', $valuepost->id)->get();
+                $upvoted = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+
+
+                if($subforum_following){
+                    $follow_subforum = true;
+                }
+                else{
+                    $follow_subforum = false;
+                }
+                if(!$check_upvote){
+                    $upvote = false;
+                }
+                else{
+                    $upvote = true;
+                }
+                if($valuepost->user_id != Auth::id()){
+                    $valuepost->upvoted = $upvote;
+                }
+
+                $valuepost->author = $author['username'];
+                $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
+                $valuepost->member_since = date("F Y", strtotime($author['created_at']));
+                $valuepost->like_count = $likes;
+                $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->get());
+                $valuepost->subforum_follow = $follow_subforum;
+                $valuepost->subforum_data = $subforum_data;
+                $valuepost->author_data = $author;
+            }
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Home/following threads succesfully displayed!','data'=> $list_post]), 200);
         }
         else{
