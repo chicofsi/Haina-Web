@@ -41,7 +41,12 @@ class ReportController extends Controller
 
         $validator = Validator::make($request->all(), [
             'content' => 'in:post,subforum,comment,profile,company',
-            'category_id' => 'required|numeric'
+            'category_id' => 'required|numeric',
+            'subforum_id' => 'required_if:content,subforum',
+            'post_id' => 'required_if:content,post',
+            'comment_id' => 'required_if:content,comment',
+            'company_id' => 'required_if:content,company',
+            'user_id' => 'required_if:content,profile',
         ]);
 
         if ($validator->fails()) {
@@ -115,7 +120,7 @@ class ReportController extends Controller
     
                     $new_report = UserReport::create($report_data);
 
-                    $new_report->subforum()->attach($check_post['id']);
+                    $new_report->post()->attach($check_post['id']);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Post reported!','data'=> $new_report]), 200);
                 }
@@ -130,7 +135,40 @@ class ReportController extends Controller
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized: Cannot report own comment','data'=> '']), 401);
                 }
                 else{
+                    $report_data = [
+                        'id_user_reporter' => Auth::id(),
+                        'id_user_reported' => $check_comment['user_id'],
+                        'id_report_category' => $request->category_id,
+                    ];
+    
+                    $new_report = UserReport::create($report_data);
 
+                    $new_report->comment()->attach($check_comment['id']);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Comment reported!','data'=> $new_report]), 200);
+                }
+            }
+            else if($request->content == "profile"){
+                $check_user = User::where('id', $request->user_id)->first();
+
+                if(!$check_user){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Comment not found!','data'=> '']), 404);
+                }
+                else if($check_user['id'] == Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized: Cannot report own profile','data'=> '']), 401);
+                }
+                else{
+                    $report_data = [
+                        'id_user_reporter' => Auth::id(),
+                        'id_user_reported' => $check_user['id'],
+                        'id_report_category' => $request->category_id,
+                    ];
+    
+                    $new_report = UserReport::create($report_data);
+
+                    $new_report->profile()->attach($check_user['id']);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Profile reported!','data'=> $new_report]), 200);
                 }
             }
         }
