@@ -55,62 +55,82 @@ class ReportController extends Controller
                 if(!$check_company){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Company not found!','data'=> '']), 404);
                 }
+                else if($check_company['id_user'] == Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized: Cannot report own company','data'=> '']), 401);
+                }
                 else{
                     $report_data = [
                         'id_user_reporter' => Auth::id(),
-                        'id_company_reporter' => $request->company_id,
+                        'id_user_reported' => $check_company['id_user'],
                         'id_report_category' => $request->category_id,
                     ];
     
-                    $new_report = CompanyReport::create($report_data);
+                    $new_report = UserReport::create($report_data);
     
-                    //$new_report->company()->attach($request->company_id);
+                    $new_report->company()->attach($request->company_id);
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Company reported!','data'=> $new_report]), 200);
                     
                 }
                 
             }
-            else{
-                if($request->content == "subforum"){
-                    $check_subforum = Subforum::where('id', $request->subforum_id)->first();
+            else if($request->content == "subforum"){
+                $check_subforum = Subforum::where('id', $request->subforum_id)->first();
 
-                    if(!$check_subforum){
-                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Subforum not found!','data'=> '']), 404);
-                    }
-                    else{
-                        $report_data = [
-                            'id_user_reporter' => Auth::id(),
-                            'id_user_reported' => $check_subforum['user_id'],
-                            'id_report_category' => $request->category_id,
-                        ];
-        
-                        $new_report = UserReport::create($report_data);
-
-                        $new_report->subforum()->attach($check_subforum['id']);
-
-                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Subforum reported!','data'=> $new_report]), 200);
-                    }
-
+                if(!$check_subforum){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Subforum not found!','data'=> '']), 404);
                 }
-                else if($request->content == "post"){
+                else if($check_subforum['creator_id'] == Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized: Cannot report own subforum','data'=> '']), 401);
+                }
+                else{
+                    $report_data = [
+                        'id_user_reporter' => Auth::id(),
+                        'id_user_reported' => $check_subforum['creator_id'],
+                        'id_report_category' => $request->category_id,
+                    ];
+    
+                    $new_report = UserReport::create($report_data);
+
+                    $new_report->subforum()->attach($check_subforum['id']);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Subforum reported!','data'=> $new_report]), 200);
+                }
+
+            }
+            else if($request->content == "post"){
                     $check_post = ForumPost::where('id', $request->post_id)->first();
 
-                    if(!$check_post){
-                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Post not found!','data'=> '']), 404);
-                    }
-                    else{
-
-                    }
+                if(!$check_post){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Post not found!','data'=> '']), 404);
                 }
-                else if($request->content == "comment"){
-                    $check_comment = ForumComment::where('id', $request->comment_id)->first();
+                else if($check_post['user_id'] == Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized: Cannot report own post','data'=> '']), 401);
+                }
+                else{
+                    $report_data = [
+                        'id_user_reporter' => Auth::id(),
+                        'id_user_reported' => $check_post['user_id'],
+                        'id_report_category' => $request->category_id,
+                    ];
+    
+                    $new_report = UserReport::create($report_data);
 
-                    if(!$check_comment){
-                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Comment not found!','data'=> '']), 404);
-                    }
-                    else{
+                    $new_report->subforum()->attach($check_post['id']);
 
-                    }
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Post reported!','data'=> $new_report]), 200);
+                }
+            }
+            else if($request->content == "comment"){
+                $check_comment = ForumComment::where('id', $request->comment_id)->first();
+
+                if(!$check_comment){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Comment not found!','data'=> '']), 404);
+                }
+                else if($check_comment['user_id'] == Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized: Cannot report own comment','data'=> '']), 401);
+                }
+                else{
+
                 }
             }
         }
