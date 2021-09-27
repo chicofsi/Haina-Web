@@ -378,6 +378,7 @@ class ForumController extends Controller
 
                 array_push($threads, $list);
 
+               
             }
             if($request->sort_by == "time"){
                 $threads = collect($threads)->sortByDesc('last_update')->toArray();
@@ -385,6 +386,22 @@ class ForumController extends Controller
             else{
                 $threads = collect($threads)->sortByDesc('like_count')->toArray();
             }
+
+            $total = count($threads);
+            $per_page = 10;
+            $current_page = $request->page ?? 1;
+
+            $starting_point = ($current_page * $per_page) - $per_page;
+
+            //$result = $threads->offset(($current_page - 1) * $per_page)->limit($per_page)->get();
+
+            $threads = array_slice($threads, $starting_point, $per_page);
+
+            $result = new \stdClass();
+            $result->threads = $threads;
+            $result->total = $total;
+            $result->current_page = (int)$current_page;
+            $result->total_page = ceil($total/$per_page);
             
 
             if(count($threads) == 0){
@@ -394,7 +411,7 @@ class ForumController extends Controller
                 //$object = new \stdClass();
                 //$threads->followed = SubforumFollower
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Threads displayed successfully!','data'=> $threads]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Threads displayed successfully!','data'=> $result]), 200);
             }
 
         }
