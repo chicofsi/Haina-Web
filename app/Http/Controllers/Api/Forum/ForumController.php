@@ -1695,11 +1695,11 @@ class ForumController extends Controller
                 
             }
             else{
-                $this->showAllThreads();
+                $this->showAllThreads($request->request->add(['page' => 1]));
             }
         }
         else{
-            $this->showAllThreads();
+            $this->showAllThreads($request->request->add(['page' => 1]));
         }
         
     }
