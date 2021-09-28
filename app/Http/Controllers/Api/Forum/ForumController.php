@@ -1717,7 +1717,7 @@ class ForumController extends Controller
 
                 $post_count = count($post);
 
-                if($post_count){
+                if($post_count == 0){
                     $likes = 0;
                     $views = 0;
                 }
@@ -1732,6 +1732,10 @@ class ForumController extends Controller
                     }
                 }
 
+                $result->subforum_id = $check_subforum['id'];
+                $result->subforum_name = $check_subforum['name'];
+                $result->description = $check_subforum['description'];
+                $result->image = $check_subforum['subforum_image'];
                 $result->followers_count = $followers_count;
                 $result->post_count = $post_count;
                 $result->likes = $likes;
