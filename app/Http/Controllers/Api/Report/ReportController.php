@@ -25,6 +25,7 @@ use App\Models\ForumComment;
 use App\Models\ForumFollowers;
 use App\Models\ForumLog;
 use App\Models\ForumMod;
+use App\Models\PropertyData;
 
 use App\Models\ReportCategory;
 
@@ -40,13 +41,14 @@ class ReportController extends Controller
     public function fileReport(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'content' => 'in:post,subforum,comment,profile,company',
+            'content' => 'in:post,subforum,comment,profile,company,property',
             'category_id' => 'required|numeric',
             'subforum_id' => 'required_if:content,subforum',
             'post_id' => 'required_if:content,post',
             'comment_id' => 'required_if:content,comment',
             'company_id' => 'required_if:content,company',
             'user_id' => 'required_if:content,profile',
+            'property_id' => 'required_if:content,property'
         ]);
 
         if ($validator->fails()) {
@@ -170,6 +172,30 @@ class ReportController extends Controller
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Profile reported!','data'=> $new_report]), 200);
                 }
+            }
+            else if($request->content == "property"){
+                $check_property = PropertyData::where('id', $request->property_data)->first();
+
+                if(!$check_property){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Property not found!','data'=> '']), 404);
+                }
+                else if($check_property['id_user'] == Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized: Cannot report own property','data'=> '']), 401);
+                }
+                else{
+                    $report_data = [
+                        'id_user_reporter' => Auth::id(),
+                        'id_user_reported' => $check_property['id_user'],
+                        'id_report_category' => $request->category_id,
+                    ];
+
+                    $new_report = UserReport::create($report_data);
+
+                    $new_report->property()->attach($check_property['id']);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Profile reported!','data'=> $new_report]), 200);
+                }
+
             }
         }
     }

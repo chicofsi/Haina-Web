@@ -1732,6 +1732,19 @@ class ForumController extends Controller
                     }
                 }
 
+                $checkmod = ForumMod::where('user_id',Auth::id())->where('subforum_id', $request->subforum_id)->first();
+                $checkban = ForumBan::where('subforum_id', $request->subforum_id)->where('user_id', Auth::id())->first();
+                
+                if($checkban){
+                    $role = "banned";
+                }
+                else if($checkmod){
+                    $role = $checkmod['role'];
+                }
+                else{
+                    $role = "none";
+                }
+
                 $result->subforum_id = $check_subforum['id'];
                 $result->subforum_name = $check_subforum['name'];
                 $result->description = $check_subforum['description'];
@@ -1740,6 +1753,7 @@ class ForumController extends Controller
                 $result->post_count = $post_count;
                 $result->likes = $likes;
                 $result->views = $views;
+                $result->role = $role;
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Subforum data found!','data'=> $result]), 200);
 
@@ -1748,7 +1762,7 @@ class ForumController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Subforum not found!','data'=> '']), 404);
             }
             
-            //jump
+            
         }
     }
 

@@ -47,6 +47,10 @@ class UserReport extends Model
         return $this->belongsToMany('App\Models\Company', 'report_list_company', 'report_id', 'company_id');
     }
 
+    public function property(){
+        return $this->belongsToMany('App\Models\PropertyData', 'report_list_property', 'report_id', 'property_id');
+    }
+
     public function profile(){
         return $this->belongsToMany('App\Models\User', 'report_list_profile', 'report_id', 'user_id');
     }
