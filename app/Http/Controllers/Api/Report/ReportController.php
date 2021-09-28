@@ -193,7 +193,7 @@ class ReportController extends Controller
 
                     $new_report->property()->attach($check_property['id']);
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Profile reported!','data'=> $new_report]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Property reported!','data'=> $new_report]), 200);
                 }
 
             }
