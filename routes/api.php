@@ -308,6 +308,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::get('/following_subforum', [ForumController::class, 'myFollowingSubforum']);
 		Route::post('/following_subforum', [ForumController::class, 'userFollowingSubforum']);
 
+		Route::post('/subforum_data', [ForumController::class, 'showSubforumData']);
+
 		Route::post('/user_profile', [ForumController::class, 'showProfile']);
 		Route::post('/search', [ForumController::class, 'search']);
 		Route::post('/share', [ForumController::class, 'sharePost']);
@@ -320,6 +322,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
 		Route::post('/banlist', [ForumController::class, 'showBanList']);
 		Route::post('/search_user', [ForumController::class, 'searchForumFollowers']);
+
 	});
 
 	Route::group(['prefix' => 'report'], function(){

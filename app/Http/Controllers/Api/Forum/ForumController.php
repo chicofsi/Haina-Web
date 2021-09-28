@@ -1698,6 +1698,56 @@ class ForumController extends Controller
         }
     }
 
+    public function showSubforumData(Request $request){
+        $validator = Validator::make($request->all(), [
+            'subforum_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check_subforum = Subforum::where('id', $request->subforum_id)->first();
+
+            if($check_subforum){
+                $result = new \stdClass();
+                $followers_count = count(SubforumFollowers::where('subforum_id', $request->subforum_id)->get());
+
+                $post = ForumPost::where('subforum_id', $request->subforum_id)->where('deleted_at', null)->get();
+
+                $post_count = count($post);
+
+                if($post_count){
+                    $likes = 0;
+                    $views = 0;
+                }
+                else{
+                    $likes = 0;
+                    $views = 0;
+
+                    foreach($post as $key => $value){
+                        $views += $value->view_count;
+
+                        $likes += count(ForumUpvote::where('post_id', $value->id)->get());
+                    }
+                }
+
+                $result->followers_count = $followers_count;
+                $result->post_count = $post_count;
+                $result->likes = $likes;
+                $result->views = $views;
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Subforum data found!','data'=> $result]), 200);
+
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Subforum not found!','data'=> '']), 404);
+            }
+            
+            //jump
+        }
+    }
+
     public function showProfile(Request $request){
         $validator = Validator::make($request->all(), [
             //'subforum_id' => 'required',
