@@ -174,7 +174,7 @@ class ReportController extends Controller
                 }
             }
             else if($request->content == "property"){
-                $check_property = PropertyData::where('id', $request->property_data)->first();
+                $check_property = PropertyData::where('id', $request->property_id)->first();
 
                 if(!$check_property){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Property not found!','data'=> '']), 404);
