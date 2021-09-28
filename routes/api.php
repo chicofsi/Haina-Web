@@ -272,11 +272,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
 	Route::group(['prefix' => 'forum'], function(){
 		Route::get('/category', [ForumController::class, 'showCategory']);
-		Route::post('/subforum', [ForumController::class, 'showAllSubforum']);
-
-		Route::post('/post_list', [ForumController::class, 'showAllPost']);
-		Route::post('/post_detail', [ForumController::class, 'showPost']);
-		Route::post('/comment', [ForumController::class, 'showComment']);
+		
 
 		Route::post('/new_subforum', [ForumController::class, 'createSubforum']);
 		Route::post('/new_comment', [ForumController::class, 'createComment']);
@@ -293,9 +289,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/ban_remove', [ForumController::class, 'removeBan']);
 		Route::post('/mod_log', [ForumController::class, 'checkModLog']);
 
-		Route::post('/all_post', [ForumController::class, 'showAllThreads']);
-		Route::get('/hot_post', [ForumController::class, 'showHotThreads']);
-		Route::post('/home_post', [ForumController::class, 'showHomeThreads']);
+		
 		Route::get('/my_subforum', [ForumController::class, 'showMySubforum']);
 		Route::get('/my_post', [ForumController::class, 'showMyPost']);
 
@@ -309,9 +303,10 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/following_subforum', [ForumController::class, 'userFollowingSubforum']);
 
 		Route::post('/subforum_data', [ForumController::class, 'showSubforumData']);
+		Route::post('/update_subforum', [ForumController::class, 'updateSubforumData']);
 
 		Route::post('/user_profile', [ForumController::class, 'showProfile']);
-		Route::post('/search', [ForumController::class, 'search']);
+		
 		Route::post('/share', [ForumController::class, 'sharePost']);
 		Route::get('/my_role', [ForumController::class, 'myRoles']);
 		Route::get('/my_ban', [ForumController::class, 'myBans']);
@@ -329,6 +324,20 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/new', [ReportController::class, 'fileReport']);
 	});
 	
+});
+
+Route::group(['prefix' => 'forum'], function(){
+	Route::post('/subforum', [ForumController::class, 'showAllSubforum']);
+
+	Route::post('/post_list', [ForumController::class, 'showAllPost']);
+	Route::post('/post_detail', [ForumController::class, 'showPost']);
+	Route::post('/comment', [ForumController::class, 'showComment']);
+
+	Route::post('/search', [ForumController::class, 'search']);
+
+	Route::post('/all_post', [ForumController::class, 'showAllThreads']);
+	Route::get('/hot_post', [ForumController::class, 'showHotThreads']);
+	Route::post('/home_post', [ForumController::class, 'showHomeThreads']);
 });
 
 //Reset pass email

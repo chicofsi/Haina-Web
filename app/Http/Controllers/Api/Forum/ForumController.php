@@ -2304,4 +2304,70 @@ class ForumController extends Controller
         
     }
 
+    public function updateSubforumData (Request $request){
+        $validator = Validator::make($request->all(), [
+            'subforum_id' => 'required',
+            'image' => 'image|mimes:png,jpg|max:1024|nullable',
+            'name' => 'min:3|nullable'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_subforum = Subforum::where('id', $request->subforum_id)->first();
+
+            if($check_subforum){
+                $checkmod = ForumMod::where('user_id',Auth::id())->where('subforum_id', $request->subforum_id)->first();
+
+                if($checkmod){
+                    if($request->image != null){
+                        $files = $request->file('image');
+                        
+                        $fileName = str_replace(' ','-', $new_subforum->id.'-'.$subforum['name'].'-'.'picture'.'-'.date('Ymd'));
+                        $guessExtension = $files->guessExtension();
+                        
+                        $store = Storage::disk('public')->putFileAs('forum/subforum', $files ,$fileName.'.'.$guessExtension);
+
+
+                        $update_image = Subforum::where('id', $new_subforum->id)->update([
+                            'name' => $request->name ?? $check_subforum['name'],
+                            'description' => $request->description ?? $check_subforum['description'],
+                            'subforum_image' => 'http://hainaservice.com/storage/'.$store
+                        ]);
+
+                        $user = User::where('id', Auth::id())->first();
+
+                        $forumlog = ForumLog::create([
+                            'subforum_id' => $new_subforum->id,
+                            'forum_action' => 'MOD',
+                            'message' => $user['username'].' updated "'.$check_subforum['name'].'" and the subforum image.'
+                        ]);
+                    }
+                    else{
+                        $update_image = Subforum::where('id', $new_subforum->id)->update([
+                            'name' => $request->name ?? $check_subforum['name'],
+                            'description' => $request->description ?? $check_subforum['description']
+                        ]);
+
+                        $user = User::where('id', Auth::id())->first();
+
+                        $forumlog = ForumLog::create([
+                            'subforum_id' => $new_subforum->id,
+                            'forum_action' => 'MOD',
+                            'message' => $user['username'].' updated "'.$check_subforum['name'].'" subforum.'
+                        ]);
+                    }
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Update subforum data success!','data'=>$forumlog]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized: You are not a mod of this subforum.','data'=> '']), 401);
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Subforum not found!','data'=> '']), 404);
+            }
+        }
+    }
+
 }
