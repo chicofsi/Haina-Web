@@ -17,11 +17,6 @@ class SanctumConfigForUser
      */
     public function handle(Request $request, Closure $next)
     {
-        if ($request->bearerToken()) {
-            Auth::setUser(
-                Auth::guard('sanctum')->user()
-            );
-        }
         return $next($request);
     }
 }

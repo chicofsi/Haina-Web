@@ -1734,7 +1734,9 @@ class ForumController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            dd(Auth::user());
+            if ($request->bearerToken()) {
+                dd(auth('sanctum')->user());
+            }
 
             $check_subforum = Subforum::where('id', $request->subforum_id)->first();
 
