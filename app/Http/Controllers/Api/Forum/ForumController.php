@@ -1614,7 +1614,8 @@ class ForumController extends Controller
     }
 
     public function showHomeThreads(Request $request){
-            if ($request->bearerToken()) {
+
+        if ($request->bearerToken()) {
                 //dd(auth('sanctum')->user());
             $subforum_followed = SubforumFollowers::where('user_id', auth('sanctum')->user()->id)->get();
 
@@ -1724,19 +1725,10 @@ class ForumController extends Controller
                 
             }
             else{
-                $request = new Request();
-                $request->page = 1;
-                dd($request->bearerToken());
-                $request->bearerToken = $request->bearerToken();                
-
                 return $this->showAllThreads($request);
             }
         }
         else{
-            $request = new Request();
-            $request->page = 1;               
-            $request->bearerToken = $request->bearerToken();    
-
             return $this->showAllThreads($request);
         }
         
