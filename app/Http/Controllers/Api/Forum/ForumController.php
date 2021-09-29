@@ -233,7 +233,7 @@ class ForumController extends Controller
                 foreach($check as $key => $value){
                     $creator_count = [];
                     if($request->bearerToken()){
-                        $check_followed = SubforumFollowers::where('subforum_id', $value->id)->where('user_id', Auth::id())->first();
+                        $check_followed = SubforumFollowers::where('subforum_id', $value->id)->where('user_id', auth('sanctum')->user())->first();
                     
                         if($check_followed){
                             $value->followed = true;
@@ -258,9 +258,6 @@ class ForumController extends Controller
                     $total_poster = array_unique($creator_count);
                     $value->total_poster = count($total_poster);
 
-                    
-
-                
                 }
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Subforum found!','data'=> $check]), 200);
@@ -331,8 +328,8 @@ class ForumController extends Controller
                 $upvote = false;
 
                 if($request->bearerToken()){
-                    $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', Auth::id())->first();
-                    $bookmark_status = ForumBookmark::where('post_id', $value->id)->where('user_id', Auth::id())->first();
+                    $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', auth('sanctum')->user())->first();
+                    $bookmark_status = ForumBookmark::where('post_id', $value->id)->where('user_id', auth('sanctum')->user())->first();
 
                     if($bookmark_status){
                         $bookmark = true;
