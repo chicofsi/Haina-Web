@@ -379,7 +379,7 @@ class ForumController extends Controller
                 ];
                 
                 if($request->bearerToken()){
-                    if($prelist['user_id'] != Auth::id()){
+                    if($prelist['user_id'] != auth('sanctum')->user()->id){
                         $prelist['upvoted'] = $upvote;
                     }
                     $prelist['bookmarked'] = $upvote;
