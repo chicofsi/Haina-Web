@@ -881,6 +881,7 @@ class ForumController extends Controller
                     else{
                         $follow_subforum = false;
                     }
+                    $valuethread->subforum_follow = $follow_subforum;
 
                     if(!$check_upvote){
                         $upvote = false;
@@ -907,7 +908,6 @@ class ForumController extends Controller
                 $valuethread->member_since = date("F Y", strtotime($author['created_at']));
                 $valuethread->like_count = $likes;
                 $valuethread->comment_count = count(ForumComment::where('post_id', $valuethread->id)->where('deleted_at', null)->get());
-                $valuethread->subforum_follow = $follow_subforum;
                 $valuethread->subforum_data = $subforum_data;
                 $valuethread->author_data = $author;
             }
