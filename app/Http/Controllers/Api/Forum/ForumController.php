@@ -798,7 +798,7 @@ class ForumController extends Controller
 
             foreach($subforum as $keysub => $valuesub){
                 $creator_count = [];
-                $check_followed = SubforumFollowers::where('subforum_id', $valuesub->id)->where('user_id', Auth::id())->first();
+                
 
                 $valuesub->post_count = count(ForumPost::where('subforum_id', $valuesub->id)->where('deleted_at', null)->get());
 
@@ -817,13 +817,17 @@ class ForumController extends Controller
 
                 $total_poster = array_unique($creator_count);
                 $valuesub->total_poster = count($total_poster);
-
-                if($check_followed){
-                    $valuesub->followed = true;
+                
+                if($request->bearerToken()){
+                    $check_followed = SubforumFollowers::where('subforum_id', $valuesub->id)->where('user_id', auth('sanctum')->user()->id)->first();
+                    if($check_followed){
+                        $valuesub->followed = true;
+                    }
+                    else{
+                        $valuesub->followed = false;
+                    }
                 }
-                else{
-                    $valuesub->followed = false;
-                }
+                
 
             }
 
@@ -838,10 +842,8 @@ class ForumController extends Controller
     
                 $author = User::where('id', $valuethread->user_id)->first();
     
-                $check_upvote = ForumUpvote::where('post_id', $valuethread->id)->where('user_id', Auth::id())->first();
-    
                 $subforum_data = Subforum::where('id', $valuethread->subforum_id)->first();
-                $subforum_following = SubforumFollowers::where('subforum_id', $valuethread->subforum_id)->where('user_id', Auth::id())->first();
+
 
                 $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
                 $subforum_data['creator_username'] = $subforum_creator['username'];
@@ -856,18 +858,12 @@ class ForumController extends Controller
 
                 $subforum_data['subforum_followers'] = $subforum_followers_count;
                 $subforum_data['post_count'] = $subforum_post_count;
-    
-                if($subforum_following){
-                    $follow_subforum = true;
-                }
-                else{
-                    $follow_subforum = false;
-                }
 
                 $images = ForumImage::where('post_id', $valuethread->id)->get();
                 $videos = ForumVideo::where('post_id', $valuethread->id)->get();
-                $upvoted = ForumUpvote::where('post_id', $valuethread->id)->where('user_id', Auth::id())->first();
+                //$upvoted = ForumUpvote::where('post_id', $valuethread->id)->where('user_id', Auth::id())->first();
 
+                //tanda
                 if($images){
                     $valuethread->images = $images;
                 }
@@ -875,24 +871,36 @@ class ForumController extends Controller
                     $valuethread->videos = $videos;
                 }
 
-                if(!$check_upvote){
-                    $upvote = false;
-                }
-                else{
-                    $upvote = true;
-                }
-                if($valuethread->user_id != Auth::id()){
+                if($request->bearerToken()){
+                    $check_upvote = ForumUpvote::where('post_id', $valuethread->id)->where('user_id', Auth::id())->first();
+                    $subforum_following = SubforumFollowers::where('subforum_id', $valuethread->subforum_id)->where('user_id', Auth::id())->first();
+
+                    if($subforum_following){
+                        $follow_subforum = true;
+                    }
+                    else{
+                        $follow_subforum = false;
+                    }
+
+                    if(!$check_upvote){
+                        $upvote = false;
+                    }
+                    else{
+                        $upvote = true;
+                    }
                     $valuethread->upvoted = $upvote;
-                }
+                    
 
-                $bookmark_status = ForumBookmark::where('post_id', $valuethread->id)->where('user_id', Auth::id())->first();
+                    $bookmark_status = ForumBookmark::where('post_id', $valuethread->id)->where('user_id', Auth::id())->first();
 
-                if($bookmark_status){
-                    $valuethread->bookmarked = true;
+                    if($bookmark_status){
+                        $valuethread->bookmarked = true;
+                    }
+                    else{
+                        $valuethread->bookmarked = false;
+                    }
                 }
-                else{
-                    $valuethread->bookmarked = false;
-                }
+                
 
                 $valuethread->author = $author['username'];
                 $valuethread->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
