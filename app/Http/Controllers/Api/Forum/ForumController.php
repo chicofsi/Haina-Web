@@ -234,7 +234,7 @@ class ForumController extends Controller
                     $creator_count = [];
                     if($request->bearerToken()){
                         $check_followed = SubforumFollowers::where('subforum_id', $value->id)->where('user_id', auth('sanctum')->user())->first();
-                    
+                        dd($check_followed);
                         if($check_followed){
                             $value->followed = true;
                         }
