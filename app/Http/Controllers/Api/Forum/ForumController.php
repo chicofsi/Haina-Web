@@ -2329,7 +2329,7 @@ class ForumController extends Controller
             $check_subforum = Subforum::where('id', $request->subforum_id)->first();
 
             if($check_subforum){
-                $checkmod = ForumMod::where('user_id',Auth::id())->where('subforum_id', $request->subforum_id)->first();
+                $checkmod = ForumMod::where('user_id',Auth::id())->where('subforum_id', $request->subforum_id)->where('role', 'mod')->first();
 
                 if($checkmod){
                     if($request->image != null){
