@@ -234,6 +234,13 @@ class ForumController extends Controller
                     $creator_count = [];
                     if(isset($request->user()->id)){
                         $check_followed = SubforumFollowers::where('subforum_id', $value->id)->where('user_id', Auth::id())->first();
+                    
+                        if($check_followed){
+                            $value->followed = true;
+                        }
+                        else{
+                            $value->followed = false;
+                        }
                     }
 
                     $value->post_count = count(ForumPost::where('subforum_id', $value->id)->where('deleted_at', null)->get());
@@ -251,12 +258,7 @@ class ForumController extends Controller
                     $total_poster = array_unique($creator_count);
                     $value->total_poster = count($total_poster);
 
-                    if($check_followed){
-                        $value->followed = true;
-                    }
-                    else{
-                        $value->followed = false;
-                    }
+                    
 
                 
                 }
