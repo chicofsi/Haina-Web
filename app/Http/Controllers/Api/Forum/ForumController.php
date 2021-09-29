@@ -2335,7 +2335,7 @@ class ForumController extends Controller
                     if($request->image != null){
                         $files = $request->file('image');
                         
-                        $fileName = str_replace(' ','-', $check_subforum['id'].'-'.$request->name ?? $check_subforum['name'].'-'.'picture'.'-'.date('Ymd'));
+                        $fileName = str_replace(' ','-', $check_subforum['id'].'-'.($request->name ?? $check_subforum['name']).'-'.'picture'.'-'.date('Ymd'));
                         $guessExtension = $files->guessExtension();
                         
                         $store = Storage::disk('public')->putFileAs('forum/subforum', $files ,$fileName.'.'.$guessExtension);
