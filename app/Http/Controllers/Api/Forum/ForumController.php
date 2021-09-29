@@ -1688,7 +1688,7 @@ class ForumController extends Controller
                     else{
                         $upvote = true;
                     }
-                    if($valuepost->user_id != Auth::id()){
+                    if($valuepost->user_id != auth('sanctum')->user()->id){
                         $valuepost->upvoted = $upvote;
                     }
 
