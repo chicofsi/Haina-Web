@@ -232,7 +232,9 @@ class ForumController extends Controller
             if(count($check) != 0){
                 foreach($check as $key => $value){
                     $creator_count = [];
-                    $check_followed = SubforumFollowers::where('subforum_id', $value->id)->where('user_id', Auth::id())->first();
+                    if(isset($request->user()->id)){
+                        $check_followed = SubforumFollowers::where('subforum_id', $value->id)->where('user_id', Auth::id())->first();
+                    }
 
                     $value->post_count = count(ForumPost::where('subforum_id', $value->id)->where('deleted_at', null)->get());
 
