@@ -1777,7 +1777,7 @@ class ForumController extends Controller
 
                 if ($request->bearerToken()) {
                     //dd(auth('sanctum')->user());
-                    $check_followed = SubforumFollowers::where('subforum_id', $check_subforum['id'])->where('user_id', Auth::id())->first();
+                    $check_followed = SubforumFollowers::where('subforum_id', $check_subforum['id'])->where('user_id', auth('sanctum')->user()->id)->first();
                     if($check_followed){
                         $result->following = true;
                     }
