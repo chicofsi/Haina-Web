@@ -326,15 +326,19 @@ class ForumController extends Controller
                 $subforum_data['subforum_followers'] = $subforum_followers_count;
                 $subforum_data['post_count'] = $subforum_post_count;
 
+                $bookmark = false;
+                $follow_subforum = false;
+                $upvote = false;
+
                 if(isset($request->user()->id)){
                     $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', Auth::id())->first();
                     $bookmark_status = ForumBookmark::where('post_id', $value->id)->where('user_id', Auth::id())->first();
 
                     if($bookmark_status){
-                        $value->bookmarked = true;
+                        $bookmark = true;
                     }
                     else{
-                        $value->bookmarked = false;
+                        $bookmark = false;
                     }
 
                     if($subforum_following){
@@ -370,15 +374,19 @@ class ForumController extends Controller
                     'content' => $value->content,
                     'images' => $value->images,
                     'videos' => $value->videos,
-                    'bookmarked' => $value->bookmarked ?? false,
-                    'subforum_follow' => $follow_subforum ?? false,
+                    //'bookmarked' => $bookmark,
+                    //'subforum_follow' => $follow_subforum,
                     'subforum_data' => $subforum_data,
                     'author_data' => $author,
                     'last_update' => $lastpost
                 ];
                 
-                if($prelist['user_id'] != Auth::id()){
-                    $prelist['upvoted'] = $upvote ?? false;
+                if(isset($request->user()->id)){
+                    if($prelist['user_id'] != Auth::id()){
+                        $prelist['upvoted'] = $upvote;
+                    }
+                    $prelist['bookmarked'] = $upvote;
+                    $prelist['subforum_follow'] = $upvote;
                 }
 
                 $list = (object) $prelist;
