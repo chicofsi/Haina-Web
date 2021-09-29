@@ -378,7 +378,7 @@ class ForumController extends Controller
                 ];
                 
                 if($prelist['user_id'] != Auth::id()){
-                    $prelist['upvoted'] = $upvote;
+                    $prelist['upvoted'] = $upvote ?? false;
                 }
 
                 $list = (object) $prelist;
