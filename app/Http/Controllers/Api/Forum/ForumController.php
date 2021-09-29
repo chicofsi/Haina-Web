@@ -1698,14 +1698,14 @@ class ForumController extends Controller
                 $request = new Request();
                 $request->page = 1;                
 
-                $this->showAllThreads($request);
+                return $this->showAllThreads($request);
             }
         }
         else{
             $request = new Request();
             $request->page = 1;                
 
-            $this->showAllThreads($request);
+            return $this->showAllThreads($request);
         }
         
     }
