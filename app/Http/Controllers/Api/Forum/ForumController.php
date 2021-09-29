@@ -1734,8 +1734,8 @@ class ForumController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            if (Auth::user()->isGuest()) {
-                dd("guest");
+            if (Auth::user()) {
+                dd(Auth::user());
             }else{
                 Auth::setUser(Auth::guard('web-users')->user());
                 dd(Auth::id);
