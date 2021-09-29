@@ -1739,7 +1739,7 @@ class ForumController extends Controller
                     Auth::guard('web-users')->user()
                 );
             }
-            
+
             $check_subforum = Subforum::where('id', $request->subforum_id)->first();
 
             if($check_subforum){
@@ -1778,7 +1778,7 @@ class ForumController extends Controller
                     $role = "none";
                 }
 
-                dd(Auth::id());
+                //dd(Auth::id());
                 
                 if(Auth::id() != null){
                     $check_followed = SubforumFollowers::where('subforum_id', $check_subforum['id'])->where('user_id', Auth::id())->first();
