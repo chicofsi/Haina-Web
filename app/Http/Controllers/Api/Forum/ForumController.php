@@ -1624,7 +1624,7 @@ class ForumController extends Controller
                 //dd(auth('sanctum')->user());
             $subforum_followed = SubforumFollowers::where('user_id', auth('sanctum')->user()->id)->get();
 
-            if($subforum_followed){
+            if(count($subforum_followed) > 0){
                 $id_followed = [];
                 foreach($subforum_followed as $key => $value){
                     array_push($id_followed, $value->subforum_id);
@@ -1673,7 +1673,7 @@ class ForumController extends Controller
 
                     $images = ForumImage::where('post_id', $valuepost->id)->get();
                     $videos = ForumVideo::where('post_id', $valuepost->id)->get();
-                    $upvoted = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+                    //$upvoted = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
 
 
                     if($subforum_following){
