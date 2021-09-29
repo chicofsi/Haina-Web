@@ -500,14 +500,17 @@ class ForumController extends Controller
                     'view_count' => $add_view
                 ]);
 
-                $bookmark_status = ForumBookmark::where('post_id', $request->post_id)->where('user_id', Auth::id())->first();
+                if($request->bearerToken()){
+                    $bookmark_status = ForumBookmark::where('post_id', $request->post_id)->where('user_id', auth('sanctum')->user()->id)->first();
 
-                if($bookmark_status){
-                    $post_detail['bookmarked'] = true;
+                    if($bookmark_status){
+                        $post_detail['bookmarked'] = true;
+                    }
+                    else{
+                        $post_detail['bookmarked'] = false;
+                    }
                 }
-                else{
-                    $post_detail['bookmarked'] = false;
-                }
+                
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Post displayed successfully!','data'=> $post_detail]), 200);
             }
