@@ -382,8 +382,8 @@ class ForumController extends Controller
                     if($prelist['user_id'] != auth('sanctum')->user()->id){
                         $prelist['upvoted'] = $upvote;
                     }
-                    $prelist['bookmarked'] = $upvote;
-                    $prelist['subforum_follow'] = $upvote;
+                    $prelist['bookmarked'] = $bookmark;
+                    $prelist['subforum_follow'] = $follow_subforum;
                 }
 
                 $list = (object) $prelist;
@@ -1357,26 +1357,41 @@ class ForumController extends Controller
 
             $author = User::where('id', $value->user_id)->first();
 
-            $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
+            $bookmark = false;
+            $follow_subforum = false;
+            $upvote = false;
 
-            if(!$check_upvote){
-                $upvote = false;
-            }
-            else{
-                $upvote = true;
-            }
+            if($request->bearerToken()){
+                $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', auth('sanctum')->user()->id)->first();
+                $bookmark_status = ForumBookmark::where('post_id', $value->id)->where('user_id', auth('sanctum')->user()->id)->first();
 
-            $bookmark_status = ForumBookmark::where('post_id', $value->id)->where('user_id', Auth::id())->first();
+                if($bookmark_status){
+                    $bookmark = true;
+                }
+                else{
+                    $bookmark = false;
+                }
 
-            if($bookmark_status){
-                $value->bookmarked = true;
-            }
-            else{
-                $value->bookmarked = false;
+                if($subforum_following){
+                    $follow_subforum = true;
+                }
+                else{
+                    $follow_subforum = false;
+                }
+
+                $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', auth('sanctum')->user()->id)->first();
+
+                if(!$check_upvote){
+                    $upvote = false;
+                }
+                else{
+                    $upvote = true;
+                }
             }
             
+            
             $subforum_data = Subforum::where('id', $value->subforum_id)->first();
-            $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', Auth::id())->first();
+            
 
             $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
@@ -1414,14 +1429,18 @@ class ForumController extends Controller
                 'content' => $value->content,
                 'images' => $value->images,
                 'videos' => $value->videos,
-                'bookmarked' => $value->bookmarked,
-                'subforum_follow' => $follow_subforum,
+                //'bookmarked' => $value->bookmarked,
+                //'subforum_follow' => $follow_subforum,
                 'subforum_data' => $subforum_data,
                 'author_data' => $author
             ];
 
-            if($prelist['user_id'] != Auth::id()){
-                $prelist['upvoted'] = $upvote;
+            if($request->bearerToken()){
+                if($prelist['user_id'] != auth('sanctum')->user()->id){
+                    $prelist['upvoted'] = $upvote;
+                }
+                $prelist['bookmarked'] = $bookmark;
+                $prelist['subforum_follow'] = $follow_subforum;
             }
 
             $list = (object) $prelist;
@@ -1624,9 +1643,9 @@ class ForumController extends Controller
         
                     $author = User::where('id', $valuepost->user_id)->first();
         
-                    $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+                    $check_upvote = ForumUpvote::where('post_id', $valuepost->id)->where('user_id', auth('sanctum')->user()->id)->first();
 
-                    $bookmark_status = ForumBookmark::where('post_id', $valuepost->id)->where('user_id', Auth::id())->first();
+                    $bookmark_status = ForumBookmark::where('post_id', $valuepost->id)->where('user_id', auth('sanctum')->user()->id)->first();
 
                     if($bookmark_status){
                         $valuepost->bookmarked = true;
@@ -1636,7 +1655,7 @@ class ForumController extends Controller
                     }
 
                     $subforum_data = Subforum::where('id', $valuepost->subforum_id)->first();
-                    $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', Auth::id())->first();
+                    $subforum_following = SubforumFollowers::where('subforum_id', $valuepost->subforum_id)->where('user_id', auth('sanctum')->user()->id)->first();
         
                     $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
                     $subforum_data['creator_username'] = $subforum_creator['username'];
