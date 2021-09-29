@@ -308,18 +308,9 @@ class ForumController extends Controller
                     $lastpost = $check_comment['created_at'];
                 }
 
-                $bookmark_status = ForumBookmark::where('post_id', $value->id)->where('user_id', Auth::id())->first();
-
-                if($bookmark_status){
-                    $value->bookmarked = true;
-                }
-                else{
-                    $value->bookmarked = false;
-                }
 
                 $subforum_data = Subforum::where('id', $value->subforum_id)->first();
-                $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', Auth::id())->first();
-    
+                
 
                 $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
                 $subforum_data['creator_username'] = $subforum_creator['username'];
@@ -335,22 +326,34 @@ class ForumController extends Controller
                 $subforum_data['subforum_followers'] = $subforum_followers_count;
                 $subforum_data['post_count'] = $subforum_post_count;
 
+                if(isset($request->user()->id)){
+                    $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', Auth::id())->first();
+                    $bookmark_status = ForumBookmark::where('post_id', $value->id)->where('user_id', Auth::id())->first();
 
-                if($subforum_following){
-                    $follow_subforum = true;
-                }
-                else{
-                    $follow_subforum = false;
-                }
+                    if($bookmark_status){
+                        $value->bookmarked = true;
+                    }
+                    else{
+                        $value->bookmarked = false;
+                    }
 
-                $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
+                    if($subforum_following){
+                        $follow_subforum = true;
+                    }
+                    else{
+                        $follow_subforum = false;
+                    }
 
-                if(!$check_upvote){
-                    $upvote = false;
+                    $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
+
+                    if(!$check_upvote){
+                        $upvote = false;
+                    }
+                    else{
+                        $upvote = true;
+                    }
                 }
-                else{
-                    $upvote = true;
-                }
+                
 
                 $prelist = [
                     'id' => $value->id,
@@ -367,8 +370,8 @@ class ForumController extends Controller
                     'content' => $value->content,
                     'images' => $value->images,
                     'videos' => $value->videos,
-                    'bookmarked' => $value->bookmarked,
-                    'subforum_follow' => $follow_subforum,
+                    'bookmarked' => $value->bookmarked ?? false,
+                    'subforum_follow' => $follow_subforum ?? false,
                     'subforum_data' => $subforum_data,
                     'author_data' => $author,
                     'last_update' => $lastpost
