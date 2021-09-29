@@ -2335,13 +2335,13 @@ class ForumController extends Controller
                     if($request->image != null){
                         $files = $request->file('image');
                         
-                        $fileName = str_replace(' ','-', $new_subforum->id.'-'.$subforum['name'].'-'.'picture'.'-'.date('Ymd'));
+                        $fileName = str_replace(' ','-', $check_subforum['id'].'-'.$check_subforum['name'].'-'.'picture'.'-'.date('Ymd'));
                         $guessExtension = $files->guessExtension();
                         
                         $store = Storage::disk('public')->putFileAs('forum/subforum', $files ,$fileName.'.'.$guessExtension);
 
 
-                        $update_image = Subforum::where('id', $new_subforum->id)->update([
+                        $update_image = Subforum::where('id', $check_subforum['id'])->update([
                             'name' => $request->name ?? $check_subforum['name'],
                             'description' => $request->description ?? $check_subforum['description'],
                             'subforum_image' => 'http://hainaservice.com/storage/'.$store
@@ -2350,13 +2350,13 @@ class ForumController extends Controller
                         $user = User::where('id', Auth::id())->first();
 
                         $forumlog = ForumLog::create([
-                            'subforum_id' => $new_subforum->id,
+                            'subforum_id' => $check_subforum['id'],
                             'forum_action' => 'MOD',
                             'message' => $user['username'].' updated "'.$check_subforum['name'].'" and the subforum image.'
                         ]);
                     }
                     else{
-                        $update_image = Subforum::where('id', $new_subforum->id)->update([
+                        $update_image = Subforum::where('id', $check_subforum['id'])->update([
                             'name' => $request->name ?? $check_subforum['name'],
                             'description' => $request->description ?? $check_subforum['description']
                         ]);
@@ -2364,7 +2364,7 @@ class ForumController extends Controller
                         $user = User::where('id', Auth::id())->first();
 
                         $forumlog = ForumLog::create([
-                            'subforum_id' => $new_subforum->id,
+                            'subforum_id' => $check_subforum['id'],
                             'forum_action' => 'MOD',
                             'message' => $user['username'].' updated "'.$check_subforum['name'].'" subforum.'
                         ]);
