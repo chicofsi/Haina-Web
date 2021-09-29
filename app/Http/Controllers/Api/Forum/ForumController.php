@@ -378,7 +378,7 @@ class ForumController extends Controller
                     'last_update' => $lastpost
                 ];
                 
-                if(isset($request->user()->id)){
+                if($request->bearerToken()){
                     if($prelist['user_id'] != Auth::id()){
                         $prelist['upvoted'] = $upvote;
                     }
