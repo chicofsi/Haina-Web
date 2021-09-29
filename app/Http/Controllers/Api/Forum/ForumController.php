@@ -1734,7 +1734,7 @@ class ForumController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            dd(Auth::user();
+            dd(Auth::user());
 
             $check_subforum = Subforum::where('id', $request->subforum_id)->first();
 
