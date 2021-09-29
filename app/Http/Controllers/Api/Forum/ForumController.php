@@ -232,7 +232,7 @@ class ForumController extends Controller
             if(count($check) != 0){
                 foreach($check as $key => $value){
                     $creator_count = [];
-                    if(isset($request->user()->id)){
+                    if($request->bearerToken()){
                         $check_followed = SubforumFollowers::where('subforum_id', $value->id)->where('user_id', Auth::id())->first();
                     
                         if($check_followed){
@@ -1601,8 +1601,9 @@ class ForumController extends Controller
     }
 
     public function showHomeThreads(Request $request){
-        if(isset($request->user()->id)){
-            $subforum_followed = SubforumFollowers::where('user_id', Auth::id())->get();
+            if ($request->bearerToken()) {
+                //dd(auth('sanctum')->user());
+            $subforum_followed = SubforumFollowers::where('user_id', auth('sanctum')->user())->get();
 
             if($subforum_followed){
                 $id_followed = [];
