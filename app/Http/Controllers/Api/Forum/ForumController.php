@@ -1760,18 +1760,7 @@ class ForumController extends Controller
                     }
                 }
 
-                $checkmod = ForumMod::where('user_id',Auth::id())->where('subforum_id', $request->subforum_id)->first();
-                $checkban = ForumBan::where('subforum_id', $request->subforum_id)->where('user_id', Auth::id())->first();
                 
-                if($checkban){
-                    $role = "banned";
-                }
-                else if($checkmod){
-                    $role = $checkmod['role'];
-                }
-                else{
-                    $role = "none";
-                }
 
                 //dd(Auth::id());
 
@@ -1784,6 +1773,19 @@ class ForumController extends Controller
                     else{
                         $result->following = false;
                     }
+
+                    $checkmod = ForumMod::where('user_id', auth('sanctum')->user()->id)->where('subforum_id', $request->subforum_id)->first();
+                    $checkban = ForumBan::where('subforum_id', $request->subforum_id)->where('user_id', auth('sanctum')->user()->id)->first();
+                    
+                    if($checkban){
+                        $result->role = "banned";
+                    }
+                    else if($checkmod){
+                        $result->role = $checkmod['role'];
+                    }
+                    else{
+                        $result->role = "none";
+                    }
                 }
             
                 
@@ -1795,7 +1797,6 @@ class ForumController extends Controller
                 $result->post_count = $post_count;
                 $result->likes = $likes;
                 $result->views = $views;
-                $result->role = $role;
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Subforum data found!','data'=> $result]), 200);
 
