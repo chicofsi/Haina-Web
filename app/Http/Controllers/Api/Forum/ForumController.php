@@ -1772,7 +1772,7 @@ class ForumController extends Controller
                     $role = "none";
                 }
 
-                if(isset($request->user()->id)){
+                if($request->user()->id != null){
                     $check_followed = SubforumFollowers::where('subforum_id', $check_subforum['id'])->where('user_id', Auth::id())->first();
                     if($check_followed){
                         $result->following = true;
