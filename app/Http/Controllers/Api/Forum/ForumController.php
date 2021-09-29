@@ -345,7 +345,7 @@ class ForumController extends Controller
                         $follow_subforum = false;
                     }
 
-                    $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
+                    $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', auth('sanctum')->user()->id)->first();
 
                     if(!$check_upvote){
                         $upvote = false;
