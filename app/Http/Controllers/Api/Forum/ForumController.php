@@ -1726,6 +1726,7 @@ class ForumController extends Controller
             else{
                 $request = new Request();
                 $request->page = 1;
+                dd($request->bearerToken());
                 $request->bearerToken = $request->bearerToken();                
 
                 return $this->showAllThreads($request);
