@@ -330,7 +330,7 @@ class ForumController extends Controller
                 $follow_subforum = false;
                 $upvote = false;
 
-                if(isset($request->user()->id)){
+                if($request->bearerToken()){
                     $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', Auth::id())->first();
                     $bookmark_status = ForumBookmark::where('post_id', $value->id)->where('user_id', Auth::id())->first();
 
