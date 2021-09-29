@@ -1432,6 +1432,7 @@ class ForumController extends Controller
                 if($prelist['user_id'] != auth('sanctum')->user()->id){
                     $prelist['upvoted'] = $upvote;
                 }
+                dd($prelist);
                 $prelist['bookmarked'] = $bookmark;
                 $prelist['subforum_follow'] = $follow_subforum;
             }
