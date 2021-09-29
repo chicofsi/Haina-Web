@@ -379,9 +379,7 @@ class ForumController extends Controller
                 ];
                 
                 if($request->bearerToken()){
-                    if($prelist['user_id'] != auth('sanctum')->user()->id){
-                        $prelist['upvoted'] = $upvote;
-                    }
+                    $prelist['upvoted'] = $upvote;
                     $prelist['bookmarked'] = $bookmark;
                     $prelist['subforum_follow'] = $follow_subforum;
                 }
@@ -1000,10 +998,7 @@ class ForumController extends Controller
                 else{
                     $check_duplicate = ForumUpvote::where('post_id', $request->post_id)->where('user_id', Auth::id())->first();
 
-                    if($check['user_id'] == Auth::id()){
-                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot Upvote Own Post!','data'=> '']), 401);
-                    }
-                    else if($check_duplicate){
+                    if($check_duplicate){
                         return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot Upvote More Than Once!','data'=> '']), 401);
                     }
                     else{
@@ -1429,10 +1424,7 @@ class ForumController extends Controller
             ];
 
             if($request->bearerToken()){
-                if($prelist['user_id'] != auth('sanctum')->user()->id){
-                    $prelist['upvoted'] = $upvote;
-                }
-                
+                $prelist['upvoted'] = $upvote;
                 $prelist['bookmarked'] = $bookmark;
                 $prelist['subforum_follow'] = $follow_subforum;
             }
@@ -1512,38 +1504,40 @@ class ForumController extends Controller
 
             $author = User::where('id', $value->user_id)->first();
 
-            $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
+            $bookmark = false;
+            $follow_subforum = false;
+            $upvote = false;
 
-            if(!$check_upvote){
-                $upvote = false;
-            }
-            else{
-                $upvote = true;
-            }
+            if($request->bearerToken()){
+                $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', auth('sanctum')->user()->id)->first();
+                $bookmark_status = ForumBookmark::where('post_id', $value->id)->where('user_id', auth('sanctum')->user()->id)->first();
 
-            /*
-            $author_following = ForumFollowers::where('user_id', $author['id'])->where('follower_id', Auth::id())->first();
-            if($author_following){
-                $follow_author = true;
-            }
-            else if($author['id'] == Auth::id()){
+                if($bookmark_status){
+                    $bookmark = true;
+                }
+                else{
+                    $bookmark = false;
+                }
 
-            }
-            else{
-                $follow_author = false;
-            }*/
-            
-            $bookmark_status = ForumBookmark::where('post_id', $value->id)->where('user_id', Auth::id())->first();
+                if($subforum_following){
+                    $follow_subforum = true;
+                }
+                else{
+                    $follow_subforum = false;
+                }
 
-            if($bookmark_status){
-                $value->bookmarked = true;
-            }
-            else{
-                $value->bookmarked = false;
+                $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', auth('sanctum')->user()->id)->first();
+
+                if(!$check_upvote){
+                    $upvote = false;
+                }
+                else{
+                    $upvote = true;
+                }
             }
 
             $subforum_data = Subforum::where('id', $value->subforum_id)->first();
-            $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', Auth::id())->first();
+            //$subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', Auth::id())->first();
             
             $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
 
@@ -1559,12 +1553,7 @@ class ForumController extends Controller
             $subforum_data['category'] = $category_name['name'];
             $subforum_data['category_zh'] = $category_name['name_zh'];
 
-            if($subforum_following){
-                $follow_subforum = true;
-            }
-            else{
-                $follow_subforum = false;
-            }
+            
 
             $prelist = [
                 'id' => $value->id,
@@ -1582,14 +1571,16 @@ class ForumController extends Controller
                 'content' => $value->content,
                 'images' => $value->images,
                 'videos' => $value->videos,
-                'bookmarked' => $value->bookmarked,
-                'subforum_follow' => $follow_subforum,
+                //'bookmarked' => $value->bookmarked,
+                //'subforum_follow' => $follow_subforum,
                 'subforum_data' => $subforum_data,
                 'author_data' => $author
             ];
 
-            if($prelist['user_id'] != Auth::id()){
+            if($request->bearerToken()){
                 $prelist['upvoted'] = $upvote;
+                $prelist['bookmarked'] = $bookmark;
+                $prelist['subforum_follow'] = $follow_subforum;
             }
 
             $list = (object) $prelist;
@@ -1683,9 +1674,9 @@ class ForumController extends Controller
                     else{
                         $upvote = true;
                     }
-                    if($valuepost->user_id != auth('sanctum')->user()->id){
-                        $valuepost->upvoted = $upvote;
-                    }
+                    
+                    $valuepost->upvoted = $upvote;
+                    
 
                     $valuepost->author = $author['username'];
                     $valuepost->author_photo =  "https://hainaservice.com/storage/".$author['photo'];
