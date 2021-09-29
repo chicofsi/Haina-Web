@@ -2352,7 +2352,7 @@ class ForumController extends Controller
                         $forumlog = ForumLog::create([
                             'subforum_id' => $check_subforum['id'],
                             'forum_action' => 'MOD',
-                            'message' => $user['username'].' updated "'.$check_subforum['name'].'" and the subforum image.'
+                            'message' => $user['username'].' updated "'.$request->name ?? $check_subforum['name'].'" and the subforum image.'
                         ]);
                     }
                     else{
@@ -2366,7 +2366,7 @@ class ForumController extends Controller
                         $forumlog = ForumLog::create([
                             'subforum_id' => $check_subforum['id'],
                             'forum_action' => 'MOD',
-                            'message' => $user['username'].' updated "'.$check_subforum['name'].'" subforum.'
+                            'message' => $user['username'].' updated "'.$request->name ?? $check_subforum['name'].'" subforum.'
                         ]);
                     }
 
