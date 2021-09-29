@@ -222,7 +222,7 @@ class ForumController extends Controller
         }
     }
 
-    public function showAllSubforum(){
+    public function showAllSubforum(Request $request){
 
             //$check = Subforum::with(['posts' => function($q){
             //    $q->where('forum_post.deleted_at', '=', null);
