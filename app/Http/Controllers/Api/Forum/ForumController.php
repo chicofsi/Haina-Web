@@ -1734,9 +1734,6 @@ class ForumController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            if ($request->bearerToken()) {
-                dd(auth('sanctum')->user());
-            }
 
             $check_subforum = Subforum::where('id', $request->subforum_id)->first();
 
@@ -1777,8 +1774,9 @@ class ForumController extends Controller
                 }
 
                 //dd(Auth::id());
-                
-                if(Auth::id() != null){
+
+                if ($request->bearerToken()) {
+                    //dd(auth('sanctum')->user());
                     $check_followed = SubforumFollowers::where('subforum_id', $check_subforum['id'])->where('user_id', Auth::id())->first();
                     if($check_followed){
                         $result->following = true;
@@ -1787,6 +1785,7 @@ class ForumController extends Controller
                         $result->following = false;
                     }
                 }
+            
                 
                 $result->subforum_id = $check_subforum['id'];
                 $result->subforum_name = $check_subforum['name'];
