@@ -233,8 +233,8 @@ class ForumController extends Controller
                 foreach($check as $key => $value){
                     $creator_count = [];
                     if($request->bearerToken()){
-                        $check_followed = SubforumFollowers::where('subforum_id', $value->id)->where('user_id', auth('sanctum')->user())->first();
-                        dd($check_followed);
+                        $check_followed = SubforumFollowers::where('subforum_id', $value->id)->where('user_id', auth('sanctum')->user()->id)->first();
+                        
                         if($check_followed){
                             $value->followed = true;
                         }
@@ -328,8 +328,8 @@ class ForumController extends Controller
                 $upvote = false;
 
                 if($request->bearerToken()){
-                    $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', auth('sanctum')->user())->first();
-                    $bookmark_status = ForumBookmark::where('post_id', $value->id)->where('user_id', auth('sanctum')->user())->first();
+                    $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', auth('sanctum')->user()->id)->first();
+                    $bookmark_status = ForumBookmark::where('post_id', $value->id)->where('user_id', auth('sanctum')->user()->id)->first();
 
                     if($bookmark_status){
                         $bookmark = true;
@@ -1600,7 +1600,7 @@ class ForumController extends Controller
     public function showHomeThreads(Request $request){
             if ($request->bearerToken()) {
                 //dd(auth('sanctum')->user());
-            $subforum_followed = SubforumFollowers::where('user_id', auth('sanctum')->user())->get();
+            $subforum_followed = SubforumFollowers::where('user_id', auth('sanctum')->user()->id)->get();
 
             if($subforum_followed){
                 $id_followed = [];
