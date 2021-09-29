@@ -1407,13 +1407,6 @@ class ForumController extends Controller
             $subforum_data['subforum_followers'] = $subforum_followers_count;
             $subforum_data['post_count'] = $subforum_post_count;
 
-            if($subforum_following){
-                $follow_subforum = true;
-            }
-            else{
-                $follow_subforum = false;
-            }
-
             $prelist = [
                 'id' => $value->id,
                 'title' => $value->title,
