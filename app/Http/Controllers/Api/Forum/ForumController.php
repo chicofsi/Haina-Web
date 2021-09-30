@@ -2203,6 +2203,32 @@ class ForumController extends Controller
                 else{
                     $banlist = ForumBan::where('subforum_id', $request->subforum_id)->get();
 
+                    foreach($banlist as $key => $value){
+                        $username = User::where('id', $value->user_id)->first();
+
+                        $user_data = [
+                            'name' => $username['fullname'],
+                            'username' => $username['username'],
+                            'photo' => "https://hainaservice.com/storage/".$username['photo']
+                        ];
+
+                        $mod = ForumMod::where('id', $value->mod_id)->first();
+                        $mod_username = User::where('id', $mod['user_id'])->first();
+
+                        $mod_data = [
+                            'role' => $mod['role'],
+                            'subforum_id' => $mod['subforum_id'],
+                            'username' => $mod_username['username'],
+                            'photo' => "https://hainaservice.com/storage/".$mod_username['photo']
+                        ];
+
+                        $value->user = $user_data;
+                        $value->mod = $mod_data;
+                        $value->photo = "https://hainaservice.com/storage/".$username['photo'];
+                        $value->member_since = date("F Y", strtotime($username['created_at']));
+
+                    }
+
                     if(count($banlist) > 0){
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Banlist Success!','data'=> $banlist]), 200);
                     }
