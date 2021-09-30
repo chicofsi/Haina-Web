@@ -2372,8 +2372,12 @@ class ForumController extends Controller
 
                 if($checkmod){
                     if($request->image != null){
-                        $path=public_path().str_replace('http://hainaservice.com/storage/','/',$check_subforum['subforum_image']);
-                        unlink($path);
+                        //$path=public_path().str_replace('http://hainaservice.com/storage/','/',$check_subforum['subforum_image']);
+                        //unlink($path);
+
+                        if (File::exists(public_path(str_replace('http://hainaservice.com/storage/','',$check_subforum['subforum_image'])))) {
+                            File::delete(public_path(str_replace('http://hainaservice.com/storage/','',$check_subforum['subforum_image'])));
+                        }
 
                         $files = $request->file('image');
                         
