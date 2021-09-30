@@ -2372,7 +2372,7 @@ class ForumController extends Controller
 
                 if($checkmod){
                     if($request->image != null){
-                        $path=public_path(str_replace('http://hainaservice.com/storage/','',$check_subforum['subforum_image']));
+                        $path=public_path().str_replace('http://hainaservice.com/storage/','',$check_subforum['subforum_image']);
                         unlink($path);
 
                         $files = $request->file('image');
