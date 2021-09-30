@@ -32,6 +32,7 @@ use App\Models\PersonalAccessToken;
 use App\Http\Controllers\Api\Notification\NotificationController;
 
 use DateTime;
+use File;
 
 use App\Http\Resources\ValueMessage;
 
@@ -2224,8 +2225,6 @@ class ForumController extends Controller
 
                         $value->user = $user_data;
                         $value->mod = $mod_data;
-                        $value->photo = "https://hainaservice.com/storage/".$username['photo'];
-                        $value->member_since = date("F Y", strtotime($username['created_at']));
 
                     }
 
