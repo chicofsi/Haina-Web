@@ -2372,6 +2372,8 @@ class ForumController extends Controller
 
                 if($checkmod){
                     if($request->image != null){
+                        unlink(str_replace('http://hainaservice.com/storage/','',$check_subforum['subforum_image']));
+
                         $files = $request->file('image');
                         
                         $fileName = str_replace(' ','-', $check_subforum['id'].'-'.($request->name ?? $check_subforum['name']).'-'.'picture'.'-'.date('Ymd'));
