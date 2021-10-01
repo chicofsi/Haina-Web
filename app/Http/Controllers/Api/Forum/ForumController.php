@@ -1876,6 +1876,224 @@ class ForumController extends Controller
         }
     }
 
+    public function showProfilePost(Request $request){
+        $validator = Validator::make($request->all(), [
+            //'subforum_id' => 'required',
+            'user_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check_user = User::where('id', $request->user_id)->first();
+
+            if($check_user){
+                $posts = ForumPost::where('user_id', $request->user_id)->where('deleted_at', null)->order_by('created_at', 'desc')->get();
+ 
+                $post_res = [];
+                
+
+                foreach($post as $key => $value){
+                    $likes = count(ForumUpvote::where('post_id', $value->id)->get());
+
+                    $lastpost = null;
+                    $check_comment = ForumComment::where('post_id', $value->id)->where('deleted_at', null)->orderBy('created_at', 'desc')->first();
+    
+                    $author = User::where('id', $value->user_id)->first();
+    
+                    if(!$check_comment){
+                        $lastpost = $value->updated_at;
+                    }
+                    else{
+                        $lastpost = $check_comment['created_at'];
+                    }
+    
+    
+                    $subforum_data = Subforum::where('id', $value->subforum_id)->first();
+                    
+    
+                    $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
+                    $subforum_data['creator_username'] = $subforum_creator['username'];
+    
+                    $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
+        
+                    $subforum_data['category'] = $category_name['name'];
+                    $subforum_data['category_zh'] = $category_name['name_zh'];
+    
+                    $subforum_followers_count = count(SubforumFollowers::where('subforum_id', $value->subforum_id)->get());
+                    $subforum_post_count = count(ForumPost::where('subforum_id', $value->subforum_id)->where('deleted_at', null)->get());
+    
+                    $subforum_data['subforum_followers'] = $subforum_followers_count;
+                    $subforum_data['post_count'] = $subforum_post_count;
+    
+                    $bookmark = false;
+                    $follow_subforum = false;
+                    $upvote = false;
+    
+                    if($request->bearerToken()){
+                        $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', auth('sanctum')->user()->id)->first();
+                        $bookmark_status = ForumBookmark::where('post_id', $value->id)->where('user_id', auth('sanctum')->user()->id)->first();
+    
+                        if($bookmark_status){
+                            $bookmark = true;
+                        }
+                        else{
+                            $bookmark = false;
+                        }
+    
+                        if($subforum_following){
+                            $follow_subforum = true;
+                        }
+                        else{
+                            $follow_subforum = false;
+                        }
+    
+                        $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', auth('sanctum')->user()->id)->first();
+    
+                        if(!$check_upvote){
+                            $upvote = false;
+                        }
+                        else{
+                            $upvote = true;
+                        }
+                    }
+                    
+    
+                    $prelist = [
+                        'id' => $value->id,
+                        'title' => $value->title,
+                        'author' => $author['username'],
+                        'user_id' => $author['id'],
+                        'author_photo' => "https://hainaservice.com/storage/".$author['photo'],
+                        'member_since' => date("F Y", strtotime($author['created_at'])),
+                        'like_count' => $likes,
+                        'comment_count' => count(ForumComment::where('post_id', $value->id)->where('deleted_at', null)->get()),
+                        'view_count' => $value->view_count,
+                        'share_count' => $value->share_count,
+                        'created' => $value->created_at,
+                        'content' => $value->content,
+                        'images' => $value->images,
+                        'videos' => $value->videos,
+                        //'bookmarked' => $bookmark,
+                        //'subforum_follow' => $follow_subforum,
+                        'subforum_data' => $subforum_data,
+                        'author_data' => $author,
+                        'last_update' => $lastpost
+                    ];
+                    
+                    if($request->bearerToken()){
+                        $prelist['upvoted'] = $upvote;
+                        $prelist['bookmarked'] = $bookmark;
+                        $prelist['subforum_follow'] = $follow_subforum;
+                    }
+    
+                    $list = (object) $prelist;
+    
+                    array_push($post_res, $list);
+    
+                    $total = count($post_res);
+                    $per_page = 10;
+                    $current_page = $request->post_page ?? 1;
+            
+                    $starting_point = ($current_page * $per_page) - $per_page;
+            
+                    //$result = $threads->offset(($current_page - 1) * $per_page)->limit($per_page)->get();
+            
+                    $post_list = array_slice($post_res, $starting_point, $per_page);
+    
+                    $result = new \stdClass();
+                    $result->posts = $post_list;
+                    $result->total = $total;
+                    $result->current_page = (int)$current_page;
+                    $result->total_page = ceil($total/$per_page);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'User Post Lists Found!','data'=> $result]), 200);
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'User not found!','data'=> '']), 404);
+            }
+        }
+    }
+
+    public function showProfileComment(Request $request){
+        $validator = Validator::make($request->all(), [
+            //'subforum_id' => 'required',
+            'user_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check_user = User::where('id', $request->user_id)->first();
+
+            if($check_user){
+                $comments = ForumComment::where('user_id', $request->user_id)->where('deleted_at', null)->order_by('created_at', 'desc')->get();
+                $comment_res = [];
+
+                foreach($comments as $key => $value){
+                    $userdata = User::where('id',$value->user_id)->first();
+
+                    $post = ForumPost::where('id', $value->post_id)->first();
+
+                    $checkmod = ForumMod::where('user_id', $value->user_id)->where('subforum_id', $post['subforum_id'])->first();
+                    $checkban = ForumBan::where('subforum_id', $post['subforum_id'])->where('user_id', $value->user_id)->first();
+                    
+                    if($checkban){
+                        $value->mod = "banned";
+                    }
+                    else if($checkmod){
+                        $value->mod = $checkmod['role'];
+                    }
+                    else{
+                        $value->mod = "none";
+                    }
+
+                    $value->username = $userdata['username'];
+                    $value->user_photo = "https://hainaservice.com/storage/".$userdata['photo'];
+                    $value->member_since = date("F Y", strtotime($userdata['created_at']));
+
+                    $prelist = [
+                        'id' => $value->id,
+                        'user_id' => $value->user_id,
+                        'post_id' =>  $value->post_id,
+                        'content' => $value->content,
+                        'post_data' => $post,
+                        'created_at' => $value->created_at,
+                        'updated_at' => $value->updated_at
+                    ];
+
+                    $list = (object) $prelist;
+
+                    array_push($comment_res, $list);
+
+                    $total = count($comment_res);
+                    $per_page = 10;
+                    $current_page = $request->post_page ?? 1;
+            
+                    $starting_point = ($current_page * $per_page) - $per_page;
+            
+                    //$result = $threads->offset(($current_page - 1) * $per_page)->limit($per_page)->get();
+            
+                    $comment_list = array_slice($comment_res, $starting_point, $per_page);
+    
+                    $result = new \stdClass();
+                    $result->posts = $comment_list;
+                    $result->total = $total;
+                    $result->current_page = (int)$current_page;
+                    $result->total_page = ceil($total/$per_page);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'User Comment Lists Found!','data'=> $result]), 200);
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'User not found!','data'=> '']), 404);
+            }
+        }
+    }
+
     public function removeBan(Request $request){
         $validator = Validator::make($request->all(), [
             'subforum_id' => 'required',
