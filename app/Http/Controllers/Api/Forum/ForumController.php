@@ -1602,7 +1602,7 @@ class ForumController extends Controller
         $views = array_column($threads, 'view_count');
 
         array_multisort($engage, SORT_DESC, $views, SORT_DESC, $threads);
-        $hot_threads = array_slice($threads, 0, 5);
+        $hot_threads = array_slice($threads, 0, 10);
 
         if(count($hot_threads) > 0){
 
@@ -1725,11 +1725,13 @@ class ForumController extends Controller
                 
             }
             else{
-                return $this->showAllThreads($request);
+                //return $this->showAllThreads($request);
+                return $this->showHotThreads();
             }
         }
         else{
-            return $this->showAllThreads($request);
+            //return $this->showAllThreads($request);
+            return $this->showHotThreads();
         }
         
     }
