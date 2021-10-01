@@ -2033,7 +2033,7 @@ class ForumController extends Controller
                 $comment_res = [];
 
                 foreach($comments as $key => $value){
-                    $userdata = User::where('id',$value->user_id)->get();
+                    $userdata = User::where('id',$value->user_id)->first();
 
                     $post = ForumPost::where('id', $value->post_id)->first();
 
@@ -2050,9 +2050,9 @@ class ForumController extends Controller
                         $value->mod = "none";
                     }
 
-                    $value->username = $userdata['username'];
-                    $value->user_photo = "https://hainaservice.com/storage/".$userdata['photo'];
-                    $value->member_since = date("F Y", strtotime($userdata['created_at']));
+                    //$value->username = $userdata['username'];
+                    //$value->user_photo = "https://hainaservice.com/storage/".$userdata['photo'];
+                    //$value->member_since = date("F Y", strtotime($userdata['created_at']));
 
                     $prelist = [
                         'id' => $value->id,
