@@ -1893,8 +1893,7 @@ class ForumController extends Controller
  
                 $post_res = [];
                 
-
-                foreach($post as $key => $value){
+                foreach($posts as $key => $value){
                     $likes = count(ForumUpvote::where('post_id', $value->id)->get());
 
                     $lastpost = null;
@@ -2080,7 +2079,7 @@ class ForumController extends Controller
                     $comment_list = array_slice($comment_res, $starting_point, $per_page);
     
                     $result = new \stdClass();
-                    $result->posts = $comment_list;
+                    $result->comments = $comment_list;
                     $result->total = $total;
                     $result->current_page = (int)$current_page;
                     $result->total_page = ceil($total/$per_page);
