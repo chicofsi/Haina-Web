@@ -34,7 +34,7 @@ use App\Http\Controllers\Api\Notification\NotificationController;
 use DateTime;
 use File;
 
-use App\Http\Resources\User as UserResource;
+use App\Http\Resources\UserResource as UserResource;
 use App\Http\Resources\ValueMessage;
 
 class ForumController extends Controller
