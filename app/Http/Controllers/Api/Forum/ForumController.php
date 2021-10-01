@@ -34,6 +34,7 @@ use App\Http\Controllers\Api\Notification\NotificationController;
 use DateTime;
 use File;
 
+use App\Http\Resources\User as UserResource;
 use App\Http\Resources\ValueMessage;
 
 class ForumController extends Controller
@@ -168,8 +169,6 @@ class ForumController extends Controller
 
                 $check_comment = ForumComment::where('post_id', $value->id)->where('deleted_at', null)->orderBy('created_at', 'desc')->first();
     
-                $author = User::where('id', $value->user_id)->first();
-    
                 $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', Auth::id())->first();
 
                 $bookmark_status = ForumBookmark::where('post_id', $value->id)->where('user_id', Auth::id())->first();
@@ -212,7 +211,7 @@ class ForumController extends Controller
                 $value->comment_count = count(ForumComment::where('post_id', $value->id)->where('deleted_at', null)->get());
                 $value->subforum_follow = $follow_subforum;
                 $value->subforum_data = $subforum_data;
-                $value->author_data = $author;
+                $value->author_data = new UserResource($author);
             }
 
         if(count($post) == 0){
@@ -375,7 +374,7 @@ class ForumController extends Controller
                     //'bookmarked' => $bookmark,
                     //'subforum_follow' => $follow_subforum,
                     'subforum_data' => $subforum_data,
-                    'author_data' => $author,
+                    'author_data' => new UserResource($author),
                     'last_update' => $lastpost
                 ];
                 
@@ -910,7 +909,7 @@ class ForumController extends Controller
                 $valuethread->like_count = $likes;
                 $valuethread->comment_count = count(ForumComment::where('post_id', $valuethread->id)->where('deleted_at', null)->get());
                 $valuethread->subforum_data = $subforum_data;
-                $valuethread->author_data = $author;
+                $valuethread->author_data = new UserResource($author);
             }
 
             if(count($subforum) == 0 && count($thread) == 0){
@@ -1429,7 +1428,7 @@ class ForumController extends Controller
                 //'bookmarked' => $value->bookmarked,
                 //'subforum_follow' => $follow_subforum,
                 'subforum_data' => $subforum_data,
-                'author_data' => $author
+                'author_data' => new UserResource($author)
             ];
 
             if($request->bearerToken()){
@@ -1583,7 +1582,7 @@ class ForumController extends Controller
                 //'bookmarked' => $value->bookmarked,
                 //'subforum_follow' => $follow_subforum,
                 'subforum_data' => $subforum_data,
-                'author_data' => $author
+                'author_data' => new UserResource($author)
             ];
 
             if($request->bearerToken()){
@@ -1704,7 +1703,7 @@ class ForumController extends Controller
                     $valuepost->comment_count = count(ForumComment::where('post_id', $valuepost->id)->where('deleted_at', null)->get());
                     $valuepost->subforum_follow = $follow_subforum;
                     $valuepost->subforum_data = $subforum_data;
-                    $valuepost->author_data = $author;
+                    $valuepost->author_data = new UserResource($author);
         
                     array_push($threads, $list_post[$keypost]);
                 }
@@ -1977,7 +1976,7 @@ class ForumController extends Controller
                         //'bookmarked' => $bookmark,
                         //'subforum_follow' => $follow_subforum,
                         'subforum_data' => $subforum_data,
-                        'author_data' => $author,
+                        'author_data' => new UserResource($author),
                         'last_update' => $lastpost
                     ];
                     
