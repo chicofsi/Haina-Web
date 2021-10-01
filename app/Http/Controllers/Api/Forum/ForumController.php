@@ -34,7 +34,7 @@ use App\Http\Controllers\Api\Notification\NotificationController;
 use DateTime;
 use File;
 
-use App\Http\Resources\UserResource as UserResource;
+use App\Http\Resources\UserResource;
 use App\Http\Resources\ValueMessage;
 
 class ForumController extends Controller
@@ -1582,7 +1582,7 @@ class ForumController extends Controller
                 //'bookmarked' => $value->bookmarked,
                 //'subforum_follow' => $follow_subforum,
                 'subforum_data' => $subforum_data,
-                'author_data' => new UserResource($author)
+                'author_data' => new UserResource($author)//jump
             ];
 
             if($request->bearerToken()){
