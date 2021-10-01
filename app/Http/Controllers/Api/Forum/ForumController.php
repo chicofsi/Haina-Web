@@ -1726,12 +1726,12 @@ class ForumController extends Controller
             }
             else{
                 //return $this->showAllThreads($request);
-                return $this->showHotThreads();
+                return $this->showHotThreads($request);
             }
         }
         else{
             //return $this->showAllThreads($request);
-            return $this->showHotThreads();
+            return $this->showHotThreads($request);
         }
         
     }
