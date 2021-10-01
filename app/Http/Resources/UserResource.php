@@ -28,7 +28,7 @@ class UserResource extends JsonResource
             'birthdate' => $this->birthdate,
             'gender' => $this->gender,
             'about' => $this->about,
-            'photo' => $this->photo_url
+            'photo' => 'https://hainaservice.com/storage/'.$this->photo
 
         ];
     }
