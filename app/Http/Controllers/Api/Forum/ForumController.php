@@ -1990,7 +1990,7 @@ class ForumController extends Controller
                     $list = (object) $prelist;
     
                     array_push($post_res, $list);
-    
+                }
                     $total = count($post_res);
                     $per_page = 10;
                     $current_page = $request->post_page ?? 1;
@@ -2008,7 +2008,7 @@ class ForumController extends Controller
                     $result->total_page = ceil($total/$per_page);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'User Post Lists Found!','data'=> $result]), 200);
-                }
+                
             }
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'User not found!','data'=> '']), 404);
@@ -2033,9 +2033,9 @@ class ForumController extends Controller
                 $comment_res = [];
 
                 foreach($comments as $key => $value){
-                    $userdata = User::where('id',$value->user_id)->first();
+                    $userdata = User::where('id',$value->user_id)->get();
 
-                    $post = ForumPost::where('id', $value->post_id)->first();
+                    $post = ForumPost::where('id', $value->post_id)->get();
 
                     $checkmod = ForumMod::where('user_id', $value->user_id)->where('subforum_id', $post['subforum_id'])->first();
                     $checkban = ForumBan::where('subforum_id', $post['subforum_id'])->where('user_id', $value->user_id)->first();
@@ -2067,7 +2067,7 @@ class ForumController extends Controller
                     $list = (object) $prelist;
 
                     array_push($comment_res, $list);
-
+                }
                     $total = count($comment_res);
                     $per_page = 10;
                     $current_page = $request->post_page ?? 1;
@@ -2085,7 +2085,7 @@ class ForumController extends Controller
                     $result->total_page = ceil($total/$per_page);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'User Comment Lists Found!','data'=> $result]), 200);
-                }
+                
             }
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'User not found!','data'=> '']), 404);
