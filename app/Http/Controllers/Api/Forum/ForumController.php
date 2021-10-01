@@ -2035,7 +2035,7 @@ class ForumController extends Controller
                 foreach($comments as $key => $value){
                     $userdata = User::where('id',$value->user_id)->get();
 
-                    $post = ForumPost::where('id', $value->post_id)->get();
+                    $post = ForumPost::where('id', $value->post_id)->first();
 
                     $checkmod = ForumMod::where('user_id', $value->user_id)->where('subforum_id', $post['subforum_id'])->first();
                     $checkban = ForumBan::where('subforum_id', $post['subforum_id'])->where('user_id', $value->user_id)->first();
