@@ -391,7 +391,7 @@ class ForumController extends Controller
                
             }
             if($request->sort_by == "time"){
-                $threads = collect($threads)->sortByDesc('last_update')->toArray();
+                $threads = collect($threads)->sortByDesc('id')->toArray();
             }
             else{
                 $threads = collect($threads)->sortByDesc('like_count')->toArray();
