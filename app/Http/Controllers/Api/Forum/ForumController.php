@@ -1604,6 +1604,16 @@ class ForumController extends Controller
         array_multisort($engage, SORT_DESC, $views, SORT_DESC, $threads);
         $hot_threads = array_slice($threads, 0, 10);
 
+        $total = count($hot_threads);
+        $per_page = 10;
+        $current_page = 1;
+
+        $result = new \stdClass();
+        $result->threads = $threads;
+        $result->total = $total;
+        $result->current_page = (int)$current_page;
+        $result->total_page = 1;
+
         if(count($hot_threads) > 0){
 
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Hot threads succesfully displayed!','data'=> $hot_threads]), 200);
