@@ -1609,7 +1609,7 @@ class ForumController extends Controller
         $current_page = 1;
 
         $result = new \stdClass();
-        $result->threads = $threads;
+        $result->threads = $hot_threads;
         $result->total = $total;
         $result->current_page = (int)$current_page;
         $result->total_page = 1;
