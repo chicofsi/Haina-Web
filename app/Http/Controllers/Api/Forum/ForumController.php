@@ -57,7 +57,7 @@ class ForumController extends Controller
             'name' => 'required',
             'description' => 'required',
             'category_id' => 'required',
-            'image' => 'required|image|mimes:png,jpg|max:1024'
+            'image' => 'required|image|mimes:png,jpg|max:5120'
         ]);
 
         if ($validator->fails()) {
@@ -1118,9 +1118,17 @@ class ForumController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'You do not follow this subforum!','data'=> '']), 404);
             }
             else{
-                $delete_follow = SubforumFollowers::where('user_id', Auth::id())->where('subforum_id', $request->subforum_id)->delete();
+                $subforum = Subforum::where('id', $request->subforum_id)->first();
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Unfollow subforum success!','data'=> $check]), 200);
+                if($subforum['creator_id'] == Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Cannot unfollow the subforum created by yourself!','data'=> '']), 401);
+                }
+                else{
+                    $delete_follow = SubforumFollowers::where('user_id', Auth::id())->where('subforum_id', $request->subforum_id)->delete();
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Unfollow subforum success!','data'=> $check]), 200);
+                }
+                
             }
         }
     }
