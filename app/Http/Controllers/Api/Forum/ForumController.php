@@ -1889,7 +1889,7 @@ class ForumController extends Controller
             $check_user = User::where('id', $request->user_id)->first();
 
             if($check_user){
-                $posts = ForumPost::where('user_id', $request->user_id)->where('deleted_at', null)->order_by('created_at', 'desc')->get();
+                $posts = ForumPost::where('user_id', $request->user_id)->where('deleted_at', null)->orderBy('created_at', 'desc')->get();
  
                 $post_res = [];
                 
@@ -1959,7 +1959,7 @@ class ForumController extends Controller
                         }
                     }
                     
-    
+
                     $prelist = [
                         'id' => $value->id,
                         'title' => $value->title,
@@ -2030,7 +2030,7 @@ class ForumController extends Controller
             $check_user = User::where('id', $request->user_id)->first();
 
             if($check_user){
-                $comments = ForumComment::where('user_id', $request->user_id)->where('deleted_at', null)->order_by('created_at', 'desc')->get();
+                $comments = ForumComment::where('user_id', $request->user_id)->where('deleted_at', null)->orderBy('created_at', 'desc')->get();
                 $comment_res = [];
 
                 foreach($comments as $key => $value){
