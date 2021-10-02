@@ -520,7 +520,7 @@ class ForumController extends Controller
             'subforum_id' => 'required',
             'title' => 'required',
             'content' => 'required',
-            ['images' => 'image|mimes:png,jpg|max:1024'],
+            ['images' => 'image|mimes:png,jpg|max:4096'],
             'video' => 'mimes:mp4,mov,3gp,qt|max:12000'
         ]);
 
@@ -2009,7 +2009,7 @@ class ForumController extends Controller
                     $post_list = array_slice($post_res, $starting_point, $per_page);
     
                     $result = new \stdClass();
-                    $result->posts = $post_list;
+                    $result->threads = $post_list;
                     $result->total = $total;
                     $result->current_page = (int)$current_page;
                     $result->total_page = ceil($total/$per_page);
