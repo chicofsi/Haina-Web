@@ -36,6 +36,7 @@ class User extends JsonResource
 
         $count = UserNotification::where('id_user',$this->id)->where('opened',0)->count();
         return [
+            'id' => $this->id,
             'fullname' => $this->fullname,
             'notification_count' => $count,
             'email' => $this->email,

@@ -291,7 +291,6 @@ class UserController extends Controller
                    'message' => null
                 ]);
 
-
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Update Photo Success','data'=> '']),$this->successStatus);
         }
 
@@ -383,14 +382,11 @@ class UserController extends Controller
                    'id_user_activity' => 5,
                    'message' => null
                 ]);
-
-
+                
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Change Password Success','data'=> '']),$this->successStatus);
             }else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Password Wrong','data'=> '']),401);
             }
-
         }
-
     }
 }
