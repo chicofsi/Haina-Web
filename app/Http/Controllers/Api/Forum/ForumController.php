@@ -2108,26 +2108,26 @@ class ForumController extends Controller
                         $bookmark_status = ForumBookmark::where('post_id', $post['id'])->where('user_id', auth('sanctum')->user()->id)->first();
     
                         if($bookmark_status){
-                            $post_data['bookmarked'] = true;
+                            $post_data->bookmarked = true;
                         }
                         else{
-                            $post_data['bookmarked'] = false;
+                            $post_data->bookmarked = false;
                         }
     
                         if($subforum_following){
-                            $post_data['subforum_follow'] = true;
+                            $post_data->subforum_follow = true;
                         }
                         else{
-                            $post_data['subforum_follow'] = false;
+                            $post_data->subforum_follow = false;
                         }
     
                         $check_upvote = ForumUpvote::where('post_id', $post['id'])->where('user_id', auth('sanctum')->user()->id)->first();
     
                         if(!$check_upvote){
-                            $post_data['upvoted'] = false;
+                            $post_data->upvoted = false;
                         }
                         else{
-                            $post_data['upvoted'] = true;
+                            $post_data->upvoted = true;
                         }
                     }
 
