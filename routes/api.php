@@ -303,8 +303,6 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/following_subforum', [ForumController::class, 'userFollowingSubforum']);
 
 		Route::post('/update_subforum', [ForumController::class, 'updateSubforumData']);
-
-		Route::post('/user_profile', [ForumController::class, 'showProfile']);
 		
 		Route::post('/share', [ForumController::class, 'sharePost']);
 		Route::get('/my_role', [ForumController::class, 'myRoles']);
@@ -332,6 +330,10 @@ Route::group(['prefix' => 'forum'], function(){
 	Route::post('/post_list', [ForumController::class, 'showAllPost']);
 	Route::post('/post_detail', [ForumController::class, 'showPost']);
 	Route::post('/comment', [ForumController::class, 'showComment']);
+
+	Route::post('/user_profile', [ForumController::class, 'showProfile']);
+	Route::post('/user_profile_post', [ForumController::class, 'showProfilePost']);
+	Route::post('/user_profile_comment', [ForumController::class, 'showProfileComment']);
 
 	Route::post('/search', [ForumController::class, 'search']);
 

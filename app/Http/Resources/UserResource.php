@@ -6,7 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\URL;
 
 
-class User extends JsonResource
+class UserResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,20 +17,18 @@ class User extends JsonResource
     public function toArray($request)
     {
 
-        $education = UserEducation::where('id_user', $this->id)->first();
-        $education_level = Education::where('id', $education['id_edu'])->first();
 
         //$photo_url=URL::to('storage/'.$this->photo);
         return [
             'fullname' => $this->fullname,
             'email' => $this->email,
-            'phone' => $this->phone,
+            //'phone' => $this->phone,
             'username' => $this->username,
-            'address' => $this->address,
+            //'address' => $this->address,
             'birthdate' => $this->birthdate,
             'gender' => $this->gender,
             'about' => $this->about,
-            //'photo' => $photo_url,
+            'photo' => 'https://hainaservice.com/storage/'.$this->photo
 
         ];
     }
