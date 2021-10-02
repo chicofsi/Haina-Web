@@ -2094,7 +2094,7 @@ class ForumController extends Controller
                         'videos' => $post['videos'],
                         //'bookmarked' => $bookmark,
                         //'subforum_follow' => $follow_subforum,
-                        'subforum_data' => $post['subforum_data'],
+                        'subforum_data' => $subforum_data,
                         'author_data' => new UserResource($author),
                         'last_update' => $lastpost
                     ];
