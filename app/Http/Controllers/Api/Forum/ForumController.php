@@ -2044,6 +2044,95 @@ class ForumController extends Controller
 
                     $post = ForumPost::where('id', $value->post_id)->first();
 
+                    //data post
+                    $likes = count(ForumUpvote::where('post_id', $post['id'])->get());
+
+                    $lastpost = null;
+                    $check_comment = ForumComment::where('post_id', $post['id'])->where('deleted_at', null)->orderBy('created_at', 'desc')->first();
+    
+                    $author = User::where('id', $post['user_id'])->first();
+    
+                    if(!$check_comment){
+                        $lastpost = $post['updated_at'];
+                    }
+                    else{
+                        $lastpost = $check_comment['created_at'];
+                    }
+    
+    
+                    $subforum_data = Subforum::where('id', $post['subforum_id'])->first();
+                    
+    
+                    $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
+                    $subforum_data['creator_username'] = $subforum_creator['username'];
+    
+                    $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
+        
+                    $subforum_data['category'] = $category_name['name'];
+                    $subforum_data['category_zh'] = $category_name['name_zh'];
+    
+                    $subforum_followers_count = count(SubforumFollowers::where('subforum_id', $post['subforum_id'])->get());
+                    $subforum_post_count = count(ForumPost::where('subforum_id', $post['subforum_id'])->where('deleted_at', null)->get());
+    
+                    $subforum_data['subforum_followers'] = $subforum_followers_count;
+                    $subforum_data['post_count'] = $subforum_post_count;
+    
+                    $post_data = (object)[
+                        'id' => $post['id'],
+                        'title' => $post['title'],
+                        'author' => $author['username'],
+                        'user_id' => $author['id'],
+                        'author_photo' => "https://hainaservice.com/storage/".$author['photo'],
+                        'member_since' => date("F Y", strtotime($author['created_at'])),
+                        'like_count' => $likes,
+                        'comment_count' => count(ForumComment::where('post_id', $post['id'])->where('deleted_at', null)->get()),
+                        'view_count' => $post['view_count'],
+                        'share_count' => $post['share_count'],
+                        'created' => $post['created_at'],
+                        'content' => $post['content'],
+                        'images' => $post['images'],
+                        'videos' => $post['videos'],
+                        //'bookmarked' => $bookmark,
+                        //'subforum_follow' => $follow_subforum,
+                        'subforum_data' => $post['subforum_data'],
+                        'author_data' => new UserResource($author),
+                        'last_update' => $lastpost
+                    ];
+
+                    $bookmark = false;
+                    $follow_subforum = false;
+                    $upvote = false;
+    
+                    if($request->bearerToken()){
+                        $subforum_following = SubforumFollowers::where('subforum_id', $post['subforum_id'])->where('user_id', auth('sanctum')->user()->id)->first();
+                        $bookmark_status = ForumBookmark::where('post_id', $post['id'])->where('user_id', auth('sanctum')->user()->id)->first();
+    
+                        if($bookmark_status){
+                            $post_data['bookmarked'] = true;
+                        }
+                        else{
+                            $post_data['bookmarked'] = false;
+                        }
+    
+                        if($subforum_following){
+                            $post_data['subforum_follow'] = true;
+                        }
+                        else{
+                            $post_data['subforum_follow'] = false;
+                        }
+    
+                        $check_upvote = ForumUpvote::where('post_id', $post['id'])->where('user_id', auth('sanctum')->user()->id)->first();
+    
+                        if(!$check_upvote){
+                            $post_data['upvoted'] = false;
+                        }
+                        else{
+                            $post_data['upvoted'] = true;
+                        }
+                    }
+
+                    //
+
                     $checkmod = ForumMod::where('user_id', $value->user_id)->where('subforum_id', $post['subforum_id'])->first();
                     $checkban = ForumBan::where('subforum_id', $post['subforum_id'])->where('user_id', $value->user_id)->first();
                     
@@ -2066,7 +2155,7 @@ class ForumController extends Controller
                         'user_id' => $value->user_id,
                         'post_id' =>  $value->post_id,
                         'content' => $value->content,
-                        'post_data' => $post,
+                        'post_data' => $post_data,
                         'created_at' => $value->created_at,
                         'updated_at' => $value->updated_at
                     ];
