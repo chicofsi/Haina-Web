@@ -35,6 +35,9 @@ class LoginController extends Controller
 
   	public function postLogin(Request $request)
   	{
+      // check privacy policy
+      if (Cookie::get('privacy_policy') === null)
+      return view('error.privacy-policy');
 
       	// Validate the form data
     	$this->validate($request, [
