@@ -4,8 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="ThemeBucket">
+    <meta name="description" content="Privacy Policy Haina Service Indonesia">
 
     <!-- favicon -->
     <link rel="shortcut icon" href="{{ url('/vendor/general') }}/img/haina-square.PNG" />
@@ -13,7 +12,7 @@
     <link rel="apple-touch-icon" sizes="72x72" href="{{ url('/vendor/general') }}/img/haina-square.PNG" />
     <link rel="apple-touch-icon" sizes="114x114" href="{{ url('/vendor/general') }}/img/haina-square.PNG" />
 
-    <title>Login</title>
+    <title>Privacy Policy, Terms and Conditions | Haina Service Indonesia</title>
 
     <link href="{{ url('/vendor/adminex/adminex/adminex/html/') }}/css/style.css" rel="stylesheet">
     <link href="{{ url('/vendor/adminex/adminex/adminex/html/') }}/css/style-responsive.css" rel="stylesheet">
@@ -44,26 +43,6 @@
 
 <div class="container">
 
-    <form class="form-signin" method="POST" action="{{ route('login') }}">
-        @csrf
-        <div class="form-signin-heading text-center">
-            <img style="max-width: 200px" src="{{asset('img/logohaina.png')}}" alt=""/>
-        </div>
-        <div class="login-wrap">
-            <x-jet-input id="username" class="form-control" type="text" name="username" :value="old('username')" placeholder="Username" required autofocus />
-            <x-jet-input id="password" class="form-control" type="password" name="password" placeholder="Password" required autocomplete="current-password" />
-
-            <button class="btn btn-lg btn-login btn-block" type="submit">
-                <i class="fa fa-check"></i>
-            </button>
-
-
-
-
-        </div>
-
-    </form>
-
 </div>
 
 
@@ -74,7 +53,7 @@
 <script src="{{ url('/vendor/adminex/adminex/adminex/html/') }}/js/jquery-1.10.2.min.js"></script>
 <script src="{{ url('/vendor/adminex/adminex/adminex/html/') }}/js/bootstrap.min.js"></script>
 <script src="{{ url('/vendor/adminex/adminex/adminex/html/') }}/js/modernizr.min.js"></script>
-@if ($privacy_policy == 'no')
+
 <script type="text/javascript">
   $(document).ready(function(){
     $("#myprivacypolicy").modal('show');
@@ -88,7 +67,15 @@
           <h4 style="text-align:center">Terms and Conditions</h4>
         </div>
       </div>
-      <div class="modal-body scroll">
+      <div class="modal-body">
+        @if ($privacy_policy == 'yes')
+        <!-- Alert from here -->
+        <div class="alert alert-info fade in">
+          <strong>Thank you!</strong>
+          You have accepted the terms and conditions of use of our system
+        </div>
+        <!-- Alert until here -->
+        @endif
         <h4 style="font-weight:bold">Privacy Policy for Haina Service Indonesia</h4>
 
         <p>At Haina Service Indonesia, accessible from https://hainaservice.com/, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by Haina Service Indonesia and how we use it.</p>
@@ -133,12 +120,14 @@
 
         <p>By using our website, you hereby consent to our Privacy Policy and agree to its Terms and Conditions.</p>
       </div>
+      @if ($privacy_policy == 'no')
       <div class="modal-footer">
-        <a href="{{ url('/accept-terms-and-conditions') }}" class="btn btn-info">Accept</a>
+        <a href="{{ url('/accept-terms-and-conditions?endpoint=policy') }}" class="btn btn-info">Accept</a>
       </div>
+      @endif
     </div>
   </div>
 </div>
-@endif
+
 </body>
 </html>

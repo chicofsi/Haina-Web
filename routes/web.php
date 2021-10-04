@@ -55,6 +55,7 @@ Route::post('/reset-password', [ResetPasswordController::class, '_post']);
 
 // accept terms and conditions
 Route::get('/accept-terms-and-conditions', [PrivacyPolicyController::class, 'accept_terms_and_condition']);
+Route::get('/policy', [PrivacyPolicyController::class, 'get_policy']);
 
 Route::get('/login', [LoginController::class, 'getLogin'])->middleware('guest')->name('login');
 Route::post('/login', [LoginController::class, 'postLogin']);
