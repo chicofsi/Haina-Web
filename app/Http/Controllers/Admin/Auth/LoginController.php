@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\AdminLogs;
 
+use Cookie;
+
 class LoginController extends Controller
 {
     public function getLogin()
@@ -20,7 +22,15 @@ class LoginController extends Controller
   		}else if(Auth::guard('service_admin')->check()){
   			return redirect()->intended('/service-dashboard');
   		}
-    	return view('auth.login');
+      // check privacy policy
+      if (Cookie::get('privacy_policy') === null) {
+        $privacy_policy = 'no';
+      } else {
+        $privacy_policy = 'yes';
+      }
+    	return view('auth.login', [
+        'privacy_policy' => $privacy_policy
+      ]);
   	}
 
   	public function postLogin(Request $request)

@@ -23,6 +23,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Api\EmailVerifiedController;
 // reset password controller
 use App\Http\Controllers\Api\ResetPasswordController;
+// privacy policy controller
+use App\Http\Controllers\PrivacyPolicyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +52,9 @@ Route::get('/resend-verified-email', [EmailVerifiedController::class, 'resend_ve
 // reset password
 Route::get('/reset-password', [ResetPasswordController::class, '_get']);
 Route::post('/reset-password', [ResetPasswordController::class, '_post']);
+
+// accept terms and conditions
+Route::get('/accept-terms-and-conditions', [PrivacyPolicyController::class, 'accept_terms_and_condition']);
 
 Route::get('/login', [LoginController::class, 'getLogin'])->middleware('guest')->name('login');
 Route::post('/login', [LoginController::class, 'postLogin']);
