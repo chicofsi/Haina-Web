@@ -315,6 +315,9 @@ class UserController extends Controller
         if($request->has('about')){
             $change['about']=$request->about;
         }
+        if($request->has('expected_salary')){
+            $change['expected_salary']=$request->expected_salary;
+        }
 
 
         User::where('id',$request->user()->id)->update($change);
