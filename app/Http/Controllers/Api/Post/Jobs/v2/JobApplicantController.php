@@ -77,6 +77,12 @@ class JobApplicantController extends Controller
                 $valuephoto->photo_url = "https://hainaservice.com/storage/".$valuephoto->photo_url;
             }
 
+            foreach($value->skill as $keyskill => $valueskill){
+                unset($valueskill->created_at);
+                unset($valueskill->updated_at);
+                unset($valueskill->pivot);
+            }
+
             $value->company_url = "https://hainaservice.com/storage/".$company_name['icon_url'];
 
             $package_name = JobVacancyPackage::where('id', $value->package)->first();
@@ -143,7 +149,7 @@ class JobApplicantController extends Controller
                             $q->where('level', request('level'));
                     })->when(request()->has('experience'), function($q){
                             $q->where('experience', '<=' ,request('experience'));
-                    })->get();
+                    })->with('skill')->get();
 
             if(count($search) == 0){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No job vacancy found for this search!','data'=> '']), 404);
@@ -161,6 +167,12 @@ class JobApplicantController extends Controller
         
                     foreach($value->company_photo as $keyphoto => $valuephoto){
                         $valuephoto->photo_url = "https://hainaservice.com/storage/".$valuephoto->photo_url;
+                    }
+
+                    foreach($value->skill as $keyskill => $valueskill){
+                        unset($valueskill->created_at);
+                        unset($valueskill->updated_at);
+                        unset($valueskill->pivot);
                     }
         
                     $value->company_url = "https://hainaservice.com/storage/".$company_name['icon_url'];
