@@ -251,6 +251,12 @@ class JobVacancyController extends Controller
                         $value->deleted_at = date('Y-m-d\TH:i:s.u\Z' , strtotime($value->deleted_at));
                     }
 
+                    foreach($value->skill as $keyskill => $valueskill){
+                        unset($valueskill->created_at);
+                        unset($valueskill->updated_at);
+                        unset($valueskill->pivot);
+                    }
+
                     $company_name = Company::where('id', $value->id_company)->first();
                     $value->company_name = $company_name['name'];
                     $value->company_desc = $company_name['description'];
