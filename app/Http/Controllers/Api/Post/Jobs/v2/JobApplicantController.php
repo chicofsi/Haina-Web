@@ -273,7 +273,7 @@ class JobApplicantController extends Controller
     public function getDocs(){
         $user = User::where('id', Auth::id())->first();
 
-        $user_docs = UserDocs::where('id_user', $user['id'])->where('id_docs_category', 1)->orderBy('created_at')->first();
+        $user_docs = UserDocs::where('id_user', $user['id'])->where('id_docs_category', 1)->where('deleted_at', null)->orderBy('created_at')->first();
 
         $user_docs['docs_url'] = "http://hainaservice.com/storage/".$user_docs['docs_url'];
 
@@ -327,6 +327,36 @@ class JobApplicantController extends Controller
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'No applications job found!','data'=> '']), 404);
+        }
+    }
+
+    public function deleteDocs(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_docs' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_docs = UserDocs::where('id', $request->id_docs)->first();
+
+            if($check_docs){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'User document not found','data'=> '']), 404);
+            }
+            else{
+                $check_usage = JobVacancyApplicant::where('id_resume', $request->id_docs)->first();
+
+                if($check_usage){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Error: Unable to delete because file is already used for job application','data'=> '']), 404);
+                }
+                else{
+                    $delete_docs = UserDocs::where('id', $request->id_docs)->update([
+                        'deleted_at' => date('Y-m-d H:i:s')
+                    ]);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Delete document success','data'=> $check_docs]), 200);
+                }
+            }
         }
     }
 
