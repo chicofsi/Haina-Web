@@ -346,7 +346,9 @@ class JobApplicantController extends Controller
             else{
                 $check_usage = JobVacancyApplicant::where('id_resume', $request->id_docs)->first();
 
-                if($check_usage){
+                if($check_docs['id_user'] != Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Error: Unauthorized','data'=> '']), 401);
+                }else if($check_usage){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Error: Unable to delete because file is already used for job application','data'=> '']), 404);
                 }
                 else{
