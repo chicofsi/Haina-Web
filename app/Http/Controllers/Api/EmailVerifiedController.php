@@ -33,7 +33,14 @@ class EmailVerifiedController extends Controller {
 
   public function verified_get() {
     if(!isset($_GET['user']) || !isset($_GET['token']))
-    return response()->json($this->ErrorController->error_400('incomplete parameters'));
+    // return response()->json($this->ErrorController->error_400('incomplete parameters'));
+    return view('mails.email-verified', [
+      'response' => 'error',
+      'icons' => 'fa-times',
+      'icons_color' => '#ef3333',
+      'title_headers' => 'Oops !!',
+      'messages' => 'Error 400 : Incomplete parameters',
+    ]);
     // inisialisasi
     $email_user = htmlentities(addslashes($_GET['user']));
     $token = htmlentities(addslashes($_GET['token']));
@@ -41,21 +48,55 @@ class EmailVerifiedController extends Controller {
     $check = EmailTokenModels::where('email', $email_user)
                              ->where('token', $token)
                              ->where('deleted_at', NULL);
-    if ($check->get()->count() < 1) return response()->json($this->ErrorController->error_404('your email and token access is wrong'));
+    if ($check->get()->count() < 1)
+    // return response()->json($this->ErrorController->error_404('your email and token access is wrong'));
+    return view('mails.email-verified', [
+      'response' => 'error',
+      'icons' => 'fa-times',
+      'icons_color' => '#ef3333',
+      'title_headers' => 'Oops !!',
+      'messages' => 'Error 404 : Your email and token access is wrong',
+    ]);
     // get field
     $ids = $check->first()['ids'];
     $valid_until = $check->first()['valid_until'];
     // set date now
     $date_now = date('Y-m-d H:i:s');
     // check condition valid until
-    if ($date_now > $valid_until) return response()->json($this->ErrorController->error_404('token has expired'));
+    if ($date_now > $valid_until)
+    // return response()->json($this->ErrorController->error_404('token has expired'));
+    return view('mails.email-verified', [
+      'response' => 'error',
+      'icons' => 'fa-times',
+      'icons_color' => '#ef3333',
+      'title_headers' => 'Oops !!',
+      'messages' => 'Error 404 : Token has expired',
+    ]);
     // update field email_verified_at
     $update = FixUsersModels::where('email', $email_user)
                             ->update([
                               'email_verified_at' => Carbon::now(),
                               'updated_at' => Carbon::now()
                             ]);
-    return (isset($update) && $update == '1') ? response()->json($this->SuccessController->success_201('your email has been verified', '')) : response()->json($this->ErrorController->error_500('an error occurred while verifying your email. contact administrator to fix this problem'));
+    if (isset($update) && $update == '1') {
+      // return response()->json($this->SuccessController->success_201('your email has been verified', ''));
+      return view('mails.email-verified', [
+        'response' => 'succes',
+        'icons' => 'fa-check',
+        'icons_color' => '#61ef33',
+        'title_headers' => 'Success',
+        'messages' => 'Your email has been verified',
+      ]);
+    } else {
+      // response()->json($this->ErrorController->error_500('an error occurred while verifying your email. contact administrator to fix this problem'));
+      return view('mails.email-verified', [
+        'response' => 'error',
+        'icons' => 'fa-times',
+        'icons_color' => '#ef3333',
+        'title_headers' => 'Oops !!',
+        'messages' => 'Error 500 : An error occurred while verifying your email. Contact administrator to fix this problem',
+      ]);
+    }
   }
 
   public function resend_verified_get() {
