@@ -38,11 +38,8 @@
         </section>
       </div>
       <footer class="main-footer">
-        <div class="footer-left">
+        <div style="text-align:center">
           Copyright &copy; {{ date('Y') }} <div class="bullet"></div> <a href="https://cv-haina-service-indonesia.business.site/" target="_blank">Haina Service Indonesia</a>
-        </div>
-        <div class="footer-right">
-          1.0
         </div>
       </footer>
     </div>
