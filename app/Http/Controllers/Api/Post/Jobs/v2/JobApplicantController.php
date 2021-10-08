@@ -352,9 +352,12 @@ class JobApplicantController extends Controller
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Error: Unable to delete because file is already used for job application','data'=> '']), 404);
                 }
                 else{
+                    $time = date('Y-m-d H:i:s');
                     $delete_docs = UserDocs::where('id', $request->id_docs)->update([
-                        'deleted_at' => date('Y-m-d H:i:s')
+                        'deleted_at' => $time
                     ]);
+
+                    $check_docs['deleted_at'] = $time;
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Delete document success','data'=> $check_docs]), 200);
                 }
