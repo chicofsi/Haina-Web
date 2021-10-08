@@ -340,7 +340,7 @@ class JobApplicantController extends Controller
         }else{
             $check_docs = UserDocs::where('id', $request->id_docs)->first();
 
-            if($check_docs){
+            if(!$check_docs){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'User document not found','data'=> '']), 404);
             }
             else{
