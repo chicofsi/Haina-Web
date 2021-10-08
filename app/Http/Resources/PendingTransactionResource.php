@@ -43,6 +43,7 @@ class PendingTransactionResource extends JsonResource {
         else if(isset($this->product)){
 
             $transaction=Transaction::where('id',$this->id)->with('product','payment')->first();
+            dd($transaction)
             
             $product_group = Product::select('id_product_group', 'description')->where('id',$transaction->product->id)->first();
             $product_category = ProductGroup::select('id_product_category')->where('id', $product_group['id_product_group'])->first();
