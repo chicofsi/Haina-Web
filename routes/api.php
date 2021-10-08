@@ -113,7 +113,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('vacancy/apply'  , [JobApplicantController::class, 'applyJob']);
 		Route::post('vacancy/withdraw'  , [JobApplicantController::class, 'withdrawApplication']);
 		Route::get('vacancy/docs', [JobApplicantController::class, 'getDocs']);
-		Route::get('vacancy/delete_docs', [JobApplicantController::class, 'deleteDocs']);
+		Route::post('vacancy/delete_docs', [JobApplicantController::class, 'deleteDocs']);
 		Route::get('vacancy/my_applications', [JobApplicantController::class, 'myJobApplications']);
 		Route::get('vacancy/show_all', [JobApplicantController::class, 'showAvailableVacancy']);
 
