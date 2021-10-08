@@ -43,23 +43,29 @@ class PendingTransactionResource extends JsonResource {
         else if(isset($this->product)){
 
             $transaction=Transaction::where('id',$this->id)->with('product','payment')->first();
-            dd($transaction);
             
             $product_group = Product::select('id_product_group', 'description')->where('id',$transaction->product->id)->first();
             $product_category = ProductGroup::select('id_product_category')->where('id', $product_group['id_product_group'])->first();
             $product_type = ProductCategory::where('id', $product_category['id_product_category'])->first();
+            if($transaction->payment!=null){
 
-            $payment_id = TransactionPayment::select('id_payment_method')->where('id',$transaction->payment->id)->first();
-            $payment_method = PaymentMethod::select('id_payment_method_category')->where('id', $payment_id['id_payment_method'])->first();
-            $payment_name = PaymentMethodCategory::select('name')->where('id', $payment_method['id_payment_method_category'])->first();
+                $payment_id = TransactionPayment::select('id_payment_method')->where('id',$transaction->payment->id)->first();
+                $payment_method = PaymentMethod::select('id_payment_method_category')->where('id', $payment_id['id_payment_method'])->first();
+                $payment_name = PaymentMethodCategory::select('name')->where('id', $payment_method['id_payment_method_category'])->first();
+
+                $payment = $payment_name['name'];
+                $id_payment_method = $payment_id['id_payment_method'];
+            }else{
+
+                $payment ="";
+                $id_payment_method =0;
+            }
 
             $name = $product_group['description'];
             $icon = $product_type['icon_code'];
             $category = $product_category['id_product_category'];
             //$payment = "Virtual";
-            $payment = $payment_name['name'];
             $total_amount = $this->total_payment;
-            $id_payment_method = $payment_id['id_payment_method'];
             $number = $this->customer_number;
         }
         
