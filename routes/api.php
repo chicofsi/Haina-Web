@@ -59,6 +59,7 @@ use App\Http\Controllers\Api\Post\Jobs\v2\UserQualificationController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::get('server-status', [UserController::class, 'serverStatus']);
 
 Route::post('login', [UserController::class, 'login']);
 Route::post('check', [UserController::class, 'check']);

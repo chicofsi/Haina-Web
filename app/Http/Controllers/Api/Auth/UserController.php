@@ -53,6 +53,12 @@ class UserController extends Controller
 
     }
 
+    public function serverStatus(Request $request)
+    {            
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Server Online!','data'=>""]), 200);
+
+    }
+
     public function login(Request $request)
     {
 
