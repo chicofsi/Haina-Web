@@ -631,6 +631,8 @@ class JobVacancyController extends Controller
                     $user_profile->user_docs = $docs;
                     $user_profile->education->education_level = $edu_name['name'];
 
+                    unset($user_profile->email_verified_at, $user_profile->created_at, $user_profile->updated_at);
+
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Applicant details found!','data'=> $user_profile]), 200);
                 }
             }
