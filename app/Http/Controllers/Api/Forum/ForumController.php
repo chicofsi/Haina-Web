@@ -90,7 +90,8 @@ class ForumController extends Controller
 
                 $files = $request->file('image');
                 
-                $fileName = str_replace(' ','-', $new_subforum->id.'-'.$subforum['name'].'-'.'picture');
+                $cleanname = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $subforum['name']);
+                $fileName = str_replace(' ','-', $new_subforum->id.'-'.$cleanname.'-'.'picture');
                 $guessExtension = $files->guessExtension();
                 
                 $store = Storage::disk('public')->putFileAs('forum/subforum', $files ,$fileName.'.'.$guessExtension);
@@ -1741,7 +1742,8 @@ class ForumController extends Controller
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Home/following threads succesfully displayed!','data'=> $result]), 200);
                 }
                 else{
-                    return response()->json(new ValueMessage(['value'=>0,'message'=>'No posts found!','data'=> '']), 404);
+                    return $this->showHotThreads($request);
+                    //return response()->json(new ValueMessage(['value'=>0,'message'=>'No posts found!','data'=> '']), 404);
                 }
                 
             }
@@ -2735,6 +2737,7 @@ class ForumController extends Controller
 
                         $files = $request->file('image');
                         
+                        $cleanname = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $request->name);
                         $fileName = str_replace(' ','-', $check_subforum['id'].'-'.($request->name ?? $check_subforum['name']).'-'.'picture'.'-'.date('Ymd'));
                         $guessExtension = $files->guessExtension();
                         
