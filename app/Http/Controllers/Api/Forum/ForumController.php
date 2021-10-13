@@ -57,7 +57,7 @@ class ForumController extends Controller
             'name' => 'required',
             'description' => 'required',
             'category_id' => 'required',
-            'image' => 'required|image|mimes:png,jpg|max:5120'
+            'image' => 'required|image|mimes:png,jpeg,jpg|max:5120'
         ]);
 
         if ($validator->fails()) {
@@ -507,6 +507,11 @@ class ForumController extends Controller
                     else{
                         $post_detail['bookmarked'] = false;
                     }
+                }
+
+                foreach($post_detail as $key=>$value){
+                    
+                    unset($value->user->email_verified_at, $value->user->created_at, $value->user->updated_at, $value->user->expected_salary, $value->user->email, $value->user->address, $value->user->phone);
                 }
                 
 
