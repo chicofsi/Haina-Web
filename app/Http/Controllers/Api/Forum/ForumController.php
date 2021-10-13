@@ -509,7 +509,7 @@ class ForumController extends Controller
                     }
                 }
                     
-                unset($post_detail['user']->email_verified_at, $post_detail['user']->created_at);
+                unset($post_detail->user->email_verified_at, $post_detail->user->created_at, $post_detail->user->updated_at);
                 
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Post displayed successfully!','data'=> $post_detail]), 200);
