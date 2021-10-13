@@ -30,7 +30,8 @@ class UserDocsController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
 
-            $fileName= str_replace(' ','-', $request->name.'_'.date('d-m-Y_H-i-s'));
+            $cleanname = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $request->name);
+            $fileName= str_replace(' ','-', $cleanname.'_'.date('d-m-Y_H-i-s'));
 
             $guessExtension = $request->file('docs')->guessExtension();
 
