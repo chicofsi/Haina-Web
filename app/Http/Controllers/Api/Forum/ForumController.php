@@ -935,7 +935,8 @@ class ForumController extends Controller
 
             foreach($files as $file){
 
-                $fileName = str_replace(' ','-', $post['title'].'_'.$num);
+                $cleantitle = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $post['title']);
+                $fileName = str_replace(' ','-', $cleantitle.'_'.$num);
                 $guessExtension = $file->guessExtension();
                 //dd($guessExtension);
                 $store = Storage::disk('public')->putFileAs('forum/post/'.$id, $file ,$fileName.'.'.$guessExtension);
@@ -963,7 +964,8 @@ class ForumController extends Controller
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Post Not Found!','data'=> '']), 404);
         }
         else{
-            $fileName = str_replace(' ','-', 'video-'.$post['title']);
+            $cleantitle = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $post['title']);
+            $fileName = str_replace(' ','-', 'video-'.$cleantitle);
             $guessExtension = $video->guessExtension();
             //dd($guessExtension);
             $store = Storage::disk('public')->putFileAs('forum/post/'.$id, $video ,$fileName.'.'.$guessExtension);
