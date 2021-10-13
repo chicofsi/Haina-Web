@@ -508,11 +508,8 @@ class ForumController extends Controller
                         $post_detail['bookmarked'] = false;
                     }
                 }
-
-                foreach($post_detail as $key=>$value){
                     
-                    unset($value->user->email_verified_at, $value->user->created_at, $value->user->updated_at, $value->user->expected_salary, $value->user->email, $value->user->address, $value->user->phone);
-                }
+                unset($post_detail['user']->email_verified_at, $post_detail['user']->created_at);
                 
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Post displayed successfully!','data'=> $post_detail]), 200);
