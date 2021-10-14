@@ -1742,19 +1742,127 @@ class ForumController extends Controller
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Home/following threads succesfully displayed!','data'=> $result]), 200);
                 }
                 else if(count($threads) > 0 && count($threads) < 10){
-                    $hot = $this->showHotThreads($request);
                     $hot_id = [];
 
                     foreach($threads as $key=>$value){
                         array_push($hot_id, $value->id);
                     }
 
-                    foreach($hot as $extra){
-                        foreach($extra as $key=>$value){
-                            dd($value);
+                    $date =  date("Y:m:d H:i:s");
+                    $datebefore = mktime(0, 0, 0, date("m")-1, date("d"),  date("Y"));
+                    //$datebefore = date_add($date, date_interval_create_from_date_string('-90 days'));
+
+                    //dd($datebefore);
+
+                    $list_post = ForumPost::where('deleted_at', null)->with(['comments' => function($q){
+                        $q->where('forum_comment.deleted_at', '=', null);
+                    }], 'images', 'videos')->whereDate('created_at', '>', $datebefore)->whereDate('created_at', '<=', $date)->whereNotIn('id', $hot_id)->get();
+                    //$hot_threads = [];
+                    $extra_threads = [];
+
+                    if($list_post){
+                    foreach($list_post as $key => $value){
+                        $likes = count(ForumUpvote::where('post_id', $value->id)->get());
+
+                        $check_comment = ForumComment::where('post_id', $value->id)->where('deleted_at', null)->orderBy('created_at', 'desc')->first();
+
+                        $author = User::where('id', $value->user_id)->first();
+
+                        $bookmark = false;
+                        $follow_subforum = false;
+                        $upvote = false;
+
+                        if($request->bearerToken()){
+                            $subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', auth('sanctum')->user()->id)->first();
+                            $bookmark_status = ForumBookmark::where('post_id', $value->id)->where('user_id', auth('sanctum')->user()->id)->first();
+
+                            if($bookmark_status){
+                                $bookmark = true;
+                            }
+                            else{
+                                $bookmark = false;
+                            }
+
+                            if($subforum_following){
+                                $follow_subforum = true;
+                            }
+                            else{
+                                $follow_subforum = false;
+                            }
+
+                            $check_upvote = ForumUpvote::where('post_id', $value->id)->where('user_id', auth('sanctum')->user()->id)->first();
+
+                            if(!$check_upvote){
+                                $upvote = false;
+                            }
+                            else{
+                                $upvote = true;
+                            }
                         }
-                       
+
+                        $subforum_data = Subforum::where('id', $value->subforum_id)->first();
+                        //$subforum_following = SubforumFollowers::where('subforum_id', $value->subforum_id)->where('user_id', Auth::id())->first();
+                        
+                        $category_name = ForumCategory::where('id', $subforum_data['category_id'])->first();
+
+                        $subforum_followers_count = count(SubforumFollowers::where('subforum_id', $value->subforum_id)->get());
+                        $subforum_post_count = count(ForumPost::where('subforum_id', $value->subforum_id)->where('deleted_at', null)->get());
+
+                        $subforum_data['subforum_followers'] = $subforum_followers_count;
+                        $subforum_data['post_count'] = $subforum_post_count;
+
+                        $subforum_creator = User::where('id', $subforum_data['creator_id'])->first();
+                        $subforum_data['creator_username'] = $subforum_creator['username'];
+
+                        $subforum_data['category'] = $category_name['name'];
+                        $subforum_data['category_zh'] = $category_name['name_zh'];
+
+                        
+
+                        $prelist = [
+                            'id' => $value->id,
+                            'title' => $value->title,
+                            'author' => $author['username'],
+                            'user_id' => $author['id'],
+                            'author_photo' => "https://hainaservice.com/storage/".$author['photo'],
+                            'member_since' => date("F Y", strtotime($author['created_at'])),
+                            'like_count' => $likes,
+                            'comment_count' => count(ForumComment::where('post_id', $value->id)->where('deleted_at', null)->get()),
+                            'view_count' => $value->view_count,
+                            'share_count' => $value->share_count,
+                            'engagement_count' => $likes + count(ForumComment::where('post_id', $value->id)->where('deleted_at', null)->get()),
+                            'created' => $value->created_at,
+                            'content' => $value->content,
+                            'images' => $value->images,
+                            'videos' => $value->videos,
+                            //'bookmarked' => $value->bookmarked,
+                            //'subforum_follow' => $follow_subforum,
+                            'subforum_data' => $subforum_data,
+                            'author_data' => new UserResource($author)//jump
+                        ];
+
+                        if($request->bearerToken()){
+                            $prelist['upvoted'] = $upvote;
+                            $prelist['bookmarked'] = $bookmark;
+                            $prelist['subforum_follow'] = $follow_subforum;
+                        }
+
+                        $list = (object) $prelist;
+
+                        array_push($extra_threads, $list);
+
                     }
+                }
+
+                foreach($extra_threads as $keyextra=>$valueextra){
+                    if(count($threads) < 10){
+                        array_push($threads, $valueextra);
+                    }
+                    else{
+                        break;
+                    }
+                }
+                
 
                     $result = new \stdClass();
                     $result->threads = $threads;
