@@ -1761,7 +1761,7 @@ class ForumController extends Controller
                     $result->current_page = 1;
                     $result->total_page = ceil($total/10);
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Home/following threads succesfully displayed!','data'=> $result]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Home/following threads succesfully displayed!','data'=> $hot]), 200);
                     
                 }
                 else{
