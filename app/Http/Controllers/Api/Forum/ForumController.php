@@ -1737,9 +1737,32 @@ class ForumController extends Controller
                 $result->current_page = (int)$current_page;
                 $result->total_page = ceil($total/$per_page);
 
-                if(count($threads) > 0){
+                if(count($threads) > 10){
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Home/following threads succesfully displayed!','data'=> $result]), 200);
+                }
+                else if(count($threads) > 0 && count($threads) < 10){
+                    $hot = $this->showHotThreads($request);
+                    $hot_id = [];
+
+                    foreach($threads as $key=>$value){
+                        array_push($hot_id, $value->id);
+                    }
+
+                    foreach($hot->data->threads as $key=>$value){
+                        if(in_array($value->id, $hot_id) == false && count($threads) < 10){
+                            array_push($threads, $value);
+                        }
+                    }
+
+                    $result = new \stdClass();
+                    $result->threads = $threads;
+                    $result->total = 10;
+                    $result->current_page = 1;
+                    $result->total_page = ceil($total/10);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Home/following threads succesfully displayed!','data'=> $result]), 200);
+                    
                 }
                 else{
                     return $this->showHotThreads($request);
