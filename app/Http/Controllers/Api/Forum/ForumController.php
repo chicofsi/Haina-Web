@@ -1750,7 +1750,9 @@ class ForumController extends Controller
                     }
 
                     foreach($hot as $extra){
-                       dd($extra);
+                        foreach($extra as $key=>$value){
+                            dd($value);
+                        }
                        
                     }
 
