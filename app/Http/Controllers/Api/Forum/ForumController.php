@@ -1750,7 +1750,7 @@ class ForumController extends Controller
                     }
 
                     foreach($hot as $extra){
-                        foreach($extra as $key=>$value){
+                        foreach($extra->data->threads as $key=>$value){
                             if(in_array($value->id, $hot_id) == false && count($threads) < 10){
                                 array_push($threads, $value);
                             }
