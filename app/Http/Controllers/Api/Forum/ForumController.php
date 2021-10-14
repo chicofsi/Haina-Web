@@ -1749,19 +1749,21 @@ class ForumController extends Controller
                         array_push($hot_id, $value->id);
                     }
 
-                    foreach($hot->data->threads as $key=>$value){
-                        if(in_array($value->id, $hot_id) == false && count($threads) < 10){
-                            array_push($threads, $value);
+                    foreach($hot as $extra){
+                        foreach($extra as $key=>$value){
+                            if(in_array($value->id, $hot_id) == false && count($threads) < 10){
+                                array_push($threads, $value);
+                            }
                         }
                     }
 
                     $result = new \stdClass();
                     $result->threads = $threads;
-                    $result->total = 10;
+                    $result->total = count($threads);
                     $result->current_page = 1;
                     $result->total_page = ceil($total/10);
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Home/following threads succesfully displayed!','data'=> $hot]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Home/following threads succesfully displayed!','data'=> $result]), 200);
                     
                 }
                 else{
