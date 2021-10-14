@@ -1835,10 +1835,11 @@ class ForumController extends Controller
                             'content' => $value->content,
                             'images' => $value->images,
                             'videos' => $value->videos,
+                            'hot_threads' => true,
                             //'bookmarked' => $value->bookmarked,
                             //'subforum_follow' => $follow_subforum,
                             'subforum_data' => $subforum_data,
-                            'author_data' => new UserResource($author)//jump
+                            'author_data' => new UserResource($author)
                         ];
 
                         if($request->bearerToken()){
@@ -1862,6 +1863,11 @@ class ForumController extends Controller
                         break;
                     }
                 }
+
+                $id = array_column($threads, 'id');
+                //$views = array_column($threads, 'view_count');
+
+                array_multisort($id, SORT_DESC, $threads);
                 
 
                     $result = new \stdClass();
