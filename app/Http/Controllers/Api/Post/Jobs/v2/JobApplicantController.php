@@ -486,6 +486,23 @@ class JobApplicantController extends Controller
             }
             else{
                 if($check_app['id_user'] == Auth::id()){
+
+                    if($check_app['status'] == 'interview'){
+                        $interview = JobVacancyInterview::where('id_user', Auth::id())->where('id_vacancy', $check_app['id_vacancy'])->first();
+
+                        $interview_data = [
+                            'id' => $interview['id'],
+                            'time' => $interview['time'],
+                            'method' => $interview['method'],
+                            'duration' => $interview['duration'],
+                            'location' => $interview['location'],
+                            'cp_name' => $interview['cp_name'],
+                            'cp_phone' => $interview['cp_phone']
+                        ];
+
+                        $check_user['interview'] = $interview_data;
+                    }
+
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Application Detail Success!','data'=> $check_app]), 200);
                 }
                 else{
