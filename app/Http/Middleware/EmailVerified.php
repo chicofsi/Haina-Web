@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use App\Http\Resources\ValueMessage;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Models\User;
+use App\Models\User;
 
 class EmailVerified
 {
