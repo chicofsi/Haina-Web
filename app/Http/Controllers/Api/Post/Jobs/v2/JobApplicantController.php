@@ -479,7 +479,7 @@ class JobApplicantController extends Controller
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
         }else{
-            $check_app = JobVacancyApplicant::where('id', $request->id_application)->with('vacancy', 'user', 'resume')->first();
+            $check_app = JobVacancyApplicant::where('id', $request->id_application)->with('vacancy', 'user', 'resume', 'vacancy.company')->first();
 
             if(!$check_app){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Application ID not found!','data'=> '']), 404);
