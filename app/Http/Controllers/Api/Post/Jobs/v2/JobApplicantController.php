@@ -471,4 +471,28 @@ class JobApplicantController extends Controller
 
     }
 
+    public function getApplicationDetail(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_application' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_app = JobVacancyApplicant::where('id', $request->id_application)->with('vacancy', 'user', 'resume')->first();
+
+            if(!$check_app){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Application ID not found!','data'=> '']), 404);
+            }
+            else{
+                if($check_app['id_user'] == Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Application Detail Success!','data'=> $check_app]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 400);
+                }
+            }
+        }
+    }
+
 }
