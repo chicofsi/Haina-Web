@@ -9,6 +9,8 @@ use App\Http\Resources\News as NewsResource;
 use App\Http\Resources\NewsAPI as NewsAPIResource;
 use App\Http\Resources\ValueMessage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\TransferStats;
@@ -117,11 +119,25 @@ class NewsController extends Controller
                 $newsData[$key]=new NewsResource($value);
             }
 
+            $total = count($newsData);
+            $per_page = 10;
+            $current_page = $request->page ?? 1;
+
+            $starting_point = ($current_page * $per_page) - $per_page;
+
+            $news_result = array_slice($newsData, $starting_point, $per_page);
+
+            $result = new \stdClass();
+            $result->news = $news_result;
+            $result->total = $total;
+            $result->current_page = (int)$current_page;
+            $result->total_page = ceil($total/$per_page);
+
             if(!$newsData){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'News Doesn\'t Exist!','data'=> '']), 404);
             }
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get News Success!','data'=> $newsData]), $this->successStatus);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get News Success!','data'=> $result]), $this->successStatus);
 
         }
 
