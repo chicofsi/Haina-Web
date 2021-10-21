@@ -479,7 +479,7 @@ class JobApplicantController extends Controller
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
         }else{
-            $check_app = JobVacancyApplicant::where('id', $request->id_application)->with('vacancy', 'user', 'resume', 'vacancy.company')->first();
+            $check_app = JobVacancyApplicant::where('id', $request->id_application)->with('vacancy', 'user', 'resume', 'vacancy.skill')->first();
 
             if(!$check_app){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Application ID not found!','data'=> '']), 404);
@@ -500,8 +500,42 @@ class JobApplicantController extends Controller
                             'cp_phone' => $interview['cp_phone']
                         ];
 
-                        $check_user['interview'] = $interview_data;
+                        $check_app['interview'] = $interview_data;
                     }
+
+                    $company_name = Company::where('id', $check_app->vacancy->id_company)->with('photo')->first();
+                    $check_app->vacancy->company_name = $company_name['name'];
+                    $check_app->vacancy->company_desc = $company_name['description'];
+                    $check_app->vacancy->company_photo = $company_name['photo'];
+                    $check_app->vacancy->company_url = "https://hainaservice.com/storage/".$company_name['icon_url'];
+
+                    foreach($check_app->vacancy->company_photo as $keyphoto => $valuephoto){
+                        $valuephoto->photo_url = "https://hainaservice.com/storage/".$valuephoto->photo_url;
+                    }
+        
+                    foreach($check_app->vacancy->skill as $keyskill => $valueskill){
+                        unset($valueskill->created_at);
+                        unset($valueskill->updated_at);
+                        unset($valueskill->pivot);
+                    }
+        
+                    $package_name = JobVacancyPackage::where('id', $check_app->vacancy->package)->first();
+                    $check_app->vacancy->package_name = $package_name['name'];
+
+                    $city_name = City::where('id', $check_app->vacancy->id_city)->first();
+                    $check_app->vacancy->city_name = $city_name['name'];
+
+                    $level_name = JobVacancyLevel::where('id', $check_app->vacancy->level)->first();
+                    $check_app->vacancy->level_name = $level_name['name'];
+
+                    $type_name = JobVacancyType::where('id', $check_app->vacancy->type)->first();
+                    $check_app->vacancy->type_name = $type_name['name'];
+
+                    $specialist_name = JobCategory::where('id', $check_app->vacancy->id_specialist)->first();
+                    $check_app->vacancy->specialist_name = $specialist_name['name'];
+
+                    $edu_name = Education::where('id', $check_app->vacancy->id_edu)->first();
+                    $check_app->vacancy->edu_name = $edu_name['name'];
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Application Detail Success!','data'=> $check_app]), 200);
                 }
