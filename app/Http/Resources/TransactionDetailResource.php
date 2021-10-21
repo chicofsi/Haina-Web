@@ -29,7 +29,7 @@ class TransactionDetailResource extends JsonResource {
 
     $product = Product::where('id', $this->id_product)->first();
     $product_group = ProductGroup::where('id', $product['id_product_group'])->first();
-    $product_category = ProductCategory::where('id', $product_category['id_product_category'])->first();
+    $product_category = ProductCategory::where('id', $product_group['id_product_category'])->first();
 
     $providers = null;
     if($product_group['id_providers'] != null){
