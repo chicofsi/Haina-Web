@@ -1174,9 +1174,15 @@ class PulsaController extends Controller
             $check_transaction = Transaction::where('id', $request->id_transaction)->first();
 
             if($check_transaction){
-                $transaction_detail = new TransactionDetailResource($check_transaction);
+                if($check_transaction['id_user'] != Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> ""]), 403);
+                }
+                else{
+                    $transaction_detail = new TransactionDetailResource($check_transaction);
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction data found!','data'=> $transaction_detail]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction data found!','data'=> $transaction_detail]), 200);
+                }
+                
             }
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction not found!','data'=> ""]), 404);
