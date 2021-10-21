@@ -10,7 +10,7 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductGroup;
 use App\Models\TransactionPayment;
-use App\Models\PaymentCategory;
+use App\Models\PaymentMethodCategory;
 use App\Models\PaymentMethod;
 
 class TransactionDetailResource extends JsonResource {
