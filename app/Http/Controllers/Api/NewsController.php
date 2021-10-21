@@ -113,13 +113,14 @@ class NewsController extends Controller
 
             $news=$news->get();
 
-            /*
+            
             $newsData=null;
 
             foreach ($news as $key => $value) {
                 $newsData[$key]=new NewsResource($value);
             }
 
+            /*
             $total = count($newsData);
             $per_page = 10;
             $current_page = $request->page ?? 1;
@@ -139,7 +140,7 @@ class NewsController extends Controller
             }
             */
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get News Success!','data'=> $news]), $this->successStatus);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get News Success!','data'=> $newsData]), $this->successStatus);
 
         }
 
