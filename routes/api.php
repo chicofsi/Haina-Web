@@ -196,6 +196,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 			//Route::post('/amountbill'  , [PulsaController::class, 'getAmountBills']);
 			Route::post('/directbill'  , [PulsaController::class, 'getDirectBills']);
 			Route::post('/cancel', [PulsaController::class, 'cancelTransaction']);
+			//Route::post('/bill_detail', [PulsaController::class, 'getTransactionDetail']);
 		});
 
 		Route::group(['prefix' => 'ticket'], function() {
@@ -344,6 +345,12 @@ Route::group(['prefix' => 'forum'], function(){
 	Route::get('/hot_post', [ForumController::class, 'showHotThreads']);
 	Route::post('/home_post', [ForumController::class, 'showHomeThreads']);
 });
+
+//nanti hapus
+Route::group(['prefix' => 'bills'],function (){
+	Route::post('/bill_detail', [PulsaController::class, 'getTransactionDetail']);
+});
+//
 
 //Reset pass email
 Route::get('/email/verify', function () {

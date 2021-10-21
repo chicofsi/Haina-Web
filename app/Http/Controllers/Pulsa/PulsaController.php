@@ -1162,4 +1162,23 @@ class PulsaController extends Controller
         
     }
 
+    public function getTransactionDetail(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_transaction' => 'required'
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            $check_transaction = Transaction::where('id', $request->id_transaction)->with('user', 'product', 'payment')->first();
+
+            if($check_transaction){
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction data found!','data'=> $check_transaction]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction not found!','data'=> ""]), 404);
+            }
+        }
+    }
+
 }
