@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\ValueMessage;
 use App\Http\Resources\BillResource;
 use App\Http\Resources\CategoryServiceResource;
+use App\Http\Resources\TransactionDetailResource;
 use App\Http\Resources\ProductGroupResource;
 use App\Http\Resources\InquiryBills as InquiryBillsResource;
 use App\Http\Resources\PendingTransactionResource;
@@ -1170,9 +1171,11 @@ class PulsaController extends Controller
         if ($validator->fails()) {          
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
-            $check_transaction = Transaction::where('id', $request->id_transaction)->with('user', 'product', 'payment')->first();
+            $check_transaction = Transaction::where('id', $request->id_transaction)->first();
 
             if($check_transaction){
+                $transaction_detail = new TransactionDetailResource($check_transaction);
+
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction data found!','data'=> $check_transaction]), 200);
             }
             else{
