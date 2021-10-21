@@ -1176,7 +1176,7 @@ class PulsaController extends Controller
             if($check_transaction){
                 $transaction_detail = new TransactionDetailResource($check_transaction);
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction data found!','data'=> $check_transaction]), 200);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Transaction data found!','data'=> $transaction_detail]), 200);
             }
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Transaction not found!','data'=> ""]), 404);
