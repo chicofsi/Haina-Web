@@ -113,6 +113,7 @@ class NewsController extends Controller
 
             $news=$news->get();
 
+            /*
             $newsData=null;
 
             foreach ($news as $key => $value) {
@@ -136,8 +137,9 @@ class NewsController extends Controller
             if(!$newsData){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'News Doesn\'t Exist!','data'=> '']), 404);
             }
+            */
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get News Success!','data'=> $result]), $this->successStatus);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Get News Success!','data'=> $news]), $this->successStatus);
 
         }
 
