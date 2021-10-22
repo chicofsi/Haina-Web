@@ -518,6 +518,8 @@ class JobApplicantController extends Controller
                         unset($valueskill->updated_at);
                         unset($valueskill->pivot);
                     }
+
+                    $check_app->resume->docs_url = "https://hainaservice.com/storage/".$check_app->resume->docs_url;
         
                     $package_name = JobVacancyPackage::where('id', $check_app->vacancy->package)->first();
                     $check_app->vacancy->package_name = $package_name['name'];
