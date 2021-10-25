@@ -12,7 +12,7 @@ class RestaurantPhotos extends Model
 
     protected $table = 'restaurant_photos';
 
-    protected $fillable = ['restaurant_id', 'photo_url'];
+    protected $fillable = ['restaurant_id', 'filename', 'photo_url'];
 
 
 }

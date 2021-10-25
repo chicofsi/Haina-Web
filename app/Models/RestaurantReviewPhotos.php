@@ -12,7 +12,7 @@ class RestaurantReviewPhotos extends Model
 
     protected $table = 'restaurant_review_photos';
 
-    protected $fillable = ['review_id', 'photo_url'];
+    protected $fillable = ['review_id', 'filename', 'photo_url'];
 
 
 }
