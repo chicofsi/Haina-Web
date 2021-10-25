@@ -14,16 +14,18 @@ class RestaurantData extends Model
 
     //public $timestamps = false;
 
-    protected $fillable = ['name', 'address', 'latitude', 'longitude', 'city_id', 'phone', 'user_id', 'cuisine_type_id',
-    'restaurant_type_id', 'open_days', 'weekdays_time_open', 'weekdays_time_close', 'weekend_time_open', 
+    protected $fillable = ['name', 'address', 'latitude', 'longitude', 'city_id', 'phone', 'user_id', 
+    'open_days', 'weekdays_time_open', 'weekdays_time_close', 'weekend_time_open', 
     'weekend_time_close', 'halal'];
 
     public function cuisine(){
-        return $this->hasOne('App\Models\RestaurantCuisineType', 'id', 'cuisine_type_id');
+        //return $this->hasOne('App\Models\RestaurantCuisineType', 'id', 'cuisine_type_id');
+        return $this->belongsToMany(RestaurantCuisineType::class, 'restaurant_cuisine_data', 'restaurant_id', 'cuisine_type_id');
     }
 
     public function type(){
-        return $this->hasOne('App\Models\RestaurantType', 'id', 'restaurant_type_id');
+        //return $this->hasOne('App\Models\RestaurantType', 'id', 'restaurant_type_id');
+        return $this->belongsToMany(RestaurantType::class, 'restaurant_type_data', 'restaurant_id', 'restaurant_type_id');
     }
 
     public function image(){
