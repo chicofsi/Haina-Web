@@ -325,6 +325,12 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	Route::group(['prefix' => 'report'], function(){
 		Route::post('/new', [ReportController::class, 'fileReport']);
 	});
+
+	Route::group(['prefix' => 'restaurant'],function (){
+		Route::post('/add_new', [RestaurantController::class, 'registerNewRestaurant']);
+		
+		Route::post('/add_review', [RestaurantController::class, 'addReview']);
+	});
 	
 });
 
@@ -348,11 +354,7 @@ Route::group(['prefix' => 'forum'], function(){
 });
 
 //nanti hapus
-Route::group(['prefix' => 'restaurant'],function (){
-	Route::post('/add_new', [RestaurantController::class, 'registerNewRestaurant']);
-	
-	Route::post('/add_review', [RestaurantController::class, 'addReview']);
-});
+
 //
 
 //Reset pass email
