@@ -44,6 +44,7 @@ use App\Http\Controllers\Api\CityController;
 use App\Http\Controllers\Api\Midtrans\MidtransController;
 use App\Http\Controllers\Api\Forum\ForumController;
 use App\Http\Controllers\Api\Report\ReportController;
+use App\Http\Controllers\Api\Restaurant\RestaurantController;
 
 use App\Http\Controllers\Api\Post\Jobs\v2\JobVacancyController;
 use App\Http\Controllers\Api\Post\Jobs\v2\JobApplicantController;
@@ -347,9 +348,11 @@ Route::group(['prefix' => 'forum'], function(){
 });
 
 //nanti hapus
-//Route::group(['prefix' => 'bills'],function (){
+Route::group(['prefix' => 'restaurant'],function (){
+	Route::post('/add_new', [RestaurantController::class, 'registerNewRestaurant']);
 	
-//});
+	Route::post('/add_review', [RestaurantController::class, 'addReview']);
+});
 //
 
 //Reset pass email

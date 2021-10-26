@@ -16,6 +16,7 @@ use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
 
 use App\Http\Resources\ValueMessage;
+use App\Http\Resources\RestaurantDataResource;
 
 use App\Models\NotificationCategory;
 use App\Models\PersonalAccessToken;
@@ -105,6 +106,9 @@ class RestaurantController extends Controller
             $restaurant_images = $request->file('restaurant_image');
 
             $this->addRestaurantImages($new_restaurant['id'], $restaurant_images);
+
+            $my_restaurant = new RestaurantDataResource($new_restaurant);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Register Restaurant Success!','data'=> $my_restaurant]), 200);
 
         }
 
