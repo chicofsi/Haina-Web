@@ -133,9 +133,25 @@ class RestaurantController extends Controller
     }
 
     public function showRestaurants(Request $request){
-        $all_restaurant = RestaurantData::with('cuisine', 'type')->orderBy('rating','desc')->get();
+        $all_restaurant = RestaurantData::where('verified', 'pending')->with('cuisine', 'type')->orderBy('rating','desc')->get();
 
-        if($all_restaurant){
+        if($request->cuisine_type != null){
+            $all_restaurant = $all_restaurant->whereHas('cuisine', function ($q){
+
+                $q->where('name', $request->cuisine_type);
+            });
+        }
+        if($request->restaurant_type != null){
+            $all_restaurant = $all_restaurant->whereHas('type', function ($q){
+
+                $q->where('name', $request->restaurant_type);
+            });
+        }
+        if($request->city_id != null){
+            $all_restaurant = $all_restaurant->where('city_id', $request->city_id);
+        }
+
+        if(count($all_restaurant) > 0){
             foreach($all_restaurant as $key => $value){
                 $restaurant_data[$key] = new RestaurantDataResource($value); 
             }
