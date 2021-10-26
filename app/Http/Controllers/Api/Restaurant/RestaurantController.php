@@ -80,6 +80,7 @@ class RestaurantController extends Controller
                 'weekend_time_open' => $request->weekend_time_open,
                 'weekend_time_close' => $request->weekend_time_close,
                 'halal' => $request->halal,
+                'verified' => 'pending'
             ];
 
             $new_restaurant = RestaurantData::create($restaurant);
@@ -116,6 +117,19 @@ class RestaurantController extends Controller
 
     }
 
+    public function myRestaurant(){
+        $my_restaurant = RestaurantData::where('user_id', Auth::id())->get();
+
+        if($my_restaurant){
+            foreach($my_restaurant as $key => $value){
+                $restaurant_data[$key] = new RestaurantDataResource($value); 
+            }
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
+        }
+    }
+
     public function addReview(Request $request){
         $validator = Validator::make($request->all(), [
             'restraurant_id' => 'required',
@@ -144,9 +158,11 @@ class RestaurantController extends Controller
 
                     $new_review = RestaurantReview::create($review);
 
-                    $review_images = $request->file('review_image');
-                    $this->storeReviewImages($new_review->id, $check_resto, $review_images);
-
+                    if($request->review_image != null){
+                        $review_images = $request->file('review_image');
+                        $this->storeReviewImages($new_review->id, $check_resto, $review_images);
+                    }
+                    
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Add Review Success!','data'=> $new_review]), 200);
                 }
             }

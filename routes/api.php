@@ -328,6 +328,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
 	Route::group(['prefix' => 'restaurant'],function (){
 		Route::post('/add_new', [RestaurantController::class, 'registerNewRestaurant']);
+		Route::get('/my_restaurant', [RestaurantController::class, 'myRestaurant']);
 		
 		Route::post('/add_review', [RestaurantController::class, 'addReview']);
 	});
