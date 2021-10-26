@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Post\Jobs\v2;
+namespace App\Http\Controllers\Api\Restaurant;
 
 use App\Http\Controllers\Controller;
 
