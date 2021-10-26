@@ -174,7 +174,7 @@ class RestaurantController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $check_resto = RestaurantData::where('id', $request->restaurant_id)->with->first();
+            $check_resto = RestaurantData::where('id', $request->restaurant_id)->first();
 
             if($check_resto){
                 $restaurant_data = new RestaurantDataResource($check_resto); 
