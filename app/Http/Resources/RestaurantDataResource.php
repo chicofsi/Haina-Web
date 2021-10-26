@@ -72,6 +72,8 @@ class RestaurantDataResource extends JsonResource {
             'halal' => $this->halal,
             'cuisine' => $cuisine,
             'cuisine_zh' => $cuisine_zh,
+            'type' => $type,
+            'type_zh' => $type_zh,
             'verified' => $this->verified,
             'rating' => $rating
         ];

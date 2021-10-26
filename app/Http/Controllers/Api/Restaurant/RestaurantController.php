@@ -133,7 +133,18 @@ class RestaurantController extends Controller
     }
 
     public function showRestaurants(Request $request){
+        $all_restaurant = RestaurantData::with('cuisine', 'type')->orderBy('rating','desc')->get();
 
+        if($all_restaurant){
+            foreach($all_restaurant as $key => $value){
+                $restaurant_data[$key] = new RestaurantDataResource($value); 
+            }
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Restaurant list displayed successfully!','data'=>$restaurant_data]), 200);
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
+        }
     }
 
     public function addReview(Request $request){
