@@ -17,8 +17,18 @@ class RestaurantDataResource extends JsonResource {
 
         //$menu = RestaurantMenu::where('restaurant_id', $this->id)->with('menu_image')->get();
 
-        
-        $rating = RestaurantReview::where('restaurant_id', $this->id)->avg('rating');
+        $cuisine = "";
+        $type = "";
+        $rating = RestaurantReview::where('restaurant_id', $this->id)->avg('rating') ?? 0.0;
+
+        foreach($this->cuisine as $key => $value){
+            if($cuisine == ""){
+                $cuisine = $value->name;
+            }
+            else{
+                $cuisine = $cuisine.", ".$value->name;
+            }
+        }
 
         return [
             'id' => $this->id,
@@ -35,6 +45,7 @@ class RestaurantDataResource extends JsonResource {
             'weekend_time_open' => $this->weekend_time_open,
             'weekend_time_close' => $this->weekend_time_close,
             'halal' => $this->halal,
+            'cuisine' => $cuisine,
             'verified' => $this->verified,
             'rating' => $rating
         ];

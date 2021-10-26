@@ -118,7 +118,7 @@ class RestaurantController extends Controller
     }
 
     public function myRestaurant(){
-        $my_restaurant = RestaurantData::where('user_id', Auth::id())->get();
+        $my_restaurant = RestaurantData::where('user_id', Auth::id())->with('cuisine', 'type')->get();
 
         if($my_restaurant){
             foreach($my_restaurant as $key => $value){
@@ -133,7 +133,7 @@ class RestaurantController extends Controller
     }
 
     public function showRestaurants(Request $request){
-        
+
     }
 
     public function addReview(Request $request){
