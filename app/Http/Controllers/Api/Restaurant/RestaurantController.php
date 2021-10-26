@@ -132,6 +132,10 @@ class RestaurantController extends Controller
         }
     }
 
+    public function showRestaurants(Request $request){
+        
+    }
+
     public function addReview(Request $request){
         $validator = Validator::make($request->all(), [
             'restraurant_id' => 'required',

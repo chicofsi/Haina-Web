@@ -17,7 +17,8 @@ class RestaurantDataResource extends JsonResource {
 
         //$menu = RestaurantMenu::where('restaurant_id', $this->id)->with('menu_image')->get();
 
-        $rating = RestaurantReview::avg('rating')->where('restaurant_id', $this->id);
+        
+        $rating = RestaurantReview::avg('rating')->where('restaurant_id', $this->id)->get();
 
         return [
             'id' => $this->id,
