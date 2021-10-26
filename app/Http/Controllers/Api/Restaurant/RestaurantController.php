@@ -201,7 +201,7 @@ class RestaurantController extends Controller
             if($check_resto){
                 $check_menu = RestaurantMenu::where('restaurant_id', $request->restaurant_id)->get();
 
-                if($check_menu){
+                if(count($check_menu) > 0){
                     foreach($check_menu as $key => $value){
                         $menu_data[$key] = new RestaurantMenuResource($value); 
                     }
@@ -232,7 +232,7 @@ class RestaurantController extends Controller
             if($check_resto){
                 $check_review = RestaurantReview::where('restaurant_id', $request->restaurant_id)->get();
 
-                if($check_review){
+                if(count($check_review) > 0){
                     foreach($check_review as $key => $value){
                         $review_data['key'] = new RestaurantReviewResource($value);
                     }
