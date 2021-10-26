@@ -23,6 +23,7 @@ class RestaurantDataResource extends JsonResource {
         $type_zh = "";
         $rating = RestaurantReview::where('restaurant_id', $this->id)->avg('rating') ?? 0.0;
 
+
         foreach($this->cuisine as $key => $value){
             if($cuisine == ""){
                 $cuisine = $value->name;
@@ -63,7 +64,7 @@ class RestaurantDataResource extends JsonResource {
             'longitude' => $this->longitude,
             'city_id' => $this->city_id,
             'phone' => $this->phone,
-            'user_id' => $this->user_id,
+            'owner_id' => $this->user_id,
             'open_days' => $this->open_days,
             'weekdays_time_open' => $this->weekdays_time_open,
             'weekdays_time_close' => $this->weekdays_time_close,

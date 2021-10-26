@@ -20,6 +20,8 @@ use GuzzleHttp\Exception\RequestException;
 
 use App\Http\Resources\ValueMessage;
 use App\Http\Resources\RestaurantDataResource;
+use App\Http\Resources\RestaurantMenuResource;
+use App\Http\Resources\RestaurantReviewResource;
 
 use App\Models\NotificationCategory;
 use App\Models\PersonalAccessToken;
@@ -163,9 +165,93 @@ class RestaurantController extends Controller
         }
     }
 
+    public function detailRestaurant(Request $request){
+        $validator = Validator::make($request->all(), [
+            'restaurant_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check_resto = RestaurantData::where('id', $request->restaurant_id)->with->first();
+
+            if($check_resto){
+                $restaurant_data = new RestaurantDataResource($check_resto); 
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Restaurant data displayed successfully!','data'=>$restaurant_data]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
+            }
+        }
+    }
+
+    public function menuRestaurant(Request $request){
+        $validator = Validator::make($request->all(), [
+            'restaurant_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check_resto = RestaurantData::where('id', $request->restaurant_id)->first();
+
+            if($check_resto){
+                $check_menu = RestaurantMenu::where('restaurant_id', $request->restaurant_id)->get();
+
+                if($check_menu){
+                    foreach($check_menu as $key => $value){
+                        $menu_data[$key] = new RestaurantMenuResource($value); 
+                    }
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Menu data displayed successfully!','data'=>$menu_data]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Menu not found!','data'=>'']), 404);
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
+            }
+        }
+    }
+
+    public function reviewRestaurant(Request $request){
+        $validator = Validator::make($request->all(), [
+            'restaurant_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check_resto = RestaurantData::where('id', $request->restaurant_id)->first();
+
+            if($check_resto){
+                $check_review = RestaurantReview::where('restaurant_id', $request->restaurant_id)->get();
+
+                if($check_review){
+                    foreach($check_review as $key => $value){
+                        $review_data['key'] = new RestaurantReviewResource($value);
+                    }
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Menu not found!','data'=>$review_data]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'No review found!','data'=>'']), 404);
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
+            }
+        }
+    }
+
     public function addReview(Request $request){
         $validator = Validator::make($request->all(), [
-            'restraurant_id' => 'required',
+            'restaurant_id' => 'required',
             'rating' => 'required',
             'review' => 'required|min:50',
             ['review_image' => 'image|mimes:png,jpg|max:4096']
