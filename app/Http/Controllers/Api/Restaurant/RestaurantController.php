@@ -79,7 +79,7 @@ class RestaurantController extends Controller
                 'halal' => $request->halal,
             ];
 
-            $new_restaurant = Restaurant::create($restaurant);
+            $new_restaurant = RestaurantData::create($restaurant);
 
             foreach($request->cuisine_type as $key => $value){
                 $check_cuisine_type = RestaurantCuisineType::where('name', $value)->first();
