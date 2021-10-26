@@ -14,6 +14,6 @@ class RestaurantCuisineType extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'name_zh'];
 
 }

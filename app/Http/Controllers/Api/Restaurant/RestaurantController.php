@@ -44,14 +44,15 @@ class RestaurantController extends Controller
             'city_id' => 'required',
             'phone' => 'required',
             'user_id' => 'required',
-            'cuisine_type_id' => 'required',
-            'restaurant_type_id' => 'required',
+            'cuisine_type' => 'required',
+            'restaurant_type' => 'required',
             'open_days' => 'required',
             'weekdays_time_open' => 'required',
             'weekdays_time_close' => 'required',
             'weekend_time_open' => 'required',
             'weekend_time_close' => 'required',
             'halal' => 'required',
+            'menu_name' => 'required',
             ['menu_image' => 'required|image|mimes:png,jpg|max:53000'],
             ['restaurant_image' => 'required|image|mimes:png,jpg|max:5300']
         ]);
@@ -60,6 +61,50 @@ class RestaurantController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
+            $restaurant = [
+                'name' => $request->name,
+                'address' => $request->address,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+                'city_id' => $request->city_id,
+                'phone' => $request->phone,
+                'user_id' => $request->user_id,
+                //'cuisine_type_id' => $request->cuisine_type_id,
+                //'restaurant_type_id' => $request->restaurant_type_id,
+                'open_days' => $request->open_days,
+                'weekdays_time_open' => $request->weekdays_time_open,
+                'weekdays_time_close' => $request->weekdays_time_close,
+                'weekend_time_open' => $request->weekend_time_open,
+                'weekend_time_close' => $request->weekend_time_close,
+                'halal' => $request->halal,
+            ];
+
+            $new_restaurant = Restaurant::create($restaurant);
+
+            foreach($request->cuisine_type as $key => $value){
+                $check_cuisine_type = RestaurantCuisineType::where('name', $value)->first();
+
+                if($check_cuisine_type){
+                    $new_restaurant->cuisine()->attach($check_cuisine_type);
+                }
+            }
+
+            foreach($request->restaurant_type as $key => $value){
+                $check_restaurant_type = RestaurantType::where('name', $value)->first();
+
+                if($check_restaurant_type){
+                    $new_restaurant->type()->attach($check_restaurant_type);
+                }
+            }
+
+            $menu_name = $request->menu_name;
+            $menu_images = $request->file('menu_image');
+
+            $this->addMenu($new_restaurant['id'], $menu_name, $menu_images);
+
+            $restaurant_images = $request->file('restaurant_image');
+
+            $this->addRestaurantImages($new_restaurant['id'], $restaurant_images);
 
         }
 
@@ -94,7 +139,7 @@ class RestaurantController extends Controller
                     $new_review = RestaurantReview::create($review);
 
                     $review_images = $request->file('review_image');
-                    //$this->storeReviewImages($new_review->id, $check_resto, $review_images);
+                    $this->storeReviewImages($new_review->id, $check_resto, $review_images);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Add Review Success!','data'=> $new_review]), 200);
                 }
@@ -102,6 +147,66 @@ class RestaurantController extends Controller
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
             }
+        }
+    }
+
+
+    public function addMenu($restaurant_id, $menu_name, $files){
+        $restaurant = RestaurantData::where('id', $restaurant_id)->first();
+
+        if($restaurant){
+            $new_menu = RestaurantMenu::create([
+                'restaurant_id' => $restaurant_id,
+                'menu_name' => $menu_name
+            ]);
+
+            $num = 1;
+
+            foreach($files as $file){
+
+                $cleanname = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $restaurant['name']);
+                $fileName = str_replace(' ','-', $restaurant['id'].'_'.$menu_name.'_'.$cleanname.'_'.$num);
+                $guessExtension = $file->guessExtension();
+                //dd($guessExtension);
+                $store = Storage::disk('public')->putFileAs('restaurant/image/data/'.$restaurant['id'].'/menu'.'/'.$menu_name, $file ,$fileName.'.'.$guessExtension);
+
+                $menu_images = RestaurantMenuPhotos::create([
+                    'menu_id' => $new_menu['id'],
+                    'filename' => $fileName,
+                    'photo_url' => 'http://hainaservice.com/storage/'.$store
+                ]);
+
+                $num += 1; 
+            }
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Add Menu Success!','data'=> $new_menu]), 200);
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
+        }
+    }
+
+    public function addRestaurantImages($restaurant_id, $files){
+        $restaurant = RestaurantData::where('id', $restaurant_id)->first();
+
+        if($restaurant){
+            $num = 1;
+
+            foreach($files as $file){
+                $cleanname = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $restaurant['name']);
+                $fileName = str_replace(' ','-', $restaurant['id'].'_'.$cleanname.'_'.$num);
+                $guessExtension = $file->guessExtension();
+                $store = Storage::disk('public')->putFileAs('restaurant/image/data/'.$restaurant['id'].'/gallery', $file ,$fileName.'.'.$guessExtension);
+
+                $restaurant_images = RestaurantPhotos::create([
+                    'restaurant_id' => $restaurant_id,
+                    'filename' => $fileName,
+                    'photo_url' => 'http://hainaservice.com/storage/'.$store
+                ]);
+            }
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
         }
     }
 
@@ -115,15 +220,15 @@ class RestaurantController extends Controller
             foreach($files as $file){
 
                 $cleanname = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $restaurant['name']);
-                $fileName = str_replace(' ','-', $restaurant['id'].'_'.$cleanname.'_'.$num);
+                $fileName = str_replace(' ','-', 'review_'.$id.'_'.$restaurant['id'].'_'.$cleanname.'_'.$num);
                 $guessExtension = $file->guessExtension();
                 //dd($guessExtension);
                 $store = Storage::disk('public')->putFileAs('restaurant/image/review/'.$id, $file ,$fileName.'.'.$guessExtension);
 
-                $review_images = RestaurantReviewImages::create([
+                $review_images = RestaurantReviewPhotos::create([
                     'review_id' => $id,
                     'filename' => $fileName,
-                    'path' => 'http://hainaservice.com/storage/'.$store
+                    'photo_url' => 'http://hainaservice.com/storage/'.$store
                 ]);
 
                 $num += 1; 
