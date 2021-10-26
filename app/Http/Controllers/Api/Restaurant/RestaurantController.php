@@ -124,6 +124,8 @@ class RestaurantController extends Controller
             foreach($my_restaurant as $key => $value){
                 $restaurant_data[$key] = new RestaurantDataResource($value); 
             }
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Restaurant list displayed successfully!','data'=>$restaurant_data]), 200);
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
