@@ -18,7 +18,9 @@ class RestaurantDataResource extends JsonResource {
         //$menu = RestaurantMenu::where('restaurant_id', $this->id)->with('menu_image')->get();
 
         $cuisine = "";
+        $cuisine_zh = "";
         $type = "";
+        $type_zh = "";
         $rating = RestaurantReview::where('restaurant_id', $this->id)->avg('rating') ?? 0.0;
 
         foreach($this->cuisine as $key => $value){
@@ -27,6 +29,29 @@ class RestaurantDataResource extends JsonResource {
             }
             else{
                 $cuisine = $cuisine.", ".$value->name;
+            }
+
+            if($cuisine_zh == ""){
+                $cuisine_zh = $value->name_zh;
+            }
+            else{
+                $cuisine_zh = $cuisine_zh.", ".$value->name_zh;
+            }
+        }
+
+        foreach($this->type as $key => $value){
+            if($type == ""){
+                $type = $value->name;
+            }
+            else{
+                $type = $type.", ".$value->name;
+            }
+
+            if($type_zh == ""){
+                $type_zh = $value->name_zh;
+            }
+            else{
+                $type_zh = $type_zh.", ".$type->name_zh;
             }
         }
 
@@ -46,6 +71,7 @@ class RestaurantDataResource extends JsonResource {
             'weekend_time_close' => $this->weekend_time_close,
             'halal' => $this->halal,
             'cuisine' => $cuisine,
+            'cuisine_zh' => $cuisine_zh,
             'verified' => $this->verified,
             'rating' => $rating
         ];
