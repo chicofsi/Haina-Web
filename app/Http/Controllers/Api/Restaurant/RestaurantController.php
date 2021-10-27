@@ -447,7 +447,7 @@ class RestaurantController extends Controller
             $num = 1;
 
             foreach($files as $file){
-
+                $menu_name = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '_', $menu_name);
                 $cleanname = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $restaurant['name']);
                 $fileName = str_replace(' ','-', $restaurant['id'].'_'.$menu_name.'_'.$cleanname.'_'.$num);
                 $guessExtension = $file->guessExtension();
