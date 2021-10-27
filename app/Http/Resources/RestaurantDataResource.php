@@ -18,43 +18,30 @@ class RestaurantDataResource extends JsonResource {
 
         //$menu = RestaurantMenu::where('restaurant_id', $this->id)->with('menu_image')->get();
 
-        $cuisine = "";
-        $cuisine_zh = "";
-        $type = "";
-        $type_zh = "";
+        $cuisine_array = [];
+        
+        $type_array = [];
+        
         $rating = RestaurantReview::where('restaurant_id', $this->id)->avg('rating') ?? 0.0;
 
 
         foreach($this->cuisine as $key => $value){
-            if($cuisine == ""){
-                $cuisine = $value->name;
-            }
-            else{
-                $cuisine = $cuisine.", ".$value->name;
-            }
+            $cuisine = new \stdClass();
+            $cuisine->id = $value->id;
+            $cuisine->name = $value->name;
+            $cuisine->name_zh = $value->name_zh;
 
-            if($cuisine_zh == ""){
-                $cuisine_zh = $value->name_zh;
-            }
-            else{
-                $cuisine_zh = $cuisine_zh.", ".$value->name_zh;
-            }
+            array_push($cuisine_array, $cuisine);
         }
 
         foreach($this->type as $key => $value){
-            if($type == ""){
-                $type = $value->name;
-            }
-            else{
-                $type = $type.", ".$value->name;
-            }
+            $type = new \stdClass();
+            
+            $type->id = $type->id;
+            $type->name = $type->name;
+            $type->name_zh = $type->name_zh;
 
-            if($type_zh == ""){
-                $type_zh = $value->name_zh;
-            }
-            else{
-                $type_zh = $type_zh.", ".$type->name_zh;
-            }
+            array_push($type_array, $type);
         }
 
         $photos = RestaurantPhotos::where('restaurant_id', $this->id)->get();
@@ -87,10 +74,10 @@ class RestaurantDataResource extends JsonResource {
             'weekend_time_close' => $this->weekend_time_close,
             'halal' => $this->halal,
             'open' => $this->open,
-            'cuisine' => $cuisine,
-            'cuisine_zh' => $cuisine_zh,
-            'type' => $type,
-            'type_zh' => $type_zh,
+            'cuisine' => $cuisine_array,
+            //'cuisine_zh' => $cuisine_zh,
+            'type' => $type_array,
+            //'type_zh' => $type_zh,
             'verified' => $this->verified,
             'rating' => number_format($rating, 1),
             'photo' => $restaurant_photos
