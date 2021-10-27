@@ -406,6 +406,34 @@ class RestaurantController extends Controller
         }
     }
 
+    public function addNewPhotos(Request $request){
+        $validator = Validator::make($request->all(), [
+            'restaurant_id' => 'required',
+            ['restaurant_image' => 'required|image|mimes:png,jpg|max:5300']
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check_resto = RestaurantData::where('id', $request->restaurant_id)->first();
+
+            if($check_resto){
+                if($check_resto['user_id'] != Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=>'']), 403);
+                }
+                else{
+                    $restaurant_images = $request->file('restaurant_image');
+
+                    return($this->addRestaurantImages($check_resto['id'], $restaurant_images));
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
+            }
+        }
+    }
+
 
     public function addMenu($restaurant_id, $menu_name, $files){
         $restaurant = RestaurantData::where('id', $restaurant_id)->first();
