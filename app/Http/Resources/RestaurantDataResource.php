@@ -37,9 +37,9 @@ class RestaurantDataResource extends JsonResource {
         foreach($this->type as $key => $value){
             $type = new \stdClass();
             
-            $type->id = $type->id;
-            $type->name = $type->name;
-            $type->name_zh = $type->name_zh;
+            $type->id = $value->id;
+            $type->name = $value->name;
+            $type->name_zh = $value->name_zh;
 
             array_push($type_array, $type);
         }
