@@ -367,7 +367,7 @@ class RestaurantController extends Controller
                     $get_review = RestaurantReview::where('id', $new_review->id)->first();
                     $review_data = new RestaurantReviewResource($get_review);
                     
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Add Review Success!','data'=> $new_review]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Add Review Success!','data'=> $review_data]), 200);
                 }
             }
             else{
