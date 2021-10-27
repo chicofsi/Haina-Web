@@ -86,12 +86,13 @@ class RestaurantDataResource extends JsonResource {
             'weekend_time_open' => $this->weekend_time_open,
             'weekend_time_close' => $this->weekend_time_close,
             'halal' => $this->halal,
+            'open' => $this->open,
             'cuisine' => $cuisine,
             'cuisine_zh' => $cuisine_zh,
             'type' => $type,
             'type_zh' => $type_zh,
             'verified' => $this->verified,
-            'rating' => $rating,
+            'rating' => number_format($rating, 1),
             'photo' => $restaurant_photos
         ];
 
