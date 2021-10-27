@@ -6,6 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\URL;
 
 use App\Models\RestaurantMenu;
+use App\Models\RestaurantPhotos;
 use App\Models\RestaurantReview;
 use App\Models\RestaurantReviewPhotos;
 
@@ -56,6 +57,20 @@ class RestaurantDataResource extends JsonResource {
             }
         }
 
+        $photos = RestaurantPhotos::where('restaurant_id', $this->id)->get();
+        $restaurant_photos = [];
+
+        foreach($photos as $key => $value){
+            $photo = new \stdClass();
+
+            $photo->id = $value->id;
+            $photo->filename = $value->filename;
+            $photo->url = $value->photo_url;
+            $photo->uploaded = $value->created_at;
+
+            array_push($restaurant_photos, $photo);
+        }
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -76,7 +91,8 @@ class RestaurantDataResource extends JsonResource {
             'type' => $type,
             'type_zh' => $type_zh,
             'verified' => $this->verified,
-            'rating' => $rating
+            'rating' => $rating,
+            'photo' => $restaurant_photos
         ];
 
     }

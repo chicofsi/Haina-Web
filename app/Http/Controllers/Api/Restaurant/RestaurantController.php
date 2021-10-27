@@ -135,7 +135,7 @@ class RestaurantController extends Controller
     }
 
     public function showRestaurants(Request $request){
-        $all_restaurant = RestaurantData::where('verified', 'pending')->with('cuisine', 'type')->get();
+        $all_restaurant = RestaurantData::where('verified', '!=', 'pending')->with('cuisine', 'type')->get();
 
         if($request->cuisine_type != null){
             $all_restaurant = $all_restaurant->whereHas('cuisine', function ($q){

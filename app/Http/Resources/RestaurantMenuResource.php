@@ -19,12 +19,25 @@ class RestaurantMenuResource extends JsonResource {
 
         $menu_photos = RestaurantMenuPhotos::where('menu_id', $this->id)->get();
 
+        $menu = [];
+
+        foreach($menu_photos as $key => $value){
+            $photo = new \stdClass();
+
+            $photo->id = $value->id;
+            $photo->filename = $value->filename;
+            $photo->url = $value->photo_url;
+            $photo->uploaded = $value->created_at;
+
+            array_push($menu, $photo);
+        }
+
         return [
             'id' => $this->id,
             'restaurant_id' => $this->restaurant_id,
             'restaurant_name' => $restaurant_name['name'],
             'menu_name' => $this->menu_name,
-            'photos' => $menu_photos
+            'menu_images' => $menu
         ];
     }
 
