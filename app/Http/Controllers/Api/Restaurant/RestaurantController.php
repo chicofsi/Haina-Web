@@ -377,7 +377,33 @@ class RestaurantController extends Controller
     }
 
     public function addNewMenu(Request $request){
+        $validator = Validator::make($request->all(), [
+            'restaurant_id' => 'required',
+            'menu_name' => 'required',
+            ['menu_image' => 'required|image|mimes:png,jpg|max:53000']
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check_resto = RestaurantData::where('id', $request->restaurant_id)->first();
+
+            if($check_resto){
+                if($check_resto['user_id'] != Auth::id()){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=>'']), 403);
+                }
+                else{
+                    $menu_name = $request->menu_name;
+                    $menu_images = $request->file('menu_image');
+
+                    return($this->addMenu($check_resto['id'], $menu_name, $menu_images));
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
+            }
+        }
     }
 
 
@@ -409,7 +435,9 @@ class RestaurantController extends Controller
                 $num += 1; 
             }
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Add Menu Success!','data'=> $new_menu]), 200);
+            $menu_data = new RestaurantMenuResource($new_menu);
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Add Menu Success!','data'=> $menu_data]), 200);
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
