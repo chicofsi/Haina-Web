@@ -323,7 +323,7 @@ class RestaurantController extends Controller
             'restaurant_id' => 'required',
             'rating' => 'required',
             'review' => 'required|min:50',
-            'review_image' => 'image|mimes:png,jpg|max:4096'
+            ['review_image' => 'image|mimes:png,jpg|max:4096']
         ]);
 
         if ($validator->fails()) {
