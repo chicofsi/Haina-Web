@@ -497,7 +497,7 @@ class RestaurantController extends Controller
 
                 $num += 1; 
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'New photo(s) added!','data'=>'']), 404);
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'New photo(s) added!','data'=>$list_photo]), 200);
             }
         }
         else{
