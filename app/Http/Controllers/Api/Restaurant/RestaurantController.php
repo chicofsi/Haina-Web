@@ -425,7 +425,9 @@ class RestaurantController extends Controller
                 else{
                     $restaurant_images = $request->file('restaurant_image');
 
-                    return($this->addRestaurantImages($check_resto['id'], $restaurant_images));
+                    $get_index = RestaurantPhotos::where('restaurant_id', $request->restaurant_id)->count();
+
+                    return($this->addRestaurantImages($check_resto['id'], $restaurant_images, $get_index));
                 }
             }
             else{
@@ -472,12 +474,12 @@ class RestaurantController extends Controller
         }
     }
 
-    public function addRestaurantImages($restaurant_id, $files){
+    public function addRestaurantImages($restaurant_id, $files, $index = null){
         $restaurant = RestaurantData::where('id', $restaurant_id)->first();
         $list_photo = [];
 
         if($restaurant){
-            $num = 1;
+            $num = $index ?? 1;
 
             foreach($files as $file){
                 $cleanname = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $restaurant['name']);
