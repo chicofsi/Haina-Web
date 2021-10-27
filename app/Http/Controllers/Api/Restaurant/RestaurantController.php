@@ -303,10 +303,10 @@ class RestaurantController extends Controller
 
                 if(count($check_review) > 0){
                     foreach($check_review as $key => $value){
-                        $review_data['key'] = new RestaurantReviewResource($value);
+                        $review_data[$key] = new RestaurantReviewResource($value);
                     }
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Menu not found!','data'=>$review_data]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Review listed successfully!','data'=>$review_data]), 200);
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'No review found!','data'=>'']), 404);
