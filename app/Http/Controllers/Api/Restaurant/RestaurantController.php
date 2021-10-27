@@ -474,6 +474,7 @@ class RestaurantController extends Controller
 
     public function addRestaurantImages($restaurant_id, $files){
         $restaurant = RestaurantData::where('id', $restaurant_id)->first();
+        $list_photo = [];
 
         if($restaurant){
             $num = 1;
@@ -484,13 +485,19 @@ class RestaurantController extends Controller
                 $guessExtension = $file->guessExtension();
                 $store = Storage::disk('public')->putFileAs('restaurant/image/data/'.$restaurant['id'].'/gallery', $file ,$fileName.'.'.$guessExtension);
 
-                $restaurant_images = RestaurantPhotos::create([
+                $new_image = [
                     'restaurant_id' => $restaurant_id,
                     'filename' => $fileName,
                     'photo_url' => 'http://hainaservice.com/storage/'.$store
-                ]);
+                ];
+
+                $restaurant_images = RestaurantPhotos::create($new_image);
+
+                array_push($list_photo, $new_image);
 
                 $num += 1; 
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'New photo(s) added!','data'=>'']), 404);
             }
         }
         else{
