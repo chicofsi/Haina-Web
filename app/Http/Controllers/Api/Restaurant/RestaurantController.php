@@ -362,6 +362,9 @@ class RestaurantController extends Controller
                         $review_images = $request->file('review_image');
                         $this->storeReviewImages($new_review->id, $check_resto['id'], $review_images);
                     }
+
+                    $get_review = RestaurantReview::where('id', $new_review->id)->first();
+                    $review_data = new RestaurantReviewResources($get_review);
                     
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Add Review Success!','data'=> $new_review]), 200);
                 }
