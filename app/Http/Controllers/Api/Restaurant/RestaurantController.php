@@ -496,9 +496,9 @@ class RestaurantController extends Controller
                 array_push($list_photo, $new_image);
 
                 $num += 1; 
-
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'New photo(s) added!','data'=>$list_photo]), 200);
             }
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'New photo(s) added!','data'=>$list_photo]), 200);
+            
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
