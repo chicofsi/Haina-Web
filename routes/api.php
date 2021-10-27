@@ -337,7 +337,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/restaurant_menu', [RestaurantController::class, 'menuRestaurant']);
 
 		Route::post('/add_menu', [RestaurantController::class, 'addNeWMenu']);
-		Route::post('/add_new_photo', [RestaurantController::class, 'addNeWPhotos']);
+		Route::post('/add_new_photo', [RestaurantController::class, 'addNewPhotos']);
 		
 		Route::post('/add_review', [RestaurantController::class, 'addReview']);
 	});
