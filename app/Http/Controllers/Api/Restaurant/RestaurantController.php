@@ -58,7 +58,7 @@ class RestaurantController extends Controller
             'weekdays_time_close' => 'required',
             'weekend_time_open' => 'required',
             'weekend_time_close' => 'required',
-            'halal' => 'required',
+            'halal' => 'required|gte:0|lte:1',
             'menu_name' => 'required',
             ['menu_image' => 'required|image|mimes:png,jpg|max:53000'],
             ['restaurant_image' => 'required|image|mimes:png,jpg|max:5300']
@@ -360,7 +360,7 @@ class RestaurantController extends Controller
 
                     if($request->review_image != null){
                         $review_images = $request->file('review_image');
-                        $this->storeReviewImages($new_review->id, $check_resto, $review_images);
+                        $this->storeReviewImages($new_review->id, $check_resto['id'], $review_images);
                     }
                     
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Add Review Success!','data'=> $new_review]), 200);
@@ -370,6 +370,10 @@ class RestaurantController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
             }
         }
+    }
+
+    public function addNewMenu(Request $request){
+
     }
 
 
