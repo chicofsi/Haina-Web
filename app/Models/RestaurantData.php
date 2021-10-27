@@ -16,7 +16,7 @@ class RestaurantData extends Model
 
     protected $fillable = ['name', 'address', 'latitude', 'longitude', 'city_id', 'phone', 'user_id', 
     'open_days', 'weekdays_time_open', 'weekdays_time_close', 'weekend_time_open', 
-    'weekend_time_close', 'halal'];
+    'weekend_time_close', 'open', 'halal'];
 
     public function cuisine(){
         //return $this->hasOne('App\Models\RestaurantCuisineType', 'id', 'cuisine_type_id');

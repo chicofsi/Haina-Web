@@ -330,6 +330,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/add_new', [RestaurantController::class, 'registerNewRestaurant']);
 		Route::get('/my_restaurant', [RestaurantController::class, 'myRestaurant']);
 		Route::post('/show_restaurant', [RestaurantController::class, 'showRestaurants']);
+		Route::post('/update_restaurant', [RestaurantController::class, 'updateRestaurant']);
 
 		Route::post('/restaurant_detail', [RestaurantController::class, 'detailRestaurant']);
 		Route::post('/restaurant_review', [RestaurantController::class, 'reviewRestaurant']);

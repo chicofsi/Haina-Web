@@ -18,6 +18,8 @@ use GuzzleHttp\TransferStats;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
 
+use DateTime;
+
 use App\Http\Resources\ValueMessage;
 use App\Http\Resources\RestaurantDataResource;
 use App\Http\Resources\RestaurantMenuResource;
@@ -82,6 +84,7 @@ class RestaurantController extends Controller
                 'weekend_time_open' => $request->weekend_time_open,
                 'weekend_time_close' => $request->weekend_time_close,
                 'halal' => $request->halal,
+                'open' => 1,
                 'verified' => 'pending'
             ];
 
@@ -131,6 +134,72 @@ class RestaurantController extends Controller
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
+        }
+    }
+
+    public function updateRestaurant(Request $request){
+        $validator = Validator::make($request->all(), [
+            'restaurant_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check_resto = RestaurantData::where('id', $request->restaurant_id)->first();
+
+            if($check_resto && $check_resto['user_id'] == Auth::id()){
+                $update_restaurant = RestaurantData::where('id', $request->restaurant_id)->update([
+                    'name' => $request->name,
+                    'address' => $request->address,
+                    'latitude' => $request->latitude,
+                    'longitude' => $request->longitude,
+                    'city_id' => $request->city_id,
+                    'phone' => $request->phone,
+                    'open_days' => $request->open_days,
+                    'weekdays_time_open' => $request->weekdays_time_open,
+                    'weekdays_time_close' => $request->weekdays_time_close,
+                    'weekend_time_open' => $request->weekend_time_open,
+                    'weekend_time_close' => $request->weekend_time_close,
+                    'halal' => $request->halal,
+                    'open' => $request->open,
+                ]);
+
+                $cuisine_data = [];
+                $type_data = [];
+
+                if($request->cuisine_type != null){
+                    foreach($request->cuisine_type as $key => $value){
+                        $check_cuisine_type = RestaurantCuisineType::where('name', $value)->first();
+        
+                        if($check_cuisine_type){
+                            array_push($cuisine_data, $check_cuisine_type['id']);
+                        }
+                    }
+
+                    $check_resto->cuisine()->sync($cuisine_data);
+                }
+    
+                if($request->restaurant_type != null){
+                    foreach($request->restaurant_type as $key => $value){
+                        $check_restaurant_type = RestaurantType::where('name', $value)->first();
+        
+                        if($check_restaurant_type){
+                            array_push($type_data, $check_restaurant_type['id']);
+                        }
+                    }
+
+                    $check_resto->type()->sync($type_data);
+                }
+
+                $updated_data = RestaurantData::where('id', $request->restaurant_id)->first();
+                $data = new RestaurantDataResource($updated_data);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Restaurant data updated successfully!','data'=>$data]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found/Unauthorized!','data'=>'']), 404);
+            }
         }
     }
 
@@ -230,7 +299,7 @@ class RestaurantController extends Controller
             $check_resto = RestaurantData::where('id', $request->restaurant_id)->first();
 
             if($check_resto){
-                $check_review = RestaurantReview::where('restaurant_id', $request->restaurant_id)->get();
+                $check_review = RestaurantReview::where('restaurant_id', $request->restaurant_id)->where('deleted_at', null)->get();
 
                 if(count($check_review) > 0){
                     foreach($check_review as $key => $value){
@@ -268,6 +337,18 @@ class RestaurantController extends Controller
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot review own restaurant!','data'=>'']), 403);
                 }
                 else{
+
+                    $check_review = RestaurantReview::where('user_id', Auth::id())->where('restaurant_id', $request->restaurant_id)->first();
+
+                    if($check_review != null){
+                        $delete_review = RestaurantReview::where('user_id', Auth::id())->where('restaurant_id', $request->restaurant_id)->update([
+                            'deleted_at' => date('Y-m-d H:i:s')
+                        ]);
+
+                        $delete_photo = RestaurantReviewPhotos::where('review_id', $check_review['id'])->update([
+                            'deleted_at' => date('Y-m-d H:i:s')
+                        ]);
+                    }
                     $review = [
                         'user_id' => Auth::id(),
                         'restaurant_id' => $request->restaurant_id,
@@ -344,6 +425,8 @@ class RestaurantController extends Controller
                     'filename' => $fileName,
                     'photo_url' => 'http://hainaservice.com/storage/'.$store
                 ]);
+
+                $num += 1; 
             }
         }
         else{
