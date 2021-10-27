@@ -26,7 +26,7 @@ class RestaurantReviewResource extends JsonResource {
             'restaurant_id' => $this->restaurant_id,
             'restaurant_name' => $restaurant_name['name'],
             'user_id' => $this->user_id,
-            'username' => $this->username,
+            'username' => $user['username'],
             'rating' => $this->rating,
             'review' => $this->review,
             'photos' => $review_photos,
