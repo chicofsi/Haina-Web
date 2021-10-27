@@ -323,7 +323,7 @@ class RestaurantController extends Controller
             'restaurant_id' => 'required',
             'rating' => 'required',
             'review' => 'required|min:50',
-            ['review_image' => 'image|mimes:png,jpg|max:4096']
+            'review_image' => 'image|mimes:png,jpg|max:4096'
         ]);
 
         if ($validator->fails()) {
@@ -364,7 +364,7 @@ class RestaurantController extends Controller
                     }
 
                     $get_review = RestaurantReview::where('id', $new_review->id)->first();
-                    $review_data = new RestaurantReviewResources($get_review);
+                    $review_data = new RestaurantReviewResource($get_review);
                     
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Add Review Success!','data'=> $new_review]), 200);
                 }
