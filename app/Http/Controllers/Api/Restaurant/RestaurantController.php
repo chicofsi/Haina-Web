@@ -358,8 +358,9 @@ class RestaurantController extends Controller
 
                     $new_review = RestaurantReview::create($review);
 
-                    if($request->review_image != null){
-                        $review_images = $request->file('review_image');
+                    $review_images = $request->file('review_image');
+                    
+                    if($review_images != null){
                         $this->storeReviewImages($new_review->id, $check_resto['id'], $review_images);
                     }
 
