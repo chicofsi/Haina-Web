@@ -237,7 +237,7 @@ class RestaurantController extends Controller
             */
 
             if(count($all_restaurant) > 0){
-                $restaurant_data = [];
+                //$restaurant_data = array();
                 foreach($all_restaurant as $key => $value){
                     $value->distance = $this->getDistance($request->my_latitude, $request->my_longitude, $value->latitude, $value->longitude);
 
@@ -245,10 +245,18 @@ class RestaurantController extends Controller
                 }
 
                 $total = count($restaurant_data);
+                /*
                 $distance = array_column($restaurant_data, 'distance');
                 $rating = array_column($restaurant_data, 'rating');
 
                 array_multisort($distance, SORT_DESC, $rating, SORT_DESC, $restaurant_data);
+                */
+
+                usort($restaurant_data, function($a, $b){
+                    $check = $a['distance'] - $b['distance'];
+                    $check .= $a['rating'] - $b['rating'];
+                    $check .= strcmp($a['name'], $b['name']);
+                });
 
                 $per_page = 10;
                 $current_page = $request->page ?? 1;
