@@ -581,7 +581,7 @@ class RestaurantController extends Controller
                         'deleted_at' => date('Y-m-d H:i:s')
                     ]);
 
-                    $remove_menu = RestaurantMenu::where('menu_id', $request->menu_id)->update([
+                    $remove_menu = RestaurantMenu::where('id', $request->menu_id)->update([
                         'deleted_at' => date('Y-m-d H:i:s')
                     ]);
 
