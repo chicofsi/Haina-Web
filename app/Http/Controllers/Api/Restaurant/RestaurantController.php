@@ -648,7 +648,7 @@ class RestaurantController extends Controller
             $check_review = RestaurantReview::where('id', $request->review_id)->where('deleted_at', null)->first();
 
             if($check_review != null){
-                if($check_review[user_id] == Auth::id()){
+                if($check_review['user_id'] == Auth::id()){
                     $delete_review = RestaurantReview::where('id', $request->review_id)->update([
                         'deleted_at' => date('Y-m-d H:i:s')
                     ]);
