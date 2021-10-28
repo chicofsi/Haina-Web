@@ -150,19 +150,19 @@ class RestaurantController extends Controller
 
             if($check_resto && $check_resto['user_id'] == Auth::id()){
                 $update_restaurant = RestaurantData::where('id', $request->restaurant_id)->update([
-                    'name' => $request->name,
-                    'address' => $request->address,
-                    'latitude' => $request->latitude,
-                    'longitude' => $request->longitude,
-                    'city_id' => $request->city_id,
-                    'phone' => $request->phone,
-                    'open_days' => $request->open_days,
-                    'weekdays_time_open' => $request->weekdays_time_open,
-                    'weekdays_time_close' => $request->weekdays_time_close,
-                    'weekend_time_open' => $request->weekend_time_open,
-                    'weekend_time_close' => $request->weekend_time_close,
-                    'halal' => $request->halal,
-                    'open' => $request->open,
+                    'name' => $request->name ?? $check_resto['name'],
+                    'address' => $request->address ?? $check_resto['address'],
+                    'latitude' => $request->latitude ?? $check_resto['latitude'],
+                    'longitude' => $request->longitude ?? $check_resto['longitude'],
+                    'city_id' => $request->city_id ?? $check_resto['city_id'],
+                    'phone' => $request->phone ?? $check_resto['phone'],
+                    'open_days' => $request->open_days ?? $check_resto['open_days'],
+                    'weekdays_time_open' => $request->weekdays_time_open ?? $check_resto['weekdays_time_open'],
+                    'weekdays_time_close' => $request->weekdays_time_close ?? $check_resto['weekdays_time_close'],
+                    'weekend_time_open' => $request->weekend_time_open ?? $check_resto['weekend_time_open'],
+                    'weekend_time_close' => $request->weekend_time_close ?? $check_resto['weekend_time_close'],
+                    'halal' => $request->halal ?? $check_resto['halal'],
+                    'open' => $request->open ?? $check_resto['open'],
                 ]);
 
                 $cuisine_data = [];
@@ -198,7 +198,7 @@ class RestaurantController extends Controller
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Restaurant data updated successfully!','data'=>$data]), 200);
             }
             else{
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found/Unauthorized!','data'=>'']), 404);
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found / Unauthorized!','data'=>'']), 404);
             }
         }
     }
