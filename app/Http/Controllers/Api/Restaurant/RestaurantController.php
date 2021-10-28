@@ -254,7 +254,7 @@ class RestaurantController extends Controller
 
                 usort($restaurant_data, function($a, $b){
                     $check = $a['distance'] - $b['distance'];
-                    $check .= $a['rating'] - $b['rating'];
+                    $check .= $b['rating'] - $a['rating'];
                     $check .= strcmp($a['name'], $b['name']);
                     return $check;
                 });
