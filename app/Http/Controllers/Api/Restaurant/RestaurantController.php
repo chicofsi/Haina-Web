@@ -256,6 +256,7 @@ class RestaurantController extends Controller
                     $check = $b['distance'] - $a['distance'];
                     $check .= $b['rating'] - $a['rating'];
                     $check .= strcmp($b['name'], $a['name']);
+                    return $check;
                 });
 
                 $per_page = 10;
