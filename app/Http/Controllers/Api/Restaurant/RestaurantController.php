@@ -207,58 +207,70 @@ class RestaurantController extends Controller
     }
 
     public function showRestaurants(Request $request){
-        $all_restaurant = RestaurantData::where('verified', '!=', 'pending')->with('cuisine', 'type')->get();
+        $validator = Validator::make($request->all(), [
+            'my_latitude' => 'required',
+            'my_longitude' => 'required'
+        ]);
 
-        if($request->cuisine_type != null){
-            $all_restaurant = $all_restaurant->whereHas('cuisine', function ($q){
-
-                $q->where('name', $request->cuisine_type);
-            });
-        }
-        if($request->restaurant_type != null){
-            $all_restaurant = $all_restaurant->whereHas('type', function ($q){
-
-                $q->where('name', $request->restaurant_type);
-            });
-        }
-        /*
-        if($request->city_id != null){
-            $all_restaurant = $all_restaurant->where('city_id', $request->city_id);
-        }
-        */
-
-        if(count($all_restaurant) > 0){
-            foreach($all_restaurant as $key => $value){
-                $restaurant_data[$key] = new RestaurantDataResource($value); 
-            }
-
-            $total = count($restaurant_data);
-            $per_page = 10;
-            $current_page = $request->page ?? 1;
-
-            $starting_point = ($current_page * $per_page) - $per_page;
-            $restaurant_data = array_slice($restaurant_data, $starting_point, $per_page);
-
-            $result = new \stdClass();
-            $result->restaurants = $restaurant_data;
-            $result->total = $total;
-            $result->current_page = (int)$current_page;
-            $result->total_page = ceil($total/$per_page);
-
-            if(count($restaurant_data) == 0){
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'No restaurants found!','data'=> '']), 404);
-            }
-            else{
-                //$object = new \stdClass();
-                //$threads->followed = SubforumFollower
-
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Restaurants list displayed successfully!','data'=> $result]), 200);
-            }
-
-            //return response()->json(new ValueMessage(['value'=>1,'message'=>'Restaurant list displayed successfully!','data'=>$restaurant_data]), 200);
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
+            $all_restaurant = RestaurantData::where('verified', '!=', 'pending')->with('cuisine', 'type')->get();
+
+            if($request->cuisine_type != null){
+                $all_restaurant = $all_restaurant->whereHas('cuisine', function ($q){
+
+                    $q->where('name', $request->cuisine_type);
+                });
+            }
+            if($request->restaurant_type != null){
+                $all_restaurant = $all_restaurant->whereHas('type', function ($q){
+
+                    $q->where('name', $request->restaurant_type);
+                });
+            }
+            /*
+            if($request->city_id != null){
+                $all_restaurant = $all_restaurant->where('city_id', $request->city_id);
+            }
+            */
+
+            if(count($all_restaurant) > 0){
+                foreach($all_restaurant as $key => $value){
+                    $value->distance = $this->getDistance($request->my_latitude, $request->my_longitude, $value->latitude, $value->longitude);
+
+                    $restaurant_data[$key] = new RestaurantDataResource($value);
+                }
+
+                $total = count($restaurant_data);
+                $per_page = 10;
+                $current_page = $request->page ?? 1;
+
+                $starting_point = ($current_page * $per_page) - $per_page;
+                $restaurant_data = array_slice($restaurant_data, $starting_point, $per_page);
+
+                $result = new \stdClass();
+                $result->restaurants = $restaurant_data;
+                $result->total = $total;
+                $result->current_page = (int)$current_page;
+                $result->total_page = ceil($total/$per_page);
+
+                if(count($restaurant_data) == 0){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'No restaurants found!','data'=> '']), 404);
+                }
+                else{
+                    //$object = new \stdClass();
+                    //$threads->followed = SubforumFollower
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Restaurants list displayed successfully!','data'=> $result]), 200);
+                }
+
+                //return response()->json(new ValueMessage(['value'=>1,'message'=>'Restaurant list displayed successfully!','data'=>$restaurant_data]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
+            }
         }
     }
 
@@ -670,6 +682,26 @@ class RestaurantController extends Controller
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Review not found!','data'=>'']), 404);
             }
         }
+    }
+
+    public function getDistance($my_lat, $my_long, $res_lat, $res_long){
+        $pi_rad = M_PI / 180;
+
+        $my_lat *= $pi_rad;
+        $my_long *= $pi_rad;
+        $res_lat *= $pi_rad;
+        $res_long *= $pi_rad;
+
+        $r = 6372.797;
+
+        $dlat = $res_lat - $my_lat;
+        $dlong = $res_long - $my_long;
+
+        $a = sin($dlat / 2) * sin($dlat / 2) + cos($lat1) * cos($lat2) * sin($dlon / 2) * sin($dlon / 2); 
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a)); 
+        $distance = $r * $c;
+
+        return $distance;
     }
 
     public function getAllCuisine(){
