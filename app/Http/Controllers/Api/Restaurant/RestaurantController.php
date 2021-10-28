@@ -616,7 +616,7 @@ class RestaurantController extends Controller
             $check_photo = RestaurantPhotos::where('id', $request->photo_id)->where('deleted_at', null)->first();
             
             if($check_photo){
-                $check_owner = RestaurantData::where('id', $check_menu['restaurant_id'])->first();
+                $check_owner = RestaurantData::where('id', $check_photo['restaurant_id'])->first();
 
                 if($check_owner['user_id'] == Auth::id()){
                     $remove_images = RestaurantPhotos::where('id', $request->photo_id)->update([
