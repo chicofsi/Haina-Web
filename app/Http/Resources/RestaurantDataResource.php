@@ -23,7 +23,7 @@ class RestaurantDataResource extends JsonResource {
         $type_array = [];
         
         $rating = RestaurantReview::where('restaurant_id', $this->id)->where('deleted_at', null)->avg('rating') ?? 0.0;
-
+        $distance = $this->distance ?? 0.0;
 
         foreach($this->cuisine as $key => $value){
             $cuisine = new \stdClass();
@@ -81,7 +81,7 @@ class RestaurantDataResource extends JsonResource {
             //'type_zh' => $type_zh,
             'verified' => $this->verified,
             'rating' => number_format($rating, 1),
-            'distance' => number_format($this->distance, 1) ?? 0.0,
+            'distance' => number_format($distance, 1),
             'photo' => $restaurant_photos
         ];
 
