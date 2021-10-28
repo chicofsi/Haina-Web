@@ -291,7 +291,7 @@ class RestaurantController extends Controller
             $check_resto = RestaurantData::where('id', $request->restaurant_id)->first();
 
             if($check_resto){
-                $check_menu = RestaurantMenu::where('restaurant_id', $request->restaurant_id)->get();
+                $check_menu = RestaurantMenu::where('restaurant_id', $request->restaurant_id)->where('deleted_at', null)->get();
 
                 if(count($check_menu) > 0){
                     foreach($check_menu as $key => $value){
@@ -560,6 +560,118 @@ class RestaurantController extends Controller
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
         }
+    }
+
+    public function deleteMenu(Request $request){
+        $validator = Validator::make($request->all(), [
+            'menu_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check_menu = RestaurantMenu::where('id', $request->menu_id)->where('deleted_at', null)->first();
+            
+            if($check_menu){
+                $check_owner = RestaurantData::where('id', $check_menu['restaurant_id'])->first();
+
+                if($check_owner['user_id'] == Auth::id()){
+                    $remove_menu_images = RestaurantMenuPhotos::where('menu_id', $request->menu_id)->update([
+                        'deleted_at' => date('Y-m-d H:i:s')
+                    ]);
+
+                    $remove_menu = RestaurantMenu::where('menu_id', $request->menu_id)->update([
+                        'deleted_at' => date('Y-m-d H:i:s')
+                    ]);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Menu removed successfully!','data'=>$check_menu]), 404);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=>'']), 404);
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Menu not found!','data'=>'']), 404);
+            }
+        }
+    }
+
+    public function deletePhoto(Request $request){
+        $validator = Validator::make($request->all(), [
+            'photo_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check_photo = RestaurantPhotos::where('id', $request->photo_id)->where('deleted_at', null)->first();
+            
+            if($check_photo){
+                $check_owner = RestaurantData::where('id', $check_menu['restaurant_id'])->first();
+
+                if($check_owner['user_id'] == Auth::id()){
+                    $remove_images = RestaurantPhotos::where('id', $request->photo_id)->update([
+                        'deleted_at' => date('Y-m-d H:i:s')
+                    ]);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Photo removed successfully!','data'=>$check_photo]), 404);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=>'']), 404);
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Photo not found!','data'=>'']), 404);
+            }
+        }
+    }
+
+    public function deleteReview(Request $request){
+        $validator = Validator::make($request->all(), [
+            'review_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+        else{
+            $check_review = RestaurantReview::where('id', $request->review_id)->first();
+
+            if($check_review != null){
+                if($check_review[user_id] == Auth::id()){
+                    $delete_review = RestaurantReview::where('id', $request->review_id)->update([
+                        'deleted_at' => date('Y-m-d H:i:s')
+                    ]);
+    
+                    $delete_photo = RestaurantReviewPhotos::where('review_id', $request->review_id)->update([
+                        'deleted_at' => date('Y-m-d H:i:s')
+                    ]);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Photo removed successfully!','data'=>$check_photo]), 404);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=>'']), 403);
+                }
+                
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Review not found!','data'=>'']), 404);
+            }
+        }
+    }
+
+    public function getAllCuisine(){
+        $data = RestaurantCuisineType::all();
+
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Cuisine type displayed successfully!','data'=>$data]), 200);
+    }
+
+    public function getAllType(){
+        $data = RestaurantType::all();
+
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Restaurant type displayed successfully!','data'=>$data]), 200);
     }
 
 }

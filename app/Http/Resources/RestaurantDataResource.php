@@ -22,7 +22,7 @@ class RestaurantDataResource extends JsonResource {
         
         $type_array = [];
         
-        $rating = RestaurantReview::where('restaurant_id', $this->id)->avg('rating') ?? 0.0;
+        $rating = RestaurantReview::where('restaurant_id', $this->id)->where('deleted_at', null)->avg('rating') ?? 0.0;
 
 
         foreach($this->cuisine as $key => $value){
@@ -44,7 +44,7 @@ class RestaurantDataResource extends JsonResource {
             array_push($type_array, $type);
         }
 
-        $photos = RestaurantPhotos::where('restaurant_id', $this->id)->get();
+        $photos = RestaurantPhotos::where('restaurant_id', $this->id)->where('deleted_at', null)->get();
         $restaurant_photos = [];
 
         foreach($photos as $key => $value){
