@@ -47,9 +47,10 @@ class RestaurantController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'address' => 'required',
+            'detail_address' => 'required',
             'latitude' => 'required',
             'longitude' => 'required',
-            'city_id' => 'required',
+            //'city_id' => 'required',
             'phone' => 'required',
             'cuisine_type' => 'required',
             'restaurant_type' => 'required',
@@ -71,9 +72,10 @@ class RestaurantController extends Controller
             $restaurant = [
                 'name' => $request->name,
                 'address' => $request->address,
+                'detail_address' => $request->detail_address,
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
-                'city_id' => $request->city_id,
+                //'city_id' => $request->city_id,
                 'phone' => $request->phone,
                 'user_id' => Auth::id(),
                 //'cuisine_type_id' => $request->cuisine_type_id,
@@ -152,9 +154,10 @@ class RestaurantController extends Controller
                 $update_restaurant = RestaurantData::where('id', $request->restaurant_id)->update([
                     'name' => $request->name ?? $check_resto['name'],
                     'address' => $request->address ?? $check_resto['address'],
+                    'detail_address' => $request->address ?? $check_resto['detail_address'],
                     'latitude' => $request->latitude ?? $check_resto['latitude'],
                     'longitude' => $request->longitude ?? $check_resto['longitude'],
-                    'city_id' => $request->city_id ?? $check_resto['city_id'],
+                    //'city_id' => $request->city_id ?? $check_resto['city_id'],
                     'phone' => $request->phone ?? $check_resto['phone'],
                     'open_days' => $request->open_days ?? $check_resto['open_days'],
                     'weekdays_time_open' => $request->weekdays_time_open ?? $check_resto['weekdays_time_open'],
@@ -218,9 +221,11 @@ class RestaurantController extends Controller
                 $q->where('name', $request->restaurant_type);
             });
         }
+        /*
         if($request->city_id != null){
             $all_restaurant = $all_restaurant->where('city_id', $request->city_id);
         }
+        */
 
         if(count($all_restaurant) > 0){
             foreach($all_restaurant as $key => $value){
@@ -585,7 +590,9 @@ class RestaurantController extends Controller
                         'deleted_at' => date('Y-m-d H:i:s')
                     ]);
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Menu removed successfully!','data'=>$check_menu]), 404);
+                    $data_menu = RestaurantMenu::where('id', $request->menu_id)->first();
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Menu removed successfully!','data'=>$data_menu]), 404);
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=>'']), 404);
@@ -616,7 +623,8 @@ class RestaurantController extends Controller
                         'deleted_at' => date('Y-m-d H:i:s')
                     ]);
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Photo removed successfully!','data'=>$check_photo]), 404);
+                    $data_photo = RestaurantPhotos::where('id', $request->photo_id)->first();
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Photo removed successfully!','data'=>$data_photo]), 404);
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=>'']), 404);
@@ -637,7 +645,7 @@ class RestaurantController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $check_review = RestaurantReview::where('id', $request->review_id)->first();
+            $check_review = RestaurantReview::where('id', $request->review_id)->where('deleted_at', null)->first();
 
             if($check_review != null){
                 if($check_review[user_id] == Auth::id()){
@@ -649,7 +657,9 @@ class RestaurantController extends Controller
                         'deleted_at' => date('Y-m-d H:i:s')
                     ]);
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Photo removed successfully!','data'=>$check_photo]), 404);
+                    $data_review = RestaurantReview::where('id', $request->review_id)->first();
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Review removed successfully!','data'=>$data_review]), 404);
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=>'']), 403);
