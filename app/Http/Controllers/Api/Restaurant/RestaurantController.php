@@ -697,7 +697,7 @@ class RestaurantController extends Controller
         $dlat = $res_lat - $my_lat;
         $dlong = $res_long - $my_long;
 
-        $a = sin($dlat / 2) * sin($dlat / 2) + cos($lat1) * cos($lat2) * sin($dlon / 2) * sin($dlon / 2); 
+        $a = sin($dlat / 2) * sin($dlat / 2) + cos($my_lat) * cos($res_lat) * sin($dlong / 2) * sin($dlong / 2); 
         $c = 2 * atan2(sqrt($a), sqrt(1 - $a)); 
         $distance = $r * $c;
 
