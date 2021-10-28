@@ -14,7 +14,7 @@ class RestaurantData extends Model
 
     //public $timestamps = false;
 
-    protected $fillable = ['name', 'address', 'latitude', 'longitude', 'city_id', 'phone', 'user_id', 
+    protected $fillable = ['name', 'address', 'detail_address', 'latitude', 'longitude', 'phone', 'user_id', 
     'open_days', 'weekdays_time_open', 'weekdays_time_close', 'weekend_time_open', 
     'weekend_time_close', 'open', 'halal'];
 
