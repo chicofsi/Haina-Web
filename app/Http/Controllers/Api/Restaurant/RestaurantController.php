@@ -250,6 +250,11 @@ class RestaurantController extends Controller
                 $starting_point = ($current_page * $per_page) - $per_page;
                 $restaurant_data = array_slice($restaurant_data, $starting_point, $per_page);
 
+                $distance = array_column($restaurant_data, 'distance');
+                $rating = array_column($restaurant_data, 'rating');
+
+                array_multisort($distance, SORT_DESC, $rating, SORT_DESC, $restaurant_data);
+
                 $result = new \stdClass();
                 $result->restaurants = $restaurant_data;
                 $result->total = $total;

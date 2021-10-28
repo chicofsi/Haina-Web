@@ -81,7 +81,7 @@ class RestaurantDataResource extends JsonResource {
             //'type_zh' => $type_zh,
             'verified' => $this->verified,
             'rating' => number_format($rating, 1),
-            'distance' => $this->distance ?? 0.0,
+            'distance' => number_format($this->distance, 1) ?? 0.0,
             'photo' => $restaurant_photos
         ];
 
