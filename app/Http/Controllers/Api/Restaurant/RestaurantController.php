@@ -124,18 +124,30 @@ class RestaurantController extends Controller
 
     }
 
-    public function myRestaurant(){
-        $my_restaurant = RestaurantData::where('user_id', Auth::id())->with('cuisine', 'type')->get();
+    public function myRestaurant(Request $request){
+        $validator = Validator::make($request->all(), [
+            'my_latitude' => 'required',
+            'my_longitude' => 'required'
+        ]);
 
-        if($my_restaurant){
-            foreach($my_restaurant as $key => $value){
-                $restaurant_data[$key] = new RestaurantDataResource($value); 
-            }
-
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Restaurant list displayed successfully!','data'=>$restaurant_data]), 200);
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
+            $my_restaurant = RestaurantData::where('user_id', Auth::id())->with('cuisine', 'type')->get();
+
+            if($my_restaurant){
+                foreach($my_restaurant as $key => $value){
+                    $value->distance = $this->getDistance($request->my_latitude, $request->my_longitude, $value->latitude, $value->longitude);
+
+                    $restaurant_data[$key] = new RestaurantDataResource($value);
+                }
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Restaurant list displayed successfully!','data'=>$restaurant_data]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
+            }
         }
     }
 
