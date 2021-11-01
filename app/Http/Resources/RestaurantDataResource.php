@@ -69,6 +69,7 @@ class RestaurantDataResource extends JsonResource {
             'phone' => $this->phone,
             'owner_id' => $this->user_id,
             'open_days' => $this->open_days,
+            'open_24_hours' => $this->open_24_hours,
             'weekdays_time_open' => $this->weekdays_time_open,
             'weekdays_time_close' => $this->weekdays_time_close,
             'weekend_time_open' => $this->weekend_time_open,
