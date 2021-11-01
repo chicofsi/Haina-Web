@@ -341,12 +341,15 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		
 		Route::post('/add_review', [RestaurantController::class, 'addReview']);
 
+		Route::post('/add_bookmark', [RestaurantController::class, 'addBookmark']);
+
 		Route::get('/show_cuisine_type', [RestaurantController::class, 'getAllCuisine']);
 		Route::get('/show_restaurant_type', [RestaurantController::class, 'getAllType']);
 
 		Route::post('/delete_menu', [RestaurantController::class, 'deleteMenu']);
 		Route::post('/delete_photo', [RestaurantController::class, 'deletePhoto']);
 		Route::post('/delete_review', [RestaurantController::class, 'deleteReview']);
+		Route::post('/delete_bookmark', [RestaurantController::class, 'removeBookmark']);
 	});
 	
 });

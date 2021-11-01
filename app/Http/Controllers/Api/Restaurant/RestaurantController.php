@@ -30,6 +30,7 @@ use App\Models\PersonalAccessToken;
 use App\Models\User;
 use App\Models\UserNotification;
 use App\Models\RestaurantData;
+use App\Models\RestaurantBookmark;
 use App\Models\RestaurantCuisineType;
 use App\Models\RestaurantType;
 use App\Models\RestaurantPhotos;
@@ -733,6 +734,65 @@ class RestaurantController extends Controller
             }
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Review not found!','data'=>'']), 404);
+            }
+        }
+    }
+
+    public function addRestaurantBookmark(Request $request){
+        $validator = Validator::make($request->all(), [
+            'restaurant_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_resto = RestaurantData::where('id', $request->restaurant_id)->first();
+
+            if($check_resto){
+                $check_bookmark = RestaurantBookmark::where('restaurant_id', $request->restaurant_id)->where('user_id', Auth::id())->first();
+
+                if($check_bookmark){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant already bookmarked!','data'=>'']), 403);
+                }
+                else{
+                    $new_bookmark = RestaurantBookmark::create([
+                        'user_id' => Auth::id(),
+                        'restaurant_id' => $request->restaurant_id
+                    ]);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Restaurant bookmarked successfully!','data'=>$new_bookmark]), 200);
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
+            }
+        }
+    }
+
+    public function removeBookmark(Request $request){
+        $validator = Validator::make($request->all(), [
+            'restaurant_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }else{
+            $check_resto = RestaurantData::where('id', $request->restaurant_id)->first();
+
+            if($check_resto){
+                $check_bookmark = RestaurantBookmark::where('restaurant_id', $request->restaurant_id)->where('user_id', Auth::id())->first();
+
+                if($check_bookmark){
+                    $delete_bookmark = RestaurantBookmark::where('restaurant_id', $request->restaurant_id)->where('user_id', Auth::id())->delete();
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Restaurant bookmark deleted successfully!','data'=>$check_bookmark]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant is not bookmarked!','data'=>'']), 403);
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
             }
         }
     }
