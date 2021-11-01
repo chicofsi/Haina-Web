@@ -96,7 +96,7 @@ class RestaurantDataResource extends JsonResource {
             //'type_zh' => $type_zh,
             'verified' => $verified['verified'],
             'rating' => number_format($rating, 1),
-            'reviews' => $reviews,
+            'reviews' => $review_count,
             'bookmarked' => $check_bookmark,
             'distance' => number_format($distance, 1),
             'photo' => $restaurant_photos
