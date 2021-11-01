@@ -145,7 +145,27 @@ class RestaurantController extends Controller
                     $restaurant_data[$key] = new RestaurantDataResource($value);
                 }
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Restaurant list displayed successfully!','data'=>$restaurant_data]), 200);
+                $total = count($restaurant_data);
+
+                $per_page = 10;
+                $current_page = $request->page ?? 1;
+
+                $starting_point = ($current_page * $per_page) - $per_page;
+                $restaurant_data = array_slice($restaurant_data, $starting_point, $per_page);
+
+                $result = new \stdClass();
+                $result->restaurants = $restaurant_data;
+                $result->total = $total;
+                $result->current_page = (int)$current_page;
+                $result->total_page = ceil($total/$per_page);
+
+                if(count($restaurant_data) == 0){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'No restaurants found!','data'=> '']), 404);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Restaurant list displayed successfully!','data'=>$result]), 200);
+                }
+              
             }
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Restaurant not found!','data'=>'']), 404);
