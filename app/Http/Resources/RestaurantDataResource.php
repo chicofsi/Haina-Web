@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\URL;
 
+use App\Models\RestaurantData;
 use App\Models\RestaurantMenu;
 use App\Models\RestaurantPhotos;
 use App\Models\RestaurantReview;
@@ -47,6 +48,8 @@ class RestaurantDataResource extends JsonResource {
         $photos = RestaurantPhotos::where('restaurant_id', $this->id)->where('deleted_at', null)->get();
         $restaurant_photos = [];
 
+        $verified = RestaurantData::where('id', $this->id)->first();
+
         foreach($photos as $key => $value){
             $photo = new \stdClass();
 
@@ -80,7 +83,7 @@ class RestaurantDataResource extends JsonResource {
             //'cuisine_zh' => $cuisine_zh,
             'type' => $type_array,
             //'type_zh' => $type_zh,
-            'verified' => $this->verified,
+            'verified' => $verified['verified'],
             'rating' => number_format($rating, 1),
             'distance' => number_format($distance, 1),
             'photo' => $restaurant_photos
