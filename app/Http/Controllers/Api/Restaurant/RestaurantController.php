@@ -769,7 +769,7 @@ class RestaurantController extends Controller
         }
     }
 
-    public function removeBookmark(Request $request){
+    public function removeRestaurantBookmark(Request $request){
         $validator = Validator::make($request->all(), [
             'restaurant_id' => 'required'
         ]);
