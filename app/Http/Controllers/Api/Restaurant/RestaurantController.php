@@ -245,10 +245,7 @@ class RestaurantController extends Controller
                 });
             }
             if($request->halal != null){
-                $all_restaurant = $all_restaurant->whereHas('halal', function ($q){
-
-                    $q->where('halal', $request->halal);
-                });
+                $all_restaurant = $all_restaurant->where('halal', $request->halal);
             }
             /*
             if($request->city_id != null){
