@@ -4,7 +4,9 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Auth;
 
+use App\Models\RestaurantBookmark;
 use App\Models\RestaurantData;
 use App\Models\RestaurantMenu;
 use App\Models\RestaurantPhotos;
@@ -44,6 +46,14 @@ class RestaurantDataResource extends JsonResource {
             $type->name_zh = $value->name_zh;
 
             array_push($type_array, $type);
+        }
+
+        $bookmark = RestaurantBookmark::where('restaurant_id', $this->id)->where('user_id', Auth::id())->first();
+        if($bookmark){
+            $check_bookmark = 1;
+        }
+        else{
+            $check_bookmark = 0;
         }
 
         $photos = RestaurantPhotos::where('restaurant_id', $this->id)->where('deleted_at', null)->get();
@@ -87,6 +97,7 @@ class RestaurantDataResource extends JsonResource {
             'verified' => $verified['verified'],
             'rating' => number_format($rating, 1),
             'reviews' => $reviews,
+            'bookmarked' => $check_bookmark,
             'distance' => number_format($distance, 1),
             'photo' => $restaurant_photos
         ];

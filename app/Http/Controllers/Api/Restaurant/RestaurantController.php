@@ -268,6 +268,9 @@ class RestaurantController extends Controller
             if($request->halal != null){
                 $all_restaurant = $all_restaurant->where('halal', $request->halal);
             }
+            if($request->keyword != null){
+                $all_restaurant = $all_restaurant->where('name', 'like', '%'.$request->keyword.'%');
+            }
             /*
             if($request->city_id != null){
                 $all_restaurant = $all_restaurant->where('city_id', $request->city_id);
