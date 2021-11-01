@@ -251,7 +251,7 @@ class RestaurantController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $all_restaurant = RestaurantData::where('verified', '!=', 'pending')->with('cuisine', 'type')->get();
+            $all_restaurant = RestaurantData::where('verified', '!=', 'pending')->with('cuisine', 'type');
 
             if($request->cuisine_type != null){
                 $all_restaurant = $all_restaurant->whereHas('cuisine', function ($q){
@@ -271,6 +271,8 @@ class RestaurantController extends Controller
             if($request->has('keyword')){
                 $all_restaurant = $all_restaurant->where('name', 'like', '%'.$request->keyword.'%');
             }
+
+            $all_restaurant = $all_restaurant->get();
             /*
             if($request->city_id != null){
                 $all_restaurant = $all_restaurant->where('city_id', $request->city_id);
