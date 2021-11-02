@@ -403,16 +403,16 @@ class RestaurantController extends Controller
                         $review_data[$key] = new RestaurantReviewResource($value);
                     }
 
-                    $total = count($check_review);
+                    $total = count($review_data);
 
                     $per_page = 10;
                     $current_page = $request->page ?? 1;
 
                     $starting_point = ($current_page * $per_page) - $per_page;
-                    $check_review = array_slice($check_review, $starting_point, $per_page);
+                    $review_data = array_slice($review_data, $starting_point, $per_page);
 
                     $result = new \stdClass();
-                    $result->reviews = $check_review;
+                    $result->reviews = $review_data;
                     $result->total = $total;
                     $result->current_page = (int)$current_page;
                     $result->total_page = ceil($total/$per_page);
