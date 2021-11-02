@@ -319,8 +319,6 @@ class RestaurantController extends Controller
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'No restaurants found!','data'=> '']), 404);
                 }
                 else{
-                    //$object = new \stdClass();
-                    //$threads->followed = SubforumFollower
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Restaurants list displayed successfully!','data'=> $result]), 200);
                 }
@@ -405,7 +403,22 @@ class RestaurantController extends Controller
                         $review_data[$key] = new RestaurantReviewResource($value);
                     }
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Review listed successfully!','data'=>$review_data]), 200);
+                    $total = count($check_review);
+
+                    $per_page = 10;
+                    $current_page = $request->page ?? 1;
+
+                    $starting_point = ($current_page * $per_page) - $per_page;
+                    $check_review = array_slice($check_review, $starting_point, $per_page);
+
+                    $result = new \stdClass();
+                    $result->reviews = $check_review;
+                    $result->total = $total;
+                    $result->current_page = (int)$current_page;
+                    $result->total_page = ceil($total/$per_page);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Review listed successfully!','data'=>$result]), 200);
+   
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'No review found!','data'=>'']), 404);
