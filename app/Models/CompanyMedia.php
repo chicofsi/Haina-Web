@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CompanyPhoto extends Model
+class CompanyMedia extends Model
 {
     use HasFactory;
     /**
@@ -13,10 +13,10 @@ class CompanyPhoto extends Model
      *
      * @var array
      */
-    protected $table = 'company_photo';
+    protected $table = 'company_media';
 
     protected $fillable = [
-        'id_company', 'photo_url', 'name'
+        'id_company', 'media_url', 'name'
     ];
 
 

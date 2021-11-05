@@ -143,7 +143,7 @@ class ManageUser extends Controller
         //     $company['address'][$key]['city']=City::where('id',$value->id_city)->select('name')->first()->name;
         // }
         // foreach ($company['photo'] as $key => $value) {
-        //     $company['photo'][$key]['photo_url']= URL::to('storage/'.$value->photo_url);
+        //     $company['photo'][$key]['media_url']= URL::to('storage/'.$value->photo_url);
         // }
       
         return Response()->json($user);

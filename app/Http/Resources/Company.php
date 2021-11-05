@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\URL;
 use App\Http\Resources\CompanyAddress as CompanyAddressResource;
-use App\Http\Resources\CompanyPhoto as CompanyPhotoResource;
+use App\Http\Resources\CompanyMedia as CompanyMediaResource;
 use App\Models\Province;
 
 class Company extends JsonResource
@@ -25,7 +25,7 @@ class Company extends JsonResource
 
         $photo=[];
         foreach ($this->photo as $key => $value) {
-            $photo[$key]=new CompanyPhotoResource($value);
+            $photo[$key]=new CompanyMediaResource($value);
         }
         $icon=URL::to('storage/'.$this->icon_url);
 

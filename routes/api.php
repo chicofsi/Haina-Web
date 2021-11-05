@@ -143,8 +143,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/applicant'  , [JobsApplicationController::class, 'getCompanyJobApplication']);
 		Route::post('/applicant/status'  , [JobsApplicationController::class, 'getJobApplicationStatus']);
 		Route::post('/address/register'  , [AddressController::class, 'registerCompanyAddress']);
-		Route::post('/photo/register'  , [PhotoController::class, 'registerCompanyPhoto']);
-		Route::post('/photo/delete'  , [PhotoController::class, 'deleteCompanyPhoto']);
+		Route::post('/photo/register'  , [PhotoController::class, 'registerCompanyMedia']);
+		Route::post('/photo/delete'  , [PhotoController::class, 'deleteCompanyMedia']);
 	});
 	
 	Route::group(['prefix' => 'docs'], function() {

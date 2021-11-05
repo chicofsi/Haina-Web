@@ -8,21 +8,21 @@ use App\Http\Resources\ValueMessage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\Company as CompanyResource;
-use App\Http\Resources\CompanyPhoto as CompanyPhotoResource;
+use App\Http\Resources\CompanyMedia as CompanyMediaResource;
 use App\Models\Company;
-use App\Models\CompanyPhoto;
+use App\Models\CompanyMedia;
 
 use App\Models\UserLogs;
 
 class PhotoController extends Controller
 {
     
-    public function registerCompanyPhoto(Request $request)
+    public function registerCompanyMedia(Request $request)
     {
         
         $validator = Validator::make($request->all(), [
             'id_company' => 'required',
-            'photo' => 'required|image',
+            'media' => 'required|mimes:png,jpg,gif,mp4,mov,3gp,qt|max:12000',
             'name' => 'required',
         ]);
 
@@ -33,15 +33,15 @@ class PhotoController extends Controller
 
                 $fileName= str_replace(' ','-', $request->id_company.'_'.$request->name.'_'.date('d-m-Y_H-i-s'));
 
-                $guessExtension = $request->file('photo')->guessExtension();
+                $guessExtension = $request->file('media')->guessExtension();
 
                 //store file into document folder
-                $file = Storage::disk('public')->putFileAs('company/photo/'.$request->id_company, $request->photo, $fileName.'.'.$guessExtension);
+                $file = Storage::disk('public')->putFileAs('company/media/'.$request->id_company, $request->photo, $fileName.'.'.$guessExtension);
                 
-                $company = CompanyPhoto::create([
+                $company = CompanyMedia::create([
                     'id_company' => $request->id_company,
                     'name' => $request->name,
-                    'photo_url' => $file,
+                    'media_url' => $file,
                 ]);
 
                 UserLogs::create([
@@ -50,7 +50,7 @@ class PhotoController extends Controller
                    'message' => "User added company picture named ".$request->name
                 ]);
 
-                return  response()->json(new ValueMessage(['value'=>1,'message'=>'Add Company Photo Success!','data'=> new CompanyPhotoResource($company)]), 200);;
+                return  response()->json(new ValueMessage(['value'=>1,'message'=>'Add Company Photo Success!','data'=> new CompanyMediaResource($company)]), 200);;
                 
             }else{
 
@@ -64,7 +64,7 @@ class PhotoController extends Controller
 
     }
 
-    public function deleteCompanyPhoto(Request $request)
+    public function deleteCompanyMedia(Request $request)
     {
         
         $validator = Validator::make($request->all(), [
@@ -74,7 +74,7 @@ class PhotoController extends Controller
         if ($validator->fails()) {          
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
-            if($photo=CompanyPhoto::where('id',$request->id)->first()){
+            if($photo=CompanyMedia::where('id',$request->id)->first()){
                 if($company=Company::where('id',$photo->id_company)->where('id_user',$request->user()->id)->first()){
 
                     Storage::disk('public')->delete($photo->photo_url);
@@ -85,7 +85,7 @@ class PhotoController extends Controller
                        'message' => "User removed company picture named ".$photo->name
                     ]);
 
-                    CompanyPhoto::where('id',$request->id)->delete();
+                    CompanyMedia::where('id',$request->id)->delete();
 
 
                     return  response()->json(new ValueMessage(['value'=>1,'message'=>'Company Photo Successfully Deleted!','data'=> ""]), 200);

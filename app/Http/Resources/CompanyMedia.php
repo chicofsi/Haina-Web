@@ -6,7 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\URL;
 use App\Models\City;
 
-class CompanyPhoto extends JsonResource
+class CompanyMedia extends JsonResource
 {
     /**
      * Transform the resource into an array.

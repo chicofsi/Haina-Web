@@ -176,12 +176,12 @@ class ManageCompany extends Controller
     {
         
         $company  = Company::where('id',$request->id)->with('address','photo')->first();
-        $company['photo_url']= URL::to('storage/'.$company->icon_url);
+        $company['media_url']= URL::to('storage/'.$company->icon_url);
         foreach ($company['address'] as $key => $value) {
             $company['address'][$key]['city']=City::where('id',$value->id_city)->select('name')->first()->name;
         }
         foreach ($company['photo'] as $key => $value) {
-            $company['photo'][$key]['photo_url']= URL::to('storage/'.$value->photo_url);
+            $company['photo'][$key]['media_url']= URL::to('storage/'.$value->photo_url);
         }
       
         return Response()->json($company);

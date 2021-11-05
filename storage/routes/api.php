@@ -42,8 +42,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
 	Route::post('company/register'  , [CompanyController::class, 'registerCompany']);
 	Route::post('company'  , [CompanyController::class, 'getCompany']);
 	Route::post('company/address/register'  , [AddressController::class, 'registerCompanyAddress']);
-	Route::post('company/photo/register'  , [PhotoController::class, 'registerCompanyPhoto']);
-	Route::post('company/photo/delete'  , [PhotoController::class, 'deleteCompanyPhoto']);
+	Route::post('company/photo/register'  , [PhotoController::class, 'registerCompanyMedia']);
+	Route::post('company/photo/delete'  , [PhotoController::class, 'deleteCompanyMedia']);
 });
 
 

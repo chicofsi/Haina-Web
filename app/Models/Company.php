@@ -28,7 +28,7 @@ class Company extends Model
         return $this->hasMany('App\Models\CompanyAddress','id_company','id');
     }
     public function photo(){
-        return $this->hasMany('App\Models\CompanyPhoto','id_company','id');
+        return $this->hasMany('App\Models\CompanyMedia','id_company','id');
     }
     public function user(){
         return $this->belongsTo('App\Models\User','id_user','id');
