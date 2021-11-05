@@ -71,10 +71,10 @@ class JobApplicantController extends Controller
             $company_name = Company::where('id', $value->id_company)->with('photo')->first();
             $value->company_name = $company_name['name'];
             $value->company_desc = $company_name['description'];
-            $value->company_photo = $company_name['photo'];
+            $value->company_media = $company_name['photo'];
 
-            foreach($value->company_photo as $keyphoto => $valuephoto){
-                $valuephoto->photo_url = "https://hainaservice.com/storage/".$valuephoto->photo_url;
+            foreach($value->company_media as $keyphoto => $valuephoto){
+                $valuephoto->media_url = "https://hainaservice.com/storage/".$valuephoto->media_url;
             }
 
             foreach($value->skill as $keyskill => $valueskill){
@@ -163,10 +163,10 @@ class JobApplicantController extends Controller
                     $company_name = Company::where('id', $value->id_company)->with('photo')->first();
                     $value->company_name = $company_name['name'];
                     $value->company_desc = $company_name['description'];
-                    $value->company_photo = $company_name['photo'];
+                    $value->company_media = $company_name['photo'];
         
-                    foreach($value->company_photo as $keyphoto => $valuephoto){
-                        $valuephoto->photo_url = "https://hainaservice.com/storage/".$valuephoto->photo_url;
+                    foreach($value->company_media as $keyphoto => $valuephoto){
+                        $valuephoto->media_url = "https://hainaservice.com/storage/".$valuephoto->media_url;
                     }
 
                     foreach($value->skill as $keyskill => $valueskill){
@@ -432,10 +432,10 @@ class JobApplicantController extends Controller
             $company_name = Company::where('id', $value->id_company)->with('photo')->first();
             $value->company_name = $company_name['name'];
             $value->company_desc = $company_name['description'];
-            $value->company_photo = $company_name['photo'];
+            $value->company_media = $company_name['photo'];
 
-            foreach($value->company_photo as $keyphoto => $valuephoto){
-                $valuephoto->photo_url = "https://hainaservice.com/storage/".$valuephoto->photo_url;
+            foreach($value->company_media as $keyphoto => $valuephoto){
+                $valuephoto->media_url = "https://hainaservice.com/storage/".$valuephoto->media_url;
             }
             $value->company_url = "https://hainaservice.com/storage/".$company_name['icon_url'];
 
@@ -506,11 +506,11 @@ class JobApplicantController extends Controller
                     $company_name = Company::where('id', $check_app->vacancy->id_company)->with('photo')->first();
                     $check_app->vacancy->company_name = $company_name['name'];
                     $check_app->vacancy->company_desc = $company_name['description'];
-                    $check_app->vacancy->company_photo = $company_name['photo'];
+                    $check_app->vacancy->company_media = $company_name['photo'];
                     $check_app->vacancy->company_url = "https://hainaservice.com/storage/".$company_name['icon_url'];
 
-                    foreach($check_app->vacancy->company_photo as $keyphoto => $valuephoto){
-                        $valuephoto->photo_url = "https://hainaservice.com/storage/".$valuephoto->photo_url;
+                    foreach($check_app->vacancy->company_media as $keyphoto => $valuephoto){
+                        $valuephoto->media_url = "https://hainaservice.com/storage/".$valuephoto->media_url;
                     }
         
                     foreach($check_app->vacancy->skill as $keyskill => $valueskill){
