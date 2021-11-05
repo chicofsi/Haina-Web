@@ -36,7 +36,7 @@ class PhotoController extends Controller
                 $guessExtension = $request->file('media')->guessExtension();
 
                 //store file into document folder
-                $file = Storage::disk('public')->putFileAs('company/media/'.$request->id_company, $request->photo, $fileName.'.'.$guessExtension);
+                $file = Storage::disk('public')->putFileAs('company/media/'.$request->id_company, $request->media, $fileName.'.'.$guessExtension);
                 
                 $company = CompanyMedia::create([
                     'id_company' => $request->id_company,
@@ -50,7 +50,7 @@ class PhotoController extends Controller
                    'message' => "User added company picture named ".$request->name
                 ]);
 
-                return  response()->json(new ValueMessage(['value'=>1,'message'=>'Add Company Photo Success!','data'=> new CompanyMediaResource($company)]), 200);;
+                return  response()->json(new ValueMessage(['value'=>1,'message'=>'Add Company Media Success!','data'=> new CompanyMediaResource($company)]), 200);;
                 
             }else{
 
@@ -77,7 +77,7 @@ class PhotoController extends Controller
             if($photo=CompanyMedia::where('id',$request->id)->first()){
                 if($company=Company::where('id',$photo->id_company)->where('id_user',$request->user()->id)->first()){
 
-                    Storage::disk('public')->delete($photo->photo_url);
+                    Storage::disk('public')->delete($photo->media_url);
 
                     UserLogs::create([
                        'id_user' => $request->user()->id,
@@ -88,13 +88,13 @@ class PhotoController extends Controller
                     CompanyMedia::where('id',$request->id)->delete();
 
 
-                    return  response()->json(new ValueMessage(['value'=>1,'message'=>'Company Photo Successfully Deleted!','data'=> ""]), 200);
+                    return  response()->json(new ValueMessage(['value'=>1,'message'=>'Company Media Successfully Deleted!','data'=> ""]), 200);
                     
                 }else{
                     return  response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> ""]), 403);;
                 }
             }else{
-                return  response()->json(new ValueMessage(['value'=>0,'message'=>'Photo Not Found!','data'=> ""]), 404);;
+                return  response()->json(new ValueMessage(['value'=>0,'message'=>'Media Not Found!','data'=> ""]), 404);;
             }
             
 
