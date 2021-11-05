@@ -21,7 +21,7 @@ class CompanyMedia extends JsonResource
         return [
             'id'=>$this->id,
             'name'=>$this->name,
-            'photo_url'=>$photo,
+            'media_url'=>$photo,
         ];
     }
 }
