@@ -6,6 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\URL;
 use App\Http\Resources\CompanyAddress as CompanyAddressResource;
 use App\Http\Resources\CompanyPhoto as CompanyPhotoResource;
+use App\Models\Province;
 
 class Company extends JsonResource
 {
@@ -28,12 +29,19 @@ class Company extends JsonResource
         }
         $icon=URL::to('storage/'.$this->icon_url);
 
+        $province = Province::where('id', $this->id_province)->first();
+
         return [
             'id'=>$this->id,
             'name'=>$this->name,
             'description'=>$this->description,
             'status'=>$this->status,
             'icon_url'=>$icon,
+            'year' => $this->year,
+            'staff_size' => $this->staff_size,
+            'siup' => $this->siup,
+            'id_province' => $this->province,
+            'province' => $province['name'],
             'address'=>$address,
             'photo'=>$photo,
         ];

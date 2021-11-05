@@ -24,6 +24,8 @@ class CompanyController extends Controller
                 'icon' => 'required|image',
                 'name' => 'required',
                 'description' => 'required',
+                'year' => 'required',
+                'staff_size' => 'required',
                 'siup' => 'required',
                 'id_province' => 'required'
             ]);
@@ -44,6 +46,8 @@ class CompanyController extends Controller
                     'icon_url' => substr($file,7),
                     'description' => $request->description,
                     'status' => 'pending review',
+                    'year' => $request->year,
+                    'staff_size' => $request->staff_size,
                     'siup' => $request->siup,
                     'id_province' => $request->id_province
                 ]);
