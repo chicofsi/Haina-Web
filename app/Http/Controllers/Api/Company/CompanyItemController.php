@@ -61,7 +61,7 @@ class CompanyItemController extends Controller
     }
 
     public function getAllItemCategory(){
-        $get_company = Company::where('id', Auth::id())->first();
+        $get_company = Company::where('id_user', Auth::id())->first();
 
         if($get_company){
             $categories = CompanyItemCategories::where('id_company', $get_company['id'])->get();
