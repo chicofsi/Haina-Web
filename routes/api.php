@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Post\Jobs\JobsVacancyController;
 use App\Http\Controllers\Api\Post\Jobs\JobsApplicationController;
 use App\Http\Controllers\Api\Post\Jobs\Skill\JobsSkillController;
 use App\Http\Controllers\Api\Company\CompanyController;
+use App\Http\Controllers\Api\Company\CompanyItemController;
 use App\Http\Controllers\Api\Company\AddressController;
 use App\Http\Controllers\Api\Company\PhotoController;
 use App\Http\Controllers\Api\UserDocs\DocsCategoryController;
@@ -145,6 +146,11 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/address/register'  , [AddressController::class, 'registerCompanyAddress']);
 		Route::post('/photo/register'  , [PhotoController::class, 'registerCompanyMedia']);
 		Route::post('/photo/delete'  , [PhotoController::class, 'deleteCompanyMedia']);
+
+		//items
+		Route::post('item/category/add', [CompanyItemController::class, 'addItemCategory']);
+		Route::post('item/add', [CompanyItemController::class, 'addNewItem']);
+		Route::get('item/category/', [CompanyItemController::class, 'getAllItemCategory']);
 	});
 	
 	Route::group(['prefix' => 'docs'], function() {
