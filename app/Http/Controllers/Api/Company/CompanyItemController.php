@@ -134,7 +134,7 @@ class CompanyItemController extends Controller
             $num = $index ?? 1;
 
             foreach($files as $file){
-                $cleantitle = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $item['name']);
+                $cleantitle = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $item['item_name']);
                 $fileName = str_replace(' ','-', $cleantitle.'-'.$num);
                 $guessExtension = $file->guessExtension();
                 //dd($guessExtension);
