@@ -102,7 +102,7 @@ class CompanyItemController extends Controller
 
                     if($request->item_media){
                         $files = $request->file('item_media');
-                        $this->storeItemMedia($new_post->id, $files);
+                        $this->storeItemMedia($new_item->id, $files);
                     }
 
                 }
