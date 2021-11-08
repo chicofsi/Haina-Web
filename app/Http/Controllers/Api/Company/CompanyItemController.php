@@ -100,9 +100,14 @@ class CompanyItemController extends Controller
 
                     $new_item = CompanyItem::create($item);
 
-                    if($request->item_media){
-                        $files = $request->file('item_media');
-                        $this->storeItemMedia($new_item->id, $files);
+                    $files = $request->file('item_media');
+                    $store_media = $this->storeItemMedia($new_item->id, $files);
+                    
+                    if($store_media->value = 0){
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Item added successfully!','data'=>'']), 403);
+                    }
+                    else{
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Item added successfully!','data'=>$new_item]), 200);
                     }
 
                 }
@@ -133,7 +138,7 @@ class CompanyItemController extends Controller
                 $fileName = str_replace(' ','-', $cleantitle.'-'.$num);
                 $guessExtension = $file->guessExtension();
                 //dd($guessExtension);
-                $store = Storage::disk('public')->putFileAs('forum/items/'.$item['id_item_category'].'/'.$id, $file ,$fileName.'.'.$guessExtension);
+                $store = Storage::disk('public')->putFileAs('company/items/'.$item['id_item_category'].'/'.$id, $file ,$fileName.'.'.$guessExtension);
 
                 $postMedia = CompanyMedia::create([
                     'id_company_item' => $item['id'],
