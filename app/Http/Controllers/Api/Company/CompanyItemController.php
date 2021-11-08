@@ -64,7 +64,7 @@ class CompanyItemController extends Controller
         $get_company = Company::where('id_user', Auth::id())->first();
 
         if($get_company){
-            $categories = CompanyItemCategories::where('id_company', $get_company['id'])->get();
+            $categories = CompanyItemCategory::where('id_company', $get_company['id'])->get();
 
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Item Category Listed Successfully','data'=> $categories]), 200);
         }
