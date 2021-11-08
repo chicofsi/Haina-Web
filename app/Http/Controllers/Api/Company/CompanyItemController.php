@@ -25,7 +25,7 @@ use App\Models\CompanyMedia;
 
 use App\Http\Resources\Company as CompanyResource;
 
-class CompanyController extends Controller
+class CompanyItemController extends Controller
 {
     public function addItemCategory(Request $request){
         $validator = Validator::make($request->all(), [
