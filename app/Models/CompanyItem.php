@@ -10,7 +10,7 @@ class CompanyItem extends Model
 
     use HasFactory;
 
-    protected $table = 'company_item_media';
+    protected $table = 'company_item';
 
 
     protected $fillable = [
