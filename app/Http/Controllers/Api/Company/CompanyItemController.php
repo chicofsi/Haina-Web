@@ -137,7 +137,7 @@ class CompanyItemController extends Controller
                 //dd($guessExtension);
                 $store = Storage::disk('public')->putFileAs('company/items/'.$item['id_item_category'].'/'.$id, $file ,$fileName.'.'.$guessExtension);
 
-                $postMedia = CompanyMedia::create([
+                $postMedia = CompanyItemMedia::create([
                     'id_company_item' => $item['id'],
                     'media_url' => 'http://hainaservice.com/storage/'.$store
                 ]);
