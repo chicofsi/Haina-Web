@@ -132,10 +132,10 @@ class CompanyItemController extends Controller
         }else{
             $result = [];
             if($request->id_item_category != null){
-                $item_categories = CompanyItemCategory::where('id', $request->id_item_category)->get();
+                $item_categories = CompanyItemCategory::where('id', $request->id_item_category)->first();
 
                 if($item_categories){
-                    $items = CompanyItem::where('id_item_category', $category_id)->get();
+                    $items = CompanyItem::where('id_item_category', $request->id_item_category)->get();
 
                         foreach($items as $key => $value){
                             $item = new CompanyItemResource($value);
