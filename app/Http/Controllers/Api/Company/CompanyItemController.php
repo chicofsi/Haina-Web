@@ -7,9 +7,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\TransferStats;
@@ -125,6 +128,8 @@ class CompanyItemController extends Controller
         $validator = Validator::make($request->all(), [
             'id_company' => 'required',
             'id_item_category' => 'numeric',
+            'sort_by_price' => 'prohibits:sort_by_price|in:asc,desc',
+            'sort_by_name' => 'prohibits:sort_by_name|in:asc,desc'
         ]);
 
         if ($validator->fails()) {          
@@ -143,7 +148,7 @@ class CompanyItemController extends Controller
                             array_push($result, $item);
                         }
 
-                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Item list displayed successfully','data'=> $result]), 200);
+                        //return response()->json(new ValueMessage(['value'=>1,'message'=>'Item list displayed successfully','data'=> $result]), 200);
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Item category not found','data'=> '']), 404);
@@ -163,12 +168,51 @@ class CompanyItemController extends Controller
                         }
                     }
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Item list displayed successfully','data'=> $result]), 200);
+                    //return response()->json(new ValueMessage(['value'=>1,'message'=>'Item list displayed successfully','data'=> $result]), 200);
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Item category not found','data'=> '']), 404);
                 }
             }
+
+            $displayed_result = $result;
+
+            if($request->sort_by_name == "asc"){
+                $displayed_result = collect($displayed_result)->sortBy('item_name')->toArray();
+            }
+            else if($request->sort_by_name == "desc"){
+                $displayed_result = collect($displayed_result)->sortByDesc('item_name')->toArray();
+            }
+
+            if($request->sort_by_price == "asc"){
+                $displayed_result = collect($displayed_result)->sortBy('item_price')->toArray();
+            }
+            else if($request->sort_by_price == "desc"){
+                $displayed_result = collect($displayed_result)->sortByDesc('item_price')->toArray();
+            }
+
+            $total = count($displayed_result);
+            $per_page = 10;
+            $current_page = $request->page ?? 1;
+
+            $starting_point = ($current_page * $per_page) - $per_page;
+
+            $displayed_result = array_slice($displayed_result, $starting_point, $per_page);
+
+            $paged_result = new \stdClass();
+            $paged_result->threads = $threads;
+            $paged_result->total = $total;
+            $paged_result->current_page = (int)$current_page;
+            $paged_result->total_page = ceil($total/$per_page);
+
+            if(count($displayed_result) == 0){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No items found!','data'=> '']), 404);
+            }
+            else{
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Items displayed successfully!','data'=> $paged_result]), 200);
+            }
+
         }
     }
 
