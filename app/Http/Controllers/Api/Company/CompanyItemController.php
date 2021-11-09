@@ -25,6 +25,7 @@ use App\Models\CompanyItemMedia;
 use App\Models\CompanyMedia;
 
 use App\Http\Resources\Company as CompanyResource;
+use App\Http\Resources\CompanyItemResource;
 
 class CompanyItemController extends Controller
 {
@@ -116,6 +117,57 @@ class CompanyItemController extends Controller
             }
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Item category not found','data'=> '']), 404);
+            }
+        }
+    }
+
+    public function showCompanyItem(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_company' => 'required',
+            'id_item_category' => 'numeric',
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            $result = [];
+            if($request->id_item_category != null){
+                $item_categories = CompanyItemCategory::where('id', $request->id_item_category)->get();
+
+                if($item_categories){
+                    $items = CompanyItem::where('id_item_category', $category_id)->get();
+
+                        foreach($items as $key => $value){
+                            $item = new CompanyItemResource($value);
+
+                            array_push($result, $item);
+                        }
+
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Item list displayed successfully','data'=> $result]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Item category not found','data'=> '']), 404);
+                }
+            }
+            else{
+                $item_categories = CompanyItemCategory::where('id_company', $request->id_company)->get();
+
+                if($item_categories){
+                    foreach($item_categories->id as $category_id){
+                        $items = CompanyItem::where('id_item_category', $category_id)->get();
+
+                        foreach($items as $key => $value){
+                            $item = new CompanyItemResource($value);
+
+                            array_push($result, $item);
+                        }
+                    }
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Item list displayed successfully','data'=> $result]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Item category not found','data'=> '']), 404);
+                }
             }
         }
     }
