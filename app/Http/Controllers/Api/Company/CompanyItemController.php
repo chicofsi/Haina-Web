@@ -102,6 +102,7 @@ class CompanyItemController extends Controller
                     $new_item = CompanyItem::create($item);
 
                     $files = $request->file('item_media');
+                    dd($files);
                     $this->storeItemMedia($new_item->id, $files);
                     
                     
