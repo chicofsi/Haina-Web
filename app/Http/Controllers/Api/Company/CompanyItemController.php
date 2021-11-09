@@ -123,32 +123,27 @@ class CompanyItemController extends Controller
 
         $item = CompanyItem::where('id', $id)->first();
         
+        $num = $index ?? 1;
 
-        if(!$item){
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Item Not Found!','data'=> '']), 404);
+        foreach($files as $file){
+            $cleantitle = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $item['item_name']);
+            $fileName = str_replace(' ','-', $cleantitle.'-'.$num);
+            $guessExtension = $file->guessExtension();
+            //dd($guessExtension);
+            $store = Storage::disk('public')->putFileAs('company/items/'.$item['id_item_category'].'/'.$id, $file ,$fileName.'.'.$guessExtension);
+
+            $postMedia = CompanyItemMedia::create([
+                'id_company_item' => $item['id'],
+                'media_url' => 'http://hainaservice.com/storage/'.$store
+            ]);
+
+            $num += 1; 
         }
-        else{
-            $num = $index ?? 1;
 
-            foreach($files as $file){
-                $cleantitle = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $item['item_name']);
-                $fileName = str_replace(' ','-', $cleantitle.'-'.$num);
-                $guessExtension = $file->guessExtension();
-                //dd($guessExtension);
-                $store = Storage::disk('public')->putFileAs('company/items/'.$item['id_item_category'].'/'.$id, $file ,$fileName.'.'.$guessExtension);
+        $posted_media = CompanyItemMedia::where('id_company_item', $id)->get();
 
-                $postMedia = CompanyItemMedia::create([
-                    'id_company_item' => $item['id'],
-                    'media_url' => 'http://hainaservice.com/storage/'.$store
-                ]);
-
-                $num += 1; 
-            }
-
-            $posted_media = CompanyItemMedia::where('id', $id)->get();
-
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Media Success!','data'=> $posted_media]), 200);
-        }
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Media Success!','data'=> $posted_media]), 200);
+    
     }
 
 }
