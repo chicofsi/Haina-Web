@@ -101,14 +101,11 @@ class CompanyItemController extends Controller
                     $new_item = CompanyItem::create($item);
 
                     $files = $request->file('item_media');
-                    $store_media = $this->storeItemMedia($new_item->id, $files);
+                    $this->storeItemMedia($new_item->id, $files);
                     
-                    if($store_media->value = 0){
-                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Item added successfully!','data'=>'']), 403);
-                    }
-                    else{
-                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Item added successfully!','data'=>$new_item]), 200);
-                    }
+                    
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Item added successfully!','data'=>$new_item]), 200);
+                    
 
                 }
                 else{
