@@ -15,7 +15,7 @@ class CompanyItemMedia extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'id_company', 'name'
+        'id_company_item', 'media_url'
     ];
 
 
