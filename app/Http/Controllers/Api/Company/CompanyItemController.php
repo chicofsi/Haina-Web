@@ -200,7 +200,7 @@ class CompanyItemController extends Controller
             $displayed_result = array_slice($displayed_result, $starting_point, $per_page);
 
             $paged_result = new \stdClass();
-            $paged_result->threads = $threads;
+            $paged_result->items = $threads;
             $paged_result->total = $total;
             $paged_result->current_page = (int)$current_page;
             $paged_result->total_page = ceil($total/$per_page);
