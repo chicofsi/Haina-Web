@@ -8,7 +8,7 @@ use App\Http\Resources\CompanyAddress as CompanyAddressResource;
 use App\Http\Resources\CompanyMedia as CompanyMediaResource;
 use App\Models\Company;
 use App\Models\CompanyItemCategory;
-use App\Models\CompanyMedia;
+use App\Models\CompanyItemMedia;
 
 class CompanyItemResource extends JsonResource
 {
@@ -19,7 +19,7 @@ class CompanyItemResource extends JsonResource
 
         $company = Company::where('id', $item_category['id_company'])->first();
 
-        $media = CompanyMedia::where('id_company_item', $this->id)->get();
+        $media = CompanyItemMedia::where('id_company_item', $this->id)->get();
 
         return [
             'id' => $this->id,
