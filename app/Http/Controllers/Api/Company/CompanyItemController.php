@@ -128,8 +128,8 @@ class CompanyItemController extends Controller
         $validator = Validator::make($request->all(), [
             'id_company' => 'required',
             'id_item_category' => 'numeric',
-            'sort_by_price' => 'prohibits:sort_by_price|in:asc,desc',
-            'sort_by_name' => 'prohibits:sort_by_name|in:asc,desc'
+            'sort_by_price' => 'prohibited_if:sort_by_price|in:asc,desc',
+            'sort_by_name' => 'prohibited_if:sort_by_name|in:asc,desc'
         ]);
 
         if ($validator->fails()) {          
