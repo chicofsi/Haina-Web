@@ -216,6 +216,27 @@ class CompanyItemController extends Controller
         }
     }
 
+    public function showItemDetail(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_item' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            $check_item = CompanyItem::where('id', $request->id_item)->first();
+
+            if($check_item){
+                $item = new CompanyItemResource($check_item);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Items displayed successfully!','data'=> $item]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Item not found!','data'=> '']), 404);
+            }
+        }
+    }
+
     public function storeItemMedia($id, $files, $index = null){
 
         $item = CompanyItem::where('id', $id)->first();
