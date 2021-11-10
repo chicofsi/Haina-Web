@@ -317,7 +317,7 @@ class CompanyItemController extends Controller
         $list_media = [];
         
         $num = $index ?? 1;
-
+        dd($files);
         foreach($files as $file){
             $cleantitle = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $item['item_name']);
             $fileName = str_replace(' ','-', $cleantitle.'-'.$num);
