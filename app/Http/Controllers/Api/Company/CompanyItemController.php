@@ -184,7 +184,7 @@ class CompanyItemController extends Controller
                     $index = CompanyItemMedia::where('id_item', $request->id_item)->count();
 
                     $files = $request->file('item_media');
-                    dd($index);
+                    
                     return($this->storeItemMedia($request->id_item, $files, ($index + 1)));
 
                     //return response()->json(new ValueMessage(['value'=>1,'message'=>'Images added successfully!','data'=> $result]), 200);
@@ -320,6 +320,7 @@ class CompanyItemController extends Controller
         $num = $index ?? 1;
         
         foreach($files as $file){
+            dd($item);
             $cleantitle = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $item['item_name']);
             $fileName = str_replace(' ','-', $cleantitle.'-'.$num);
             $guessExtension = $file->guessExtension();
