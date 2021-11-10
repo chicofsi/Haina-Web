@@ -401,7 +401,7 @@ class CompanyItemController extends Controller
                         'deleted_at' => date('Y-m-d H:i:s')
                     ]);
 
-                    $item = CompanyItem::where('id', $request->item)->first();
+                    $item = CompanyItem::where('id', $request->id_item)->first();
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Item deleted successfully','data'=> $item]), 200);
                 }
