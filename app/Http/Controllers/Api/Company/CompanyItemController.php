@@ -124,6 +124,38 @@ class CompanyItemController extends Controller
         }
     }
 
+    public function updateItem(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_item' => 'required',
+            'id_item_category' => 'numeric',
+            'item_price' => 'gte:0',
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            $check_item = CompanyItem::where('id', $request->id_item)->where('deleted_at', '!=', null)->first();
+
+            if($check_item){
+                $update_item = CompanyItem::where('id', $request->id_item)->update([
+                    'id_item_category' => $request->id_item_category ?? $check_item['id_item_category'],
+                    'item_name' => $request->item_name ?? $check_item['item_name'],
+                    'item_description' => $request->item_description ?? $check_item['item_description'],
+                    'item_price' => $request->item_price ?? $check_item['item_price']
+                ]);
+                
+                
+                $item = CompanyItem::where('id', $request->id_item)->first();
+                $result = new CompanyItemResource($item);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Items updated successfully!','data'=> $result]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Item not found!','data'=> '']), 404);
+            }
+        }
+    }
+
     public function showCompanyItem(Request $request){
         $validator = Validator::make($request->all(), [
             'id_company' => 'required',
@@ -140,7 +172,7 @@ class CompanyItemController extends Controller
                 $item_categories = CompanyItemCategory::where('id', $request->id_item_category)->first();
 
                 if($item_categories){
-                    $items = CompanyItem::where('id_item_category', $request->id_item_category)->get();
+                    $items = CompanyItem::where('id_item_category', $request->id_item_category)->where('deleted_at', '!=', null)->get();
 
                         foreach($items as $key => $value){
                             $item = new CompanyItemResource($value);
@@ -159,7 +191,7 @@ class CompanyItemController extends Controller
 
                 if($item_categories){
                     foreach($item_categories as $key_category=>$value_category){
-                        $items = CompanyItem::where('id_item_category', $value_category->id)->get();
+                        $items = CompanyItem::where('id_item_category', $value_category->id)->where('deleted_at', '!=', null)->get();
 
                         foreach($items as $key => $value){
                             $item = new CompanyItemResource($value);

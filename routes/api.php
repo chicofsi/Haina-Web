@@ -151,6 +151,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('item/category/add', [CompanyItemController::class, 'addItemCategory']);
 		Route::post('item/add', [CompanyItemController::class, 'addNewItem']);
 		Route::post('item/detail', [CompanyItemController::class, 'showItemDetail']);
+		Route::post('item/update', [CompanyItemController::class, 'updateItem']);
 		Route::get('item/category/', [CompanyItemController::class, 'getAllItemCategory']);
 		Route::post('item/show/', [CompanyItemController::class, 'showCompanyItem']);
 	});
