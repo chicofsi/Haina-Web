@@ -184,6 +184,7 @@ class CompanyItemController extends Controller
                     $index = CompanyItemMedia::where('id_item', $request->id_item)->count();
 
                     $files = $request->file('item_media');
+                    dd($index);
                     return($this->storeItemMedia($request->id_item, $files, ($index + 1)));
 
                     //return response()->json(new ValueMessage(['value'=>1,'message'=>'Images added successfully!','data'=> $result]), 200);
