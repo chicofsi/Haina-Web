@@ -397,7 +397,7 @@ class CompanyItemController extends Controller
                     ]);
                     
 
-                    $delete_item = CompanyItemMedia::where('id', $request->id_item)->update([
+                    $delete_item = CompanyItem::where('id', $request->id_item)->update([
                         'deleted_at' => date('Y-m-d H:i:s')
                     ]);
 
