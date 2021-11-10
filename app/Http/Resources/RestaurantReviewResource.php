@@ -21,15 +21,23 @@ class RestaurantReviewResource extends JsonResource {
 
         $user = User::where('id', $this->user_id)->first();
 
+        $user_data = [
+            'user_id' => $this->user_id,
+            'username' => $user['username'],
+            'user_photo' => "https://hainaservice.com/storage/".$user['photo'],
+            'full_name' => $user['fullname']
+        ];
+
         return [
             'id' => $this->id,
             'restaurant_id' => $this->restaurant_id,
             'restaurant_name' => $restaurant_name['name'],
             'user_id' => $this->user_id,
-            'username' => $user['username'],
+            //'username' => $user['username'],
             'rating' => $this->rating,
             'review' => $this->review,
             'photos' => $review_photos,
+            'user' => $user_data,
             'review_date' => $this->created_at
         ];
 
