@@ -341,6 +341,9 @@ class CompanyItemController extends Controller
 
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Media Success!','data'=> $list_media]), 200);
         }
+        else{
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Item not found!','data'=> '']), 404);
+        }
     
     }
 
