@@ -185,7 +185,7 @@ class CompanyItemController extends Controller
 
                     $files = $request->file('item_media');
                     
-                    return($this->storeItemMedia($request->id_item, $files, ($index + 1)));
+                    return($this->storeItemMedia($check_item['id'], $files, ($index + 1)));
 
                     //return response()->json(new ValueMessage(['value'=>1,'message'=>'Images added successfully!','data'=> $result]), 200);
                 }
