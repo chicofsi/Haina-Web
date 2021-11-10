@@ -12,8 +12,7 @@ class CompanyItemMedia extends Model
 
     protected $table = 'company_item_media';
 
-    public $timestamps = false;
-
+    
     protected $fillable = [
         'id_item', 'media_url'
     ];
