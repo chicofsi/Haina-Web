@@ -84,7 +84,7 @@ class CompanyItemController extends Controller
             'item_name' => 'required',
             'item_description' => 'required',
             'item_price' => 'required|gte:0',
-            ['item_media' => 'required|mimes:png,jpg,jpeg,gif,mp4|max:53000']
+            ['item_media' => 'required|mimes:png,jpg,jpeg,gif,mp4|max:10000']
         ]);
 
         if ($validator->fails()) {          
@@ -154,6 +154,39 @@ class CompanyItemController extends Controller
                     $result = new CompanyItemResource($item);
 
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Items updated successfully!','data'=> $result]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized','data'=> '']), 401);
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Item not found!','data'=> '']), 404);
+            }
+        }
+    }
+
+    public function addNewItemMedia(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_item' => 'required',
+            ['item_media' => 'required|mimes:png,jpg,jpeg,gif,mp4|max:10000']
+        ]);
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            $check_item = CompanyItem::where('id', $request->id_item)->where('deleted_at', null)->first();
+
+            if($check_item){
+                $check_category = CompanyItemCategory::where('id', $check_item['id_item_category'])->first();
+
+                $check_company = Company::where('id', $check_category['id_company'])->first();
+
+                if($check_company['id_user'] == Auth::id()){
+                    $index = CompanyItemMedia::where('id_item', $request->id_item)->count();
+
+                    $files = $request->file('item_media');
+                    return($this->storeItemMedia($new_item->id, $files, ($index + 1)));
+
+                    //return response()->json(new ValueMessage(['value'=>1,'message'=>'Images added successfully!','data'=> $result]), 200);
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized','data'=> '']), 401);
@@ -281,6 +314,7 @@ class CompanyItemController extends Controller
     public function storeItemMedia($id, $files, $index = null){
 
         $item = CompanyItem::where('id', $id)->first();
+        $list_media = [];
         
         $num = $index ?? 1;
 
@@ -292,16 +326,18 @@ class CompanyItemController extends Controller
             $store = Storage::disk('public')->putFileAs('company/items/'.$item['id_item_category'].'/'.$id, $file ,$fileName.'.'.$guessExtension);
 
             $postMedia = CompanyItemMedia::create([
-                'id_company_item' => $item['id'],
+                'id_item' => $item['id'],
                 'media_url' => 'http://hainaservice.com/storage/'.$store
             ]);
+
+            array_push($list_media, $postMedia);
 
             $num += 1; 
         }
 
-        $posted_media = CompanyItemMedia::where('id_company_item', $id)->get();
+        //$posted_media = CompanyItemMedia::where('id_item', $id)->get();
 
-        return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Media Success!','data'=> $posted_media]), 200);
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Media Success!','data'=> $list_media]), 200);
     
     }
 

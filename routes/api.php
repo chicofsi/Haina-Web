@@ -154,6 +154,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('item/update', [CompanyItemController::class, 'updateItem']);
 		Route::get('item/category/', [CompanyItemController::class, 'getAllItemCategory']);
 		Route::post('item/show/', [CompanyItemController::class, 'showCompanyItem']);
+		Route::post('item/media/add', [CompanyItemController::class, 'addNewItemMedia']);
 	});
 	
 	Route::group(['prefix' => 'docs'], function() {
