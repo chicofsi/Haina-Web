@@ -84,7 +84,7 @@ class CompanyItemController extends Controller
             'item_name' => 'required',
             'item_description' => 'required',
             'item_price' => 'required|gte:0',
-            ['item_media' => 'required|mimes:png,jpg,jpeg,gif,mp4|max:10000']
+            ['item_media' => 'required|mimes:png,jpg,jpeg,gif,mp4|max:25000']
         ]);
 
         if ($validator->fails()) {          
@@ -168,7 +168,7 @@ class CompanyItemController extends Controller
     public function addNewItemMedia(Request $request){
         $validator = Validator::make($request->all(), [
             'id_item' => 'required',
-            ['item_media' => 'required|mimes:png,jpg,jpeg,gif,mp4|max:10000']
+            ['item_media' => 'required|mimes:png,jpg,jpeg,gif,mp4|max:25000']
         ]);
         if ($validator->fails()) {          
             return response()->json(['error'=>$validator->errors()], 400);                        
