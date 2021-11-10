@@ -29,6 +29,7 @@ use App\Models\CompanyMedia;
 
 use App\Http\Resources\Company as CompanyResource;
 use App\Http\Resources\CompanyItemResource;
+use DateTime;
 
 class CompanyItemController extends Controller
 {
@@ -69,7 +70,7 @@ class CompanyItemController extends Controller
         $get_company = Company::where('id_user', Auth::id())->first();
 
         if($get_company){
-            $categories = CompanyItemCategory::where('id_company', $get_company['id'])->get();
+            $categories = CompanyItemCategory::where('id_company', $get_company['id'])->where('deleted_at', null)->get();
 
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Item Category Listed Successfully','data'=> $categories]), 200);
         }
@@ -90,7 +91,7 @@ class CompanyItemController extends Controller
         if ($validator->fails()) {          
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
-            $check_category = CompanyItemCategory::where('id', $request->id_item_category)->first();
+            $check_category = CompanyItemCategory::where('id', $request->id_item_category)->where('deleted_at', null)->first();
 
             if($check_category){
                 $check_company = Company::where('id', $check_category['id_company'])->first();
@@ -165,6 +166,35 @@ class CompanyItemController extends Controller
         }
     }
 
+    public function updateCategory(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_item_category' => 'required|numeric',
+            'name' => 'required'
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            $check_category = CompanyItemCategory::where('id', $request->id_item_category)->where('deleted_at', null)->first();
+
+            if($check_category){
+                $check_company = Company::where('id', $check_category['id_company'])->first();
+
+                if($check_company['id_user'] == Auth::id()){
+                    $update_category = CompanyItemCategory::where('id', $request->id_item_category)->update([
+                        'name' => $request->name
+                    ]);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized','data'=> '']), 401);
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Item category not found!','data'=> '']), 404);
+            }
+        }
+    }
+
     public function addNewItemMedia(Request $request){
         $validator = Validator::make($request->all(), [
             'id_item' => 'required',
@@ -212,7 +242,7 @@ class CompanyItemController extends Controller
         }else{
             $result = [];
             if($request->id_item_category != null){
-                $item_categories = CompanyItemCategory::where('id', $request->id_item_category)->first();
+                $item_categories = CompanyItemCategory::where('id', $request->id_item_category)->where('deleted_at', null)->first();
 
                 if($item_categories){
                     $items = CompanyItem::where('id_item_category', $request->id_item_category)->where('deleted_at', null)->get();
@@ -230,7 +260,7 @@ class CompanyItemController extends Controller
                 }
             }
             else{
-                $item_categories = CompanyItemCategory::where('id_company', $request->id_company)->get();
+                $item_categories = CompanyItemCategory::where('id_company', $request->id_company)->where('deleted_at', null)->get();
 
                 if($item_categories){
                     foreach($item_categories as $key_category=>$value_category){
@@ -299,7 +329,7 @@ class CompanyItemController extends Controller
         if ($validator->fails()) {          
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
-            $check_item = CompanyItem::where('id', $request->id_item)->first();
+            $check_item = CompanyItem::where('id', $request->id_item)->where('deleted_at', null)->first();
 
             if($check_item){
                 $item = new CompanyItemResource($check_item);
@@ -308,6 +338,114 @@ class CompanyItemController extends Controller
             }
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Item not found!','data'=> '']), 404);
+            }
+        }
+    }
+
+    public function deleteCategory(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_item_category' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            $check_category = CompanyItemCategory::where('id', $request->id_item_category)->where('deleted_at', null)->first();
+
+            if($check_category){
+                $check_item = CompanyItem::where('id_item_category')->where('deleted_at', null)->get();
+
+                if($check_item){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot delete category with items in it!','data'=> '']), 401);
+                }
+                else{
+                    $check_company = Company::where('id', $check_category['id_company'])->first();
+
+                    if($check_company['id_user'] == Auth::id()){
+                        $update_category = CompanyItemCategory::where('id', $request->id_item_category)->update([
+                            'name' => $request->name
+                        ]);
+                    }
+                    else{
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized','data'=> '']), 401);
+                    }
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Item category not found!','data'=> '']), 404);
+            }
+        }
+    }
+
+    public function deleteItem(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_item' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            $check_item = CompanyItem::where('id', $request->id_item)->where('deleted_at', null)->first();
+
+            if($check_item){
+                $check_category = CompanyItemCategory::where('id', $check_item['id_item_category'])->first();
+                $check_company = Company::where('id', $check_category['id_company'])->first();
+
+                if($check_company['id_user'] == Auth::id()){
+                    $delete_media = CompanyItemMedia::where('id_item', $request->id_item)->where('deleted_at', null)->update([
+                        'deleted_at' => date('Y-m-d H:i:s')
+                    ]);
+                    
+
+                    $delete_item = CompanyItemMedia::where('id', $request->id_item)->update([
+                        'deleted_at' => date('Y-m-d H:i:s')
+                    ]);
+
+                    $item = CompanyItem::where('id', $request->item)->first();
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Item deleted successfully','data'=> $item]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized','data'=> '']), 401);
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Item not found!','data'=> '']), 404);
+            }
+        }
+    }
+
+    public function deleteMedia(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_media' => 'required|numeric'
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            $check_media = CompanyItemMedia::where('id', $request->id_media)->where('deleted_at', null)->first();
+
+            if($check_media){
+                $check_item = CompanyItem::where('id', $check_media['id_item'])->first();
+                $check_category = CompanyItemCategory::where('id', $check_item['id_item_category'])->first();
+                $check_company = Company::where('id', $check_category['id_company'])->first();
+
+                if($check_company['id_user'] == Auth::id()){
+                    $delete_media = CompanyItemMedia::where('id', $request->id_media)->update([
+                        'deleted_at' => date('Y-m-d H:i:s')
+                    ]);
+
+                    $media = CompanyItemMedia::where('id', $request->id_media)->first();
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Media deleted successfully','data'=> $media]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized','data'=> '']), 401);
+                }
+
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Media not found!','data'=> '']), 404);
             }
         }
     }

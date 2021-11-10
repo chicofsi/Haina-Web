@@ -12,8 +12,6 @@ class CompanyItemCategory extends Model
 
     protected $table = 'company_item_category';
 
-    public $timestamps = false;
-
     protected $fillable = [
         'id_company', 'name'
     ];
