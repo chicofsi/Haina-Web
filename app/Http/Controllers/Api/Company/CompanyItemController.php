@@ -316,30 +316,31 @@ class CompanyItemController extends Controller
 
         $item = CompanyItem::where('id', $id)->first();
         $list_media = [];
+        if($item){
+            $num = $index ?? 1;
         
-        $num = $index ?? 1;
-        
-        foreach($files as $file){
-            
-            $cleantitle = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $item['item_name']);
-            $fileName = str_replace(' ','-', $cleantitle.'-'.$num);
-            $guessExtension = $file->guessExtension();
-            //dd($guessExtension);
-            $store = Storage::disk('public')->putFileAs('company/items/'.$item['id_item_category'].'/'.$id, $file ,$fileName.'.'.$guessExtension);
+            foreach($files as $file){
+                
+                $cleantitle = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $item['item_name']);
+                $fileName = str_replace(' ','-', $cleantitle.'-'.$num);
+                $guessExtension = $file->guessExtension();
+                //dd($guessExtension);
+                $store = Storage::disk('public')->putFileAs('company/items/'.$item['id_item_category'].'/'.$id, $file ,$fileName.'.'.$guessExtension);
 
-            $postMedia = CompanyItemMedia::create([
-                'id_item' => $item['id'],
-                'media_url' => 'http://hainaservice.com/storage/'.$store
-            ]);
+                $postMedia = CompanyItemMedia::create([
+                    'id_item' => $item['id'],
+                    'media_url' => 'http://hainaservice.com/storage/'.$store
+                ]);
 
-            array_push($list_media, $postMedia);
+                array_push($list_media, $postMedia);
 
-            $num += 1; 
+                $num += 1; 
+            }
+
+            //$posted_media = CompanyItemMedia::where('id_item', $id)->get();
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Media Success!','data'=> $list_media]), 200);
         }
-
-        //$posted_media = CompanyItemMedia::where('id_item', $id)->get();
-
-        return response()->json(new ValueMessage(['value'=>1,'message'=>'Post Media Success!','data'=> $list_media]), 200);
     
     }
 
