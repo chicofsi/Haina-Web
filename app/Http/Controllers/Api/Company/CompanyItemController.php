@@ -355,7 +355,7 @@ class CompanyItemController extends Controller
             if($check_category){
                 $check_item = CompanyItem::where('id_item_category')->where('deleted_at', null)->get();
 
-                if(count($check_item) == 0){
+                if(count($check_item) > 0){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot delete category with items in it!','data'=> '']), 401);
                 }
                 else{
