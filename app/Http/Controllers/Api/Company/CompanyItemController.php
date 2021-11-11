@@ -184,6 +184,10 @@ class CompanyItemController extends Controller
                     $update_category = CompanyItemCategory::where('id', $request->id_item_category)->update([
                         'name' => $request->name
                     ]);
+
+                    $category = CompanyItemCategory::where('id', $request->id_item_category)->first();
+
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Category updated!','data'=> $category]), 404);
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized','data'=> '']), 401);
