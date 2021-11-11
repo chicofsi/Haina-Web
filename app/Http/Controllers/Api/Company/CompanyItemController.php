@@ -363,7 +363,7 @@ class CompanyItemController extends Controller
 
                     if($check_company['id_user'] == Auth::id()){
                         $update_category = CompanyItemCategory::where('id', $request->id_item_category)->update([
-                            'name' => $request->name
+                            'deleted_at' => date('Y-m-d H:i:s')
                         ]);
                     }
                     else{
