@@ -460,7 +460,7 @@ class CompanyItemController extends Controller
 
     public function searchItem(Request $request){
         $validator = Validator::make($request->all(), [
-            'keyword' => 'required|gte:3',
+            'keyword' => 'required|min:3',
             'id_company' => 'required|numeric',
             'sort_by_price' => 'prohibited_if:sort_by_name,asc,desc|in:asc,desc',
             'sort_by_name' => 'prohibited_if:sort_by_price,asc,desc|in:asc,desc'
