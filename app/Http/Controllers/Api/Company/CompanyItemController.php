@@ -365,6 +365,10 @@ class CompanyItemController extends Controller
                         $update_category = CompanyItemCategory::where('id', $request->id_item_category)->update([
                             'deleted_at' => date('Y-m-d H:i:s')
                         ]);
+
+                        $category = CompanyItemCategory::where('id', $request->id_item_category)->first();
+
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Category deleted successfully','data'=> $category]), 401);
                     }
                     else{
                         return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized','data'=> '']), 401);
