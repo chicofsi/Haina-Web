@@ -159,6 +159,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('item/media/add', [CompanyItemController::class, 'addNewItemMedia']);
 		Route::post('item/media/delete', [CompanyItemController::class, 'deleteMedia']);
 		Route::post('item/delete', [CompanyItemController::class, 'deleteItem']);
+		Route::post('item/search', [CompanyItemController::class, 'searchItem']);
 	});
 	
 	Route::group(['prefix' => 'docs'], function() {

@@ -458,6 +458,77 @@ class CompanyItemController extends Controller
         }
     }
 
+    public function searchItem(Request $request){
+        $validator = Validator::make($request->all(), [
+            'keyword' => 'required|gte:3',
+            'id_company' => 'required|numeric',
+            'sort_by_price' => 'prohibited_if:sort_by_name,asc,desc|in:asc,desc',
+            'sort_by_name' => 'prohibited_if:sort_by_price,asc,desc|in:asc,desc'
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            $result = [];
+            $item_categories = CompanyItemCategory::where('id_company', $request->id_company)->where('deleted_at', null)->get();
+
+            if($item_categories){
+                foreach($item_categories as $key_category=>$value_category){
+                    $items = CompanyItem::where('id_item_category', $value_category->id)->where('name', 'like', '%'.$request->keyword.'%')->where('deleted_at', null)->get();
+
+                    foreach($items as $key => $value){
+                        $item = new CompanyItemResource($value);
+
+                        array_push($result, $item);
+                    }
+                }
+
+                $displayed_result = $result;
+
+                if($request->sort_by_name == "asc"){
+                    $displayed_result = collect($displayed_result)->sortBy('item_name')->toArray();
+                }
+                else if($request->sort_by_name == "desc"){
+                    $displayed_result = collect($displayed_result)->sortByDesc('item_name')->toArray();
+                }
+
+                if($request->sort_by_price == "asc"){
+                    $displayed_result = collect($displayed_result)->sortBy('item_price')->toArray();
+                }
+                else if($request->sort_by_price == "desc"){
+                    $displayed_result = collect($displayed_result)->sortByDesc('item_price')->toArray();
+                }
+
+                $total = count($displayed_result);
+                $per_page = 10;
+                $current_page = $request->page ?? 1;
+
+                $starting_point = ($current_page * $per_page) - $per_page;
+
+                $displayed_result = array_slice($displayed_result, $starting_point, $per_page);
+
+                $paged_result = new \stdClass();
+                $paged_result->items = $displayed_result;
+                $paged_result->total = $total;
+                $paged_result->current_page = (int)$current_page;
+                $paged_result->total_page = ceil($total/$per_page);
+
+                if(count($displayed_result) == 0){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'No items found!','data'=> '']), 404);
+                }
+                else{
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Items displayed successfully!','data'=> $paged_result]), 200);
+                }
+
+                    
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Item category not found','data'=> '']), 404);
+                }
+        }
+    }
+
     public function storeItemMedia($id, $files, $index = null){
 
         $item = CompanyItem::where('id', $id)->first();
