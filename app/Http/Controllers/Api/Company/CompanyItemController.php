@@ -474,7 +474,7 @@ class CompanyItemController extends Controller
 
             if($item_categories){
                 foreach($item_categories as $key_category=>$value_category){
-                    $items = CompanyItem::where('id_item_category', $value_category->id)->where('name', 'like', '%'.$request->keyword.'%')->where('deleted_at', null)->get();
+                    $items = CompanyItem::where('id_item_category', $value_category->id)->where('item_name', 'like', '%'.$request->keyword.'%')->where('deleted_at', null)->get();
 
                     foreach($items as $key => $value){
                         $item = new CompanyItemResource($value);
