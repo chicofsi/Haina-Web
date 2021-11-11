@@ -19,7 +19,7 @@ class CompanyItemResource extends JsonResource
 
         $company = Company::where('id', $item_category['id_company'])->first();
 
-        $media = CompanyItemMedia::where('id_item', $this->id)->get();
+        $media = CompanyItemMedia::where('id_item', $this->id)->where('deleted_at', null)->get();
 
         return [
             'id' => $this->id,
