@@ -98,11 +98,13 @@ class CompanyController extends Controller
             
 
             if(count($company) > 0){
-                $company_list = [];
+                $company_data = [];
 
                 foreach($company as $key => $value){
-                    $company_list[$key] = new CompanyResource($value);
+                    $company_data[$key] = new CompanyResource($value);
                 }
+                
+                $company_list = $company_data;
 
                 if($request->sort_by_name == "asc"){
                     $company_list = collect($company_list)->sortBy('name')->toArray();
