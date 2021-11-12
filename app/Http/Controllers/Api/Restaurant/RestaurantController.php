@@ -266,7 +266,7 @@ class RestaurantController extends Controller
     public function showRestaurants(Request $request){
         $validator = Validator::make($request->all(), [
             'my_latitude' => 'required',
-            'my_longitude' => 'required'
+            'my_longitude' => 'required',
             'keyword' => 'min:3'
         ]);
 
