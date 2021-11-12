@@ -395,27 +395,6 @@ class RestaurantController extends Controller
         }
         else{
             $bookmark_list = RestaurantBookmark::where('user_id', Auth::id())->get();
-
-            if($request->cuisine_type != null){
-                $bookmark_list = $bookmark_list->whereHas('cuisine', function ($q){
-
-                    $q->where('name', $request->cuisine_type);
-                });
-            }
-            if($request->restaurant_type != null){
-                $bookmark_list = $bookmark_list->whereHas('type', function ($q){
-
-                    $q->where('name', $request->restaurant_type);
-                });
-            }
-            if($request->halal != null){
-                $bookmark_list = $bookmark_list->where('halal', $request->halal);
-            }
-            if($request->has('keyword')){
-                $bookmark_list = $bookmark_list->where('name', 'like', '%'.$request->keyword.'%');
-            }
-
-            $bookmark_list = $bookmark_list->get();
             
             $bookmarked_id=[];
 
@@ -426,6 +405,26 @@ class RestaurantController extends Controller
 
                 $restaurant_list = RestaurantData::whereIn('id', $bookmarked_id)->get();
 
+                if($request->cuisine_type != null){
+                    $restaurant_list = $restaurant_list->whereHas('cuisine', function ($q){
+    
+                        $q->where('name', $request->cuisine_type);
+                    });
+                }
+                if($request->restaurant_type != null){
+                    $restaurant_list = $restaurant_list->whereHas('type', function ($q){
+    
+                        $q->where('name', $request->restaurant_type);
+                    });
+                }
+                if($request->halal != null){
+                    $restaurant_list = $restaurant_list->where('halal', $request->halal);
+                }
+                if($request->has('keyword')){
+                    $restaurant_list = $restaurant_list->where('name', 'like', '%'.$request->keyword.'%');
+                }
+    
+                $restaurant_list = $restaurant_list->get();
                 
                 foreach($restaurant_list as $key=>$value){
                     $value->distance = $this->getDistance($request->my_latitude, $request->my_longitude, $value->latitude, $value->longitude);
