@@ -117,7 +117,7 @@ class CompanyController extends Controller
 
                 $starting_point = ($current_page * $per_page) - $per_page;
 
-                $company_list = array_slice($displayed_result, $starting_point, $per_page);
+                $company_list = array_slice($company_list, $starting_point, $per_page);
 
                 $paged_result = new \stdClass();
                 $paged_result->items = $company_list;
