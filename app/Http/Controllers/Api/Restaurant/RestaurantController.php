@@ -398,7 +398,7 @@ class RestaurantController extends Controller
 
             
             foreach($restaurant_list as $key=>$value){
-                $restaurant[$key] = new RestaurantResource($value);
+                $restaurant[$key] = new RestaurantDataResource($value);
             }
 
             $total = count($restaurant);
