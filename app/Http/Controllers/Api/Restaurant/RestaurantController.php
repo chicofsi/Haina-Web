@@ -391,10 +391,10 @@ class RestaurantController extends Controller
 
         if(count($bookmark_list) > 0){
             foreach($bookmark_list as $key => $value){
-                array_push($bookmark_list, $value->restaurant_id);
+                array_push($bookmarked_id, $value->restaurant_id);
             }
 
-            $restaurant_list = RestaurantData::whereIn('id', $bookmark_list)->get();
+            $restaurant_list = RestaurantData::whereIn('id', $bookmarked_id)->get();
 
             
             foreach($restaurant_list as $key=>$value){
