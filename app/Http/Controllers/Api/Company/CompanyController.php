@@ -116,7 +116,6 @@ class CompanyController extends Controller
                     $company_list = collect($company_list)->sortByDesc('name')->toArray();
                 }
 
-                $company_list->
 
                 $total = count($company_list);
                 $per_page = 10;
