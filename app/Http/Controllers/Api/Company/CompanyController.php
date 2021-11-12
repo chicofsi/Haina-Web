@@ -110,13 +110,7 @@ class CompanyController extends Controller
                 $company_list = $company_data;
 
                 if($request->sort_by_name == "asc"){
-                    $company_list = collect($company_list)->sort(function($a, $b) {
-                        
-                        if($a->name === $b->name) {
-                           return 0;
-                        };
-                        return strnatcmp($a->name, $b->name);
-                     })->toArray();
+                    $company_list = collect($company_list)->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE)->toArray();
                     
                 }
                 else if($request->sort_by_name == "desc"){

@@ -287,17 +287,17 @@ class CompanyItemController extends Controller
             $displayed_result = $result;
 
             if($request->sort_by_name == "asc"){
-                $displayed_result = collect($displayed_result)->sortBy('item_name')->toArray();
+                $displayed_result = collect($displayed_result)->sortBy('item_name', SORT_NATURAL|SORT_FLAG_CASE)->toArray();
             }
             else if($request->sort_by_name == "desc"){
-                $displayed_result = collect($displayed_result)->sortByDesc('item_name')->toArray();
+                $displayed_result = collect($displayed_result)->sortByDesc('item_name', SORT_NATURAL|SORT_FLAG_CASE)->toArray();
             }
 
             if($request->sort_by_price == "asc"){
-                $displayed_result = collect($displayed_result)->sortBy('item_price')->toArray();
+                $displayed_result = collect($displayed_result)->sortBy('item_price', SORT_NATURAL|SORT_FLAG_CASE)->toArray();
             }
             else if($request->sort_by_price == "desc"){
-                $displayed_result = collect($displayed_result)->sortByDesc('item_price')->toArray();
+                $displayed_result = collect($displayed_result)->sortByDesc('item_price', SORT_NATURAL|SORT_FLAG_CASE)->toArray();
             }
 
             $total = count($displayed_result);
@@ -486,17 +486,17 @@ class CompanyItemController extends Controller
                 $displayed_result = $result;
 
                 if($request->sort_by_name == "asc"){
-                    $displayed_result = collect($displayed_result)->sortBy('item_name')->toArray();
+                    $displayed_result = collect($displayed_result)->sortBy('item_name',mSORT_NATURAL|SORT_FLAG_CASE)->toArray();
                 }
                 else if($request->sort_by_name == "desc"){
-                    $displayed_result = collect($displayed_result)->sortByDesc('item_name')->toArray();
+                    $displayed_result = collect($displayed_result)->sortByDesc('item_name', SORT_NATURAL|SORT_FLAG_CASE)->toArray();
                 }
 
                 if($request->sort_by_price == "asc"){
-                    $displayed_result = collect($displayed_result)->sortBy('item_price')->toArray();
+                    $displayed_result = collect($displayed_result)->sortBy('item_price', SORT_NATURAL|SORT_FLAG_CASE)->toArray();
                 }
                 else if($request->sort_by_price == "desc"){
-                    $displayed_result = collect($displayed_result)->sortByDesc('item_price')->toArray();
+                    $displayed_result = collect($displayed_result)->sortByDesc('item_price', SORT_NATURAL|SORT_FLAG_CASE)->toArray();
                 }
 
                 $total = count($displayed_result);
