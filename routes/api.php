@@ -147,6 +147,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/photo/register'  , [PhotoController::class, 'registerCompanyMedia']);
 		Route::post('/photo/delete'  , [PhotoController::class, 'deleteCompanyMedia']);
 
+		Route::post('/show'  , [CompanyController::class, 'showCompanyList']);
+
 		//items
 		Route::post('item/category/add', [CompanyItemController::class, 'addItemCategory']);
 		Route::post('item/add', [CompanyItemController::class, 'addNewItem']);

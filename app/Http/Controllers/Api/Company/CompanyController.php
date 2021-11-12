@@ -78,6 +78,62 @@ class CompanyController extends Controller
         
 
     }
+
+    public function showCompanyList(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'keyword' => 'min:3',
+            'sort_by_name' => 'in:asc,desc'
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            if($request->keyword != null){
+                $company = Company::where('status', 'active')->where('name', 'like', '%'.$request->keyword.'%')->get();
+            }
+            else{
+                $company = Company::where('status', 'active')->get();
+            }
+            
+
+            if(count($company) > 0){
+                $company_list = [];
+
+                foreach($company as $key => $value){
+                    $company_list[$key] = new CompanyResource($value);
+                }
+
+                if($request->sort_by_name == "asc"){
+                    $company_list = collect($displayed_result)->sortBy('name')->toArray();
+                }
+                else if($request->sort_by_name == "desc"){
+                    $company_list = collect($displayed_result)->sortByDesc('name')->toArray();
+                }
+
+                $total = count($company_list);
+                $per_page = 10;
+                $current_page = $request->page ?? 1;
+
+                $starting_point = ($current_page * $per_page) - $per_page;
+
+                $company_list = array_slice($displayed_result, $starting_point, $per_page);
+
+                $paged_result = new \stdClass();
+                $paged_result->items = $company_list;
+                $paged_result->total = $total;
+                $paged_result->current_page = (int)$current_page;
+                $paged_result->total_page = ceil($total/$per_page);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Company displayed successfully!','data'=> $paged_result]), 200);
+
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No company found!','data'=> '']), 404);
+            }
+        }
+        
+    }
     
     
 }
