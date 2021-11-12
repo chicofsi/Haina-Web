@@ -396,6 +396,27 @@ class RestaurantController extends Controller
         else{
             $bookmark_list = RestaurantBookmark::where('user_id', Auth::id())->get();
 
+            if($request->cuisine_type != null){
+                $bookmark_list = $bookmark_list->whereHas('cuisine', function ($q){
+
+                    $q->where('name', $request->cuisine_type);
+                });
+            }
+            if($request->restaurant_type != null){
+                $bookmark_list = $bookmark_list->whereHas('type', function ($q){
+
+                    $q->where('name', $request->restaurant_type);
+                });
+            }
+            if($request->halal != null){
+                $bookmark_list = $bookmark_list->where('halal', $request->halal);
+            }
+            if($request->has('keyword')){
+                $bookmark_list = $bookmark_list->where('name', 'like', '%'.$request->keyword.'%');
+            }
+
+            $bookmark_list = $bookmark_list->get();
+            
             $bookmarked_id=[];
 
             if(count($bookmark_list) > 0){
