@@ -101,7 +101,10 @@ class CompanyController extends Controller
                 $company_data = [];
 
                 foreach($company as $key => $value){
-                    $company_data[$key] = new CompanyResource($value);
+                    //$company_data[$key] = new CompanyResource($value);
+
+                    $company_item = new CompanyResource($value);
+                    array_push($company_data, $company_item);
                 }
                 
                 $company_list = $company_data;
@@ -112,6 +115,8 @@ class CompanyController extends Controller
                 else if($request->sort_by_name == "desc"){
                     $company_list = collect($company_list)->sortByDesc('name')->toArray();
                 }
+
+                $company_list->
 
                 $total = count($company_list);
                 $per_page = 10;
