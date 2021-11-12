@@ -120,7 +120,7 @@ class CompanyController extends Controller
                     
                 }
                 else if($request->sort_by_name == "desc"){
-                    $company_list = collect($company_list)->sortByDesc('name')->toArray();
+                    $company_list = collect($company_list)->sortByDesc('name', SORT_NATURAL|SORT_FLAG_CASE)->toArray();
                 }
 
 
