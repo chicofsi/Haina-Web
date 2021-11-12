@@ -403,7 +403,7 @@ class RestaurantController extends Controller
                     array_push($bookmarked_id, $value->restaurant_id);
                 }
 
-                $restaurant_list = RestaurantData::whereIn('id', $bookmarked_id)->get();
+                $restaurant_list = RestaurantData::whereIn('id', $bookmarked_id);
 
                 if($request->cuisine_type != null){
                     $restaurant_list = $restaurant_list->whereHas('cuisine', function ($q){
