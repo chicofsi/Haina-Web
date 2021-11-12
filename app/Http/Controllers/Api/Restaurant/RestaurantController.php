@@ -415,7 +415,7 @@ class RestaurantController extends Controller
             $paged_result->current_page = (int)$current_page;
             $paged_result->total_page = ceil($total/$per_page);
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmarkedestaurant displayed successfully!','data'=> $paged_result]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmarked restaurant displayed successfully!','data'=> $paged_result]), 200);
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Bookmarked restaurant not found!','data'=>'']), 404);
