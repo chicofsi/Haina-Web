@@ -137,9 +137,31 @@ class RestaurantController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $my_restaurant = RestaurantData::where('user_id', Auth::id())->with('cuisine', 'type')->get();
+            $my_restaurant = RestaurantData::where('user_id', Auth::id())->with('cuisine', 'type');
 
-            if($my_restaurant){
+            if($request->cuisine_type != null){
+                $my_restaurant = $my_restaurant->whereHas('cuisine', function ($q){
+
+                    $q->where('name', $GLOBALS['request']->cuisine_type);
+                });
+            }
+            if($request->restaurant_type != null){
+                $my_restaurant = $my_restaurant->whereHas('type', function ($q){
+
+                    $q->where('name', $GLOBALS['request']->restaurant_type);
+                });
+            }
+            if($request->halal != null){
+                $my_restaurant = $my_restaurant->where('halal', $request->halal);
+            }
+            if($request->has('keyword')){
+                $my_restaurant = $my_restaurant->where('name', 'like', '%'.$request->keyword.'%');
+            }
+
+            $my_restaurant = $my_restaurant->get();
+
+
+            if(count($my_restaurant) > 0){
                 foreach($my_restaurant as $key => $value){
                     $value->distance = $this->getDistance($request->my_latitude, $request->my_longitude, $value->latitude, $value->longitude);
 
@@ -245,6 +267,7 @@ class RestaurantController extends Controller
         $validator = Validator::make($request->all(), [
             'my_latitude' => 'required',
             'my_longitude' => 'required'
+            'keyword' => 'min:3'
         ]);
 
         if ($validator->fails()) {
