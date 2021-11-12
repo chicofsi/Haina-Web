@@ -408,7 +408,7 @@ class RestaurantController extends Controller
                 if($request->cuisine_type != null){
                     $restaurant_list = $restaurant_list->whereHas('cuisine', function ($q){
     
-                        $q->where('name', $request->cuisine_type);
+                        $q->where('name', $GLOBALS['request']->cuisine_type);
                     });
                 }
                 if($request->restaurant_type != null){
