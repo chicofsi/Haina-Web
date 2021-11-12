@@ -16,7 +16,7 @@ class CompanyMedia extends JsonResource
      */
     public function toArray($request)
     {
-        $photo=URL::to('storage/'.$this->photo_url);
+        $photo=URL::to('storage/'.$this->media_url);
         $city=City::where('id',$this->id_city)->first();
         return [
             'id'=>$this->id,
