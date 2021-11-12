@@ -256,13 +256,13 @@ class RestaurantController extends Controller
             if($request->cuisine_type != null){
                 $all_restaurant = $all_restaurant->whereHas('cuisine', function ($q){
 
-                    $q->where('name', $request->cuisine_type);
+                    $q->where('name', $GLOBALS['request']->cuisine_type);
                 });
             }
             if($request->restaurant_type != null){
                 $all_restaurant = $all_restaurant->whereHas('type', function ($q){
 
-                    $q->where('name', $request->restaurant_type);
+                    $q->where('name', $GLOBALS['request']->restaurant_type);
                 });
             }
             if($request->halal != null){
@@ -414,7 +414,7 @@ class RestaurantController extends Controller
                 if($request->restaurant_type != null){
                     $restaurant_list = $restaurant_list->whereHas('type', function ($q){
     
-                        $q->where('name', $request->restaurant_type);
+                        $q->where('name', $GLOBALS['request']->restaurant_type);
                     });
                 }
                 if($request->halal != null){
