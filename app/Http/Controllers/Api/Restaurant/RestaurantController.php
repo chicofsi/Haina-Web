@@ -410,7 +410,7 @@ class RestaurantController extends Controller
             $displayed_result = array_slice($restaurant, $starting_point, $per_page);
 
             $paged_result = new \stdClass();
-            $paged_result->items = $restaurant;
+            $paged_result->restaurants = $restaurant;
             $paged_result->total = $total;
             $paged_result->current_page = (int)$current_page;
             $paged_result->total_page = ceil($total/$per_page);
