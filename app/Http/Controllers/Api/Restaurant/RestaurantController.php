@@ -426,32 +426,33 @@ class RestaurantController extends Controller
     
                 $restaurant_list = $restaurant_list->get();
                 
-                foreach($restaurant_list as $key=>$value){
-                    $value->distance = $this->getDistance($request->my_latitude, $request->my_longitude, $value->latitude, $value->longitude);
-                    
-                    $restaurant[$key] = new RestaurantDataResource($value);
-                }
-
-                $total = count($restaurant);
-                $per_page = 10;
-                $current_page = $request->page ?? 1;
-
-                $starting_point = ($current_page * $per_page) - $per_page;
-
-                $displayed_result = array_slice($restaurant, $starting_point, $per_page);
-
-                $paged_result = new \stdClass();
-                $paged_result->restaurants = $restaurant;
-                $paged_result->total = $total;
-                $paged_result->current_page = (int)$current_page;
-                $paged_result->total_page = ceil($total/$per_page);
-
-                if(count($restaurant) == 0){
+                if(count($restaurant_list) == 0){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Bookmarked restaurant not found!','data'=> '']), 404);
                 }
                 else{
+                    foreach($restaurant_list as $key=>$value){
+                        $value->distance = $this->getDistance($request->my_latitude, $request->my_longitude, $value->latitude, $value->longitude);
+                        
+                        $restaurant[$key] = new RestaurantDataResource($value);
+                    }
+    
+                    $total = count($restaurant);
+                    $per_page = 10;
+                    $current_page = $request->page ?? 1;
+    
+                    $starting_point = ($current_page * $per_page) - $per_page;
+    
+                    $displayed_result = array_slice($restaurant, $starting_point, $per_page);
+    
+                    $paged_result = new \stdClass();
+                    $paged_result->restaurants = $restaurant;
+                    $paged_result->total = $total;
+                    $paged_result->current_page = (int)$current_page;
+                    $paged_result->total_page = ceil($total/$per_page);
+
                     return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmarked restaurant displayed successfully!','data'=> $paged_result]), 200);
                 }
+                
             }
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Bookmarked restaurant not found!','data'=>'']), 404);
