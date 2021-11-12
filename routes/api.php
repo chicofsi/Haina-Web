@@ -359,6 +359,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/add_review', [RestaurantController::class, 'addReview']);
 
 		Route::post('/add_bookmark', [RestaurantController::class, 'addRestaurantBookmark']);
+		Route::post('/show_bookmark', [RestaurantController::class, 'restaurantBookmark']);
 
 		Route::get('/show_cuisine_type', [RestaurantController::class, 'getAllCuisine']);
 		Route::get('/show_restaurant_type', [RestaurantController::class, 'getAllType']);
