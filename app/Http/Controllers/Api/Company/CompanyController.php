@@ -105,10 +105,10 @@ class CompanyController extends Controller
                 }
 
                 if($request->sort_by_name == "asc"){
-                    $company_list = collect($displayed_result)->sortBy('name')->toArray();
+                    $company_list = collect($company_list)->sortBy('name')->toArray();
                 }
                 else if($request->sort_by_name == "desc"){
-                    $company_list = collect($displayed_result)->sortByDesc('name')->toArray();
+                    $company_list = collect($company_list)->sortByDesc('name')->toArray();
                 }
 
                 $total = count($company_list);

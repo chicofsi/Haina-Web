@@ -43,7 +43,7 @@ class Company extends JsonResource
             'id_province' => $this->id_province,
             'province' => $province['name'],
             'address'=>$address,
-            'photo'=>$photo,
+            'media'=>$photo,
         ];
     }
 }
