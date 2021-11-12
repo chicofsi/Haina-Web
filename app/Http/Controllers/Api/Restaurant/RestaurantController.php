@@ -385,40 +385,52 @@ class RestaurantController extends Controller
     }
 
     public function restaurantBookmark(Request $request){
-        $bookmark_list = RestaurantBookmark::where('user_id', Auth::id())->get();
+        $validator = Validator::make($request->all(), [
+            'my_latitude' => 'required',
+            'my_longitude' => 'required'
+        ]);
 
-        $bookmarked_id=[];
-
-        if(count($bookmark_list) > 0){
-            foreach($bookmark_list as $key => $value){
-                array_push($bookmarked_id, $value->restaurant_id);
-            }
-
-            $restaurant_list = RestaurantData::whereIn('id', $bookmarked_id)->get();
-
-            
-            foreach($restaurant_list as $key=>$value){
-                $restaurant[$key] = new RestaurantDataResource($value);
-            }
-
-            $total = count($restaurant);
-            $per_page = 10;
-            $current_page = $request->page ?? 1;
-
-            $starting_point = ($current_page * $per_page) - $per_page;
-
-            $displayed_result = array_slice($restaurant, $starting_point, $per_page);
-
-            $paged_result = new \stdClass();
-            $paged_result->restaurants = $restaurant;
-            $paged_result->total = $total;
-            $paged_result->current_page = (int)$current_page;
-            $paged_result->total_page = ceil($total/$per_page);
-
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmarked restaurant displayed successfully!','data'=> $paged_result]), 200);
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Bookmarked restaurant not found!','data'=>'']), 404);
+            $bookmark_list = RestaurantBookmark::where('user_id', Auth::id())->get();
+
+            $bookmarked_id=[];
+
+            if(count($bookmark_list) > 0){
+                foreach($bookmark_list as $key => $value){
+                    array_push($bookmarked_id, $value->restaurant_id);
+                }
+
+                $restaurant_list = RestaurantData::whereIn('id', $bookmarked_id)->get();
+
+                
+                foreach($restaurant_list as $key=>$value){
+                    $value->distance = $this->getDistance($request->my_latitude, $request->my_longitude, $value->latitude, $value->longitude);
+                    
+                    $restaurant[$key] = new RestaurantDataResource($value);
+                }
+
+                $total = count($restaurant);
+                $per_page = 10;
+                $current_page = $request->page ?? 1;
+
+                $starting_point = ($current_page * $per_page) - $per_page;
+
+                $displayed_result = array_slice($restaurant, $starting_point, $per_page);
+
+                $paged_result = new \stdClass();
+                $paged_result->restaurants = $restaurant;
+                $paged_result->total = $total;
+                $paged_result->current_page = (int)$current_page;
+                $paged_result->total_page = ceil($total/$per_page);
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Bookmarked restaurant displayed successfully!','data'=> $paged_result]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Bookmarked restaurant not found!','data'=>'']), 404);
+            }
         }
     }
 
