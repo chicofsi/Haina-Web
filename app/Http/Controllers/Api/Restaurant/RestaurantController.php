@@ -670,7 +670,7 @@ class RestaurantController extends Controller
                 $menu_images = RestaurantMenuPhotos::create([
                     'menu_id' => $new_menu['id'],
                     'filename' => $fileName,
-                    'photo_url' => 'http://hainaservice.com/storage/'.$store
+                    'photo_url' => 'https://hainaservice.com/storage/'.$store
                 ]);
 
                 $num += 1; 
@@ -701,7 +701,7 @@ class RestaurantController extends Controller
                 $new_image = [
                     'restaurant_id' => $restaurant_id,
                     'filename' => $fileName,
-                    'photo_url' => 'http://hainaservice.com/storage/'.$store
+                    'photo_url' => 'https://hainaservice.com/storage/'.$store
                 ];
 
                 $restaurant_images = RestaurantPhotos::create($new_image);
@@ -736,7 +736,7 @@ class RestaurantController extends Controller
                 $review_images = RestaurantReviewPhotos::create([
                     'review_id' => $id,
                     'filename' => $fileName,
-                    'photo_url' => 'http://hainaservice.com/storage/'.$store
+                    'photo_url' => 'https://hainaservice.com/storage/'.$store
                 ]);
 
                 $num += 1; 
