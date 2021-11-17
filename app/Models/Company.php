@@ -32,5 +32,8 @@ class Company extends Model
     }
     public function user(){
         return $this->belongsTo('App\Models\User','id_user','id');
-    } 
+    }
+    public function category(){
+        return $this->belongsToMany(CompanyCategory::class, 'company_category_data', 'id_company', 'id_company_category');
+    }
 }

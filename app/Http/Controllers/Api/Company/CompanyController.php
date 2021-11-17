@@ -142,5 +142,10 @@ class CompanyController extends Controller
         
     }
     
+    public function getCompanyCategory(){
+        $categories = CompanyCategory::all();
+
+        return response()->json(new ValueMessage(['value'=>1,'message'=>'Company category listed successfully!','data'=> $categories]), 200);
+    }
     
 }

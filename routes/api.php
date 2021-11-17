@@ -148,6 +148,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/photo/delete'  , [PhotoController::class, 'deleteCompanyMedia']);
 
 		Route::post('/show'  , [CompanyController::class, 'showCompanyList']);
+		Route::get('/category'  , [CompanyController::class, 'getCompanyCategory']);
 
 		//items
 		Route::post('item/category/add', [CompanyItemController::class, 'addItemCategory']);
