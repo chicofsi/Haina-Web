@@ -41,7 +41,7 @@ class PhotoController extends Controller
                 $company = CompanyMedia::create([
                     'id_company' => $request->id_company,
                     'name' => $request->name,
-                    'media_url' => $file,
+                    'media_url' => 'https://hainaservice.com/storage/'.$file,
                 ]);
 
                 UserLogs::create([

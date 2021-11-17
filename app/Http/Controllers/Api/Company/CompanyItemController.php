@@ -546,7 +546,7 @@ class CompanyItemController extends Controller
 
                 $postMedia = CompanyItemMedia::create([
                     'id_item' => $item['id'],
-                    'media_url' => 'http://hainaservice.com/storage/'.$store
+                    'media_url' => 'https://hainaservice.com/storage/'.$store
                 ]);
 
                 array_push($list_media, $postMedia);
