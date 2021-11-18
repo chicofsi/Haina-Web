@@ -497,17 +497,21 @@ class RestaurantController extends Controller
             $check_resto = RestaurantData::where('id', $request->restaurant_id)->first();
 
             if($check_resto){
-                $check_review = RestaurantReview::where('restaurant_id', $request->restaurant_id)->withCount('review_image')->where('deleted_at', null);
+                $check_review = RestaurantReview::where('restaurant_id', $request->restaurant_id)->with('review_image')->where('deleted_at', null);
 
                 if($request->stars != null){
                     $check_review = $check_review->where('rating', $request->stars);
                 }
                 if($request->media != null){
                     if($request->media == 0){
-                        $check_review = $check_review->where('review_image_count', 0);
+                        $check_review = $check_review->whereHas('review_image', function($q){
+                            $q;
+                        }, '=', 0);
                     }
                     else{
-                        $check_review = $check_review->where('review_image_count', '>', 0);
+                        $check_review = $check_review->whereHas('review_image', function($q){
+                            $q;
+                        }, '>', 0);
                     }
                 }
 
