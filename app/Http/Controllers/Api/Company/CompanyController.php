@@ -194,7 +194,31 @@ class CompanyController extends Controller
 
                 $company = $company->sortBy('distance')->toArray();
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Company displayed successfully!','data'=> $company]), 200);
+                foreach($company as $key => $value){
+                    $company_data[$key] = new CompanyResource($value);
+                }
+
+                $total = count($company_data);
+                $per_page = 10;
+                $current_page = $request->page ?? 1;
+
+                $starting_point = ($current_page * $per_page) - $per_page;
+                $company_data = array_slice($company_data, $starting_point, $per_page);
+
+                $result = new \stdClass();
+                $result->company = $company_data;
+                $result->total = $total;
+                $result->current_page = (int)$current_page;
+                $result->total_page = ceil($total/$per_page);
+
+                if(count($restaurant_data) == 0){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'No company found!','data'=> '']), 404);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Companies list displayed successfully!','data'=> $result]), 200);
+                }
+
+                //return response()->json(new ValueMessage(['value'=>1,'message'=>'Company displayed successfully!','data'=> $company]), 200);
             }
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'No company found!','data'=> '']), 404);

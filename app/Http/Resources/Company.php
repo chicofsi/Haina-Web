@@ -44,6 +44,7 @@ class Company extends JsonResource
         foreach($category as $key => $value){
             unset($value->created_at);
             unset($value->updated_at);
+            unset($value->pivot);
         }
 
         return [
