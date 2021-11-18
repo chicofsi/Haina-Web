@@ -179,7 +179,7 @@ class CompanyController extends Controller
                             $address_longitude = $city['longitude'];
                         }
                     }
-                    if($address_latitude = 0.0 && $address_longitude = 0.0){
+                    if($address_latitude == 0.0 && $address_longitude == 0.0){
                         $address = CompanyAddress::where('id_company', $value->id)->first();
 
                         $city = City::where('id', $address['id_city'])->first();
