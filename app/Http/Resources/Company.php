@@ -27,7 +27,9 @@ class Company extends JsonResource
             }
         }
 
-        
+        if($primary_address == null && $this->address != []){
+            $primary_address = $address[0];
+        }
 
         $photo=[];
         foreach ($this->photo as $key => $value) {
