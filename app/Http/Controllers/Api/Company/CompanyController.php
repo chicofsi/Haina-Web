@@ -187,7 +187,7 @@ class CompanyController extends Controller
                         $address_longitude = $city['longitude'];
                     }
 
-                    $value->distance = $this->getDistance($request->my_latitude, $request->my_longitude, $value->latitude, $value->longitude);
+                    $value->distance = $this->getDistance($request->my_latitude, $request->my_longitude, $address_latitude, $address_longitude);
                 }
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'Company displayed successfully!','data'=> $company]), 200);
