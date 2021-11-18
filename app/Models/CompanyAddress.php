@@ -16,7 +16,7 @@ class CompanyAddress extends Model
     protected $table = 'company_address';
 
     protected $fillable = [
-        'id_company', 'address', 'active', 'id_city'
+        'id_company', 'address', 'active', 'id_city', 'primary_address'
     ];
 
 

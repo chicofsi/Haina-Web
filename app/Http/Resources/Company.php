@@ -19,8 +19,16 @@ class Company extends JsonResource
     public function toArray($request)
     {
         $address=[];
+        $primary_address = null;
         foreach ($this->address as $key => $value) {
             $address[$key]=new CompanyAddressResource($value);
+            if($value->primary_address = 1){
+                $primary_address = new CompanyAddressResource($value);
+            }
+        }
+
+        if($primary_address == null){
+            $primary_address = $address[0];
         }
 
         $photo=[];
@@ -42,6 +50,7 @@ class Company extends JsonResource
             'siup' => $this->siup,
             'id_province' => $this->id_province,
             'province' => $province['name'],
+            'primary_address' => $primary_address,
             'address'=>$address,
             'media'=>$photo,
         ];
