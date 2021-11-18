@@ -187,6 +187,8 @@ class CompanyController extends Controller
                         $address_longitude = $city['longitude'];
                     }
 
+                    $value->addr_lat = $address_latitude;
+                    $value->addr_long = $address_longitude;
                     $value->distance = $this->getDistance($request->my_latitude, $request->my_longitude, $address_latitude, $address_longitude);
                 }
 
