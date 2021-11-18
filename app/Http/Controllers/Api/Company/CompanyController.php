@@ -210,7 +210,7 @@ class CompanyController extends Controller
                 $result->total = $total;
                 $result->current_page = (int)$current_page;
                 $result->total_page = ceil($total/$per_page);
-                dd($result);
+                
 
                 if(count($company_data) == 0){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'No company found!','data'=> '']), 404);
