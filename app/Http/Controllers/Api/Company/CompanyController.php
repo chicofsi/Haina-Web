@@ -173,7 +173,7 @@ class CompanyController extends Controller
                     $address_longitude = 0.0;
 
                     foreach($value->address as $key_address => $value_address){
-                        if($value_address->primary_address = 1){
+                        if($value_address->primary_address == 1){
                             $city = City::where('id', $value_address->id_city)->first();
                             $address_latitude = $city['latitude'];
                             $address_longitude = $city['longitude'];
