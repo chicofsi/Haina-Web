@@ -216,7 +216,7 @@ class CompanyController extends Controller
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'No company found!','data'=> '']), 404);
                 }
                 else{
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Companies list displayed successfully!','data'=> $result]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Companies list displayed successfully!','data'=> $company_data]), 200);
                 }
 
                 //return response()->json(new ValueMessage(['value'=>1,'message'=>'Company displayed successfully!','data'=> $company]), 200);
