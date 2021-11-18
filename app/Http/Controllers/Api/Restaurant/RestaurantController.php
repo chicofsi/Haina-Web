@@ -505,12 +505,12 @@ class RestaurantController extends Controller
                 if($request->media != null){
                     if($request->media == 0){
                         $check_review = $check_review->whereHas('review_image', function($q){
-                            $q->where(count('id') < 1);
+                            $q->count() < 1;
                         });
                     }
                     else{
                         $check_review = $check_review->whereHas('review_image', function($q){
-                            $q->where(count('id') > 0);
+                            $q->count() > 0;
                         });
                     }
                 }
