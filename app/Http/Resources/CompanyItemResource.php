@@ -30,7 +30,7 @@ class CompanyItemResource extends JsonResource
             'item_catalog' => $item_catalog['name'],
             'id_item_category' => $this->id_item_category,
             'item_category' => $item_category['name'],
-            'item_category' => $item_category['name_zh'],
+            'item_category_zh' => $item_category['name_zh'],
             'item_name' => $this->item_name,
             'item_description' => $this->item_description,
             'item_price' => $this->item_price,
