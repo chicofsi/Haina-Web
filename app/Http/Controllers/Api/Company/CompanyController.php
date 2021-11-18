@@ -10,6 +10,7 @@ use App\Http\Resources\Company as CompanyResource;
 use App\Models\Company;
 use App\Models\CompanyCategory;
 use App\Models\CompanyAddress;
+use App\Models\City;
 
 use App\Models\UserLogs;
 
@@ -145,11 +146,83 @@ class CompanyController extends Controller
         }
         
     }
+
+    public function listCompanyByDistance(Request $request){
+        $validator = Validator::make($request->all(), [
+            'my_latitude' => 'required',
+            'my_longitude' => 'required'
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+
+            $company = Company::where('status', 'active')->with('category', 'address');
+
+            if($request->id_category != null){
+                $company = $company->whereHas('category', function($q){
+                    $q->where('id', $GLOBALS['request']->id_category);
+                });
+            }
+
+            $company = $company->get();
+
+            if(count($company) > 0){
+                foreach($company as $key => $value){
+                    $address_latitude = 0.0;
+                    $address_longitude = 0.0;
+
+                    foreach($value->adress as $key_address => $value_address){
+                        if($value_address->primary_address = 1){
+                            $city = City::where('id', $value_address->id_city)->first();
+                            $address_latitude = $city['latitude'];
+                            $address_longitude = $city['longitude'];
+                        }
+                    }
+                    if($address_latitude = 0.0 && $address_longitude = 0.0){
+                        $address = CompanyAddress::where('id_company', $value->id)->first();
+
+                        $city = City::where('id', $address['id_city'])->first();
+                        $address_latitude = $city['latitude'];
+                        $address_longitude = $city['longitude'];
+                    }
+
+                    $value->distance = $this->getDistance($request->my_latitude, $request->my_longitude, $value->latitude, $value->longitude);
+                }
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Company displayed successfully!','data'=> $company]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'No company found!','data'=> '']), 404);
+            }
+        }
+        
+    }
     
     public function getCompanyCategory(){
         $categories = CompanyCategory::all();
 
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Company category listed successfully!','data'=> $categories]), 200);
+    }
+
+    public function getDistance($my_lat, $my_long, $res_lat, $res_long){
+        $pi_rad = M_PI / 180;
+
+        $my_lat *= $pi_rad;
+        $my_long *= $pi_rad;
+        $res_lat *= $pi_rad;
+        $res_long *= $pi_rad;
+
+        $r = 6372.797;
+
+        $dlat = $res_lat - $my_lat;
+        $dlong = $res_long - $my_long;
+
+        $a = sin($dlat / 2) * sin($dlat / 2) + cos($my_lat) * cos($res_lat) * sin($dlong / 2) * sin($dlong / 2); 
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a)); 
+        $distance = $r * $c;
+
+        return $distance;
     }
     
 }
