@@ -494,10 +494,10 @@ class RestaurantController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $check_resto = RestaurantData::where('id', $request->restaurant_id)->with('review_image')->first();
+            $check_resto = RestaurantData::where('id', $request->restaurant_id)->first();
 
             if($check_resto){
-                $check_review = RestaurantReview::where('restaurant_id', $request->restaurant_id)->where('deleted_at', null);
+                $check_review = RestaurantReview::where('restaurant_id', $request->restaurant_id)->with('review_image')->where('deleted_at', null);
 
                 if($request->stars != null){
                     $check_review = $check_review->where('rating', $request->stars);
