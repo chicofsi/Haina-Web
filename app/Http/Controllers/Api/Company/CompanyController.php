@@ -18,7 +18,7 @@ class CompanyController extends Controller
 {
     public function registerCompany(Request $request)
     {
-        if($company=Company::where('id_user',$request->user()->id)->with('address','photo')->first()){
+        if($company=Company::where('id_user',$request->user()->id)->with('address','photo', 'category')->first()){
             
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Already Registered A Company!','data'=> new CompanyResource($company)]), 401);
         }else{
@@ -63,7 +63,7 @@ class CompanyController extends Controller
 
                 $company->category()->attach($request->id_category);
 
-                $data=Company::with('address','photo')->where('id',$company->id)->first();
+                $data=Company::with('address','photo', 'category')->where('id',$company->id)->first();
 
                 return  response()->json(new ValueMessage(['value'=>1,'message'=>'Company Register Success!','data'=>  new CompanyResource($data)]), 200);;
                 
@@ -74,7 +74,7 @@ class CompanyController extends Controller
     }
     public function getCompany(Request $request)
     {
-        if($company=Company::where('id_user',$request->user()->id)->with('address','photo')->first()){
+        if($company=Company::where('id_user',$request->user()->id)->with('address','photo', 'category')->first()){
             
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Get Company Success!','data'=> new CompanyResource($company)]), 200);
         }else{
@@ -95,10 +95,10 @@ class CompanyController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
             if($request->keyword != null){
-                $company = Company::where('status', 'active')->where('name', 'like', '%'.$request->keyword.'%')->get();
+                $company = Company::where('status', 'active')->where('name', 'like', '%'.$request->keyword.'%')->with('category')->get();
             }
             else{
-                $company = Company::where('status', 'active')->get();
+                $company = Company::where('status', 'active')->with('category')->get();
             }
             
 

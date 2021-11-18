@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\URL;
 use App\Http\Resources\CompanyAddress as CompanyAddressResource;
 use App\Http\Resources\CompanyMedia as CompanyMediaResource;
 use App\Models\Province;
+use App\Models\CompanyCategory;
 
 class Company extends JsonResource
 {
@@ -39,6 +40,12 @@ class Company extends JsonResource
 
         $province = Province::where('id', $this->id_province)->first();
 
+        $category = $this->category;
+        foreach($category as $key => $value){
+            unset($value->created_at);
+            unset($value->updated_at);
+        }
+
         return [
             'id'=>$this->id,
             'name'=>$this->name,
@@ -52,6 +59,7 @@ class Company extends JsonResource
             'province' => $province['name'],
             'primary_address' => $primary_address,
             'address'=>$address,
+            'category'=>$category,
             'media'=>$photo,
         ];
     }
