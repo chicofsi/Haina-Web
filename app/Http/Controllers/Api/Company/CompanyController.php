@@ -25,10 +25,11 @@ class CompanyController extends Controller
                 'icon' => 'required|image',
                 'name' => 'required',
                 'description' => 'required',
-                //'year' => 'required',
-                //'staff_size' => 'required',
+                'year' => 'required',
+                'staff_size' => 'required',
                 'siup' => 'required',
-                'id_province' => 'required'
+                'id_province' => 'required',
+                'id_category' => 'required'
             ]);
 
             if ($validator->fails()) {          
@@ -58,6 +59,8 @@ class CompanyController extends Controller
                    'id_user_activity' => 9,
                    'message' => "User request to register company named ".$request->name
                 ]);
+
+                $company->category()->attach($request->id_category);
 
                 $data=Company::with('address','photo')->where('id',$company->id)->first();
 
