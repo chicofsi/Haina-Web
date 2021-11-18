@@ -22,7 +22,7 @@ class Company extends JsonResource
         $primary_address = null;
         foreach ($this->address as $key => $value) {
             $address[$key]=new CompanyAddressResource($value);
-            if($value->primary_address = 1){
+            if($value->primary_address == 1){
                 $primary_address = new CompanyAddressResource($value);
             }
         }
