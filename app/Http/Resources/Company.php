@@ -27,7 +27,7 @@ class Company extends JsonResource
             }
         }
 
-        if($primary_address == null){
+        if($primary_address == null && $this->address != null){
             $primary_address = $address[0];
         }
 
