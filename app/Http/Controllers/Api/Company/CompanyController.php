@@ -197,7 +197,7 @@ class CompanyController extends Controller
                 foreach($company as $key => $value){
                     $company_data[$key] = new CompanyResource($value);
                 }
-
+                dd($company_data);
                 $total = count($company_data);
                 $per_page = 10;
                 $current_page = $request->page ?? 1;
