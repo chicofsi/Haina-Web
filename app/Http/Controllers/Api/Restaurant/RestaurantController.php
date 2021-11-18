@@ -485,17 +485,37 @@ class RestaurantController extends Controller
 
     public function reviewRestaurant(Request $request){
         $validator = Validator::make($request->all(), [
-            'restaurant_id' => 'required'
+            'restaurant_id' => 'required',
+            'stars' => 'gte:1',
+            'media' => 'in:0,1'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 400);
         }
         else{
-            $check_resto = RestaurantData::where('id', $request->restaurant_id)->first();
+            $check_resto = RestaurantData::where('id', $request->restaurant_id)->with('review_image')->first();
 
             if($check_resto){
-                $check_review = RestaurantReview::where('restaurant_id', $request->restaurant_id)->where('deleted_at', null)->get();
+                $check_review = RestaurantReview::where('restaurant_id', $request->restaurant_id)->where('deleted_at', null);
+
+                if($request->stars != null){
+                    $check_review = $check_review->where('rating', $request->stars);
+                }
+                if($request->media != null){
+                    if($request->media == 0){
+                        $check_review = $check_review->whereHas('review_image', function($q){
+                            $q->where(count('id') < 1);
+                        });
+                    }
+                    else{
+                        $check_review = $check_review->whereHas('review_image', function($q){
+                            $q->where(count('id') > 0);
+                        });
+                    }
+                }
+
+                $check_review = $check_review->get();
 
                 if(count($check_review) > 0){
                     foreach($check_review as $key => $value){
