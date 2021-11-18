@@ -23,7 +23,7 @@ class CompanyAddress extends JsonResource
             'status'=>$this->active,
             'id_city'=>$city->id,
             'city'=>$city->name,
-            'primary_address'=>this->primary_address
+            'primary_address'=>$this->primary_address
         ];
     }
 }
