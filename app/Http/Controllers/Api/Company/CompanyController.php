@@ -8,6 +8,7 @@ use App\Http\Resources\ValueMessage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Company as CompanyResource;
 use App\Models\Company;
+use App\Models\CompanyCategory;
 use App\Models\CompanyAddress;
 
 use App\Models\UserLogs;

@@ -14,7 +14,7 @@ class CompanyItem extends Model
 
 
     protected $fillable = [
-        'id_item_category', 'item_name', 'item_description', 'item_price'
+        'id_item_catalog', 'item_name', 'item_description', 'item_price'
     ];
 
 

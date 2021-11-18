@@ -23,7 +23,7 @@ use App\Http\Resources\ValueMessage;
 use App\Models\Company;
 use App\Models\CompanyAddress;
 use App\Models\CompanyItem;
-use App\Models\CompanyItemCategory;
+use App\Models\CompanyItemCatalog;
 use App\Models\CompanyItemMedia;
 use App\Models\CompanyMedia;
 
@@ -57,7 +57,7 @@ class CompanyItemController extends Controller
                     'name' => $request->name
                 ];
 
-                $new_category = CompanyItemCategory::create($category);
+                $new_category = CompanyItemCatalog::create($category);
 
                 return response()->json(new ValueMessage(['value'=>1,'message'=>'New Item Category Created Successfully','data'=> $new_category]), 200);
 
@@ -70,7 +70,7 @@ class CompanyItemController extends Controller
         $get_company = Company::where('id_user', Auth::id())->first();
 
         if($get_company){
-            $categories = CompanyItemCategory::where('id_company', $get_company['id'])->where('deleted_at', null)->get();
+            $categories = CompanyItemCatalog::where('id_company', $get_company['id'])->where('deleted_at', null)->get();
 
             return response()->json(new ValueMessage(['value'=>1,'message'=>'Item Category Listed Successfully','data'=> $categories]), 200);
         }
@@ -81,7 +81,7 @@ class CompanyItemController extends Controller
 
     public function addNewItem(Request $request){
         $validator = Validator::make($request->all(), [
-            'id_item_category' => 'required',
+            'id_item_catalog' => 'required',
             'item_name' => 'required',
             'item_description' => 'required',
             'item_price' => 'required|gte:0',
@@ -91,14 +91,14 @@ class CompanyItemController extends Controller
         if ($validator->fails()) {          
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
-            $check_category = CompanyItemCategory::where('id', $request->id_item_category)->where('deleted_at', null)->first();
+            $check_category = CompanyItemCatalog::where('id', $request->id_item_catalog)->where('deleted_at', null)->first();
 
             if($check_category){
                 $check_company = Company::where('id', $check_category['id_company'])->first();
 
                 if($check_company['id_user'] == Auth::id()){
                     $item = [
-                        'id_item_category' => $request->id_item_category,
+                        'id_item_catalog' => $request->id_item_catalog,
                         'item_name' => $request->item_name,
                         'item_description' => $request->item_description,
                         'item_price' => $request->item_price
@@ -128,7 +128,7 @@ class CompanyItemController extends Controller
     public function updateItem(Request $request){
         $validator = Validator::make($request->all(), [
             'id_item' => 'required',
-            'id_item_category' => 'numeric',
+            'id_item_catalog' => 'numeric',
             'item_price' => 'gte:0',
         ]);
 
@@ -138,13 +138,13 @@ class CompanyItemController extends Controller
             $check_item = CompanyItem::where('id', $request->id_item)->where('deleted_at', null)->first();
 
             if($check_item){
-                $check_category = CompanyItemCategory::where('id', $check_item['id_item_category'])->first();
+                $check_category = CompanyItemCatalog::where('id', $check_item['id_item_catalog'])->first();
 
                 $check_company = Company::where('id', $check_category['id_company'])->first();
 
                 if($check_company['id_user'] == Auth::id()){
                     $update_item = CompanyItem::where('id', $request->id_item)->update([
-                        'id_item_category' => $request->id_item_category ?? $check_item['id_item_category'],
+                        'id_item_catalog' => $request->id_item_catalog ?? $check_item['id_item_catalog'],
                         'item_name' => $request->item_name ?? $check_item['item_name'],
                         'item_description' => $request->item_description ?? $check_item['item_description'],
                         'item_price' => $request->item_price ?? $check_item['item_price']
@@ -168,24 +168,24 @@ class CompanyItemController extends Controller
 
     public function updateCategory(Request $request){
         $validator = Validator::make($request->all(), [
-            'id_item_category' => 'required|numeric',
+            'id_item_catalog' => 'required|numeric',
             'name' => 'required'
         ]);
 
         if ($validator->fails()) {          
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
-            $check_category = CompanyItemCategory::where('id', $request->id_item_category)->where('deleted_at', null)->first();
+            $check_category = CompanyItemCatalog::where('id', $request->id_item_catalog)->where('deleted_at', null)->first();
 
             if($check_category){
                 $check_company = Company::where('id', $check_category['id_company'])->first();
 
                 if($check_company['id_user'] == Auth::id()){
-                    $update_category = CompanyItemCategory::where('id', $request->id_item_category)->update([
+                    $update_category = CompanyItemCatalog::where('id', $request->id_item_catalog)->update([
                         'name' => $request->name
                     ]);
 
-                    $category = CompanyItemCategory::where('id', $request->id_item_category)->first();
+                    $category = CompanyItemCatalog::where('id', $request->id_item_catalog)->first();
 
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Category updated!','data'=> $category]), 404);
                 }
@@ -210,7 +210,7 @@ class CompanyItemController extends Controller
             $check_item = CompanyItem::where('id', $request->id_item)->where('deleted_at', null)->first();
 
             if($check_item){
-                $check_category = CompanyItemCategory::where('id', $check_item['id_item_category'])->first();
+                $check_category = CompanyItemCatalog::where('id', $check_item['id_item_catalog'])->first();
 
                 $check_company = Company::where('id', $check_category['id_company'])->first();
 
@@ -236,7 +236,7 @@ class CompanyItemController extends Controller
     public function showCompanyItem(Request $request){
         $validator = Validator::make($request->all(), [
             'id_company' => 'required',
-            'id_item_category' => 'numeric',
+            'id_item_catalog' => 'numeric',
             'sort_by_price' => 'prohibited_if:sort_by_name,asc,desc|in:asc,desc',
             'sort_by_name' => 'prohibited_if:sort_by_price,asc,desc|in:asc,desc'
         ]);
@@ -245,11 +245,11 @@ class CompanyItemController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
             $result = [];
-            if($request->id_item_category != null){
-                $item_categories = CompanyItemCategory::where('id', $request->id_item_category)->where('deleted_at', null)->first();
+            if($request->id_item_catalog != null){
+                $item_categories = CompanyItemCatalog::where('id', $request->id_item_catalog)->where('deleted_at', null)->first();
 
                 if($item_categories){
-                    $items = CompanyItem::where('id_item_category', $request->id_item_category)->where('deleted_at', null)->get();
+                    $items = CompanyItem::where('id_item_catalog', $request->id_item_catalog)->where('deleted_at', null)->get();
 
                         foreach($items as $key => $value){
                             $item = new CompanyItemResource($value);
@@ -264,11 +264,11 @@ class CompanyItemController extends Controller
                 }
             }
             else{
-                $item_categories = CompanyItemCategory::where('id_company', $request->id_company)->where('deleted_at', null)->get();
+                $item_categories = CompanyItemCatalog::where('id_company', $request->id_company)->where('deleted_at', null)->get();
 
                 if($item_categories){
                     foreach($item_categories as $key_category=>$value_category){
-                        $items = CompanyItem::where('id_item_category', $value_category->id)->where('deleted_at', null)->get();
+                        $items = CompanyItem::where('id_item_catalog', $value_category->id)->where('deleted_at', null)->get();
 
                         foreach($items as $key => $value){
                             $item = new CompanyItemResource($value);
@@ -348,16 +348,16 @@ class CompanyItemController extends Controller
 
     public function deleteCategory(Request $request){
         $validator = Validator::make($request->all(), [
-            'id_item_category' => 'required|numeric',
+            'id_item_catalog' => 'required|numeric',
         ]);
 
         if ($validator->fails()) {          
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
-            $check_category = CompanyItemCategory::where('id', $request->id_item_category)->where('deleted_at', null)->first();
+            $check_category = CompanyItemCatalog::where('id', $request->id_item_catalog)->where('deleted_at', null)->first();
 
             if($check_category){
-                $check_item = CompanyItem::where('id_item_category')->where('deleted_at', null)->get();
+                $check_item = CompanyItem::where('id_item_catalog')->where('deleted_at', null)->get();
 
                 if(count($check_item) > 0){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'Cannot delete category with items in it!','data'=> '']), 401);
@@ -366,11 +366,11 @@ class CompanyItemController extends Controller
                     $check_company = Company::where('id', $check_category['id_company'])->first();
 
                     if($check_company['id_user'] == Auth::id()){
-                        $update_category = CompanyItemCategory::where('id', $request->id_item_category)->update([
+                        $update_category = CompanyItemCatalog::where('id', $request->id_item_catalog)->update([
                             'deleted_at' => date('Y-m-d H:i:s')
                         ]);
 
-                        $category = CompanyItemCategory::where('id', $request->id_item_category)->first();
+                        $category = CompanyItemCatalog::where('id', $request->id_item_catalog)->first();
 
                         return response()->json(new ValueMessage(['value'=>1,'message'=>'Category deleted successfully','data'=> $category]), 401);
                     }
@@ -396,7 +396,7 @@ class CompanyItemController extends Controller
             $check_item = CompanyItem::where('id', $request->id_item)->where('deleted_at', null)->first();
 
             if($check_item){
-                $check_category = CompanyItemCategory::where('id', $check_item['id_item_category'])->first();
+                $check_category = CompanyItemCatalog::where('id', $check_item['id_item_catalog'])->first();
                 $check_company = Company::where('id', $check_category['id_company'])->first();
 
                 if($check_company['id_user'] == Auth::id()){
@@ -435,7 +435,7 @@ class CompanyItemController extends Controller
 
             if($check_media){
                 $check_item = CompanyItem::where('id', $check_media['id_item'])->first();
-                $check_category = CompanyItemCategory::where('id', $check_item['id_item_category'])->first();
+                $check_category = CompanyItemCatalog::where('id', $check_item['id_item_catalog'])->first();
                 $check_company = Company::where('id', $check_category['id_company'])->first();
 
                 if($check_company['id_user'] == Auth::id()){
@@ -470,11 +470,11 @@ class CompanyItemController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
             $result = [];
-            $item_categories = CompanyItemCategory::where('id_company', $request->id_company)->where('deleted_at', null)->get();
+            $item_categories = CompanyItemCatalog::where('id_company', $request->id_company)->where('deleted_at', null)->get();
 
             if($item_categories){
                 foreach($item_categories as $key_category=>$value_category){
-                    $items = CompanyItem::where('id_item_category', $value_category->id)->where('item_name', 'like', '%'.$request->keyword.'%')->where('deleted_at', null)->get();
+                    $items = CompanyItem::where('id_item_catalog', $value_category->id)->where('item_name', 'like', '%'.$request->keyword.'%')->where('deleted_at', null)->get();
 
                     foreach($items as $key => $value){
                         $item = new CompanyItemResource($value);
@@ -542,7 +542,7 @@ class CompanyItemController extends Controller
                 $fileName = str_replace(' ','-', $cleantitle.'-'.$num);
                 $guessExtension = $file->guessExtension();
                 //dd($guessExtension);
-                $store = Storage::disk('public')->putFileAs('company/items/'.$item['id_item_category'].'/'.$id, $file ,$fileName.'.'.$guessExtension);
+                $store = Storage::disk('public')->putFileAs('company/items/'.$item['id_item_catalog'].'/'.$id, $file ,$fileName.'.'.$guessExtension);
 
                 $postMedia = CompanyItemMedia::create([
                     'id_item' => $item['id'],
