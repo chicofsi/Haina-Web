@@ -204,12 +204,13 @@ class CompanyController extends Controller
 
                 $starting_point = ($current_page * $per_page) - $per_page;
                 $company_data = array_slice($company_data, $starting_point, $per_page);
-                dd($company_data);
+                
                 $result = new \stdClass();
                 $result->company = $company_data;
                 $result->total = $total;
                 $result->current_page = (int)$current_page;
                 $result->total_page = ceil($total/$per_page);
+                dd($result);
 
                 if(count($company_data) == 0){
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'No company found!','data'=> '']), 404);
