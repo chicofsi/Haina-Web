@@ -8,6 +8,7 @@ use App\Http\Resources\CompanyAddress as CompanyAddressResource;
 use App\Http\Resources\CompanyMedia as CompanyMediaResource;
 use App\Models\Company;
 use App\Models\CompanyItemCatalog;
+use App\Models\CompanyItemCategory;
 use App\Models\CompanyItemMedia;
 
 class CompanyItemResource extends JsonResource
