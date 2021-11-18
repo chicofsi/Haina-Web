@@ -151,13 +151,15 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::get('/category'  , [CompanyController::class, 'getCompanyCategory']);
 
 		//items
-		Route::post('item/category/add', [CompanyItemController::class, 'addItemCategory']);
 		Route::post('item/add', [CompanyItemController::class, 'addNewItem']);
 		Route::post('item/detail', [CompanyItemController::class, 'showItemDetail']);
 		Route::post('item/update', [CompanyItemController::class, 'updateItem']);
-		Route::get('item/category/', [CompanyItemController::class, 'getAllItemCategory']);
-		Route::post('item/category/update', [CompanyItemController::class, 'updateCategory']);
-		Route::post('item/category/delete', [CompanyItemController::class, 'deleteCategory']);
+		Route::get('item/category/', [CompanyItemController::class, 'getItemCategory']);
+
+		Route::post('item/category/add', [CompanyItemController::class, 'addItemCatalog']);
+		Route::get('item/catalog/', [CompanyItemController::class, 'getAllItemCatalog']);
+		Route::post('item/catalog/update', [CompanyItemController::class, 'updateCatalog']);
+		Route::post('item/catalog/delete', [CompanyItemController::class, 'deleteCatalog']);
 		Route::post('item/show/', [CompanyItemController::class, 'showCompanyItem']);
 		Route::post('item/media/add', [CompanyItemController::class, 'addNewItemMedia']);
 		Route::post('item/media/delete', [CompanyItemController::class, 'deleteMedia']);
