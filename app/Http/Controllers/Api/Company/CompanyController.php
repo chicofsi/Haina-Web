@@ -192,7 +192,7 @@ class CompanyController extends Controller
                     $value->distance = $this->getDistance($request->my_latitude, $request->my_longitude, $address_latitude, $address_longitude);
                 }
 
-                $company = $company->sortBy('distance')->toArray();
+                $company = $company->sortBy('distance');
 
                 foreach($company as $key => $value){
                     $company_data[$key] = new CompanyResource($value);
@@ -216,7 +216,7 @@ class CompanyController extends Controller
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'No company found!','data'=> '']), 404);
                 }
                 else{
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Companies list displayed successfully!','data'=> $company]), 200);
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Companies list displayed successfully!','data'=> $result]), 200);
                 }
 
                 //return response()->json(new ValueMessage(['value'=>1,'message'=>'Company displayed successfully!','data'=> $company]), 200);
