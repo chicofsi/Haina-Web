@@ -554,7 +554,24 @@ class CompanyItemController extends Controller
                 array_push($company_result, $company);
             }
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Search result successfully listed','data'=> $company_result]), 200);
+            $catalogs = CompanyItemCatalog::where('name', 'like', '%'.$request->keyword.'%')->where('deleted_at', null)->with('items')->get();
+            foreach($catalogs as $key => $value){
+                array_push($catalog_result, $value);
+            }
+
+            $items = CompanyItem::where('name', 'like', '%'.$request->keyword.'%')->where('deleted_at', null)->get();
+            foreach($items as $key => $value){
+                $item = new CompanyItemResource($value);
+
+                array_push($item_result, $item);
+            }
+
+            $result = new \stdClass();
+            $result->company = $company_result;
+            $result->item = $item_result;
+            $result->catalog = $catalog_result;
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Search result successfully listed','data'=> $result]), 200);
         }
     }
 

@@ -16,5 +16,8 @@ class CompanyItemCatalog extends Model
         'id_company', 'name'
     ];
 
+    public function items(){
+    	return $this->hasMany('App\Models\CompanyItem','id_item_catalog','id');
+    }
 
 }
