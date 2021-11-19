@@ -517,7 +517,7 @@ class RestaurantController extends Controller
 
                 $check_review = $check_review->get();
 
-                $your_review = RestaurantReview::where('restaurant_id', $request->restaurant_id)->where('user_id', Auth::id())->with('review_image')->where('deleted_at', null)->get();
+                $your_review = RestaurantReview::where('restaurant_id', $request->restaurant_id)->where('user_id', Auth::id())->with('review_image')->where('deleted_at', null)->first();
                 $your_review = new RestaurantReviewResource($your_review);
 
                 if(count($check_review) > 0){
