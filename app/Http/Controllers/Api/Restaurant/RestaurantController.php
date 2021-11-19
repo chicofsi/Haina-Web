@@ -517,15 +517,12 @@ class RestaurantController extends Controller
 
                 $check_review = $check_review->get();
 
-                $your_review = null;
+                $your_review = RestaurantReview::where('restaurant_id', $request->restaurant_id)->where('user_id', Auth::id())->with('review_image')->where('deleted_at', null);
+                $your_review = new RestaurantReviewResource($your_review);
 
                 if(count($check_review) > 0){
                     foreach($check_review as $key => $value){
                         $review_data[$key] = new RestaurantReviewResource($value);
-
-                        if($value->user_id == Auth::id()){
-                            $your_review = new RestaurantReviewResource($value);
-                        }
                     }
 
                     $total = count($review_data);
