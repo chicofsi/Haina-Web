@@ -579,8 +579,10 @@ class RestaurantController extends Controller
                     $keep_array = [];
 
                     if($check_review != null){
-                        $delete_review = RestaurantReview::where('user_id', Auth::id())->where('restaurant_id', $request->restaurant_id)->update([
-                            'deleted_at' => date('Y-m-d H:i:s')
+                        $update_review = RestaurantReview::where('user_id', Auth::id())->where('restaurant_id', $request->restaurant_id)->update([
+                            //'deleted_at' => date('Y-m-d H:i:s')
+                            'rating' => $request->rating ?? $check_review['rating'],
+                            'review' => $request->review ?? $check_review['review']
                         ]);
 
                         if($request->keep_photo != null){
@@ -594,7 +596,43 @@ class RestaurantController extends Controller
                                 'deleted_at' => date('Y-m-d H:i:s')
                             ]);
                         }
+
+                        $photo_index = RestaurantReviewPhotos::where('review_id', $check_review['id'])->count();
+
+                        $review_images = $request->file('review_image');
+
+                        if($review_images != null){
+                            $this->storeReviewImages($check_review['id'], $check_resto['id'], $review_images, $photo_index);
+                        }
+
+                        $get_review = RestaurantReview::where('id', $check_review['id'])->first();
+                        $review_data = new RestaurantReviewResource($get_review);
+                    
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Update Review Success!','data'=> $review_data]), 200);
                     }
+                    else{
+                        $review = [
+                            'user_id' => Auth::id(),
+                            'restaurant_id' => $request->restaurant_id,
+                            'rating' => $request->rating,
+                            'review' => $request->review,
+                        ];
+    
+                        $new_review = RestaurantReview::create($review);
+    
+                        $review_images = $request->file('review_image');
+
+                        if($review_images != null){
+                            $this->storeReviewImages($new_review->id, $check_resto['id'], $review_images);
+                        }
+
+                        $get_review = RestaurantReview::where('id', $new_review->id)->first();
+                    $review_data = new RestaurantReviewResource($get_review);
+                    
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Add Review Success!','data'=> $review_data]), 200);
+
+                    }
+                    /*
                     $review = [
                         'user_id' => Auth::id(),
                         'restaurant_id' => $request->restaurant_id,
@@ -606,6 +644,7 @@ class RestaurantController extends Controller
 
                     $review_images = $request->file('review_image');
 
+                    
                     if(count($keep_array) != 0){
                         $kept_photos = RestaurantReviewPhotos::whereIn('id', $keep_array)->update([
                             'review_id' => $new_review['id']
@@ -615,11 +654,7 @@ class RestaurantController extends Controller
                     if($review_images != null){
                         $this->storeReviewImages($new_review->id, $check_resto['id'], $review_images);
                     }
-
-                    $get_review = RestaurantReview::where('id', $new_review->id)->first();
-                    $review_data = new RestaurantReviewResource($get_review);
-                    
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Add Review Success!','data'=> $review_data]), 200);
+                    */
                 }
             }
             else{
@@ -759,12 +794,12 @@ class RestaurantController extends Controller
         }
     }
 
-    public function storeReviewImages($id, $restaurant_id, $files){
+    public function storeReviewImages($id, $restaurant_id, $files, $index = 1){
         $restaurant = RestaurantData::where('id', $restaurant_id)->first();
 
         if($restaurant){
 
-            $num = 1;
+            $num = $index;
 
             foreach($files as $file){
 
