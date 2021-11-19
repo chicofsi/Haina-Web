@@ -147,9 +147,11 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/photo/register'  , [PhotoController::class, 'registerCompanyMedia']);
 		Route::post('/photo/delete'  , [PhotoController::class, 'deleteCompanyMedia']);
 
-		Route::post('/show'  , [CompanyController::class, 'showCompanyList']);
-		Route::post('/show/distance'  , [CompanyController::class, 'listCompanyByDistance']);
+		//Route::post('/show'  , [CompanyController::class, 'showCompanyList']);
+		Route::post('/show'  , [CompanyController::class, 'listCompanyByDistance']);
 		Route::get('/category'  , [CompanyController::class, 'getCompanyCategory']);
+
+		Route::post('/item/search'  , [CompanyController::class, 'globalSearch']);
 
 		//items
 		Route::post('item/add', [CompanyItemController::class, 'addNewItem']);
@@ -165,7 +167,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('item/media/add', [CompanyItemController::class, 'addNewItemMedia']);
 		Route::post('item/media/delete', [CompanyItemController::class, 'deleteMedia']);
 		Route::post('item/delete', [CompanyItemController::class, 'deleteItem']);
-		Route::post('item/search', [CompanyItemController::class, 'searchItem']);
+		//Route::post('item/search', [CompanyItemController::class, 'searchItem']);
 	});
 	
 	Route::group(['prefix' => 'docs'], function() {

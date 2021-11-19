@@ -534,6 +534,30 @@ class CompanyItemController extends Controller
         }
     }
 
+    public function globalSearch(Request $request){
+        $validator = Validator::make($request->all(), [
+            'keyword' => 'required|min:2'
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            $item_result = [];
+            $company_result = [];
+            $catalog_result = [];
+
+            //company
+            $companies = Company::where('status', 'active')->where('name', 'like', '%'.$request->keyword.'%')->with('category', 'address')->get();
+            foreach($companies as $key => $value){
+                $company = new CompanyResource($value);
+
+                array_push($company_result, $company);
+            }
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Search result successfully listed','data'=> $company_result]), 200);
+        }
+    }
+
     public function getItemCategory(){
         $categories = CompanyItemCategory::all();
 
