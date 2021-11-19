@@ -17,7 +17,7 @@ class RestaurantReviewResource extends JsonResource {
     public function toArray($request){
         $restaurant_name = RestaurantData::select('name')->where('id', $this->restaurant_id)->first();
 
-        $review_photos = RestaurantReviewPhotos::where('review_id', $this->id)->get();
+        $review_photos = RestaurantReviewPhotos::where('review_id', $this->id)->where('deleted_at', null)->get();
 
         $user = User::where('id', $this->user_id)->first();
 
