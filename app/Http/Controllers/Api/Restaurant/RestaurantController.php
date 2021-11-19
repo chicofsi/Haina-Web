@@ -576,15 +576,24 @@ class RestaurantController extends Controller
                 else{
 
                     $check_review = RestaurantReview::where('user_id', Auth::id())->where('restaurant_id', $request->restaurant_id)->first();
+                    $keep_array = [];
 
                     if($check_review != null){
                         $delete_review = RestaurantReview::where('user_id', Auth::id())->where('restaurant_id', $request->restaurant_id)->update([
                             'deleted_at' => date('Y-m-d H:i:s')
                         ]);
 
-                        $delete_photo = RestaurantReviewPhotos::where('review_id', $check_review['id'])->update([
-                            'deleted_at' => date('Y-m-d H:i:s')
-                        ]);
+                        if($request->keep_photo != null){
+                            $keep_array = explode(',', $value->keep_photo);
+                            $delete_photo = RestaurantReviewPhotos::where('review_id', $check_review['id'])->whereNotIn('id', $keep_array)->update([
+                                'deleted_at' => date('Y-m-d H:i:s')
+                            ]);
+                        }
+                        else{
+                            $delete_photo = RestaurantReviewPhotos::where('review_id', $check_review['id'])->update([
+                                'deleted_at' => date('Y-m-d H:i:s')
+                            ]);
+                        }
                     }
                     $review = [
                         'user_id' => Auth::id(),
@@ -596,6 +605,12 @@ class RestaurantController extends Controller
                     $new_review = RestaurantReview::create($review);
 
                     $review_images = $request->file('review_image');
+
+                    if(count($keep_array) != 0){
+                        $kept_photos = RestaurantReviewPhotos::whereIn('id', $keep_array)->update([
+                            'review_id' => $new_review['id']
+                        ]);
+                    }
                     
                     if($review_images != null){
                         $this->storeReviewImages($new_review->id, $check_resto['id'], $review_images);
