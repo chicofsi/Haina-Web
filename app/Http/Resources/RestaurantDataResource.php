@@ -72,6 +72,14 @@ class RestaurantDataResource extends JsonResource {
             array_push($restaurant_photos, $photo);
         }
 
+        if($this->user_id == Auth::id()){
+            $check_owner =  true;
+        }
+        else{
+            $check_owner =  false;
+        }
+        
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -81,7 +89,7 @@ class RestaurantDataResource extends JsonResource {
             'longitude' => $this->longitude,
             //'city_id' => $this->city_id,
             'phone' => $this->phone,
-            'owner_id' => $this->user_id,
+            'owner' => $check_owner,
             'open_days' => $this->open_days,
             'open_24_hours' => $this->open_24_hours,
             'weekdays_time_open' => $this->weekdays_time_open,
