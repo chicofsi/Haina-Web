@@ -29,6 +29,7 @@ use App\Models\CompanyItemMedia;
 use App\Models\CompanyMedia;
 
 use App\Http\Resources\Company as CompanyResource;
+use App\Http\Resources\CompanyCatalogResource;
 use App\Http\Resources\CompanyItemResource;
 use DateTime;
 
@@ -556,7 +557,9 @@ class CompanyItemController extends Controller
 
             $catalogs = CompanyItemCatalog::where('name', 'like', '%'.$request->keyword.'%')->where('deleted_at', null)->with('items')->get();
             foreach($catalogs as $key => $value){
-                array_push($catalog_result, $value);
+                $catalog = new CompanyCatalogResource($value);
+
+                array_push($catalog_result, $catalog);
             }
 
             $items = CompanyItem::where('item_name', 'like', '%'.$request->keyword.'%')->where('deleted_at', null)->get();
