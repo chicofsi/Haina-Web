@@ -584,7 +584,7 @@ class RestaurantController extends Controller
                         ]);
 
                         if($request->keep_photo != null){
-                            $keep_array = explode(',', $value->keep_photo);
+                            $keep_array = explode(',', $request->keep_photo);
                             $delete_photo = RestaurantReviewPhotos::where('review_id', $check_review['id'])->whereNotIn('id', $keep_array)->update([
                                 'deleted_at' => date('Y-m-d H:i:s')
                             ]);
