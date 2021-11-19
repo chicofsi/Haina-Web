@@ -6,10 +6,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\URL;
 use App\Http\Resources\CompanyAddress as CompanyAddressResource;
 use App\Http\Resources\CompanyMedia as CompanyMediaResource;
+
 use App\Models\Company;
 use App\Models\CompanyItemCatalog;
 use App\Models\CompanyItemCategory;
 use App\Models\CompanyItemMedia;
+use App\Models\CompanyItem;
 
 class CompanyCatalogResource extends JsonResource
 {
