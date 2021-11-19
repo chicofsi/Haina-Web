@@ -559,7 +559,7 @@ class CompanyItemController extends Controller
                 array_push($catalog_result, $value);
             }
 
-            $items = CompanyItem::where('name', 'like', '%'.$request->keyword.'%')->where('deleted_at', null)->get();
+            $items = CompanyItem::where('item_name', 'like', '%'.$request->keyword.'%')->where('deleted_at', null)->get();
             foreach($items as $key => $value){
                 $item = new CompanyItemResource($value);
 
