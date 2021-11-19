@@ -151,7 +151,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('/show'  , [CompanyController::class, 'listCompanyByDistance']);
 		Route::get('/category'  , [CompanyController::class, 'getCompanyCategory']);
 
-		Route::post('/item/search'  , [CompanyController::class, 'globalSearch']);
+		Route::post('/item/search'  , [CompanyItemController::class, 'globalSearch']);
 
 		//items
 		Route::post('item/add', [CompanyItemController::class, 'addNewItem']);
