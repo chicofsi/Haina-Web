@@ -575,7 +575,7 @@ class RestaurantController extends Controller
                 }
                 else{
 
-                    $check_review = RestaurantReview::where('user_id', Auth::id())->where('restaurant_id', $request->restaurant_id)->first();
+                    $check_review = RestaurantReview::where('user_id', Auth::id())->where('restaurant_id', $request->restaurant_id)->where('deleted_at', null)->first();
                     $keep_array = [];
 
                     if($check_review != null){
