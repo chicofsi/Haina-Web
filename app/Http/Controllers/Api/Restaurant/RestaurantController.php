@@ -517,9 +517,15 @@ class RestaurantController extends Controller
 
                 $check_review = $check_review->get();
 
+                $your_review = null;
+
                 if(count($check_review) > 0){
                     foreach($check_review as $key => $value){
                         $review_data[$key] = new RestaurantReviewResource($value);
+
+                        if($value->user_id == Auth::id()){
+                            $your_review = new RestaurantReviewResource($value);
+                        }
                     }
 
                     $total = count($review_data);
@@ -531,6 +537,7 @@ class RestaurantController extends Controller
                     $review_data = array_slice($review_data, $starting_point, $per_page);
 
                     $result = new \stdClass();
+                    $result->your_review = $your_review;
                     $result->reviews = $review_data;
                     $result->total = $total;
                     $result->current_page = (int)$current_page;
@@ -553,7 +560,7 @@ class RestaurantController extends Controller
         $validator = Validator::make($request->all(), [
             'restaurant_id' => 'required',
             'rating' => 'required',
-            'review' => 'required|min:50',
+            //'review' => 'required|min:50',
             ['review_image' => 'image|mimes:png,jpg|max:4096']
         ]);
 
