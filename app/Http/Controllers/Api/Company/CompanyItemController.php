@@ -492,7 +492,7 @@ class CompanyItemController extends Controller
                 $displayed_result = $result;
 
                 if($request->sort_by_name == "asc"){
-                    $displayed_result = collect($displayed_result)->sortBy('item_name',mSORT_NATURAL|SORT_FLAG_CASE)->toArray();
+                    $displayed_result = collect($displayed_result)->sortBy('item_name',SORT_NATURAL|SORT_FLAG_CASE)->toArray();
                 }
                 else if($request->sort_by_name == "desc"){
                     $displayed_result = collect($displayed_result)->sortByDesc('item_name', SORT_NATURAL|SORT_FLAG_CASE)->toArray();
@@ -569,6 +569,42 @@ class CompanyItemController extends Controller
                 array_push($item_result, $item);
             }
 
+            //filter company
+            if($request->sort_company_by_name == "asc"){
+                $company_result = collect($company_result)->sortBy('name',SORT_NATURAL|SORT_FLAG_CASE)->toArray();
+            }
+            else if($request->sort_company_by_name == "desc"){
+                $company_result = collect($company_result)->sortByDesc('name',SORT_NATURAL|SORT_FLAG_CASE)->toArray();
+            }
+
+            //filter catalog
+            if($request->sort_catalog_by_name == "asc"){
+                $catalog_result = collect($catalog_result)->sortBy('name',SORT_NATURAL|SORT_FLAG_CASE)->toArray();
+            }
+            else if($request->sort_catalog_by_name == "desc"){
+                $catalog_result = collect($catalog_result)->sortByDesc('name',SORT_NATURAL|SORT_FLAG_CASE)->toArray();
+            }
+
+            //filter items
+            if($request->sort_item_by_name == "asc"){
+                $item_result = collect($item_result)->sortBy('item_name',SORT_NATURAL|SORT_FLAG_CASE)->toArray();
+            }
+            else if($request->sort_item_by_name == "desc"){
+                $item_result = collect($item_result)->sortByDesc('item_name',SORT_NATURAL|SORT_FLAG_CASE)->toArray();
+            }
+
+            if($request->sort_item_by_price == "asc"){
+                $item_result = collect($item_result)->sortBy('item_price')->toArray();
+            }
+            else if($request->sort_item_by_price == "desc"){
+                $item_result = collect($item_result)->sortByDesc('item_price')->toArray();
+            }
+
+            if($request->sort_item_by_time == 1){
+                $item_result = collect($item_result)->sortByDesc('created_At')->toArray();
+            }
+
+            //
             $result = new \stdClass();
             $result->company = $company_result;
             $result->item = $item_result;
