@@ -623,8 +623,11 @@ class CompanyItemController extends Controller
                 $item_result = collect($item_result)->sortByDesc('item_price')->toArray();
             }
 
-            if($request->sort_item_by_time == 1){
-                $item_result = collect($item_result)->sortByDesc('created_At')->toArray();
+            if($request->sort_item_by_time == "asc"){
+                $item_result = collect($item_result)->sortBy('created_at')->toArray();
+            }
+            else if($request->sort_item_by_time == "desc"){
+                $item_result = collect($item_result)->sortByDesc('created_at')->toArray();
             }
 
             //
