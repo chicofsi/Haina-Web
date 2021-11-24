@@ -548,13 +548,23 @@ class CompanyItemController extends Controller
             $catalog_result = [];
 
             //company
-            $companies = Company::where('status', 'active')->where('name', 'like', '%'.$request->keyword.'%')->with('category', 'address')->get();
+            $companies = Company::where('status', 'active')->where('name', 'like', '%'.$request->keyword.'%')->with('category', 'address');
+            if($request->company_province != null){
+                $companies = $companies->where('id_province', $request->company_province);
+            }
+            if($request->company_category){
+                $companies = $companies->whereHas('category', function($q){
+                    $q->where('id', $GLOBALS['request']->company_category);
+                });
+            }
+            $companies = $companies->get();
             foreach($companies as $key => $value){
                 $company = new CompanyResource($value);
 
                 array_push($company_result, $company);
             }
 
+            //catalog
             $catalogs = CompanyItemCatalog::where('name', 'like', '%'.$request->keyword.'%')->where('deleted_at', null)->with('items')->get();
             foreach($catalogs as $key => $value){
                 $catalog = new CompanyCatalogResource($value);
@@ -562,14 +572,20 @@ class CompanyItemController extends Controller
                 array_push($catalog_result, $catalog);
             }
 
-            $items = CompanyItem::where('item_name', 'like', '%'.$request->keyword.'%')->where('deleted_at', null)->get();
+            //items
+            if($request->item_category == null){
+                $items = CompanyItem::where('item_name', 'like', '%'.$request->keyword.'%')->where('deleted_at', null)->get();
+            }
+            else{
+                $items = CompanyItem::where('item_name', 'like', '%'.$request->keyword.'%')->where('id_item_category', $request->item_category)->where('deleted_at', null)->get();
+            }
             foreach($items as $key => $value){
                 $item = new CompanyItemResource($value);
 
                 array_push($item_result, $item);
             }
 
-            //filter company
+            //sort company
             if($request->sort_company_by_name == "asc"){
                 $company_result = collect($company_result)->sortBy('name',SORT_NATURAL|SORT_FLAG_CASE)->toArray();
             }
@@ -577,7 +593,7 @@ class CompanyItemController extends Controller
                 $company_result = collect($company_result)->sortByDesc('name',SORT_NATURAL|SORT_FLAG_CASE)->toArray();
             }
 
-            //filter catalog
+            //sort catalog
             if($request->sort_catalog_by_name == "asc"){
                 $catalog_result = collect($catalog_result)->sortBy('name',SORT_NATURAL|SORT_FLAG_CASE)->toArray();
             }
@@ -585,7 +601,14 @@ class CompanyItemController extends Controller
                 $catalog_result = collect($catalog_result)->sortByDesc('name',SORT_NATURAL|SORT_FLAG_CASE)->toArray();
             }
 
-            //filter items
+            if($request->sort_catalog_by_price == "asc"){
+                $item_result = collect($catalog_result)->sortBy('starting_price')->toArray();
+            }
+            else if($request->sort_catalog_by_price == "desc"){
+                $item_result = collect($catalog_result)->sortByDesc('starting_price')->toArray();
+            }
+
+            //sort items
             if($request->sort_item_by_name == "asc"){
                 $item_result = collect($item_result)->sortBy('item_name',SORT_NATURAL|SORT_FLAG_CASE)->toArray();
             }
