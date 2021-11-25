@@ -34,8 +34,7 @@ class CompanyItemResource extends JsonResource
             'item_name' => $this->item_name,
             'item_description' => $this->item_description,
             'item_price' => $this->item_price,
-            'id_company' => $company['id'],
-            'company_name' => $company['name'],
+            'company' => $company,
             'media' => $media
         ];
     }
