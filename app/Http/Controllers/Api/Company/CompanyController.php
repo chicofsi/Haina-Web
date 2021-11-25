@@ -29,6 +29,7 @@ class CompanyController extends Controller
                 'year' => 'required',
                 'staff_size' => 'required',
                 'siup' => 'required',
+                'contact_number' => 'numeric',
                 'id_province' => 'required',
                 'id_category' => 'required'
             ]);
@@ -52,6 +53,7 @@ class CompanyController extends Controller
                     'year' => $request->year ?? 0,
                     'staff_size' => $request->staff_size ?? 1,
                     'siup' => $request->siup,
+                    'contact_number' => $request->phone_number ?? "-",
                     'id_province' => $request->id_province
                 ]);
 

@@ -56,6 +56,7 @@ class Company extends JsonResource
             'year' => $this->year,
             'staff_size' => $this->staff_size,
             'siup' => $this->siup,
+            'contact_number' => $this->contact_number,
             'id_province' => $this->id_province,
             'province' => $province['name'],
             'primary_address' => $primary_address,
