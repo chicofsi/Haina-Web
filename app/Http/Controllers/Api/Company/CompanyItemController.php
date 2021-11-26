@@ -733,7 +733,7 @@ class CompanyItemController extends Controller
 
                             if(count($current) > 0){
                                 foreach($current as $id){
-                                    $remove_promote = CompanyItem::where(id, $id)->update([
+                                    $remove_promote = CompanyItem::where('id', $id)->update([
                                         'promoted' => 0
                                     ]);
                                 }
@@ -741,7 +741,7 @@ class CompanyItemController extends Controller
 
                             if(count($new) > 0){
                                 foreach($new as $id){
-                                    $update_promote = CompanyItem::where(id, $id)->update([
+                                    $update_promote = CompanyItem::where('id', $id)->update([
                                         'promoted' => 1
                                     ]);
                                 }
