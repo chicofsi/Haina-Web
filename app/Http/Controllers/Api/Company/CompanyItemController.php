@@ -692,7 +692,7 @@ class CompanyItemController extends Controller
     public function updatePromotedItem(Request $request){
         $validator = Validator::make($request->all(), [
             'id_company' => 'required|numeric',
-            ['promoted_item' => 'required']
+            'promoted_item' => 'required'
         ]);
 
         if ($validator->fails()) {          
