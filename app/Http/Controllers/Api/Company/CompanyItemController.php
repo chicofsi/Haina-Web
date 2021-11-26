@@ -646,6 +646,36 @@ class CompanyItemController extends Controller
         return response()->json(new ValueMessage(['value'=>1,'message'=>'Item categories displayed successfully!','data'=> $categories]), 200);
     }
 
+    public function getPromotedItem(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_company' => 'required|numeric'
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            $result = [];
+            $item_catalogs = CompanyItemCatalog::where('id_company', $request->id_company)->where('deleted_at', null)->get();
+
+            if($item_catalogs){
+                foreach($item_catalogs as $key_catalog=>$value_catalog){
+                    $items = CompanyItem::where('id_item_catalog', $value_catalog->id)->where('deleted_at', null)->where('promoted', 1)->get();
+
+                    foreach($items as $key => $value){
+                        $item = new CompanyItemResource($value);
+
+                        array_push($result, $item);
+                    }
+                }
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Promoted item displayed successfully','data'=> $result]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Item catalog not found','data'=> '']), 404);
+            }
+        }
+    }
+
     public function storeItemMedia($id, $files, $index = null){
 
         $item = CompanyItem::where('id', $id)->first();
