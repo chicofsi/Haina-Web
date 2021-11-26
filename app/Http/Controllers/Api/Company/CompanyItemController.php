@@ -727,7 +727,7 @@ class CompanyItemController extends Controller
                             }
 
                             $intersect = array_intersect($new, $current);
-
+                            dd($current);
                             $new = array_values(array_diff($new, $intersect));
                             $current = array_diff(array_diff($current, $intersect));
 
