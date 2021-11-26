@@ -654,24 +654,114 @@ class CompanyItemController extends Controller
         if ($validator->fails()) {          
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
-            $result = [];
-            $item_catalogs = CompanyItemCatalog::where('id_company', $request->id_company)->where('deleted_at', null)->get();
+            Company::where('id', $request->id_company)->first();
 
-            if($item_catalogs){
-                foreach($item_catalogs as $key_catalog=>$value_catalog){
-                    $items = CompanyItem::where('id_item_catalog', $value_catalog->id)->where('deleted_at', null)->where('promoted', 1)->get();
-
-                    foreach($items as $key => $value){
-                        $item = new CompanyItemResource($value);
-
-                        array_push($result, $item);
-                    }
-                }
-
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Promoted item displayed successfully','data'=> $result]), 200);
+            if(!$check_company){
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Company not found','data'=> '']), 404);
             }
             else{
-                return response()->json(new ValueMessage(['value'=>0,'message'=>'Item catalog not found','data'=> '']), 404);
+                $result = [];
+                $item_catalogs = CompanyItemCatalog::where('id_company', $request->id_company)->where('deleted_at', null)->get();
+
+                if($item_catalogs){
+                    foreach($item_catalogs as $key_catalog=>$value_catalog){
+                        $items = CompanyItem::where('id_item_catalog', $value_catalog->id)->where('deleted_at', null)->where('promoted', 1)->get();
+
+                        foreach($items as $key => $value){
+                            $item = new CompanyItemResource($value);
+
+                            array_push($result, $item);
+                        }
+                    }
+
+                    if(count($result) > 0){
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Promoted item displayed successfully','data'=> $result]), 200);
+                    }
+                    else{
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Promoted item not found!','data'=> '']), 404);
+                    }
+                    
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Item catalog not found','data'=> '']), 404);
+                }
+            }
+        }
+    }
+
+    public function updatePromotedItem(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_company' => 'required|numeric',
+            ['promoted_item' => 'required']
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            if ($validator->fails()) {          
+                return response()->json(['error'=>$validator->errors()], 400);                        
+            }else{
+                Company::where('id', $request->id_company)->first();
+    
+                if(!$check_company){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Company not found','data'=> '']), 404);
+                }
+                else{
+                    $current = [];
+                    $new = $request->promoted_item;
+
+                    $result = [];
+
+                    $item_catalogs = CompanyItemCatalog::where('id_company', $request->id_company)->where('deleted_at', null)->get();
+
+                    if($item_catalogs){
+                        foreach($item_catalogs as $key_catalog=>$value_catalog){
+                            $items = CompanyItem::where('id_item_catalog', $value_catalog->id)->where('deleted_at', null)->where('promoted', 1)->get();
+
+                            foreach($items as $key => $value){
+                                $item = $value->id;
+
+                                array_push($current, $item);
+                            }
+                        }
+
+                        $intersect = array_intersect($new, $current);
+
+                        $new = array_values(array_diff($new, $intersect));
+                        $current = array_diff(array_diff($current, $intersect));
+
+                        if(count($current) > 0){
+                            foreach($current as $id){
+                                $remove_promote = CompanyItem::where(id, $id)->update([
+                                    'promoted' => 0
+                                ]);
+                            }
+                        }
+
+                        if(count($new) > 0){
+                            foreach($new as $id){
+                                $update_promote = CompanyItem::where(id, $id)->update([
+                                    'promoted' => 1
+                                ]);
+                            }
+                        }
+
+                        $new_items = CompanyItem::where('id_item_catalog', $value_catalog->id)->where('deleted_at', null)->where('promoted', 1)->get();
+
+                        if(count($new_items) > 0){
+                            foreach($new_items as $key => $value){
+                                $item = new CompanyItemResource($value);
+    
+                                array_push($result, $item);
+                            }
+                        }
+
+                        return response()->json(new ValueMessage(['value'=>1,'message'=>'Promoted updated successfully','data'=> $result]), 200);
+                    }
+                    else{
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Item catalog not found','data'=> '']), 404);
+                    }
+                }
             }
         }
     }
