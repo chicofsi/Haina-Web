@@ -160,7 +160,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::get('item/category/', [CompanyItemController::class, 'getItemCategory']);
 
 		Route::post('item/category/add', [CompanyItemController::class, 'addItemCatalog']);
-		Route::get('item/catalog/', [CompanyItemController::class, 'getAllItemCatalog']);
+		Route::post('item/catalog/', [CompanyItemController::class, 'getAllItemCatalog']);
 		Route::post('item/catalog/update', [CompanyItemController::class, 'updateCatalog']);
 		Route::post('item/catalog/delete', [CompanyItemController::class, 'deleteCatalog']);
 		Route::post('item/show/', [CompanyItemController::class, 'showCompanyItem']);

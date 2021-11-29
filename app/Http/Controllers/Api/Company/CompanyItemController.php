@@ -68,16 +68,24 @@ class CompanyItemController extends Controller
         }
     }
 
-    public function getAllItemCatalog(){
-        $get_company = Company::where('id_user', Auth::id())->first();
+    public function getAllItemCatalog(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_company' => 'required',
+        ]);
 
-        if($get_company){
-            $catalogs = CompanyItemCatalog::where('id_company', $get_company['id'])->where('deleted_at', null)->get();
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            $get_company = Company::where('id', $request->id_company)->first();
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Item Catalog Listed Successfully','data'=> $catalogs]), 200);
-        }
-        else{
-            return response()->json(new ValueMessage(['value'=>0,'message'=>'Company not found','data'=> '']), 404);
+            if($get_company){
+                $catalogs = CompanyItemCatalog::where('id_company', $get_company['id'])->where('deleted_at', null)->get();
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Item Catalog Listed Successfully','data'=> $catalogs]), 200);
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Company not found','data'=> '']), 404);
+            }
         }
     }
 
