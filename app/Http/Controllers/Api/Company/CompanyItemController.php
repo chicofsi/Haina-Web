@@ -81,7 +81,11 @@ class CompanyItemController extends Controller
             if($get_company){
                 $catalogs = CompanyItemCatalog::where('id_company', $get_company['id'])->where('deleted_at', null)->get();
 
-                return response()->json(new ValueMessage(['value'=>1,'message'=>'Item Catalog Listed Successfully','data'=> $catalogs]), 200);
+                foreach($catalogs as $key => $value){
+                    $item_catalog[$key] = new CompanyCatalogResource($value);
+                }
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Item Catalog Listed Successfully','data'=> $item_catalog]), 200);
             }
             else{
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Company not found','data'=> '']), 404);
