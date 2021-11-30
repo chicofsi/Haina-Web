@@ -343,6 +343,36 @@ class CompanyItemController extends Controller
         }
     }
 
+    public function getItemByCategory(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_item_category' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }else{
+            $check_category = CompanyItemCategory::where('id', $request->id_item_category)->first();
+
+            if($check_category){
+                $items = CompanyItem::where('id_item_category', $request->id_item_category)->where('deleted_at', null)->get();
+
+                if(count($items) > 0){
+                    foreach($items as $key => $value){
+                        $result[$key] = new CompanyItemResource($value);
+                    }
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Item listed successfully!','data'=> $result]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'No items found!','data'=> '']), 404);
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Category not found!','data'=> '']), 404);
+            }
+        }
+    }
+
     public function showItemDetail(Request $request){
         $validator = Validator::make($request->all(), [
             'id_item' => 'required|numeric',
