@@ -762,7 +762,9 @@ class CompanyItemController extends Controller
                         if($check_item){
                             if(in_array($check_item['id_item_catalog'], $catalog_id)){
                                 if($check_item['promoted'] == 1){
-                                    $check_item['promoted'] == 0;
+                                    $check_item = CompanyItem::where('id', $request->id_item)->update([
+                                        'promoted' => 0
+                                    ]);
     
                                     $updated_item = CompanyItem::where('id', $request->id_item)->first();
     
@@ -781,7 +783,9 @@ class CompanyItemController extends Controller
                                     }
     
                                     if(count($current) < 3){
-                                        $check_item['promoted'] == 1;
+                                        $check_item = CompanyItem::where('id', $request->id_item)->update([
+                                            'promoted' => 1
+                                        ]);
     
                                         $updated_item = CompanyItem::where('id', $request->id_item)->first();
     
