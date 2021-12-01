@@ -731,6 +731,75 @@ class CompanyItemController extends Controller
         }
     }
 
+    public function togglePromotedItem(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_company' => 'required|numeric',
+            'id_item' => 'required'
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }
+        else{
+            if ($validator->fails()) {          
+                return response()->json(['error'=>$validator->errors()], 400);                        
+            }
+            else{
+                $check_company = Company::where('id', $request->id_company)->first();
+    
+                if(!$check_company){
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Company not found','data'=> '']), 404);
+                }
+                else{
+                    if(Auth::id() == $check_company['id_user']){
+                        $check_item = CompanyItem::where('id', $request->id_item)->where('deleted_at', null)->first();
+
+                        if($check_item){
+                            
+                            if($check_item['promoted'] == 1){
+                                $check_item['promoted'] == 0;
+
+                                $updated_item = CompanyItem::where('id', $request->id_item)->first();
+
+                                return response()->json(new ValueMessage(['value'=>1,'message'=>'Item promotion removed','data'=> $update_item]), 200);
+                            }
+                            else{
+                                $item_catalogs = CompanyItemCatalog::where('id_company', $request->id_company)->where('deleted_at', null)->get();
+
+                                foreach($item_catalogs as $key_catalog=>$value_catalog){
+                                    $items = CompanyItem::where('id_item_catalog', $value_catalog->id)->where('promoted', 1)->where('deleted_at', null)->where('promoted', 1)->get();
+
+                                    foreach($items as $key => $value){
+                                        $item = $value->id;
+
+                                        array_push($current, $item);
+                                    }
+                                }
+
+                                if(count($item) < 3){
+                                    $check_item['promoted'] == 1;
+
+                                    $updated_item = CompanyItem::where('id', $request->id_item)->first();
+
+                                    return response()->json(new ValueMessage(['value'=>1,'message'=>'New item promotion added','data'=> $update_item]), 200);
+                                }
+                                else{
+                                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Maximum promoted item quota reached','data'=> '']), 404);
+                                }
+                            }
+                        }
+                        else{
+                            return response()->json(new ValueMessage(['value'=>0,'message'=>'Item not found','data'=> '']), 404);
+                        }
+                    }
+                    else{
+                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 403);
+                    }
+                }
+            }
+        }
+    }
+
     public function updatePromotedItem(Request $request){
         $validator = Validator::make($request->all(), [
             'id_company' => 'required|numeric',

@@ -167,6 +167,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('item/show/category', [CompanyItemController::class, 'getItemByCategory']);
 		Route::post('item/promoted/', [CompanyItemController::class, 'getPromotedItem']);
 		Route::post('item/promoted/update', [CompanyItemController::class, 'updatePromotedItem']);
+		Route::post('item/promoted/toggle', [CompanyItemController::class, 'togglePromotedItem']);
 		Route::post('item/media/add', [CompanyItemController::class, 'addNewItemMedia']);
 		Route::post('item/media/delete', [CompanyItemController::class, 'deleteMedia']);
 		Route::post('item/delete', [CompanyItemController::class, 'deleteItem']);
