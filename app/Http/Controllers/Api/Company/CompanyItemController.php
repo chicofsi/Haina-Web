@@ -755,8 +755,10 @@ class CompanyItemController extends Controller
                         $check_item = CompanyItem::where('id', $request->id_item)->where('deleted_at', null)->first();
                         $item_catalogs = CompanyItemCatalog::where('id_company', $request->id_company)->where('deleted_at', null)->get();
 
-                        $catalog_id = (array) CompanyItemCatalog::select('id')->where('id_company', $request->id_company)->where('deleted_at', null)->get();
-                        dd($catalog_id);
+                        foreach($item_catalogs as $key => $value){
+                            $catalog_id[$key] = $value->id; 
+                        }
+
                         if($check_item){
                             if(in_array($check_item['id_item_catalog'], $catalog_id)){
                                 if($check_item['promoted'] == 1){
