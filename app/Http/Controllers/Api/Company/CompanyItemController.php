@@ -766,7 +766,7 @@ class CompanyItemController extends Controller
     
                                     $updated_item = CompanyItem::where('id', $request->id_item)->first();
     
-                                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Item promotion removed','data'=> $update_item]), 200);
+                                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Item promotion removed','data'=> $updated_item]), 200);
                                 }
                                 else{
                                     
@@ -785,7 +785,7 @@ class CompanyItemController extends Controller
     
                                         $updated_item = CompanyItem::where('id', $request->id_item)->first();
     
-                                        return response()->json(new ValueMessage(['value'=>1,'message'=>'New item promotion added','data'=> $update_item]), 200);
+                                        return response()->json(new ValueMessage(['value'=>1,'message'=>'New item promotion added','data'=> $updated_item]), 200);
                                     }
                                     else{
                                         return response()->json(new ValueMessage(['value'=>0,'message'=>'Maximum promoted item quota reached','data'=> '']), 404);
