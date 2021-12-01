@@ -772,7 +772,7 @@ class CompanyItemController extends Controller
                                     
                                     foreach($item_catalogs as $key_catalog=>$value_catalog){
                                         $items = CompanyItem::where('id_item_catalog', $value_catalog->id)->where('promoted', 1)->where('deleted_at', null)->where('promoted', 1)->get();
-    
+                                        $current = [];
                                         foreach($items as $key => $value){
                                             $item = $value->id;
     
@@ -780,7 +780,7 @@ class CompanyItemController extends Controller
                                         }
                                     }
     
-                                    if(count($item) < 3){
+                                    if(count($current) < 3){
                                         $check_item['promoted'] == 1;
     
                                         $updated_item = CompanyItem::where('id', $request->id_item)->first();
