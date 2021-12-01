@@ -772,15 +772,15 @@ class CompanyItemController extends Controller
                                 }
                                 else{
                                     
-                                    foreach($item_catalogs as $key_catalog=>$value_catalog){
-                                        $items = CompanyItem::where('id_item_catalog', $value_catalog->id)->where('promoted', 1)->where('deleted_at', null)->where('promoted', 1)->get();
-                                        $current = [];
-                                        foreach($items as $key => $value){
-                                            $item = $value->id;
-    
-                                            array_push($current, $item);
-                                        }
+                                    //foreach($item_catalogs as $key_catalog=>$value_catalog){
+                                    $items = CompanyItem::whereIn('id_item_catalog', $catalog_id)->where('deleted_at', null)->where('promoted', 1)->get();
+                                    $current = [];
+                                    foreach($items as $key => $value){
+                                        $item = $value->id;
+
+                                        array_push($current, $item);
                                     }
+                                    //}
     
                                     if(count($current) < 3){
                                         $check_item = CompanyItem::where('id', $request->id_item)->update([
