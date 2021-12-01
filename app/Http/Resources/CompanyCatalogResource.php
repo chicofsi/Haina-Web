@@ -23,6 +23,8 @@ class CompanyCatalogResource extends JsonResource
 
         $item = CompanyItem::where('id_item_catalog', $this->id)->get();
 
+        $item_count = count($item);
+
         foreach($item as $key => $value){
             $price[$key] = $value->item_price;
         }
@@ -34,6 +36,7 @@ class CompanyCatalogResource extends JsonResource
             'id_company' => $this->id_company,
             'name' => $this->name,
             'starting_price' => $starting_price,
+            'item_count' => $item_count,
             'company' => $company,
             'item' => $item,
         ];
