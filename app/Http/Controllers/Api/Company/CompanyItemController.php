@@ -753,39 +753,44 @@ class CompanyItemController extends Controller
                 else{
                     if(Auth::id() == $check_company['id_user']){
                         $check_item = CompanyItem::where('id', $request->id_item)->where('deleted_at', null)->first();
+                        $item_catalogs = CompanyItemCatalog::where('id_company', $request->id_company)->where('deleted_at', null)->get();
 
+                        $catalog_id = (array) CompanyItemCatalog::select('id')->where('id_company', $request->id_company)->where('deleted_at', null)->get();
+                        dd($catalog_id);
                         if($check_item){
-                            
-                            if($check_item['promoted'] == 1){
-                                $check_item['promoted'] == 0;
-
-                                $updated_item = CompanyItem::where('id', $request->id_item)->first();
-
-                                return response()->json(new ValueMessage(['value'=>1,'message'=>'Item promotion removed','data'=> $update_item]), 200);
-                            }
-                            else{
-                                $item_catalogs = CompanyItemCatalog::where('id_company', $request->id_company)->where('deleted_at', null)->get();
-
-                                foreach($item_catalogs as $key_catalog=>$value_catalog){
-                                    $items = CompanyItem::where('id_item_catalog', $value_catalog->id)->where('promoted', 1)->where('deleted_at', null)->where('promoted', 1)->get();
-
-                                    foreach($items as $key => $value){
-                                        $item = $value->id;
-
-                                        array_push($current, $item);
-                                    }
-                                }
-
-                                if(count($item) < 3){
-                                    $check_item['promoted'] == 1;
-
+                            if(in_array($check_item['id_item_catalog'], $catalog_id)){
+                                if($check_item['promoted'] == 1){
+                                    $check_item['promoted'] == 0;
+    
                                     $updated_item = CompanyItem::where('id', $request->id_item)->first();
-
-                                    return response()->json(new ValueMessage(['value'=>1,'message'=>'New item promotion added','data'=> $update_item]), 200);
+    
+                                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Item promotion removed','data'=> $update_item]), 200);
                                 }
                                 else{
-                                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Maximum promoted item quota reached','data'=> '']), 404);
+                                    
+                                    foreach($item_catalogs as $key_catalog=>$value_catalog){
+                                        $items = CompanyItem::where('id_item_catalog', $value_catalog->id)->where('promoted', 1)->where('deleted_at', null)->where('promoted', 1)->get();
+    
+                                        foreach($items as $key => $value){
+                                            $item = $value->id;
+    
+                                            array_push($current, $item);
+                                        }
+                                    }
+    
+                                    if(count($item) < 3){
+                                        $check_item['promoted'] == 1;
+    
+                                        $updated_item = CompanyItem::where('id', $request->id_item)->first();
+    
+                                        return response()->json(new ValueMessage(['value'=>1,'message'=>'New item promotion added','data'=> $update_item]), 200);
+                                    }
+                                    else{
+                                        return response()->json(new ValueMessage(['value'=>0,'message'=>'Maximum promoted item quota reached','data'=> '']), 404);
+                                    }
                                 }
+                            }else{
+                                return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 403);
                             }
                         }
                         else{
