@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\URL;
 
-class CompanyItemMedia extends JsonResource
+class CompanyItemMediaResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
