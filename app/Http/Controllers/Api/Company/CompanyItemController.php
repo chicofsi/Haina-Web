@@ -361,7 +361,23 @@ class CompanyItemController extends Controller
                         $result[$key] = new CompanyItemResource($value);
                     }
 
-                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Item listed successfully!','data'=> $result]), 200);
+                    //jump
+
+                    $total = count($items);
+                    $per_page = 10;
+                    $current_page = $request->page ?? 1;
+
+                    $starting_point = ($current_page * $per_page) - $per_page;
+
+                    $displayed_result = array_slice($result, $starting_point, $per_page);
+
+                    $paged_result = new \stdClass();
+                    $paged_result->items = $displayed_result;
+                    $paged_result->total = $total;
+                    $paged_result->current_page = (int)$current_page;
+                    $paged_result->total_page = ceil($total/$per_page);
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Item listed successfully!','data'=> $paged_result]), 200);
                 }
                 else{
                     return response()->json(new ValueMessage(['value'=>0,'message'=>'No items found!','data'=> '']), 404);
@@ -908,9 +924,17 @@ class CompanyItemController extends Controller
                 //dd($guessExtension);
                 $store = Storage::disk('public')->putFileAs('company/items/'.$item['id_item_catalog'].'/'.$id, $file ,$fileName.'.'.$guessExtension);
 
+                if(in_array($guessExtension, ["png", "jpg", "jpeg", "gif"]) == true){
+                    $type = "image";
+                }
+                else{
+                    $type = "video";
+                }
+
                 $postMedia = CompanyItemMedia::create([
                     'id_item' => $item['id'],
-                    'media_url' => 'https://hainaservice.com/storage/'.$store
+                    'media_url' => 'https://hainaservice.com/storage/'.$store,
+                    'media_type' => $type
                 ]);
 
                 array_push($list_media, $postMedia);

@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\URL;
+use App\Http\Resources\Company as CompanyResource;
 use App\Http\Resources\CompanyAddress as CompanyAddressResource;
 use App\Http\Resources\CompanyMedia as CompanyMediaResource;
 use App\Models\Company;
@@ -21,8 +22,13 @@ class CompanyItemResource extends JsonResource
         $item_category = CompanyItemCategory::where('id', $this->id_item_category)->first();
 
         $company = Company::where('id', $item_catalog['id_company'])->first();
+        $company_data = new CompanyResource($company);
 
         $media = CompanyItemMedia::where('id_item', $this->id)->where('deleted_at', null)->get();
+
+        foreach($media as $key => $value){
+            $media_data[$key] = new CompanyMediaResource($value);
+        }
 
         return [
             'id' => $this->id,
@@ -35,8 +41,8 @@ class CompanyItemResource extends JsonResource
             'item_description' => $this->item_description,
             'item_price' => $this->item_price,
             'promoted' => $this->promoted,
-            'company' => $company,
-            'media' => $media
+            'company' => $company_data,
+            'media' => $media_data
         ];
     }
 

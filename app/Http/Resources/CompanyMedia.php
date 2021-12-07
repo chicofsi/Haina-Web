@@ -17,11 +17,12 @@ class CompanyMedia extends JsonResource
     public function toArray($request)
     {
         $photo=URL::to('storage/'.$this->media_url);
-        $city=City::where('id',$this->id_city)->first();
+        //$city=City::where('id',$this->id_city)->first();
         return [
             'id'=>$this->id,
             'name'=>$this->name,
             'media_url'=>$photo,
+            'media_type'=>$this->media_type
         ];
     }
 }
