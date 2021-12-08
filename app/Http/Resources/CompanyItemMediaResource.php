@@ -15,11 +15,11 @@ class CompanyItemMediaResource extends JsonResource
      */
     public function toArray($request)
     {
-        $photo=URL::to('storage/'.$this->media_url);
+        //$photo=URL::to('storage/'.$this->media_url);
 
         return [
             'id'=>$this->id,
-            'media_url'=>$photo,
+            'media_url'=>$this->media_url,
             'media_type'=>$this->media_type
         ];
     }
