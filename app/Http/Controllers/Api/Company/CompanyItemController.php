@@ -356,12 +356,14 @@ class CompanyItemController extends Controller
             if($check_category){
                 $items = CompanyItem::where('id_item_category', $request->id_item_category)->where('deleted_at', null)->get();
 
+                if($request->keyword =! null){
+                    $items = CompanyItem::where('id_item_category', $request->id_item_category)->where('item_name', 'like', '%'.$request->keyword.'%')->where('deleted_at', null)->get();
+                }
+
                 if(count($items) > 0){
                     foreach($items as $key => $value){
                         $result[$key] = new CompanyItemResource($value);
                     }
-
-                    //jump
 
                     $total = count($items);
                     $per_page = 10;
