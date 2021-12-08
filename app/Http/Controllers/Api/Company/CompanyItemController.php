@@ -356,7 +356,7 @@ class CompanyItemController extends Controller
             if($check_category){
                 $items = CompanyItem::where('id_item_category', $request->id_item_category)->where('deleted_at', null)->get();
 
-                if($request->keyword =! null){
+                if($request->keyword != null){
                     $items = CompanyItem::where('id_item_category', $request->id_item_category)->where('item_name', 'like', '%'.$request->keyword.'%')->where('deleted_at', null)->get();
                 }
 
