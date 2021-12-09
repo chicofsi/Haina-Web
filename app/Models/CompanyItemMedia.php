@@ -14,7 +14,7 @@ class CompanyItemMedia extends Model
 
     
     protected $fillable = [
-        'id_item', 'media_url'
+        'id_item', 'media_url', 'media_type'
     ];
 
 
