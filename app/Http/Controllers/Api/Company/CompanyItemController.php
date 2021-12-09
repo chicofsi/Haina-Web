@@ -346,9 +346,9 @@ class CompanyItemController extends Controller
     public function getItemByCategory(Request $request){
         $validator = Validator::make($request->all(), [
             'id_item_category' => 'required|numeric',
-            'sort_by_price' => 'prohibits:sort_by_name,sort_by_time|in:asc,desc',
-            'sort_by_name' => 'prohibits:sort_by_price,sort_by_time|in:asc,desc',
-            'sort_by_time' => 'prohibits:sort_by_price,sort_by_name|in:asc,desc'
+            'sort_by_price' => 'prohibited_if:sort_by_name,asc,desc|prohibited_if:sort_by_time,asc,desc|in:asc,desc',
+            'sort_by_name' => 'prohibits:sort_by_price,asc,desc|prohibited_if:sort_by_time,asc,desc|in:asc,desc',
+            'sort_by_time' => 'prohibits:sort_by_price,asc,desc|prohibited_if:sort_by_name,asc,desc|in:asc,desc'
         ]);
 
         if ($validator->fails()) {          
