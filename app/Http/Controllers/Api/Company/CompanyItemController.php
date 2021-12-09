@@ -955,7 +955,7 @@ class CompanyItemController extends Controller
                     $type = "image";
                 }
 
-                dd($type);
+                //dd($type);
                 
                 $store = Storage::disk('public')->putFileAs('company/items/'.$item['id_item_catalog'].'/'.$id, $file ,$fileName.'.'.$guessExtension);
                 
