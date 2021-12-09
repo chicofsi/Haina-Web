@@ -947,13 +947,13 @@ class CompanyItemController extends Controller
                 $cleantitle = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $item['item_name']);
                 $fileName = str_replace(' ','-', $cleantitle.'-'.$num);
                 $guessExtension = $file->guessExtension();
-                //dd($guessExtension);
+                
                 $store = Storage::disk('public')->putFileAs('company/items/'.$item['id_item_catalog'].'/'.$id, $file ,$fileName.'.'.$guessExtension);
-                dd($guessExtension);
-                if(in_array($guessExtension, ["png", "jpg", "jpeg", "gif"]) == true){
+                
+                if(in_array($guessExtension, ["png", "jpg", "jpeg", "gif"])){
                     $type = "image";
                 }
-                else{
+                else if($guessExtension = "mp4"){
                     $type = "video";
                 }
 
