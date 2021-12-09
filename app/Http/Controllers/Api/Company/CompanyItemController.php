@@ -925,7 +925,7 @@ class CompanyItemController extends Controller
                 $guessExtension = $file->guessExtension();
                 //dd($guessExtension);
                 $store = Storage::disk('public')->putFileAs('company/items/'.$item['id_item_catalog'].'/'.$id, $file ,$fileName.'.'.$guessExtension);
-
+                dd($guessExtension);
                 if(in_array($guessExtension, ["png", "jpg", "jpeg", "gif"]) == true){
                     $type = "image";
                 }
