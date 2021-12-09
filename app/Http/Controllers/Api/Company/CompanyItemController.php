@@ -947,9 +947,7 @@ class CompanyItemController extends Controller
                 $cleantitle = str_replace(array( '\'', '"',',' , ';', '<', '>', '?', '*', '|', ':'), '', $item['item_name']);
                 $fileName = str_replace(' ','-', $cleantitle.'-'.$num);
                 $guessExtension = $file->guessExtension();
-                
-                $store = Storage::disk('public')->putFileAs('company/items/'.$item['id_item_catalog'].'/'.$id, $file ,$fileName.'.'.$guessExtension);
-                
+
                 if($guessExtension == "mp4"){
                     $type = "video";
                 }
@@ -957,6 +955,11 @@ class CompanyItemController extends Controller
                     $type = "image";
                 }
 
+                dd($type);
+                
+                $store = Storage::disk('public')->putFileAs('company/items/'.$item['id_item_catalog'].'/'.$id, $file ,$fileName.'.'.$guessExtension);
+                
+                
                 $postMedia = CompanyItemMedia::create([
                     'id_item' => $item['id'],
                     'media_url' => 'https://hainaservice.com/storage/'.$store,
