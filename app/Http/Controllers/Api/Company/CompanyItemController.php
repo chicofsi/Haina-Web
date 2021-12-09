@@ -346,6 +346,9 @@ class CompanyItemController extends Controller
     public function getItemByCategory(Request $request){
         $validator = Validator::make($request->all(), [
             'id_item_category' => 'required|numeric',
+            'sort_by_price' => 'prohibits:sort_by_name,sort_by_time|in:asc,desc',
+            'sort_by_name' => 'prohibits:sort_by_price,sort_by_time|in:asc,desc',
+            'sort_by_time' => 'prohibits:sort_by_price,sort_by_name|in:asc,desc'
         ]);
 
         if ($validator->fails()) {          
@@ -359,13 +362,34 @@ class CompanyItemController extends Controller
                 if($request->keyword != null){
                     $items = CompanyItem::where('id_item_category', $request->id_item_category)->where('item_name', 'like', '%'.$request->keyword.'%')->where('deleted_at', null)->get();
                 }
-
+                //jump
                 if(count($items) > 0){
                     foreach($items as $key => $value){
                         $result[$key] = new CompanyItemResource($value);
                     }
 
-                    $total = count($items);
+                    if($request->sort_by_name == "asc"){
+                        $result = collect($result)->sortBy('item_name',SORT_NATURAL|SORT_FLAG_CASE)->toArray();
+                    }
+                    else if($request->sort_by_name == "desc"){
+                        $result = collect($result)->sortByDesc('item_name', SORT_NATURAL|SORT_FLAG_CASE)->toArray();
+                    }
+    
+                    if($request->sort_by_price == "asc"){
+                        $result = collect($result)->sortBy('item_price', SORT_NATURAL|SORT_FLAG_CASE)->toArray();
+                    }
+                    else if($request->sort_by_price == "desc"){
+                        $result = collect($result)->sortByDesc('item_price', SORT_NATURAL|SORT_FLAG_CASE)->toArray();
+                    }
+
+                    if($request->sort_by_time == "asc"){
+                        $result = collect($result)->sortBy('created_at')->toArray();
+                    }
+                    else if($request->sort_by_time == "desc"){
+                        $result = collect($result)->sortByDesc('created_at')->toArray();
+                    }
+
+                    $total = count($result);
                     $per_page = 10;
                     $current_page = $request->page ?? 1;
 
