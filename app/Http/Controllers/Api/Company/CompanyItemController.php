@@ -950,7 +950,7 @@ class CompanyItemController extends Controller
                 
                 $store = Storage::disk('public')->putFileAs('company/items/'.$item['id_item_catalog'].'/'.$id, $file ,$fileName.'.'.$guessExtension);
                 
-                if(in_array($guessExtension, ["png", "jpg", "jpeg", "gif"])){
+                if(in_array($guessExtension, array("png", "jpg", "jpeg", "gif"))){
                     $type = "image";
                 }
                 else if($guessExtension = "mp4"){
