@@ -79,7 +79,7 @@ class CompanyItemController extends Controller
         if($company){
             $company_result = new CompanyResource($company);
 
-            return response()->json(new ValueMessage(['value'=>1,'message'=>'Company not found','data'=> $company_result]), 200);
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Company data displayed successfully','data'=> $company_result]), 200);
         }
         else{
             return response()->json(new ValueMessage(['value'=>0,'message'=>'Company not found','data'=> '']), 404);
