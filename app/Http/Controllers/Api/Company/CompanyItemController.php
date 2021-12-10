@@ -73,7 +73,7 @@ class CompanyItemController extends Controller
             $company = Company::where('id', $request->id_company)->first();
         }
         else{
-            $company = Company::where('id_user', Auth::id)->first();
+            $company = Company::where('id_user', Auth::id())->first();
         }
 
         if($company){
