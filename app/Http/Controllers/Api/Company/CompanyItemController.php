@@ -68,6 +68,25 @@ class CompanyItemController extends Controller
         }
     }
 
+    public function getCompanyData(Request $request){
+        if($request->id_company != null){
+            $company = Company::where('id', $request->id_company)->first();
+        }
+        else{
+            $company = Company::where('id_user', Auth::id)->first();
+        }
+
+        if($company){
+            $company_result = new CompanyResource($company);
+
+            return response()->json(new ValueMessage(['value'=>1,'message'=>'Company not found','data'=> $company_result]), 200);
+        }
+        else{
+            return response()->json(new ValueMessage(['value'=>0,'message'=>'Company not found','data'=> '']), 404);
+        }
+
+    }
+
     public function getAllItemCatalog(Request $request){
         $validator = Validator::make($request->all(), [
             'id_company' => 'required',
