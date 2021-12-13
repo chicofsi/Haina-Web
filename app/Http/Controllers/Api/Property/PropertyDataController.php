@@ -120,7 +120,7 @@ class PropertyDataController extends Controller
                     'condition' => $request->condition,
                     'building_area' => $request->building_area,
                     'land_area' => $request->land_area ?? null,
-                    'bedroom' => $request->bedroom,
+                    'bedroom' => $request->bedroom ?? 0,
                     'bathroom' => $request->bathroom,
                     'floor_level' => $request->floor_level,
                     'year' => $request->year,
