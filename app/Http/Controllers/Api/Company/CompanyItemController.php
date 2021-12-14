@@ -381,7 +381,6 @@ class CompanyItemController extends Controller
                 if($request->keyword != null){
                     $items = CompanyItem::where('id_item_category', $request->id_item_category)->where('item_name', 'like', '%'.$request->keyword.'%')->where('deleted_at', null)->get();
                 }
-                //jump
                 if(count($items) > 0){
                     foreach($items as $key => $value){
                         $result[$key] = new CompanyItemResource($value);
@@ -950,6 +949,59 @@ class CompanyItemController extends Controller
                         return response()->json(new ValueMessage(['value'=>0,'message'=>'Unauthorized!','data'=> '']), 403);
                     }
                 }
+            }
+        }
+    }
+
+    public function getCompanyItemSuggestion(Request $request){
+        $validator = Validator::make($request->all(), [
+            'current_item_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }
+        else{
+            $item = CompanyItem::where('id', $request->current_item_id)->first();
+
+            $item_suggest = [];
+
+            if($item){
+                $item_in_catalog = CompanyItem::where('id_item_catalog', $item['id_item_catalog'])->where('id', '!=', $request->current_item_id)->where('deleted_at', null)->get();
+
+                if(count($item_in_catalog) > 0){
+                    foreach($item_in_catalog as $key => $value){
+                        $item_suggest[$key] = new CompanyItemResource($value);
+                    }
+                }
+                else{
+                    $catalog = CompanyItemCatalog::where('id', $item['id_item_catalog'])->first();
+
+                    $company = Company::where('id', $catalog['id_company'])->first();
+
+                    $catalog_items = CompanyItemCatalog::where('id_company', $catalog['id_company'])->where('deleted_at', null)->get();
+
+                    foreach($catalog_items as $key => $value){
+                        $catalog_id[$key] = $value->id;
+                    }
+
+                    $items = CompanyItem::whereIn('id_item_catalog', $catalog_id)->where('deleted_at', null)->where('id', '!=', $request->current_item_id)->get();
+                    
+                    foreach($item_in_catalog as $key => $value){
+                        $item_suggest[$key] = new CompanyItemResource($value);
+                    }
+                }
+
+                shuffle($item_suggest);
+                if(count($item_suggest) > 10){
+                    $item_suggest = array_slice($item_suggest, 0, 10);
+                }
+
+                return response()->json(new ValueMessage(['value'=>1,'message'=>'Suggested items displayed successfully','data'=> $item_suggest]), 200);
+
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Item not found','data'=> '']), 404);
             }
         }
     }
