@@ -757,7 +757,7 @@ class CompanyItemController extends Controller
         if ($validator->fails()) {          
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
-            Company::where('id', $request->id_company)->first();
+            $check_company = Company::where('id', $request->id_company)->first();
 
             if(!$check_company){
                 return response()->json(new ValueMessage(['value'=>0,'message'=>'Company not found','data'=> '']), 404);
