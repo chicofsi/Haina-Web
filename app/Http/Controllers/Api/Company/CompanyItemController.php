@@ -1006,6 +1006,45 @@ class CompanyItemController extends Controller
         }
     }
 
+    public function getGlobalItemSuggestion(Request $request){
+        $validator = Validator::make($request->all(), [
+            'current_item_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {          
+            return response()->json(['error'=>$validator->errors()], 400);                        
+        }
+        else{
+            $item = CompanyItem::where('id', $request->current_item_id)->first();
+
+            $item_suggest = [];
+
+            if($item){
+                $global_item = CompanyItem::where('id','!=', $request->current_item_id)->where('deleted_at', null)->get();
+
+                if(count($global_item) > 0){
+
+                    foreach($global_item as $key => $value){
+                        $item_suggest[$key] = new CompanyItemResource($value);
+                    }
+
+                    shuffle($item_suggest);
+                    if(count($item_suggest) > 10){
+                        $item_suggest = array_slice($item_suggest, 0, 10);
+                    }
+
+                    return response()->json(new ValueMessage(['value'=>1,'message'=>'Suggested items displayed successfully','data'=> $item_suggest]), 200);
+                }
+                else{
+                    return response()->json(new ValueMessage(['value'=>0,'message'=>'Item not found','data'=> '']), 404);
+                }
+            }
+            else{
+                return response()->json(new ValueMessage(['value'=>0,'message'=>'Item not found','data'=> '']), 404);
+            }
+        }
+    }
+
     public function storeItemMedia($id, $files, $index = null){
 
         $item = CompanyItem::where('id', $id)->first();

@@ -176,6 +176,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 		Route::post('item/search', [CompanyItemController::class, 'searchItem']);
 
 		Route::post('item/suggested', [CompanyItemController::class, 'getCompanyItemSuggestion']);
+		Route::post('item/suggested_global', [CompanyItemController::class, 'getGlobalItemSuggestion']);
 		
 	});
 	
