@@ -2121,7 +2121,7 @@ class ForumController extends Controller
                         'comment_count' => count(ForumComment::where('post_id', $value->id)->where('deleted_at', null)->get()),
                         'view_count' => $value->view_count,
                         'share_count' => $value->share_count,
-                        'created' => $value->created_at,
+                        'created_at' => $value->created_at,
                         'content' => $value->content,
                         'images' => $value->images,
                         'videos' => $value->videos,
