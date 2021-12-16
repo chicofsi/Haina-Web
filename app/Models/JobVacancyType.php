@@ -12,7 +12,7 @@ class JobVacancyType extends Model
     protected $table = 'job_vacancy_type';
 
     protected $fillable = [
-        'name'
+        'name', 'name_zh'
     ];
 
 }

@@ -12,7 +12,7 @@ class JobVacancyLevel extends Model
     protected $table = 'job_vacancy_level';
 
     protected $fillable = [
-        'name'
+        'name','name_zh'
     ];
 
 }

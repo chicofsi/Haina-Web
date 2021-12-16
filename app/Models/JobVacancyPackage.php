@@ -12,7 +12,7 @@ class JobVacancyPackage extends Model
     protected $table = 'job_vacancy_package';
 
     protected $fillable = [
-        'name', 'price', 'description'
+        'name', 'price', 'description', 'description_zh'
     ];
 
 }
